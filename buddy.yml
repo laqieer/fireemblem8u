@@ -1,4 +1,4 @@
-- pipeline: "Build"
+- pipeline: "Build (Tools Removed)"
   trigger_mode: "ON_EVERY_PUSH"
   ref_name: "remove_tools"
   ref_type: "BRANCH"
