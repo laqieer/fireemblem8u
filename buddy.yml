@@ -11,7 +11,7 @@
     docker_image_tag: "latest"
     execute_commands:
     - "apt-get update && apt-get -y install python3"
-    - "LOCAL_PREFIX=$DEVKITARM/bin/ make"
+    - "LOCAL_PREFIX=$DEVKITARM/bin/ make clean && make"
     mount_filesystem_path: "/buddy/fireemblem8u"
     shell: "BASH"
     trigger_condition: "ALWAYS"
