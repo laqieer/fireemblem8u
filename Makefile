@@ -8,9 +8,8 @@ endif
 
 UNAME := $(shell uname)
 
-CC1      := tools/agbcc/bin/agbcc$(EXE)
-CC1_OLD  := tools/agbcc/bin/old_agbcc$(EXE)
-#include $(DEVKITARM)
+CC1      := agbcc$(EXE)
+CC1_OLD  := old_agbcc$(EXE)
 PREFIX = $(LOCAL_PREFIX)arm-none-eabi-
 export CPP := cpp
 ifeq ($(UNAME),Darwin)
@@ -19,17 +18,13 @@ endif
 export AS := $(PREFIX)as$(EXE)
 export LD := $(PREFIX)ld$(EXE)
 export OBJCOPY := $(PREFIX)objcopy$(EXE)
-#CPP      := $(DEVKITARM)/bin/arm-none-eabi-cpp
-#AS       := $(DEVKITARM)/bin/arm-none-eabi-as
-#LD       := $(DEVKITARM)/bin/arm-none-eabi-ld
-#OBJCOPY  := $(DEVKITARM)/bin/arm-none-eabi-objcopy
-BIN2C    := tools/bin2c/bin2c$(EXE)
-GBAGFX   := tools/gbagfx/gbagfx$(EXE)
-SCANINC  := tools/scaninc/scaninc$(EXE)
-PREPROC  := tools/preproc/preproc$(EXE)
+BIN2C    := bin2c$(EXE)
+GBAGFX   := gbagfx$(EXE)
+SCANINC  := scaninc$(EXE)
+PREPROC  := preproc$(EXE)
 
 CC1FLAGS := -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm
-CPPFLAGS := -I tools/agbcc/include -iquote include -iquote . -nostdinc -undef
+CPPFLAGS := -I /usr/local/bin/tools/agbcc/include -iquote include -iquote . -nostdinc -undef
 ASFLAGS  := -mcpu=arm7tdmi -mthumb-interwork -I include
 
 #### Files ####
@@ -129,7 +124,7 @@ $(DEPS_DIR)/%.d: %.c
 	@$(MAKEDEP)
 
 $(ELF): $(ALL_OBJECTS) $(LDSCRIPT) $(SYM_FILES)
-	$(LD) -T $(LDSCRIPT) -Map $(MAP) $(ALL_OBJECTS) tools/agbcc/lib/libgcc.a tools/agbcc/lib/libc.a -o $@
+	$(LD) -T $(LDSCRIPT) -Map $(MAP) $(ALL_OBJECTS) /usr/local/bin/tools/agbcc/lib/libgcc.a /usr/local/bin/tools/agbcc/lib/libc.a -o $@
 
 %.gba: %.elf
 	$(OBJCOPY) -O binary --pad-to 0x9000000 --gap-fill=0xff $< $@
