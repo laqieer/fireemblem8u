@@ -10,7 +10,7 @@
     docker_image_name: "laqieer/gba-disasm-decomp-tools"
     docker_image_tag: "latest"
     execute_commands:
-    - "make"
+    - "LOCAL_PREFIX=$DEVKITARM/bin/ make"
     mount_filesystem_path: "/buddy/fireemblem8u"
     shell: "BASH"
     trigger_condition: "ALWAYS"
