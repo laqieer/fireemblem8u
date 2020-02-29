@@ -13,7 +13,7 @@ from subprocess import Popen, PIPE
 cwd = os.path.dirname(os.path.realpath(__file__))
 
 # tool path
-gbagfx = '../tools/gbagfx/gbagfx'
+gbagfx = 'gbagfx'
 
 fake = 0
 lz77 = 1

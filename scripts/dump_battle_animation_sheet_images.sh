@@ -36,8 +36,8 @@ do
 		echo "sheet $i at $p"
 		len=`get_lz_len ../baserom.gba $p`
 		temp=`dd bs=1 skip=$p count=$len if=../baserom.gba of=out/banim_sheet_$i.lz`
-		temp=$temp`../tools/gbagfx/gbagfx out/banim_sheet_$i.lz out/banim_sheet_$i.4bpp`
-		temp=$temp`../tools/gbagfx/gbagfx out/banim_sheet_$i.4bpp out/banim_sheet_$i.png -width 32`
+		temp=$temp`gbagfx out/banim_sheet_$i.lz out/banim_sheet_$i.4bpp`
+		temp=$temp`gbagfx out/banim_sheet_$i.4bpp out/banim_sheet_$i.png -width 32`
 		if [[ $temp =~ error ]]
 		then
 			echo $temp >> out/error.log

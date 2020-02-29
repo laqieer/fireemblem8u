@@ -12,7 +12,7 @@ for((i=0;i<224;i++))
 do
     ((p=1460669+32*i))
     dd bs=4 skip=$p count=32 if=../baserom.gba of=out/item_icon_$i.4bpp
-    ../tools/gbagfx/gbagfx out/item_icon_$i.4bpp out/item_icon_$i.png -width 2 -palette out/item_icon_palette.gbapal
+    gbagfx out/item_icon_$i.4bpp out/item_icon_$i.png -width 2 -palette out/item_icon_palette.gbapal
     printf "\t.global item_icon_%d\nitem_icon_%d:\n\t.incbin \"graphics/item_icon/item_icon_%d.4bpp\"\n" $i $i $i >> out/data_item_icon.s
 done
 
