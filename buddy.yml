@@ -13,6 +13,7 @@
     - "apt-get update && apt-get -y install python3"
     - "make clean"
     - "LOCAL_PREFIX=$DEVKITARM/bin/ make"
+    - "scripts/calcrom.sh"
     mount_filesystem_path: "/buddy/fireemblem8u"
     shell: "BASH"
     trigger_condition: "ALWAYS"
