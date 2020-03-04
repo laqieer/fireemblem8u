@@ -1,6 +1,11 @@
 #ifndef GUARD_VARIABLES_H
 #define GUARD_VARIABLES_H
 
+#include "gba/types.h"
+#include "types.h"
+#include "global.h"
+#include "proc.h"
+
 // extern ??? gUnknown_02000000
 // extern ??? gUnknown_02000008
 // extern ??? gUnknown_02000010
@@ -497,8 +502,6 @@ extern struct TileDataTransfer gUnknown_02024CDC[];
 // extern ??? gUnknown_02026E10
 // extern ??? gUnknown_02028F78
 // extern ??? gUnknown_02029D88
-extern struct UnknownStructCTC gUnknown_02029D8C[];
-extern struct UnknownStructCTC gUnknown_0202A58C[17];
 // extern ??? gUnknown_0202A68C
 extern struct TextBuffer0202A6AC gUnknown_0202A6AC;
 //extern u8 gUnknown_0202AC01[];
@@ -542,7 +545,6 @@ extern struct ActionData gActionData;
 // extern ??? gUnknown_0203A95E
 // extern ??? gUnknown_0203A974
 // extern ??? gUnknown_0203A9FC
-// extern ??? gUnknown_0203AA04
 // extern ??? gUnknown_0203AA7F
 // extern ??? gUnknown_0203AA80
 // extern ??? gUnknown_0203AA8A
@@ -783,7 +785,6 @@ extern void (*sHBlankHandler2)(void);
 extern u16* gUnknown_03004158;
 // extern ??? gUnknown_03004160
 // extern ??? gUnknown_03004960
-extern struct UnknownStructCTC *gUnknown_03004970;
 // extern ??? gUnknown_03004980
 // extern ??? gUnknown_03004990
 // extern ??? gUnknown_03004C00
@@ -794,7 +795,6 @@ extern struct Unit* gActiveUnit;
 // extern ??? gUnknown_03004E86
 // extern ??? gUnknown_03004F08
 // extern ??? gUnknown_03004F0C
-// extern ??? gUnknown_03004F10
 // extern ??? gUnknown_03004F20
 // extern ??? gUnknown_03004FA0
 // extern ??? gUnknown_03004FA4
@@ -1299,20 +1299,6 @@ extern u16 gUnknown_08589A9C[];
 extern struct Glyph *gUnknown_0858C7EC[];
 extern struct Glyph *gUnknown_0858F6F4[];
 extern struct Glyph *gUnknown_08590B44[];
-extern const u16 gUnknown_08590F44[]; // 8x8 obj data
-// extern ??? gUnknown_08590F4C
-extern const u16 gUnknown_08590F54[]; // 32x32 obj data
-extern const u16 gUnknown_08590F64[]; // 8x16 obj data
-// extern ??? gUnknown_08590F6C
-// extern ??? gUnknown_08590F7C
-extern const u16 gUnknown_08590F8C[]; // ?? obj data
-// extern ??? gUnknown_08590F94
-// extern ??? gUnknown_08590F9C
-// extern ??? gUnknown_08590FA4
-extern const u16 gUnknown_08590FB4[]; // ?? obj data
-// extern ??? gUnknown_08590FBC
-// extern ??? gUnknown_08590FD4
-extern struct ProcCmd gUnknown_08590FDC[];
 // extern ??? gUnknown_08590FEC
 // extern ??? gUnknown_0859100C
 // extern ??? gUnknown_08591026
@@ -1663,14 +1649,10 @@ extern const u16 gUnknown_085A401C[]; // clouds palette
 // extern ??? gUnknown_085A7E34
 // extern ??? gUnknown_085A7EC8
 // extern ??? gUnknown_085A7EE8
-// extern ??? gUnknown_085A7F08
-// extern ??? gUnknown_085A7F30
-// extern ??? gUnknown_085A7F58
-// extern ??? gUnknown_085A7F5C
-// extern ??? gUnknown_085A7F74
-// extern ??? gUnknown_085A7F94
+// extern ??? gProcScr_CpPhase
+// extern ??? gProcScr_BerserkCpPhase
 // extern ??? gUnknown_085A7F9C
-// extern ??? gUnknown_085A7FCC
+// extern ??? gProcScr_CpDecide
 // extern ??? gUnknown_085A8004
 // extern ??? gUnknown_085A8024
 // extern ??? gUnknown_085A80A4
