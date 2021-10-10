@@ -162,9 +162,7 @@ SECTIONS
         /usr/local/bin/tools/agbcc/lib/libc.a:memchr.o(.text);
         /usr/local/bin/tools/agbcc/lib/libc.a:memmove.o(.text);
         /usr/local/bin/tools/agbcc/lib/libc.a:mlock.o(.text);
-        /* TODO: linking this object from libc causes some libgcc functions to
-         * get discarded. I have no idea why. */
-        /*/usr/local/bin/tools/agbcc/lib/libc.a:mprec.o(.text);*/ asm/libc/mprec.o(.text);
+        /usr/local/bin/tools/agbcc/lib/libc.a:mprec.o(.text);
         /usr/local/bin/tools/agbcc/lib/libc.a:s_isinf.o(.text);
         /usr/local/bin/tools/agbcc/lib/libc.a:s_isnan.o(.text);
         /usr/local/bin/tools/agbcc/lib/libc.a:sbrkr.o(.text);

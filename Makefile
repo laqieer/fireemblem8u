@@ -8,8 +8,8 @@ endif
 
 UNAME := $(shell uname)
 
-CC1      := agbcc$(EXE)
-CC1_OLD  := old_agbcc$(EXE)
+CC1      := $(TOOL_PREFIX)agbcc/bin/agbcc$(EXE)
+CC1_OLD  := $(TOOL_PREFIX)agbcc/bin/old_agbcc$(EXE)
 PREFIX = $(LOCAL_PREFIX)arm-none-eabi-
 export CPP := cpp
 ifeq ($(UNAME),Darwin)
@@ -19,9 +19,9 @@ export AS := $(PREFIX)as$(EXE)
 export LD := $(PREFIX)ld$(EXE)
 export OBJCOPY := $(PREFIX)objcopy$(EXE)
 BIN2C    := bin2c$(EXE)
-GBAGFX   := gbagfx$(EXE)
-SCANINC  := scaninc$(EXE)
-PREPROC  := preproc$(EXE)
+GBAGFX   := $(TOOL_PREFIX)gbagfx/gbagfx$(EXE)
+SCANINC  := $(TOOL_PREFIX)scaninc/scaninc$(EXE)
+PREPROC  := $(TOOL_PREFIX)preproc/preproc$(EXE)
 
 ifeq ($(UNAME),Darwin)
 	SED := sed -i ''
@@ -36,7 +36,7 @@ else
 endif
 
 CC1FLAGS := -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm -g
-CPPFLAGS := -I /usr/local/bin/tools/agbcc/include -iquote include -iquote . -nostdinc -undef
+CPPFLAGS := -I $(TOOL_PREFIX)agbcc/include -iquote include -iquote . -nostdinc -undef
 ASFLAGS  := -mcpu=arm7tdmi -mthumb-interwork -I include
 
 #### Files ####
@@ -144,7 +144,7 @@ $(DEPS_DIR)/%.d: %.c
 	@$(MAKEDEP)
 
 $(ELF): $(ALL_OBJECTS) $(LDSCRIPT) $(SYM_FILES)
-	$(LD) -T $(LDSCRIPT) -Map $(MAP) -R $(BANIM_OBJECT).sym.o $(ALL_OBJECTS) /usr/local/bin/tools/agbcc/lib/libgcc.a /usr/local/bin/tools/agbcc/lib/libc.a -o $@
+	$(LD) -T $(LDSCRIPT) -Map $(MAP) -R $(BANIM_OBJECT).sym.o $(ALL_OBJECTS) -L $(TOOL_PREFIX)agbcc/lib -o $@ -lc -lgcc
 
 %.gba: %.elf
 	$(OBJCOPY) --strip-debug -O binary --pad-to 0x9000000 --gap-fill=0xff $< $@
