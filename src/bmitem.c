@@ -6,6 +6,7 @@
 #include "icon.h"
 #include "chapterdata.h"
 #include "bmunit.h"
+#include "bmitemuse.h"
 
 #include "bmitem.h"
 
@@ -15,11 +16,11 @@
 // TODO: figure out those two inline functions and where they belong
 
 static inline void SetChapterUnk1C(int arg, u8 val) {
-    gUnknown_0202BCF0.unk1C[arg] = val;
+    gRAMChapterData.unk1C[arg] = val;
 }
 
 static inline int GetChapterUnk1C(int arg) {
-    return gUnknown_0202BCF0.unk1C[arg];
+    return gRAMChapterData.unk1C[arg];
 }
 
 char* GetItemNameWithArticle(int item, s8 capitalize) {

@@ -69,6 +69,8 @@ sub_801EA64: @ 0x0801EA64
 	pop {r0}
 	bx r0
 
+	THUMB_FUNC_END sub_801EA64
+
 	THUMB_FUNC_START sub_801EAE8
 sub_801EAE8: @ 0x0801EAE8
 	push {r4, r5, r6, r7, lr}
@@ -178,7 +180,7 @@ _0801EBB2:
 	cmp r0, r1
 	ble _0801EBCA
 	adds r0, r7, #0
-	bl Proc_ClearNativeCallback
+	bl Proc_Break
 _0801EBCA:
 	add sp, #0x10
 	pop {r3, r4, r5}
@@ -192,6 +194,8 @@ _0801EBCA:
 _0801EBDC: .4byte gSinLookup
 _0801EBE0: .4byte gUnknown_0202BCB0
 _0801EBE4: .4byte gObject_16x16
+
+	THUMB_FUNC_END sub_801EAE8
 
 	THUMB_FUNC_START sub_801EBE8
 sub_801EBE8: @ 0x0801EBE8
@@ -218,6 +222,8 @@ _0801EC08:
 	pop {r0}
 	bx r0
 
+	THUMB_FUNC_END sub_801EBE8
+
 	THUMB_FUNC_START sub_801EC10
 sub_801EC10: @ 0x0801EC10
 	push {r4, r5, r6, lr}
@@ -229,7 +235,7 @@ sub_801EC10: @ 0x0801EC10
 	adds r5, r3, #0
 	ldr r0, _0801EC44  @ gUnknown_0859AEA0
 	adds r1, r6, #0
-	bl Proc_Create
+	bl Proc_Start
 	mov r1, r8
 	str r1, [r0, #0x2c]
 	lsls r4, r4, #4
@@ -245,6 +251,8 @@ sub_801EC10: @ 0x0801EC10
 	bx r0
 	.align 2, 0
 _0801EC44: .4byte gUnknown_0859AEA0
+
+	THUMB_FUNC_END sub_801EC10
 
 	THUMB_FUNC_START sub_801EC48
 sub_801EC48: @ 0x0801EC48
@@ -262,5 +270,7 @@ _0801EC5C:
 _0801EC5E:
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END sub_801EC48
 
 .align 2, 0 @ align with 0

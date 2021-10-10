@@ -494,10 +494,8 @@ extern void *gBGVramTilemapPointers[];
 extern void (*gMainCallback)(void);
 extern struct Struct02024CD4 gUnknown_02024CD4;
 extern struct TileDataTransfer gUnknown_02024CDC[];
-// extern ??? gProcesses
 // extern ??? gUnknown_02026968
 // extern ??? gUnknown_02026A6C
-// extern ??? gRootProcesses
 // extern ??? gUnknown_02026A90
 // extern ??? gUnknown_02026E10
 // extern ??? gUnknown_02028F78
@@ -511,13 +509,13 @@ extern u8 gUnknown_0202B4AC[];
 extern int gUnknown_0202B6AC;
 // extern ??? gUnknown_0202B6B0
 extern struct Struct0202BCB0 gUnknown_0202BCB0;
-extern struct Struct0202BCF0 gUnknown_0202BCF0;
+extern struct RAMChapterData gRAMChapterData;
 // extern ??? gUnknown_0202BD30
 // extern ??? gUnknown_0202BD31
 // extern ??? gUnknown_0202BD3C
 // extern ??? gUnknown_0202BD40
 // extern ??? gUnknown_0202BD44
-// extern ??? gActiveUnitId
+extern u8 gActiveUnitId;
 // extern ??? gActiveUnitMoveOrigin
 // extern ??? gUnitArrayBlue
 // extern ??? gUnitArrayRed
@@ -548,7 +546,7 @@ extern struct ActionData gActionData;
 // extern ??? gUnknown_0203AA7F
 // extern ??? gUnknown_0203AA80
 // extern ??? gUnknown_0203AA8A
-// extern ??? gUnknown_0203AA94
+// extern ??? gAiDecision
 // extern ??? gUnknown_0203AAA0
 // extern ??? gUnknown_0203C624
 // extern ??? gUnknown_0203CA24
@@ -787,7 +785,7 @@ extern u16* gUnknown_03004158;
 // extern ??? gUnknown_03004960
 // extern ??? gUnknown_03004980
 // extern ??? gUnknown_03004990
-// extern ??? gUnknown_03004C00
+// extern ??? gStatGainSimUnit
 extern struct Unit* gActiveUnit;
 // extern ??? gUnknown_03004E70
 // extern ??? gUnknown_03004E74
@@ -1343,8 +1341,6 @@ extern struct Glyph *gUnknown_08590B44[];
 // extern ??? gUnknown_0859160C
 // extern ??? gUnknown_08591624
 // extern ??? gUnknown_0859163C
-// extern ??? gUnknown_0859168C
-extern u8 gOAMTileSizeLookup[]; // May be local to ap.c? Or even AP_QueueObjGraphics specifically
 // u8 ??? gUnknown_085916D4
 extern const char *gUnknown_08591AA4[][2];
 //extern struct {u32 *unk0; u32 *unk4; u32 *unk8;} gUnknown_08591AA4;
@@ -1477,7 +1473,7 @@ extern const struct ProcCmd gUnknown_0859A548[]; // this is GENS/Camera Movement
 // extern ??? gUnknown_0859B528
 // extern ??? gUnknown_0859B540
 // extern ??? gUnknown_0859B560
-// extern ??? gUnknown_0859B600
+// extern ??? gProcScr_0859B600
 // extern ??? gUnknown_0859B630
 // extern ??? gUnknown_0859B668
 // extern ??? gUnknown_0859B66C
@@ -1494,8 +1490,8 @@ extern const struct ProcCmd gUnknown_0859A548[]; // this is GENS/Camera Movement
 // extern ??? gUnknown_0859B98E
 // extern ??? gUnknown_0859B996
 // extern ??? gUnknown_0859B99E
-// extern ??? gUnknown_0859B9B8
-// extern ??? gUnknown_0859BA38
+// extern ??? gProcScr_SquareSelectWarp
+// extern ??? gProcScr_SquareSelectTorch
 // extern ??? gUnknown_0859BC64
 // extern ??? gUnknown_0859BCA8
 // extern ??? gUnknown_0859BCF4
@@ -1509,7 +1505,7 @@ extern const struct ProcCmd gUnknown_0859A548[]; // this is GENS/Camera Movement
 // extern ??? gUnknown_0859CFF8
 // extern ??? gUnknown_0859D01C
 // extern ??? gUnknown_0859D040
-// extern ??? gUnknown_0859D064
+// extern ??? gMenuInfo_RepairItems
 // extern ??? gUnknown_0859D088
 // extern ??? gUnknown_0859D0AC
 // extern ??? gUnknown_0859D0D0
@@ -1522,19 +1518,19 @@ extern const struct ProcCmd gUnknown_0859A548[]; // this is GENS/Camera Movement
 // extern ??? gUnknown_0859D1CC
 // extern ??? gUnknown_0859D1F0
 // extern ??? gUnknown_0859D214
-// extern ??? gUnknown_0859D238
-// extern ??? gUnknown_0859D258
-// extern ??? gUnknown_0859D278
-// extern ??? gUnknown_0859D298
-// extern ??? gUnknown_0859D2B8
-// extern ??? gUnknown_0859D2D8
-// extern ??? gUnknown_0859D2F8
+// extern ??? gSelectInfo_OffensiveStaff
+// extern ??? gSelectInfo_Barrier
+// extern ??? gSelectInfo_Restore
+// extern ??? gSelectInfo_Heal
+// extern ??? gSelectInfo_Dance
+// extern ??? gSelectInfo_PutTrap
+// extern ??? gSelectInfo_0859D2F8
 // extern ??? gUnknown_0859D318
 // extern ??? gUnknown_0859D338
 // extern ??? gUnknown_0859D358
 // extern ??? gUnknown_0859D378
 // extern ??? gUnknown_0859D398
-// extern ??? gUnknown_0859D3B8
+// extern ??? gSelectInfo_Repair
 // extern ??? gUnknown_0859D3D8
 // extern ??? gUnknown_0859D3F8
 // extern ??? gUnknown_0859D418
@@ -1651,10 +1647,9 @@ extern const u16 gUnknown_085A401C[]; // clouds palette
 // extern ??? gUnknown_085A7EE8
 // extern ??? gProcScr_CpPhase
 // extern ??? gProcScr_BerserkCpPhase
-// extern ??? gUnknown_085A7F9C
 // extern ??? gProcScr_CpDecide
 // extern ??? gUnknown_085A8004
-// extern ??? gUnknown_085A8024
+// extern ??? gProcScr_CpPerform
 // extern ??? gUnknown_085A80A4
 // extern ??? gUnknown_085A80BC
 // extern ??? gUnknown_085A8120
@@ -2973,22 +2968,22 @@ extern const s8 gUnknown_0880C785[]; // terrainid-to-something lookup
 // extern ??? gUnknown_0880D1AD
 // extern ??? gUnknown_0880D1EE
 // extern ??? gUnknown_0880D22F
-extern const u16 gUnknown_0880D374[]; // terrainid-to-textid lookup
+extern u16 CONST_DATA gUnknown_0880D374[]; // terrainid-to-textid lookup
 // extern ??? gUnknown_088ACBC4
-extern const u8 gUnknown_088ADEF1[]; // Some bow effectiveness list
-extern const u8 gUnknown_088ADF2A[]; // Some bow effectiveness list
-extern const u8 gUnknown_088ADF39[]; // Slayer effectiveness list
-// extern ??? gUnknown_088ADF57
-// extern ??? gUnknown_088ADF5E
-// extern ??? gUnknown_088ADF64
-// extern ??? gUnknown_088ADF67
-// extern ??? gUnknown_088ADF6B
-// extern ??? gUnknown_088ADF76
-// extern ??? gUnknown_088ADF96
-// extern ??? gUnknown_088ADF9E
-// extern ??? gUnknown_088ADFA3
-// extern ??? gUnknown_088ADFA4
-// extern ??? gUnknown_088ADFA6
+extern u8 CONST_DATA gUnknown_088ADEF1[]; // Some bow effectiveness list
+extern u8 CONST_DATA gUnknown_088ADF2A[]; // Some bow effectiveness list
+extern u8 CONST_DATA gUnknown_088ADF39[]; // Slayer effectiveness list
+extern u8 CONST_DATA gUnknown_088ADF57[]; // Hero Crest class list
+extern u8 CONST_DATA gUnknown_088ADF5E[]; // Knight Crest class list
+extern u8 CONST_DATA gUnknown_088ADF64[]; // Orion's Bolt class list
+extern u8 CONST_DATA gUnknown_088ADF67[]; // Elysian Whip class list
+extern u8 CONST_DATA gUnknown_088ADF6B[]; // Guiding ring class list
+extern u8 CONST_DATA gUnknown_088ADF76[]; // Master seal class list
+extern u8 CONST_DATA gUnknown_088ADF96[]; // Heaven seal class list
+extern u8 CONST_DATA gUnknown_088ADF9E[]; // Ocean seal class list
+extern u8 CONST_DATA gUnknown_088ADFA3[]; // Unk (C1) class list
+extern u8 CONST_DATA gUnknown_088ADFA4[]; // Lunar Brace class list
+extern u8 CONST_DATA gUnknown_088ADFA6[]; // Solar Brace class list
 // extern ??? gUnknown_088AF834
 // extern ??? gUnknown_088AF880
 // extern ??? gUnknown_088AFB5A

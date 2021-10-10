@@ -14,7 +14,7 @@
 . = 0x000030; gUnknown_03000030 = .;
 . = 0x000040;
 . = ALIGN(4); src/soundwrapper.o(.bss);
-/*face.c*/
+. = ALIGN(4); src/data_scene.o(.bss);
 . = 0x0000D0; gUnknown_030000D0 = .;
 . = 0x0000D8; gUnknown_030000D8 = .;
 . = 0x0000E8; gUnknown_030000E8 = .;
@@ -152,7 +152,7 @@
 . = 0x0049A0; gWorkingBmMap = .;
 . = 0x0049B0; gUnknown_030049B0 = .;
 . = 0x004BB0; gWorkingTerrainMoveCosts = .;
-. = 0x004C00; gUnknown_03004C00 = .;
+. = 0x004C00; gStatGainSimUnit = .;
 . = 0x004C50; gUnknown_03004C50 = .;
 . = 0x004E50; gActiveUnit = .;
 . = 0x004E60; gMovMapFillState = .;
@@ -162,7 +162,7 @@
 . = 0x004E86; gUnknown_03004E86 = .;
 . = 0x004F08; gUnknown_03004F08 = .;
 . = 0x004F0C; gUnknown_03004F0C = .;
-. = 0x004F10; gCpDecideMainFunc = .;
+. = 0x004F10; AiDecideMainFunc = .;
 . = 0x004F20; gUnknown_03004F20 = .;
 . = 0x004FA0; gUnknown_03004FA0 = .;
 . = 0x004FA4; gUnknown_03004FA4 = .;

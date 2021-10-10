@@ -7,37 +7,33 @@
 
 #include "cp_common.h"
 
-static void CpOrderMain(struct Proc* proc);
-static void CpOrderBerserkInit(struct Proc* proc);
-static void CpOrderFunc_BeginDecide(struct Proc* proc);
+static void CpOrderMain(ProcPtr proc);
+static void CpOrderBerserkInit(ProcPtr proc);
+static void CpOrderFunc_BeginDecide(ProcPtr proc);
 static int GetUnitBattleAiPriority(struct Unit* unit);
 static int GetUnitAiPriority(struct Unit* unit);
 static int BuildAiUnitList(void);
 static void SortAiUnitList(int count);
-static void CpOrderFunc_End(struct Proc* proc);
-
-void sub_8039CAC(struct Proc* proc);
-
-extern ProcFunc gCpDecideMainFunc;
+static void CpOrderFunc_End(ProcPtr proc);
 
 static
 u32* CONST_DATA sUnitPriorityArray = (void*) gUnknown_02020188;
 
 struct ProcCmd CONST_DATA gProcScr_CpOrder[] =
 {
-    PROC_SET_NAME("E_CPORDER"),
+    PROC_NAME("E_CPORDER"),
 
-    PROC_LOOP_ROUTINE(CpOrderMain),
+    PROC_REPEAT(CpOrderMain),
 
     PROC_END,
 };
 
 struct ProcCmd CONST_DATA gProcScr_BerserkCpOrder[] =
 {
-    PROC_SET_NAME("E_BSKORDER"),
+    PROC_NAME("E_BSKORDER"),
 
-    PROC_CALL_ROUTINE(CpOrderBerserkInit),
-    PROC_LOOP_ROUTINE(CpOrderFunc_End),
+    PROC_CALL(CpOrderBerserkInit),
+    PROC_REPEAT(CpOrderFunc_End),
 
     PROC_END,
 };
@@ -49,16 +45,16 @@ ProcFunc CONST_DATA sCpOrderFuncList[] =
     CpOrderFunc_End,
 };
 
-void CpOrderMain(struct Proc* proc)
+void CpOrderMain(ProcPtr proc)
 {
     sCpOrderFuncList[gAiState.orderState++](proc);
 }
 
-void CpOrderBerserkInit(struct Proc* proc)
+void CpOrderBerserkInit(ProcPtr proc)
 {
     int i, aiNum = 0;
 
-    u32 faction = gUnknown_0202BCF0.chapterPhaseIndex;
+    u32 faction = gRAMChapterData.chapterPhaseIndex;
 
     int factionUnitCountLut[3] = { 62, 20, 50 }; // TODO: named constant for those
 
@@ -83,13 +79,13 @@ void CpOrderBerserkInit(struct Proc* proc)
         gAiState.units[aiNum] = 0;
         gAiState.unitIt = gAiState.units;
 
-        gCpDecideMainFunc = sub_8039CAC;
+        AiDecideMainFunc = AiDecideMain;
 
-        Proc_CreateBlockingChild(gProcScr_CpDecide, proc);
+        Proc_StartBlocking(gProcScr_CpDecide, proc);
     }
 }
 
-void CpOrderFunc_BeginDecide(struct Proc* proc)
+void CpOrderFunc_BeginDecide(ProcPtr proc)
 {
     int unitAmt = BuildAiUnitList();
 
@@ -100,9 +96,9 @@ void CpOrderFunc_BeginDecide(struct Proc* proc)
         gAiState.units[unitAmt] = 0;
         gAiState.unitIt = gAiState.units;
 
-        gCpDecideMainFunc = sub_8039CAC;
+        AiDecideMainFunc = AiDecideMain;
 
-        Proc_CreateBlockingChild(gProcScr_CpDecide, proc);
+        Proc_StartBlocking(gProcScr_CpDecide, proc);
     }
 }
 
@@ -152,7 +148,7 @@ int GetUnitAiPriority(struct Unit* unit)
     if (UNIT_CATTRIBUTES(unit) & (CA_DANCE | CA_PLAY))
         return priority - 149;
 
-    if (!(unit->_u0A & 1))
+    if (!(unit->aiFlags & AI_UNIT_FLAG_0))
     {
         priority += lead << 8;
 
@@ -172,7 +168,7 @@ int BuildAiUnitList(void)
 {
     int i, aiNum = 0;
 
-    u32 faction = gUnknown_0202BCF0.chapterPhaseIndex;
+    u32 faction = gRAMChapterData.chapterPhaseIndex;
     u32* prioIt = sUnitPriorityArray;
 
     int factionUnitCountLut[3] = { 62, 20, 50 }; // TODO: named constant for those
@@ -202,14 +198,13 @@ int BuildAiUnitList(void)
     return aiNum;
 }
 
-#ifdef NONMATCHING
-
 void SortAiUnitList(int count)
 {
     int i, j;
 
-    if (count <= 1)
+    if (count <= 1) // Redundant check
         return;
+	++count; --count;
 
     // this is a bubble sort, I think
 
@@ -235,77 +230,7 @@ void SortAiUnitList(int count)
     }
 }
 
-#else // NONMATCH
-
-__attribute__((naked))
-void SortAiUnitList(int count)
+void CpOrderFunc_End(ProcPtr proc)
 {
-    asm("\n\
-        .syntax unified\n\
-        push {r4, r5, r6, r7, lr}\n\
-        mov r7, r9\n\
-        mov r6, r8\n\
-        push {r6, r7}\n\
-        cmp r0, #1\n\
-        ble _08039AA6\n\
-        movs r5, #0\n\
-        subs r0, #2\n\
-        cmp r5, r0\n\
-        bgt _08039AA6\n\
-        mov ip, r0\n\
-        ldr r1, _08039AB4  @ sUnitPriorityArray\n\
-        mov r9, r1\n\
-        ldr r1, _08039AB8  @ gAiState\n\
-        mov r8, r1\n\
-    _08039A6E:\n\
-        adds r4, r0, #0\n\
-        adds r6, r5, #1\n\
-        cmp r0, r5\n\
-        blt _08039A9E\n\
-        mov r7, r9\n\
-        mov r1, r8\n\
-        adds r3, r0, r1\n\
-    _08039A7C:\n\
-        ldr r1, [r7]\n\
-        lsls r0, r4, #2\n\
-        adds r0, r0, r1\n\
-        ldr r2, [r0]\n\
-        ldr r1, [r0, #4]\n\
-        cmp r2, r1\n\
-        bls _08039A96\n\
-        str r1, [r0]\n\
-        str r2, [r0, #4]\n\
-        ldrb r1, [r3]\n\
-        ldrb r0, [r3, #1]\n\
-        strb r0, [r3]\n\
-        strb r1, [r3, #1]\n\
-    _08039A96:\n\
-        subs r3, #1\n\
-        subs r4, #1\n\
-        cmp r4, r5\n\
-        bge _08039A7C\n\
-    _08039A9E:\n\
-        adds r5, r6, #0\n\
-        mov r0, ip\n\
-        cmp r5, r0\n\
-        ble _08039A6E\n\
-    _08039AA6:\n\
-        pop {r3, r4}\n\
-        mov r8, r3\n\
-        mov r9, r4\n\
-        pop {r4, r5, r6, r7}\n\
-        pop {r0}\n\
-        bx r0\n\
-        .align 2, 0\n\
-    _08039AB4: .4byte sUnitPriorityArray\n\
-    _08039AB8: .4byte gAiState\n\
-        .syntax divided\n\
-    ");
-}
-
-#endif // NONMATCH
-
-void CpOrderFunc_End(struct Proc* proc)
-{
-    Proc_ClearNativeCallback(proc);
+    Proc_Break(proc);
 }

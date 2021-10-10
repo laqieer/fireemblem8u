@@ -8,9 +8,10 @@ struct Unit;
 // Forward declarations for types that may need to be declared elsewhere later?
 struct BattleUnit; // currently in bmunit.h
 struct UnitDefinition; // currently in bmunit.h
+struct Trap;
+struct BattleHit;
 
 // Type definitions for types without any other home :/
-struct BattleHit;
 
 struct BgCoords
 {
@@ -140,7 +141,7 @@ struct Struct0202BCB0 // Game State Struct
     /* 3F */ s8 unk3F;
 };
 
-struct Struct0202BCF0 { // Chapter Data Struct
+struct RAMChapterData { // Chapter Data Struct
     /* 00 */ u32 unk0; // a time value
     /* 04 */ u32 unk4; // a time value
 
@@ -206,7 +207,7 @@ struct Struct0202BCF0 { // Chapter Data Struct
 };
 
 /**
- * Use with Struct0202BCF0 field chapterStateBits
+ * Use with RAMChapterData field chapterStateBits
  */
 enum
 {
@@ -502,6 +503,12 @@ struct FaceData
     /* 14 */ u8 xMouth, yMouth;
     /* 16 */ u8 xEyes,  yEyes;
     /* 18 */ u8 blinkKind;
+};
+
+struct FaceVramEntry
+{
+    /* 00 */ u32 tileOffset;
+    /* 04 */ u16 paletteId;
 };
 
 #endif // GUARD_TYPES_H

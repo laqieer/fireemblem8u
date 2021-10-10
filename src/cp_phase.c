@@ -14,12 +14,12 @@ static void AiPhaseCleanup(struct Proc* proc);
 CONST_DATA
 struct ProcCmd gProcScr_CpPhase[] =
 {
-    PROC_SET_NAME("E_CPPHASE"),
+    PROC_NAME("E_CPPHASE"),
 
-    PROC_CALL_ROUTINE(AiPhaseInit),
+    PROC_CALL(AiPhaseInit),
     PROC_YIELD,
 
-    PROC_CALL_ROUTINE(AiPhaseCleanup),
+    PROC_CALL(AiPhaseCleanup),
 
     PROC_END,
 };
@@ -27,12 +27,12 @@ struct ProcCmd gProcScr_CpPhase[] =
 CONST_DATA
 struct ProcCmd gProcScr_BerserkCpPhase[] =
 {
-    PROC_SET_NAME("E_BSKPHASE"),
+    PROC_NAME("E_BSKPHASE"),
 
-    PROC_CALL_ROUTINE(AiPhaseBerserkInit),
+    PROC_CALL(AiPhaseBerserkInit),
     PROC_YIELD,
 
-    PROC_CALL_ROUTINE(AiPhaseCleanup),
+    PROC_CALL(AiPhaseCleanup),
 
     PROC_END,
 };
@@ -49,13 +49,13 @@ static void AiPhaseInit(struct Proc* proc)
     for (i = 0; i < 8; ++i)
         gAiState.unk86[i] = 0;
 
-    gAiState.specialItemFlags = gUnknown_080D8538[gUnknown_0202BCF0.chapterIndex];
+    gAiState.specialItemFlags = gUnknown_080D8538[gRAMChapterData.chapterIndex];
     gAiState.unk84 = 0;
 
     UpdateAllPhaseHealingAIStatus();
     SetupUnitInventoryAIFlags();
 
-    Proc_CreateBlockingChild(gProcScr_CpOrder, proc);
+    Proc_StartBlocking(gProcScr_CpOrder, proc);
 }
 
 static void AiPhaseBerserkInit(struct Proc* proc)
@@ -68,12 +68,12 @@ static void AiPhaseBerserkInit(struct Proc* proc)
     for (i = 0; i < 8; ++i)
         gAiState.unk86[i] = 0;
 
-    gAiState.specialItemFlags = gUnknown_080D8538[gUnknown_0202BCF0.chapterIndex];
+    gAiState.specialItemFlags = gUnknown_080D8538[gRAMChapterData.chapterIndex];
 
     UpdateAllPhaseHealingAIStatus();
     SetupUnitInventoryAIFlags();
 
-    Proc_CreateBlockingChild(gProcScr_BerserkCpOrder, proc);
+    Proc_StartBlocking(gProcScr_BerserkCpOrder, proc);
 }
 
 static void AiPhaseCleanup(struct Proc* proc)

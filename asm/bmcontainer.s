@@ -11,6 +11,8 @@ GetConvoyItemArray: @ 0x08031500
 	.align 2, 0
 _08031504: .4byte gUnknown_0203A81C
 
+	THUMB_FUNC_END GetConvoyItemArray
+
 	THUMB_FUNC_START ClearConvoyItems
 ClearConvoyItems: @ 0x08031508
 	push {lr}
@@ -28,6 +30,8 @@ ClearConvoyItems: @ 0x08031508
 	.align 2, 0
 _08031524: .4byte gUnknown_0203A81C
 _08031528: .4byte 0x01000064
+
+	THUMB_FUNC_END ClearConvoyItems
 
 	THUMB_FUNC_START ShrinkConvoyItemList
 ShrinkConvoyItemList: @ 0x0803152C
@@ -64,6 +68,8 @@ _08031544:
 	.align 2, 0
 _0803156C: .4byte gUnknown_02020188
 
+	THUMB_FUNC_END ShrinkConvoyItemList
+
 	THUMB_FUNC_START GetConvoyItemCount
 GetConvoyItemCount: @ 0x08031570
 	push {lr}
@@ -85,6 +91,8 @@ _08031580:
 	bx r1
 	.align 2, 0
 _08031590: .4byte gUnknown_0203A81C
+
+	THUMB_FUNC_END GetConvoyItemCount
 
 	THUMB_FUNC_START AddItemToConvoy
 AddItemToConvoy: @ 0x08031594
@@ -118,6 +126,8 @@ _080315C6:
 	pop {r1}
 	bx r1
 
+	THUMB_FUNC_END AddItemToConvoy
+
 	THUMB_FUNC_START sub_80315CC
 sub_80315CC: @ 0x080315CC
 	push {lr}
@@ -131,6 +141,8 @@ sub_80315CC: @ 0x080315CC
 	bx r0
 	.align 2, 0
 _080315E0: .4byte gUnknown_0203A81C
+
+	THUMB_FUNC_END sub_80315CC
 
 	THUMB_FUNC_START GetConvoyItemSlot
 GetConvoyItemSlot: @ 0x080315E4
@@ -163,6 +175,8 @@ _08031614:
 	pop {r1}
 	bx r1
 
+	THUMB_FUNC_END GetConvoyItemSlot
+
 	THUMB_FUNC_START HasConvoyAccess
 HasConvoyAccess: @ 0x0803161C
 	push {lr}
@@ -181,7 +195,7 @@ HasConvoyAccess: @ 0x0803161C
 	.align 2, 0
 _08031638: .4byte gUnknown_03005280
 _0803163C:
-	ldr r0, _08031654  @ gUnknown_0202BCF0
+	ldr r0, _08031654  @ gRAMChapterData
 	ldrb r0, [r0, #0xe]
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
@@ -195,17 +209,19 @@ _08031650:
 	movs r0, #0
 	b _0803165A
 	.align 2, 0
-_08031654: .4byte gUnknown_0202BCF0
+_08031654: .4byte gRAMChapterData
 _08031658:
 	movs r0, #1
 _0803165A:
 	pop {r1}
 	bx r1
 
+	THUMB_FUNC_END HasConvoyAccess
+
 	THUMB_FUNC_START sub_8031660
 sub_8031660: @ 0x08031660
 	push {lr}
-	ldr r0, _0803167C  @ gUnknown_0202BCF0
+	ldr r0, _0803167C  @ gRAMChapterData
 	ldrb r0, [r0, #0xe]
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
@@ -217,12 +233,14 @@ sub_8031660: @ 0x08031660
 	movs r0, #1
 	b _08031682
 	.align 2, 0
-_0803167C: .4byte gUnknown_0202BCF0
+_0803167C: .4byte gRAMChapterData
 _08031680:
 	movs r0, #0
 _08031682:
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END sub_8031660
 
 	THUMB_FUNC_START sub_8031688
 sub_8031688: @ 0x08031688
@@ -257,5 +275,7 @@ _080316BC:
 	pop {r4}
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END sub_8031688
 
 .align 2, 0

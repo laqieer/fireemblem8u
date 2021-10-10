@@ -9,7 +9,7 @@ GetPlayerStartCursorPosition: @ 0x0801DE30
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	adds r6, r1, #0
-	ldr r4, _0801DE74  @ gUnknown_0202BCF0
+	ldr r4, _0801DE74  @ gRAMChapterData
 	ldrh r0, [r4, #0x10]
 	cmp r0, #1
 	bne _0801DE50
@@ -37,7 +37,7 @@ _0801DE50:
 	ldrsb r0, [r1, r0]
 	b _0801DE7E
 	.align 2, 0
-_0801DE74: .4byte gUnknown_0202BCF0
+_0801DE74: .4byte gRAMChapterData
 _0801DE78:
 	ldrb r0, [r4, #0x12]
 	str r0, [r5]
@@ -48,17 +48,19 @@ _0801DE7E:
 	pop {r0}
 	bx r0
 
+	THUMB_FUNC_END GetPlayerStartCursorPosition
+
 	THUMB_FUNC_START GetEnemyStartCursorPosition
 GetEnemyStartCursorPosition: @ 0x0801DE88
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r5, r1, #0
-	ldr r0, _0801DE98  @ gUnknown_0202BCF0
+	ldr r0, _0801DE98  @ gRAMChapterData
 	ldrb r0, [r0, #0xf]
 	adds r4, r0, #1
 	b _0801DEDC
 	.align 2, 0
-_0801DE98: .4byte gUnknown_0202BCF0
+_0801DE98: .4byte gRAMChapterData
 _0801DE9C:
 	adds r0, r4, #0
 	bl GetUnit
@@ -90,7 +92,7 @@ _0801DE9C:
 	bne _0801DEE2
 _0801DED6:
 	adds r4, #1
-	ldr r0, _0801DEEC  @ gUnknown_0202BCF0
+	ldr r0, _0801DEEC  @ gRAMChapterData
 	ldrb r0, [r0, #0xf]
 _0801DEDC:
 	adds r0, #0x40
@@ -102,7 +104,9 @@ _0801DEE2:
 	bx r0
 	.align 2, 0
 _0801DEE8: .4byte 0x00000201
-_0801DEEC: .4byte gUnknown_0202BCF0
+_0801DEEC: .4byte gRAMChapterData
+
+	THUMB_FUNC_END GetEnemyStartCursorPosition
 
 	THUMB_FUNC_START sub_801DEF0
 sub_801DEF0: @ 0x0801DEF0
@@ -113,16 +117,16 @@ sub_801DEF0: @ 0x0801DEF0
 	negs r0, r0
 	str r0, [sp]
 	str r0, [sp, #4]
-	ldr r4, _0801DF14  @ gUnknown_0202BCF0
+	ldr r4, _0801DF14  @ gRAMChapterData
 	ldrb r0, [r4, #0xf]
 	bl GetPhaseAbleUnitCount
 	cmp r0, #0
 	bne _0801DF18
 	adds r0, r5, #0
-	bl Proc_Delete
+	bl Proc_End
 	b _0801DF5A
 	.align 2, 0
-_0801DF14: .4byte gUnknown_0202BCF0
+_0801DF14: .4byte gRAMChapterData
 _0801DF18:
 	ldrb r0, [r4, #0xf]
 	cmp r0, #0x40
@@ -163,6 +167,8 @@ _0801DF5A:
 	pop {r0}
 	bx r0
 
+	THUMB_FUNC_END sub_801DEF0
+
 	THUMB_FUNC_START ADJUSTFROMXI_MoveCameraOnSomeUnit
 ADJUSTFROMXI_MoveCameraOnSomeUnit: @ 0x0801DF64
 	push {r4, r5, r6, lr}
@@ -186,5 +192,7 @@ _0801DF8E:
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
+
+	THUMB_FUNC_END ADJUSTFROMXI_MoveCameraOnSomeUnit
 
 .align 2, 0 @ align with 0

@@ -2,139 +2,6 @@
 
 	.SYNTAX UNIFIED
 
-	THUMB_FUNC_START sub_801BA88
-sub_801BA88: @ 0x0801BA88
-	push {r4, r5, r6, lr}
-	mov r6, r8
-	push {r6}
-	sub sp, #0xc
-	ldr r1, [r0, #0x2c]
-	mov r8, r1
-	ldr r4, [r0, #0x30]
-	adds r1, r0, #0
-	adds r1, #0x52
-	ldrh r5, [r1]
-	ldr r6, [r0, #0x54]
-	add r0, sp, #4
-	adds r1, r5, #0
-	bl Text_Init
-	add r0, sp, #4
-	adds r1, r6, #0
-	bl Text_AppendString
-	adds r5, #2
-	movs r0, #0
-	str r0, [sp]
-	mov r0, r8
-	adds r1, r4, #0
-	adds r2, r5, #0
-	movs r3, #4
-	bl DrawUiFrame2
-	adds r4, #1
-	lsls r4, r4, #5
-	adds r4, #1
-	add r4, r8
-	lsls r4, r4, #1
-	ldr r0, _0801BAE8  @ gBG0TilemapBuffer
-	adds r4, r4, r0
-	add r0, sp, #4
-	adds r1, r4, #0
-	bl Text_Draw
-	movs r0, #3
-	bl BG_EnableSyncByMask
-	add sp, #0xc
-	pop {r3}
-	mov r8, r3
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0801BAE8: .4byte gBG0TilemapBuffer
-
-	THUMB_FUNC_START sub_801BAEC
-sub_801BAEC: @ 0x0801BAEC
-	push {r4, r5, r6, lr}
-	mov r6, r8
-	push {r6}
-	adds r5, r0, #0
-	adds r6, r1, #0
-	mov r8, r2
-	adds r4, r3, #0
-	ldr r0, _0801BB18  @ gUnknown_0859AA64
-	movs r1, #3
-	bl Proc_Create
-	str r5, [r0, #0x2c]
-	str r6, [r0, #0x30]
-	str r4, [r0, #0x54]
-	adds r0, #0x52
-	mov r1, r8
-	strh r1, [r0]
-	pop {r3}
-	mov r8, r3
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0801BB18: .4byte gUnknown_0859AA64
-
-	THUMB_FUNC_START sub_801BB1C
-sub_801BB1C: @ 0x0801BB1C
-	push {lr}
-	bl EndMenu
-	bl ClearBg0Bg1
-	ldr r0, _0801BB3C  @ gUnknown_0859D040
-	bl StartOrphanMenu
-	movs r0, #2
-	movs r1, #0
-	bl SetupDebugFontForBG
-	movs r0, #1
-	pop {r1}
-	bx r1
-	.align 2, 0
-_0801BB3C: .4byte gUnknown_0859D040
-
-	THUMB_FUNC_START DebugMenu_MapIdle
-DebugMenu_MapIdle: @ 0x0801BB40
-	push {lr}
-	adds r0, r1, #0
-	movs r1, #7
-	movs r2, #2
-	bl sub_801C65C
-	movs r0, #0
-	pop {r1}
-	bx r1
-
-	THUMB_FUNC_START DebugMenu_MapEffect
-DebugMenu_MapEffect: @ 0x0801BB54
-	push {r4, lr}
-	adds r4, r1, #0
-	bl EndBMapMain
-	adds r4, #0x3c
-	movs r0, #0
-	ldrsb r0, [r4, r0]
-	bl sub_801C650
-	ldr r4, _0801BB90  @ gUnknown_0202BCF0
-	strb r0, [r4, #0xe]
-	ldr r0, _0801BB94  @ gUnknown_03001780
-	ldrb r0, [r0]
-	strb r0, [r4, #0x1b]
-	bl ChapterChangeUnitCleanup
-	bl nullsub_9
-	adds r4, #0x4a
-	ldrb r1, [r4]
-	movs r0, #0xf
-	negs r0, r0
-	ands r0, r1
-	movs r1, #4
-	orrs r0, r1
-	strb r0, [r4]
-	movs r0, #0x17
-	pop {r4}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_0801BB90: .4byte gUnknown_0202BCF0
-_0801BB94: .4byte gUnknown_03001780
-
 	THUMB_FUNC_START sub_801BB98
 sub_801BB98: @ 0x0801BB98
 	push {r4, r5, r6, lr}
@@ -198,6 +65,8 @@ _0801BBCC:
 	.align 2, 0
 _0801BC14: .4byte gUnknown_08A20E74
 _0801BC18: .4byte gBG0TilemapBuffer
+
+	THUMB_FUNC_END sub_801BB98
 
 	THUMB_FUNC_START sub_801BC1C
 sub_801BC1C: @ 0x0801BC1C
@@ -290,8 +159,10 @@ _0801BCC0: .4byte gKeyStatusPtr
 _0801BCC4: .4byte gUnknown_08A20E74
 _0801BCC8: .4byte gBG0TilemapBuffer
 
-	THUMB_FUNC_START sub_801BCCC
-sub_801BCCC: @ 0x0801BCCC
+	THUMB_FUNC_END sub_801BC1C
+
+	THUMB_FUNC_START EndMenuAndClear
+EndMenuAndClear: @ 0x0801BCCC
 	push {lr}
 	bl EndMenu
 	movs r0, #0
@@ -300,6 +171,8 @@ sub_801BCCC: @ 0x0801BCCC
 	movs r0, #1
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END EndMenuAndClear
 
 	THUMB_FUNC_START DebugMapMenu_DisplayInfoDraw
 DebugMapMenu_DisplayInfoDraw: @ 0x0801BCE4
@@ -353,6 +226,8 @@ _0801BD4C: .4byte gUnknown_0859AA5C
 _0801BD50: .4byte gUnknown_0859AA7C
 _0801BD54: .4byte gBG0TilemapBuffer
 
+	THUMB_FUNC_END DebugMapMenu_DisplayInfoDraw
+
 	THUMB_FUNC_START DebugMapMenu_DisplayInfoIdle
 DebugMapMenu_DisplayInfoIdle: @ 0x0801BD58
 	push {r4, r5, lr}
@@ -389,10 +264,14 @@ _0801BD90:
 _0801BD98: .4byte gUnknown_0859AA5C
 _0801BD9C: .4byte gKeyStatusPtr
 
+	THUMB_FUNC_END DebugMapMenu_DisplayInfoIdle
+
 	THUMB_FUNC_START DebugMapMenu_DisplayInfoEffect
 DebugMapMenu_DisplayInfoEffect: @ 0x0801BDA0
 	movs r0, #0
 	bx lr
+
+	THUMB_FUNC_END DebugMapMenu_DisplayInfoEffect
 
 	THUMB_FUNC_START DebugMenu_WeatherDraw
 DebugMenu_WeatherDraw: @ 0x0801BDA4
@@ -450,6 +329,8 @@ DebugMenu_WeatherDraw: @ 0x0801BDA4
 _0801BE1C: .4byte gUnknown_080D7A6C
 _0801BE20: .4byte gUnknown_0859AA5C
 _0801BE24: .4byte gBG0TilemapBuffer
+
+	THUMB_FUNC_END DebugMenu_WeatherDraw
 
 	THUMB_FUNC_START DebugMenu_WeatherIdle
 DebugMenu_WeatherIdle: @ 0x0801BE28
@@ -554,10 +435,14 @@ _0801BEF2:
 	pop {r1}
 	bx r1
 
+	THUMB_FUNC_END DebugMenu_WeatherIdle
+
 	THUMB_FUNC_START DebugMenu_WeatherEffect
 DebugMenu_WeatherEffect: @ 0x0801BEFC
 	movs r0, #0
 	bx lr
+
+	THUMB_FUNC_END DebugMenu_WeatherEffect
 
 	THUMB_FUNC_START DebugMenu_ClearDraw
 DebugMenu_ClearDraw: @ 0x0801BF00
@@ -607,6 +492,8 @@ DebugMenu_ClearDraw: @ 0x0801BF00
 	bx r1
 	.align 2, 0
 _0801BF68: .4byte gBG0TilemapBuffer
+
+	THUMB_FUNC_END DebugMenu_ClearDraw
 
 	THUMB_FUNC_START DebugMenu_ClearIdle
 DebugMenu_ClearIdle: @ 0x0801BF6C
@@ -696,28 +583,34 @@ _0801C008:
 	pop {r1}
 	bx r1
 
+	THUMB_FUNC_END DebugMenu_ClearIdle
+
 	THUMB_FUNC_START DebugMenu_ClearEffect
 DebugMenu_ClearEffect: @ 0x0801C014
 	movs r0, #0x17
 	bx lr
 
+	THUMB_FUNC_END DebugMenu_ClearEffect
+
 	THUMB_FUNC_START DebugMenu_ErasedEffect
 DebugMenu_ErasedEffect: @ 0x0801C018
 	push {lr}
 	bl ClearBg0Bg1
-	ldr r0, _0801C02C  @ gUnknown_0859CFB0
+	ldr r0, _0801C02C  @ gDebugClearMenuDef
 	bl StartOrphanMenu
 	movs r0, #7
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801C02C: .4byte gUnknown_0859CFB0
+_0801C02C: .4byte gDebugClearMenuDef
 
-	THUMB_FUNC_START sub_801C030
-sub_801C030: @ 0x0801C030
+	THUMB_FUNC_END DebugMenu_ErasedEffect
+
+	THUMB_FUNC_START DebugClearMenu_ClearFile
+DebugClearMenu_ClearFile: @ 0x0801C030
 	push {lr}
 	bl DeclareCompletedPlaythrough
-	ldr r2, _0801C058  @ gUnknown_0202BCF0
+	ldr r2, _0801C058  @ gRAMChapterData
 	ldrb r1, [r2, #0x14]
 	movs r0, #0xef
 	ands r0, r1
@@ -730,13 +623,15 @@ sub_801C030: @ 0x0801C030
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801C058: .4byte gUnknown_0202BCF0
+_0801C058: .4byte gRAMChapterData
 
-	THUMB_FUNC_START sub_801C05C
-sub_801C05C: @ 0x0801C05C
+	THUMB_FUNC_END DebugClearMenu_ClearFile
+
+	THUMB_FUNC_START DebugMenuInit
+DebugMenuInit: @ 0x0801C05C
 	push {r4, lr}
 	ldr r1, _0801C084  @ gUnknown_03001780
-	ldr r0, _0801C088  @ gUnknown_0202BCF0
+	ldr r0, _0801C088  @ gRAMChapterData
 	ldrb r0, [r0, #0x1b]
 	strb r0, [r1]
 	ldr r4, _0801C08C  @ gUnknown_02022D76
@@ -752,8 +647,10 @@ sub_801C05C: @ 0x0801C05C
 	bx r1
 	.align 2, 0
 _0801C084: .4byte gUnknown_03001780
-_0801C088: .4byte gUnknown_0202BCF0
+_0801C088: .4byte gRAMChapterData
 _0801C08C: .4byte gUnknown_02022D76
+
+	THUMB_FUNC_END DebugMenuInit
 
 	THUMB_FUNC_START DEBUGONLY_Startup
 DEBUGONLY_Startup: @ 0x0801C090
@@ -768,7 +665,7 @@ DEBUGONLY_Startup: @ 0x0801C090
 	bl SetupDebugFontForBG
 	ldr r0, _0801C0E8  @ gUnknown_080D7A7C
 	bl sub_8008A24
-	ldr r0, _0801C0EC  @ gUnknown_0859CFF8
+	ldr r0, _0801C0EC  @ gDebugContinueMenuDef
 	bl StartOrphanMenu
 	ldr r4, _0801C0F0  @ gUnknown_0202BCB0
 	ldrb r2, [r4, #4]
@@ -792,13 +689,15 @@ DEBUGONLY_Startup: @ 0x0801C090
 _0801C0E0: .4byte SomeUpdateRoutine
 _0801C0E4: .4byte GeneralVBlankHandler
 _0801C0E8: .4byte gUnknown_080D7A7C
-_0801C0EC: .4byte gUnknown_0859CFF8
+_0801C0EC: .4byte gDebugContinueMenuDef
 _0801C0F0: .4byte gUnknown_0202BCB0
 _0801C0F4: .4byte 0x0600B000
 _0801C0F8: .4byte gUnknown_02023CE8
 
-	THUMB_FUNC_START sub_801C0FC
-sub_801C0FC: @ 0x0801C0FC
+	THUMB_FUNC_END DEBUGONLY_Startup
+
+	THUMB_FUNC_START DebugContinueMenuInit
+DebugContinueMenuInit: @ 0x0801C0FC
 	push {lr}
 	sub sp, #0x14
 	ldr r0, [r0, #0x48]
@@ -873,8 +772,10 @@ _0801C182:
 	.align 2, 0
 _0801C194: .4byte 0x00000103
 
-	THUMB_FUNC_START sub_801C198
-sub_801C198: @ 0x0801C198
+	THUMB_FUNC_END DebugContinueMenuInit
+
+	THUMB_FUNC_START DebugContinueMenuEnd
+DebugContinueMenuEnd: @ 0x0801C198
 	push {lr}
 	movs r0, #0
 	bl DeleteFaceByIndex
@@ -905,6 +806,8 @@ sub_801C198: @ 0x0801C198
 _0801C1D4: .4byte gLCDControlBuffer
 _0801C1D8: .4byte gPaletteBuffer
 
+	THUMB_FUNC_END DebugContinueMenuEnd
+
 	THUMB_FUNC_START sub_801C1DC
 sub_801C1DC: @ 0x0801C1DC
 	push {lr}
@@ -920,7 +823,7 @@ sub_801C1DC: @ 0x0801C1DC
 	ldr r0, _0801C21C  @ 0x0000026A
 	bl GetStringFromIndex
 	bl SetTacticianName
-	ldr r1, _0801C220  @ gUnknown_0202BCF0
+	ldr r1, _0801C220  @ gRAMChapterData
 	movs r0, #1
 	strb r0, [r1, #0xe]
 	movs r0, #0
@@ -932,7 +835,9 @@ sub_801C1DC: @ 0x0801C1DC
 	bx r1
 	.align 2, 0
 _0801C21C: .4byte 0x0000026A
-_0801C220: .4byte gUnknown_0202BCF0
+_0801C220: .4byte gRAMChapterData
+
+	THUMB_FUNC_END sub_801C1DC
 
 	THUMB_FUNC_START sub_801C224
 sub_801C224: @ 0x0801C224
@@ -949,10 +854,12 @@ sub_801C224: @ 0x0801C224
 	ldrsb r2, [r0, r2]
 	adds r2, #0xb
 	adds r0, r3, #0
-	bl sub_801C65C
+	bl DebugMenuMapIdleCore
 	movs r0, #0
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END sub_801C224
 
 	THUMB_FUNC_START sub_801C248
 sub_801C248: @ 0x0801C248
@@ -995,7 +902,7 @@ _0801C28A:
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
 	bl sub_801C650
-	ldr r1, _0801C2C8  @ gUnknown_0202BCF0
+	ldr r1, _0801C2C8  @ gRAMChapterData
 	strb r0, [r1, #0xe]
 	ldr r0, _0801C2CC  @ gUnknown_03001780
 	ldrb r0, [r0]
@@ -1010,30 +917,36 @@ _0801C28A:
 	bx r1
 	.align 2, 0
 _0801C2C4: .4byte 0x0000026A
-_0801C2C8: .4byte gUnknown_0202BCF0
+_0801C2C8: .4byte gRAMChapterData
 _0801C2CC: .4byte gUnknown_03001780
+
+	THUMB_FUNC_END sub_801C248
 
 	THUMB_FUNC_START sub_801C2D0
 sub_801C2D0: @ 0x0801C2D0
 	push {lr}
-	ldr r0, _0801C2E0  @ gUnknown_0859D01C
+	ldr r0, _0801C2E0  @ gDebugChuudanMenuDef
 	bl StartOrphanMenu
 	movs r0, #0x17
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801C2E0: .4byte gUnknown_0859D01C
+_0801C2E0: .4byte gDebugChuudanMenuDef
+
+	THUMB_FUNC_END sub_801C2D0
 
 	THUMB_FUNC_START sub_801C2E4
 sub_801C2E4: @ 0x0801C2E4
 	push {lr}
-	ldr r0, _0801C2F4  @ gUnknown_0859CFD4
+	ldr r0, _0801C2F4  @ gDebugChargeMenuDef
 	bl StartOrphanMenu
 	movs r0, #0x17
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801C2F4: .4byte gUnknown_0859CFD4
+_0801C2F4: .4byte gDebugChargeMenuDef
+
+	THUMB_FUNC_END sub_801C2E4
 
 	THUMB_FUNC_START sub_801C2F8
 sub_801C2F8: @ 0x0801C2F8
@@ -1044,13 +957,17 @@ sub_801C2F8: @ 0x0801C2F8
 	pop {r1}
 	bx r1
 
-	THUMB_FUNC_START sub_801C308
-sub_801C308: @ 0x0801C308
+	THUMB_FUNC_END sub_801C2F8
+
+	THUMB_FUNC_START DebugChuudanMenu_IsManualSaveAvailable
+DebugChuudanMenu_IsManualSaveAvailable: @ 0x0801C308
 	movs r0, #2
 	bx lr
 
-	THUMB_FUNC_START sub_801C30C
-sub_801C30C: @ 0x0801C30C
+	THUMB_FUNC_END DebugChuudanMenu_IsManualSaveAvailable
+
+	THUMB_FUNC_START DebugChuudanMenu_ManualSave
+DebugChuudanMenu_ManualSave: @ 0x0801C30C
 	push {lr}
 	adds r1, #0x3d
 	ldrb r0, [r1]
@@ -1066,8 +983,10 @@ _0801C322:
 	pop {r1}
 	bx r1
 
-	THUMB_FUNC_START sub_801C328
-sub_801C328: @ 0x0801C328
+	THUMB_FUNC_END DebugChuudanMenu_ManualSave
+
+	THUMB_FUNC_START DebugContinueMenu_IsManualContinueAvailable
+DebugContinueMenu_IsManualContinueAvailable: @ 0x0801C328
 	push {lr}
 	movs r0, #4
 	bl sub_80A5DA8
@@ -1081,8 +1000,10 @@ _0801C33A:
 	pop {r1}
 	bx r1
 
-	THUMB_FUNC_START sub_801C340
-sub_801C340: @ 0x0801C340
+	THUMB_FUNC_END DebugContinueMenu_IsManualContinueAvailable
+
+	THUMB_FUNC_START DebugContinueMenu_ManualContinue
+DebugContinueMenu_ManualContinue: @ 0x0801C340
 	push {lr}
 	adds r1, #0x3d
 	ldrb r0, [r1]
@@ -1107,8 +1028,10 @@ _0801C368:
 	.align 2, 0
 _0801C36C: .4byte gProc_BMapMain
 
-	THUMB_FUNC_START sub_801C370
-sub_801C370: @ 0x0801C370
+	THUMB_FUNC_END DebugContinueMenu_ManualContinue
+
+	THUMB_FUNC_START DebugContinueMenu_InitializeFile
+DebugContinueMenu_InitializeFile: @ 0x0801C370
 	push {lr}
 	adds r1, #0x3d
 	ldrb r0, [r1]
@@ -1131,8 +1054,10 @@ _0801C392:
 	.align 2, 0
 _0801C398: .4byte gProc_BMapMain
 
-	THUMB_FUNC_START sub_801C39C
-sub_801C39C: @ 0x0801C39C
+	THUMB_FUNC_END DebugContinueMenu_InitializeFile
+
+	THUMB_FUNC_START DebugContinueMenu_IsContinueChapterAvailable
+DebugContinueMenu_IsContinueChapterAvailable: @ 0x0801C39C
 	push {lr}
 	movs r0, #3
 	bl sub_80A5DA8
@@ -1146,8 +1071,10 @@ _0801C3AE:
 	pop {r1}
 	bx r1
 
-	THUMB_FUNC_START sub_801C3B4
-sub_801C3B4: @ 0x0801C3B4
+	THUMB_FUNC_END DebugContinueMenu_IsContinueChapterAvailable
+
+	THUMB_FUNC_START DebugContinueMenu_ContinueChapter
+DebugContinueMenu_ContinueChapter: @ 0x0801C3B4
 	push {lr}
 	adds r1, #0x3d
 	ldrb r0, [r1]
@@ -1163,6 +1090,8 @@ _0801C3CC:
 _0801C3CE:
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END DebugContinueMenu_ContinueChapter
 
 	THUMB_FUNC_START DebugMenu_FogDraw
 DebugMenu_FogDraw: @ 0x0801C3D4
@@ -1181,7 +1110,7 @@ DebugMenu_FogDraw: @ 0x0801C3D4
 	movs r2, #0
 	bl Text_InsertString
 	ldr r2, _0801C43C  @ gUnknown_0859AA7C
-	ldr r0, _0801C440  @ gUnknown_0202BCF0
+	ldr r0, _0801C440  @ gRAMChapterData
 	ldrb r1, [r0, #0xd]
 	negs r0, r1
 	orrs r0, r1
@@ -1213,8 +1142,10 @@ DebugMenu_FogDraw: @ 0x0801C3D4
 	bx r1
 	.align 2, 0
 _0801C43C: .4byte gUnknown_0859AA7C
-_0801C440: .4byte gUnknown_0202BCF0
+_0801C440: .4byte gRAMChapterData
 _0801C444: .4byte gBG0TilemapBuffer
+
+	THUMB_FUNC_END DebugMenu_FogDraw
 
 	THUMB_FUNC_START DebugMenu_FogIdle
 DebugMenu_FogIdle: @ 0x0801C448
@@ -1232,7 +1163,7 @@ DebugMenu_FogIdle: @ 0x0801C448
 	ands r0, r1
 	cmp r0, #0
 	beq _0801C4A6
-	ldr r4, _0801C484  @ gUnknown_0202BCF0
+	ldr r4, _0801C484  @ gRAMChapterData
 	ldrb r0, [r4, #0xd]
 	cmp r0, #0
 	bne _0801C498
@@ -1244,7 +1175,7 @@ DebugMenu_FogIdle: @ 0x0801C448
 	b _0801C49E
 	.align 2, 0
 _0801C480: .4byte gKeyStatusPtr
-_0801C484: .4byte gUnknown_0202BCF0
+_0801C484: .4byte gRAMChapterData
 _0801C488:
 	movs r0, #0xe
 	ldrsb r0, [r4, r0]
@@ -1265,18 +1196,24 @@ _0801C4A6:
 	pop {r1}
 	bx r1
 
+	THUMB_FUNC_END DebugMenu_FogIdle
+
 	THUMB_FUNC_START DebugMenu_FogEffect
 DebugMenu_FogEffect: @ 0x0801C4B0
 	movs r0, #0
 	bx lr
 
-	THUMB_FUNC_START sub_801C4B4
-sub_801C4B4: @ 0x0801C4B4
+	THUMB_FUNC_END DebugMenu_FogEffect
+
+	THUMB_FUNC_START DebugContinueMenu_ReleaseEntry
+DebugContinueMenu_ReleaseEntry: @ 0x0801C4B4
 	push {lr}
 	bl NewGameControl
 	movs r0, #7
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END DebugContinueMenu_ReleaseEntry
 
 	THUMB_FUNC_START DebugMenu_GNightEffect
 DebugMenu_GNightEffect: @ 0x0801C4C0
@@ -1287,6 +1224,8 @@ DebugMenu_GNightEffect: @ 0x0801C4C0
 	movs r0, #0x17
 	pop {r1}
 	bx r1
+
+	THUMB_FUNC_END DebugMenu_GNightEffect
 
 	THUMB_FUNC_START DebugChargeMenu_Draw
 DebugChargeMenu_Draw: @ 0x0801C4D0
@@ -1310,7 +1249,7 @@ DebugChargeMenu_Draw: @ 0x0801C4D0
 	adds r7, r4, #0
 	cmp r0, #0
 	beq _0801C514
-	ldr r0, _0801C510  @ gUnknown_0202BCF0
+	ldr r0, _0801C510  @ gRAMChapterData
 	adds r0, #0x43
 	ldrb r0, [r0]
 	lsls r0, r0, #0x1d
@@ -1318,9 +1257,9 @@ DebugChargeMenu_Draw: @ 0x0801C4D0
 	.align 2, 0
 _0801C508: .4byte gUnknown_080D7A88
 _0801C50C: .4byte gUnknown_080D7A8C
-_0801C510: .4byte gUnknown_0202BCF0
+_0801C510: .4byte gRAMChapterData
 _0801C514:
-	ldr r0, _0801C580  @ gUnknown_0202BCF0
+	ldr r0, _0801C580  @ gRAMChapterData
 	adds r0, #0x42
 	ldrh r0, [r0]
 	lsls r0, r0, #0x17
@@ -1370,8 +1309,10 @@ _0801C51C:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801C580: .4byte gUnknown_0202BCF0
+_0801C580: .4byte gRAMChapterData
 _0801C584: .4byte gBG0TilemapBuffer
+
+	THUMB_FUNC_END DebugChargeMenu_Draw
 
 	THUMB_FUNC_START DebugChargeMenu_Idle
 DebugChargeMenu_Idle: @ 0x0801C588
@@ -1393,7 +1334,7 @@ DebugChargeMenu_Idle: @ 0x0801C588
 	adds r4, r0, #0
 	cmp r1, #0
 	beq _0801C5C0
-	ldr r1, _0801C5BC  @ gUnknown_0202BCF0
+	ldr r1, _0801C5BC  @ gRAMChapterData
 	adds r0, r1, #0
 	adds r0, #0x43
 	ldrb r0, [r0]
@@ -1401,9 +1342,9 @@ DebugChargeMenu_Idle: @ 0x0801C588
 	b _0801C5CA
 	.align 2, 0
 _0801C5B8: .4byte gKeyStatusPtr
-_0801C5BC: .4byte gUnknown_0202BCF0
+_0801C5BC: .4byte gRAMChapterData
 _0801C5C0:
-	ldr r1, _0801C610  @ gUnknown_0202BCF0
+	ldr r1, _0801C610  @ gRAMChapterData
 	adds r0, r1, #0
 	adds r0, #0x42
 	ldrh r0, [r0]
@@ -1449,7 +1390,7 @@ _0801C5F2:
 	strb r0, [r3]
 	b _0801C626
 	.align 2, 0
-_0801C610: .4byte gUnknown_0202BCF0
+_0801C610: .4byte gRAMChapterData
 _0801C614:
 	adds r3, #0x42
 	movs r0, #3
@@ -1472,17 +1413,21 @@ _0801C62E:
 	.align 2, 0
 _0801C638: .4byte 0xFFFFFE7F
 
+	THUMB_FUNC_END DebugChargeMenu_Idle
+
 	THUMB_FUNC_START sub_801C63C
 sub_801C63C: @ 0x0801C63C
 	push {lr}
 	ldr r0, _0801C64C  @ gUnknown_0859AA84
 	movs r1, #3
-	bl Proc_Create
+	bl Proc_Start
 	movs r0, #0x17
 	pop {r1}
 	bx r1
 	.align 2, 0
 _0801C64C: .4byte gUnknown_0859AA84
+
+	THUMB_FUNC_END sub_801C63C
 
 	THUMB_FUNC_START sub_801C650
 sub_801C650: @ 0x0801C650
@@ -1493,8 +1438,10 @@ sub_801C650: @ 0x0801C650
 	.align 2, 0
 _0801C658: .4byte gUnknown_0859AA9C
 
-	THUMB_FUNC_START sub_801C65C
-sub_801C65C: @ 0x0801C65C
+	THUMB_FUNC_END sub_801C650
+
+	THUMB_FUNC_START DebugMenuMapIdleCore
+DebugMenuMapIdleCore: @ 0x0801C65C
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, r9
@@ -1709,5 +1656,7 @@ _0801C81C:
 _0801C888: .4byte gUnknown_03001780
 _0801C88C: .4byte gBG0TilemapBuffer
 _0801C890: .4byte gUnknown_080D7AC4
+
+	THUMB_FUNC_END DebugMenuMapIdleCore
 
 	.align 2, 0 @ Don't pad with nop.
