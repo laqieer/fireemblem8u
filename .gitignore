@@ -59,7 +59,7 @@ Temporary Items
 *.o
 src/*.s
 *.dump
-tools/agbcc
+tools
 *.exe
 .dep
 *.4bpp
