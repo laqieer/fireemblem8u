@@ -17,3 +17,5 @@ This branch removes `tools/` to make setting up much easier with [docker](https:
 docker build -t fireemblem8u .
 docker run fireemblem8u make
 ```
+
+* You will see `fireemblem8.gba: OK` for success.
