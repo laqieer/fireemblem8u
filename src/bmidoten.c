@@ -2,12 +2,13 @@
 
 #include "constants/terrains.h"
 
-#include "rng.h"
 #include "bmitem.h"
-#include "bmunit.h"
 #include "bmmap.h"
-#include "proc.h"
+#include "bmphase.h"
+#include "bmunit.h"
 #include "mu.h"
+#include "proc.h"
+#include "rng.h"
 
 #include "bmidoten.h"
 
@@ -774,7 +775,7 @@ void GenerateDangerZoneRange(s8 boolDisplayStaffRange)
 
     BmMapFill(gBmMapRange, 0);
 
-    enemyFaction = IsNotEnemyPhaseMaybe();
+    enemyFaction = GetNonActiveFaction();
 
     for (i = enemyFaction + 1; i < enemyFaction + 0x80; ++i)
     {
@@ -839,7 +840,7 @@ void GenerateMagicSealMap(int value)
     }
 }
 
-inline u8* GetWorkingMoveCosts(void)
+inline s8* GetWorkingMoveCosts(void)
 {
     return gWorkingTerrainMoveCosts;
 }
