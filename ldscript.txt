@@ -69,7 +69,7 @@ SECTIONS
         asm/menuitempanel.o(.text);
         asm/unitswapfx.o(.text);
         asm/phasechangefx.o(.text);
-        asm/code_801F50C.o(.text); /* ChangeActiveUnitFacing */
+        src/unit_facing.o(.text);
         asm/trapfx.o(.text);
         asm/notifybox.o(.text);
         asm/chapterintrofx.o(.text);
@@ -82,7 +82,7 @@ SECTIONS
         asm/minefx.o(.text);
         asm/chapterintrofx_title.o(.text);
         asm/bmmenu.o(.text);
-        asm/bmphase.o(.text);
+        src/bmphase.o(.text);
         src/bmgold.o(.text);
         asm/bmtarget.o(.text);
         asm/bmudisp.o(.text);
@@ -97,7 +97,7 @@ SECTIONS
         asm/bmusort.o(.text);
         asm/bmarena.o(.text);
         asm/bmmind.o(.text);
-        asm/bmpatharrowdisp.o(.text);
+        src/bmpatharrowdisp.o(.text);
         asm/sallycursor.o(.text);
         asm/bmcommanddbg.o(.text);
         src/chapterdata.o(.text);
@@ -118,9 +118,10 @@ SECTIONS
         src/uimenu.o(.text);
         asm/ui_targetselection.o(.text);
         asm/code_battleanim.o(.text);
-        asm/monstergen.o(.text);
+        src/monstergen.o(.text);
         src/mu.o(.text);
         asm/muctrl.o(.text);
+        src/mapanim.o(.text);
         asm/code_mapanim.o(.text);
         asm/ev_triggercheck.o(.text);
         asm/asmcs.o(.text);
@@ -274,6 +275,8 @@ SECTIONS
         . = ALIGN(4); data/data_8ADEB0.o(.data);
         . = ALIGN(4); src/unit_icon_wait_data.o(.data);
         . = ALIGN(4); data/data_8AFBD8.o(.data);
+        . = ALIGN(4); src/monstergen_data.o(.data);
+        . = ALIGN(4); data/data_8D2700.o(.data);
         . = ALIGN(4); src/mu.o(.data);
         . = ALIGN(4); data/data_9A2DB0.o(.data);
         . = ALIGN(4); src/unit_icon_move_data.o(.data);
