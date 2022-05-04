@@ -1,65 +1,47 @@
 #### Tools ####
 
-ifeq ($(OS),Windows_NT)
-  EXE := .exe
-else
-  EXE :=
-endif
-
-UNAME := $(shell uname)
-
-CC1      := $(TOOL_PREFIX)agbcc/bin/agbcc$(EXE)
-CC1_OLD  := $(TOOL_PREFIX)agbcc/bin/old_agbcc$(EXE)
-PREFIX = $(LOCAL_PREFIX)arm-none-eabi-
-export CPP := cpp
-ifeq ($(UNAME),Darwin)
-export CPP := $(PREFIX)$(CPP)
-endif
-export AS := $(PREFIX)as$(EXE)
-export LD := $(PREFIX)ld$(EXE)
-export OBJCOPY := $(PREFIX)objcopy$(EXE)
-BIN2C    := bin2c$(EXE)
-GBAGFX   := $(TOOL_PREFIX)gbagfx/gbagfx$(EXE)
-SCANINC  := $(TOOL_PREFIX)scaninc/scaninc$(EXE)
-AIF2PCM  := $(TOOL_PREFIX)aif2pcm/aif2pcm$(EXE)
-
-ifeq ($(UNAME),Darwin)
-	SED := sed -i ''
-else
-	SED := sed -i
-endif
-
-ifeq ($(UNAME),Darwin)
-	SHASUM := shasum
-else
-	SHASUM := sha1sum
-endif
+CC1     := agbcc
+CC1_OLD := old_agbcc
+PREFIX  := arm-none-eabi-
+CPP     := $(PREFIX)cpp
+AS      := $(PREFIX)as
+LD      := $(PREFIX)ld
+OBJCOPY := $(PREFIX)objcopy
+STRIP   := $(PREFIX)strip
+BIN2C   := bin2c
+GBAGFX  := gbagfx
+SCANINC := scaninc
+AIF2PCM := aif2pcm
+MID2AGB := mid2agb
 
 CC1FLAGS := -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm -g
-CPPFLAGS := -I $(TOOL_PREFIX)agbcc/include -iquote include -iquote . -nostdinc -undef
+CPPFLAGS := -iquote include -iquote . -nostdinc -undef
 ASFLAGS  := -mcpu=arm7tdmi -mthumb-interwork -I include
 
 #### Files ####
 
 C_SUBDIR = src
 ASM_SUBDIR = asm
-DATA_ASM_SUBDIR = data
+DATA_SUBDIR = data
 SAMPLE_SUBDIR = sound/direct_sound_samples
+MID_SUBDIR = sound/songs/midi
 
 ROM          := fireemblem8.gba
 ELF          := $(ROM:.gba=.elf)
 MAP          := $(ROM:.gba=.map)
 LDSCRIPT     := ldscript.txt
 SYM_FILES    := sym_iwram.txt sym_ewram.txt
-CFILES       := $(wildcard src/*.c)
-ASM_S_FILES  := $(wildcard asm/*.s)
-DATA_S_FILES := $(wildcard data/*.s) 
-SOUND_S_FILES := $(wildcard sound/*.s sound/songs/*.s)
+CFILES       := $(wildcard $(C_SUBDIR)/*.c)
+ASM_S_FILES  := $(wildcard $(ASM_SUBDIR)/*.s)
+DATA_S_FILES := $(wildcard $(DATA_SUBDIR)/*.s)
+SOUND_S_FILES := $(wildcard sound/*.s sound/songs/*.s sound/songs/mml/*.s)
 SFILES       := $(ASM_S_FILES) $(DATA_S_FILES) $(SOUND_S_FILES)
 C_OBJECTS    := $(CFILES:.c=.o)
 ASM_OBJECTS  := $(SFILES:.s=.o)
 BANIM_OBJECT := data/banim/data_banim.o
-ALL_OBJECTS  := $(C_OBJECTS) $(ASM_OBJECTS) $(BANIM_OBJECT)
+MID_FILES    := $(wildcard $(MID_SUBDIR)/*.mid)
+MID_OBJECTS  := $(MID_FILES:.mid=.o)
+ALL_OBJECTS  := $(C_OBJECTS) $(ASM_OBJECTS) $(BANIM_OBJECT) $(MID_OBJECTS)
 DEPS_DIR     := .dep
 
 # Use the older compiler to build library code
@@ -72,7 +54,7 @@ src/bmitem.o: CC1FLAGS += -Wno-error
 #### Main Targets ####
 
 compare: $(ROM)
-	$(SHASUM) -c checksum.sha1
+	sha1sum -c checksum.sha1
 
 .PHONY: compare
 
@@ -84,6 +66,8 @@ clean:
 	$(RM) -f data/banim/*.bin data/banim/*.o data/banim/*.lz data/banim/*.bak
 	# Remove converted sound samples
 	$(RM) -f $(SAMPLE_SUBDIR)/*.bin
+	# Remove converted songs
+	$(RM) -f $(MID_SUBDIR)/*.s
 
 .PHONY: clean
 
@@ -97,6 +81,7 @@ tag:
 # Graphics Recipes
 
 include graphics_file_rules.mk
+include songs.mk
 
 %.s: ;
 %.png: ;
@@ -106,15 +91,7 @@ include graphics_file_rules.mk
 %.1bpp: %.png  ; $(GBAGFX) $< $@
 %.4bpp: %.png  ; $(GBAGFX) $< $@
 %.8bpp: %.png  ; $(GBAGFX) $< $@
-%.gbapal: %.pal
-ifneq ($(OS),Windows_NT)
-ifeq ($(UNAME),Darwin)
-	$(SED) $$'s/\r*$$/\r/' $<
-else
-	$(SED) -e 's/\r*$$/\r/' $<
-endif
-endif
-	$(GBAGFX) $< $@
+%.gbapal: %.pal ; $(GBAGFX) $< $@
 %.gbapal: %.png ; $(GBAGFX) $< $@
 %.lz: % ; $(GBAGFX) $< $@
 %.rl: % ; $(GBAGFX) $< $@
@@ -149,7 +126,8 @@ $(DEPS_DIR)/%.d: %.c
 	@$(MAKEDEP)
 
 $(ELF): $(ALL_OBJECTS) $(LDSCRIPT) $(SYM_FILES)
-	$(LD) -T $(LDSCRIPT) -Map $(MAP) -R $(BANIM_OBJECT).sym.o $(ALL_OBJECTS) -L $(TOOL_PREFIX)agbcc/lib -o $@ -lc -lgcc
+	$(LD) -T $(LDSCRIPT) -Map $(MAP) $(ALL_OBJECTS) -R $(BANIM_OBJECT).sym.o -L /usr/local/bin/agbcc/lib -o $@ -lc -lgcc
+	$(STRIP) -N .gcc2_compiled. $@
 
 %.gba: %.elf
 	$(OBJCOPY) --strip-debug -O binary --pad-to 0x9000000 --gap-fill=0xff $< $@
@@ -158,11 +136,7 @@ $(C_OBJECTS): %.o: %.c $(DEPS_DIR)/%.d
 	@$(MAKEDEP)
 	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) -o $*.s
 	echo '.ALIGN 2, 0' >> $*.s
-ifeq ($(UNAME),Darwin)
-	$(SED) -f scripts/align_2_before_debug_section_for_osx.sed $*.s
-else
-	$(SED) '/.section	.debug_line/i\.align 2, 0' $*.s
-endif
+	sed -i '/.section	.debug_line/i\.align 2, 0' $*.s
 	$(AS) $(ASFLAGS) $*.s -o $@
 
 ifeq ($(NODEP),1)
