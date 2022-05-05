@@ -11,12 +11,12 @@ This branch removes `tools/` to make setting up much easier, especially for Wind
 
 ### Setting up the repository
 
-* Install [Docker](https://www.docker.com/).
+1. Install [Docker](https://www.docker.com/).
 
-* You must have a copy of the Fire Emblem: The Sacred Stones ROM named `baserom.gba` in the repository directory.
+2. You must place a copy of the `Fire Emblem: The Sacred Stones` ROM named `baserom.gba` in the repository directory.
 
-* Build
-- For Windows users, double-click `build.bat`.
-- For other users, run `./build.sh`.
+3. Build
+  * For Windows users, double-click `build.bat`.
+  * For other users, run `./build.sh`.
 
-* You will see `fireemblem8.gba: OK` for success.
+You will see `fireemblem8.gba: OK` for success.
