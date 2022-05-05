@@ -15,8 +15,8 @@ This branch removes `tools/` to make setting up much easier, especially for Wind
 
 * You must have a copy of the Fire Emblem: The Sacred Stones ROM named `baserom.gba` in the repository directory.
 
-```
-./build.sh
-```
+* Build
+- For Windows users, double-click `build.bat`.
+- For other users, run `./build.sh`.
 
 * You will see `fireemblem8.gba: OK` for success.
