@@ -1,4 +1,8 @@
 **/.git
+**/.gitignore
+**/.gitattributes
+**/*.md
+**/*.yml
 build.sh
 Dockerfile
 
