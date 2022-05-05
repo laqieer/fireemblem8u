@@ -7,7 +7,7 @@ This is a disassembly of Fire Emblem: The Sacred Stones (U)[!]
 It builds the following ROM:
 * fireemblem8.gba `sha1: c25b145e37456171ada4b0d440bf88a19f4d509f`
 
-This branch removes `tools/` to make setting up much easier.
+This branch removes `tools/` to make setting up much easier, especially for Windows users, because you needn't install Unix environments to build tools and project anymore.
 
 ### Setting up the repository
 
