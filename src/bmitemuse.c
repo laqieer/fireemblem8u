@@ -11,10 +11,12 @@
 #include "bmunit.h"
 #include "bmmap.h"
 #include "bmbattle.h"
+#include "bmtarget.h"
 #include "bmtrick.h"
 #include "uiutils.h"
 #include "uimenu.h"
 #include "uiselecttarget.h"
+#include "playerphase.h"
 
 #include "constants/characters.h"
 #include "constants/items.h"
@@ -48,22 +50,6 @@ void sub_801E684(ProcPtr parent, struct Unit* unit, int x, int y);
 void sub_801E748(int number);
 
 void FillWarpRangeMap(struct Unit* caster, struct Unit* target);
-void DisplayMoveRangeGraphics(int config);
-
-void MakeTargetListForAdjacentHeal(struct Unit* unit);
-void MakeTargetListForRestore(struct Unit* unit);
-void MakeTargetListForRescueStaff(struct Unit* unit);
-void MakeTargetListForBarrier(struct Unit* unit);
-void MakeTargetListForSilence(struct Unit* unit);
-void MakeTargetListForSleep(struct Unit* unit);
-void MakeTargetListForBerserk(struct Unit* unit);
-void MakeTargetListForWarp(struct Unit* unit);
-void MakeTargetListForHammerne(struct Unit* unit);
-void MakeTargetListForUnlock(struct Unit* unit);
-void MakeTargetListForMine(struct Unit* unit);
-void MakeTargetListForLightRune(struct Unit* unit);
-void MakeTargetListForDanceRing(struct Unit* unit);
-void MakeTargetListForDoorAndBridges(struct Unit* unit, int terrain);
 
 static s8 HasSelectTarget(struct Unit* unit, void(*func)(struct Unit*));
 

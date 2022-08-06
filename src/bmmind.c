@@ -12,6 +12,9 @@
 #include "m4a.h"
 #include "soundwrapper.h"
 #include "bmusemind.h"
+#include "bmtrap.h"
+#include "bmarch.h"
+#include "bmtarget.h"
 #include "bmmind.h"
 
 #include "constants/items.h"
@@ -76,9 +79,7 @@ struct ProcCmd CONST_DATA sProcScr_DeathDropAnim[] = {
     PROC_END,
 };
 
-static void BATTLE_GOTO1_IfNobodyIsDead(ProcPtr proc);
 static void BATTLE_PostCombatDeathFades(ProcPtr proc);
-static void BATTLE_DeleteLinkedMOVEUNIT(ProcPtr proc);
 static bool8 BATTLE_HandleItemDrop(ProcPtr proc);
 static void BATTLE_HandleCombatDeaths(ProcPtr proc);
 
@@ -121,10 +122,6 @@ PROC_LABEL(1),
 // koido.s
 void Make6CKOIDO(struct Unit*, int, u8, ProcPtr);
 int GetSomeFacingDirection(int, int, int, int);
-
-// bmtrap.s
-s8 sub_80377F0(ProcPtr, struct Unit*);
-void sub_8037830(ProcPtr, struct Unit*);
 
 // ev_triggercheck.s
 void sub_808371C(u8, u8, int);
@@ -262,7 +259,7 @@ int sub_80321C8() {
 s8 ActionDrop(ProcPtr proc) {
     struct Unit* target = GetUnit(gActionData.targetIndex);
     ProcPtr child;
-    
+
     if ((1 & gBmMapHidden[gActionData.yOther][gActionData.xOther])) {
         gWorkingMovementScript[0] = 0xA;
         gWorkingMovementScript[1] = 4;
@@ -397,7 +394,7 @@ s8 ActionSupport(ProcPtr proc) {
             target->supports[subjectSupportNum] = subjectExp;
         }
 
-        if (subjectExp < targetExp) { 
+        if (subjectExp < targetExp) {
             gActiveUnit->supports[targetSupportNum] = targetExp;
         }
     }
@@ -714,7 +711,7 @@ void BATTLE_HandleArenaDeathsMaybe(ProcPtr proc) {
 
 ??? sub_80329C0(u8 r0) {
     CpuFastFill(r0, gUnknown_0203A974, 7);
-    
+
     return gUnknown_0203A974;
 }
 

@@ -1,18 +1,19 @@
 #### Tools ####
 
-CC1     := agbcc
-CC1_OLD := old_agbcc
-PREFIX  := arm-none-eabi-
-CPP     := $(PREFIX)cpp
-AS      := $(PREFIX)as
-LD      := $(PREFIX)ld
-OBJCOPY := $(PREFIX)objcopy
-STRIP   := $(PREFIX)strip
-BIN2C   := bin2c
-GBAGFX  := gbagfx
-SCANINC := scaninc
-AIF2PCM := aif2pcm
-MID2AGB := mid2agb
+CC1        := agbcc
+CC1_OLD    := old_agbcc
+PREFIX     := arm-none-eabi-
+CPP        := $(PREFIX)cpp
+AS         := $(PREFIX)as
+LD         := $(PREFIX)ld
+OBJCOPY    := $(PREFIX)objcopy
+STRIP      := $(PREFIX)strip
+BIN2C      := bin2c
+GBAGFX     := gbagfx
+SCANINC    := scaninc
+AIF2PCM    := aif2pcm
+MID2AGB    := mid2agb
+TEXTENCODE := textencode
 
 CC1FLAGS := -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm -g
 CPPFLAGS := -iquote include -iquote . -nostdinc -undef
@@ -31,7 +32,11 @@ ELF          := $(ROM:.gba=.elf)
 MAP          := $(ROM:.gba=.map)
 LDSCRIPT     := ldscript.txt
 SYM_FILES    := sym_iwram.txt sym_ewram.txt
+CFILES_GENERATED := $(C_SUBDIR)/msg_data.c
 CFILES       := $(wildcard $(C_SUBDIR)/*.c)
+ifeq (,$(findstring $(CFILES_GENERATED),$(CFILES)))
+CFILES       += $(CFILES_GENERATED)
+endif
 ASM_S_FILES  := $(wildcard $(ASM_SUBDIR)/*.s)
 DATA_S_FILES := $(wildcard $(DATA_SUBDIR)/*.s)
 SOUND_S_FILES := $(wildcard sound/*.s sound/songs/*.s sound/songs/mml/*.s sound/voicegroups/*.s)
@@ -60,7 +65,7 @@ compare: $(ROM)
 
 clean:
 	find . \( -iname '*.1bpp' -o -iname '*.4bpp' -o -iname '*.8bpp' -o -iname '*.gbapal' -o -iname '*.lz' -o -iname '*.fk' -o -iname '*.latfont' -o -iname '*.hwjpnfont' -o -iname '*.fwjpnfont' \) -exec rm {} +
-	$(RM) $(ROM) $(ELF) $(MAP) $(ALL_OBJECTS) src/*.s graphics/*.h
+	$(RM) $(ROM) $(ELF) $(MAP) $(ALL_OBJECTS) src/*.s graphics/*.h $(CFILES_GENERATED)
 	$(RM) -rf $(DEPS_DIR)
 	# Remove battle animation binaries
 	$(RM) -f data/banim/*.bin data/banim/*.o data/banim/*.lz data/banim/*.bak
@@ -131,6 +136,10 @@ $(ELF): $(ALL_OBJECTS) $(LDSCRIPT) $(SYM_FILES)
 
 %.gba: %.elf
 	$(OBJCOPY) --strip-debug -O binary --pad-to 0x9000000 --gap-fill=0xff $< $@
+
+# Generate msg_data.c
+src/msg_data.c: msg_list.txt
+	$(TEXTENCODE) $< $@ --vanilla-tree
 
 $(C_OBJECTS): %.o: %.c $(DEPS_DIR)/%.d
 	@$(MAKEDEP)

@@ -60,20 +60,20 @@ _080225F4: .4byte 0x00000864
 	THUMB_FUNC_START CommandEffectEndPlayerPhase
 CommandEffectEndPlayerPhase: @ 0x080225F8
 	push {lr}
-	ldr r0, _08022608  @ gUnknown_0859AAD8
+	ldr r0, _08022608  @ gProcScr_PlayerPhase
 	bl Proc_EndEach
 	movs r0, #0x17
 	pop {r1}
 	bx r1
 	.align 2, 0
-_08022608: .4byte gUnknown_0859AAD8
+_08022608: .4byte gProcScr_PlayerPhase
 
 	THUMB_FUNC_END CommandEffectEndPlayerPhase
 
 	THUMB_FUNC_START MapMenu_UnitCommand
 MapMenu_UnitCommand: @ 0x0802260C
 	push {lr}
-	ldr r0, _08022624  @ gUnknown_0859AAD8
+	ldr r0, _08022624  @ gProcScr_PlayerPhase
 	bl Proc_Find
 	movs r1, #0xa
 	bl Proc_Goto
@@ -82,7 +82,7 @@ MapMenu_UnitCommand: @ 0x0802260C
 	pop {r1}
 	bx r1
 	.align 2, 0
-_08022624: .4byte gUnknown_0859AAD8
+_08022624: .4byte gProcScr_PlayerPhase
 
 	THUMB_FUNC_END MapMenu_UnitCommand
 
@@ -221,7 +221,7 @@ sub_80226F8: @ 0x080226F8
 	ldr r0, _0802271C  @ gUnknown_0202BCB0
 	adds r0, #0x3e
 	strb r1, [r0]
-	ldr r0, _08022720  @ gUnknown_0859AAD8
+	ldr r0, _08022720  @ gProcScr_PlayerPhase
 	bl Proc_Find
 	movs r1, #0xc
 	bl Proc_Goto
@@ -231,7 +231,7 @@ sub_80226F8: @ 0x080226F8
 	.align 2, 0
 _08022718: .4byte gActiveUnit
 _0802271C: .4byte gUnknown_0202BCB0
-_08022720: .4byte gUnknown_0859AAD8
+_08022720: .4byte gProcScr_PlayerPhase
 
 	THUMB_FUNC_END sub_80226F8
 
@@ -647,7 +647,7 @@ GiveUsability: @ 0x080229F4
 	cmp r2, #0
 	beq _08022A34
 	adds r0, r3, #0
-	bl sub_8025594
+	bl MakeGiveTargetList
 	bl GetSelectTargetCount
 	cmp r0, #0
 	beq _08022A34
@@ -669,7 +669,7 @@ GiveEffect: @ 0x08022A3C
 	push {lr}
 	ldr r0, _08022A54  @ gActiveUnit
 	ldr r0, [r0]
-	bl sub_8025594
+	bl MakeGiveTargetList
 	ldr r0, _08022A58  @ gUnknown_0859D418
 	bl NewTargetSelection
 	movs r0, #7
@@ -1164,7 +1164,7 @@ _08022E04:
 	ldrb r0, [r4, #3]
 	strb r0, [r1, #0x15]
 _08022E22:
-	ldr r0, _08022E34  @ gUnknown_0859E520
+	ldr r0, _08022E34  @ gProcScr_BKSEL
 	bl Proc_EndEach
 	movs r0, #0x17
 _08022E2A:
@@ -1173,7 +1173,7 @@ _08022E2A:
 	bx r1
 	.align 2, 0
 _08022E30: .4byte gActionData
-_08022E34: .4byte gUnknown_0859E520
+_08022E34: .4byte gProcScr_BKSEL
 
 	THUMB_FUNC_END sub_8022DF0
 
@@ -1283,7 +1283,7 @@ _08022EE8:
 	adds r2, r3, #0
 	bl BattleGenerateSimulation
 _08022EFC:
-	bl sub_803738C
+	bl UpdateBattleForecastContents
 	movs r0, #0
 	add sp, #4
 	pop {r4, r5}
@@ -1303,7 +1303,7 @@ sub_8022F10: @ 0x08022F10
 	movs r0, #4
 	bl BG_EnableSyncByMask
 	bl HideMoveRangeGraphics
-	bl sub_80373B4
+	bl CloseBattleForecast
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -1569,7 +1569,7 @@ sub_80230F0: @ 0x080230F0
 	cmp r0, #0
 	bne _0802314E
 	adds r0, r2, #0
-	bl sub_8025B6C
+	bl MakeTargetListForRefresh
 	bl GetSelectTargetCount
 	cmp r0, #0
 	beq _08023118
@@ -1696,7 +1696,7 @@ PlayCommandEffect: @ 0x080231D0
 	movs r7, #0
 	ldr r6, _08023248  @ gActiveUnit
 	ldr r0, [r6]
-	bl sub_8025B6C
+	bl MakeTargetListForRefresh
 	bl GetSelectTargetCount
 	negs r1, r0
 	orrs r1, r0
@@ -3082,7 +3082,7 @@ TalkCommandUsability: @ 0x08023C80
 	cmp r0, #0
 	bne _08023C9E
 	adds r0, r2, #0
-	bl sub_8025610
+	bl MakeTalkTargetList
 	bl GetSelectTargetCount
 	cmp r0, #0
 	bne _08023CA8
@@ -3120,7 +3120,7 @@ TalkCommandEffect: @ 0x08023CC4
 	beq _08023CEC
 	ldr r0, _08023CE4  @ gActiveUnit
 	ldr r0, [r0]
-	bl sub_8025610
+	bl MakeTalkTargetList
 	ldr r0, _08023CE8  @ gUnknown_0859D398
 	bl NewTargetSelection
 	movs r0, #7
@@ -3171,7 +3171,7 @@ SupportCommandUsability: @ 0x08023D14
 	cmp r0, #0
 	beq _08023D40
 	ldr r0, [r4]
-	bl sub_8025610
+	bl MakeTalkTargetList
 	bl GetSelectTargetCount
 	cmp r0, #0
 	beq _08023D48
@@ -3384,7 +3384,7 @@ _08023E94:
 _08023E98: .4byte gActiveUnit
 _08023E9C:
 	adds r0, r2, #0
-	bl sub_80258A4
+	bl MakeTargetListForPick
 	bl GetSelectTargetCount
 	movs r1, #3
 	cmp r0, #0
@@ -3404,7 +3404,7 @@ PickCommandEffect: @ 0x08023EB4
 	ldr r0, _08023ED0  @ gActionData
 	ldrb r0, [r0, #0xc]
 	bl GetUnit
-	bl sub_80258A4
+	bl MakeTargetListForPick
 	ldr r0, _08023ED4  @ gUnknown_0859D358
 	bl NewTargetSelection
 	movs r0, #0x17
@@ -4139,7 +4139,7 @@ SummonCommandUsability: @ 0x080243D8
 	cmp r0, #0
 	bne _0802445A
 	adds r0, r2, #0
-	bl sub_8025CA4
+	bl MakeTargetListForSummon
 	bl GetSelectTargetCount
 	cmp r0, #0
 	beq _0802445A
@@ -4239,7 +4239,7 @@ SummonCommandEffect: @ 0x080244B8
 	push {lr}
 	ldr r0, _080244D0  @ gActiveUnit
 	ldr r0, [r0]
-	bl sub_8025CA4
+	bl MakeTargetListForSummon
 	ldr r0, _080244D4  @ gUnknown_0859D338
 	bl NewTargetSelection
 	movs r0, #7
@@ -5076,7 +5076,7 @@ ItemMenu_Is1stCommandAvailable: @ 0x08024A88
 	push {lr}
 	ldr r0, _08024AA0  @ gActiveUnit
 	ldr r0, [r0]
-	bl sub_8025B6C
+	bl MakeTargetListForRefresh
 	bl GetSelectTargetCount
 	cmp r0, #0
 	beq _08024AA4
@@ -5136,7 +5136,7 @@ ItemMenu_Select1stCommand: @ 0x08024AF0
 	beq _08024B14
 	ldr r0, _08024B0C  @ gActiveUnit
 	ldr r0, [r0]
-	bl sub_8025B6C
+	bl MakeTargetListForRefresh
 	ldr r0, _08024B10  @ gSelectInfo_Dance
 	bl NewTargetSelection
 	movs r0, #0x27
@@ -5386,7 +5386,7 @@ _08024CB6:
 MapMenu_RecordsCommand: @ 0x08024CBC
 	push {lr}
 	movs r0, #3
-	bl sub_80381E0
+	bl StartDungeonRecordProcFromMenu
 	movs r0, #0x17
 	pop {r1}
 	bx r1

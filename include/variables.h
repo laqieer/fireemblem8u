@@ -52,7 +52,7 @@
 // extern ??? gUnknown_02002038
 // extern ??? gUnknown_02002088
 // extern ??? gUnknown_02002774
-// extern ??? gUnknown_02002FDC
+// extern ??? gaBattleForecastTextStructs
 // extern ??? gUnknown_02002FF4
 // extern ??? gUnknown_0200300C
 // extern ??? gUnknown_02003088
@@ -521,7 +521,6 @@ extern struct Vec2 gActiveUnitMoveOrigin;
 // extern ??? gUnitArrayGreen
 // extern ??? gUnknown_02030B8C
 extern u8 gWorkingMovementScript[];
-// extern ??? gUnknown_02033F3C
 // extern ??? gUnknown_02033F40
 // extern ??? gUnknown_02034010
 // extern ??? gUnknown_02036010
@@ -694,7 +693,7 @@ extern struct OamDataTransfer gUnknown_03000030;
 // extern ??? gUnknown_03000808
 // extern ??? gUnknown_03001780
 // extern ??? gUnknown_03001788
-// extern ??? gUnknown_030017A0
+// extern ??? gDungeonState
 // extern ??? gUnknown_030017AC
 // extern ??? gUnknown_030017C8
 // extern ??? gUnknown_030017CC
@@ -879,7 +878,6 @@ extern short gSinLookup[]; // gSinTable; needs to be non-const to match?
 // extern ??? gUnknown_080D7F64
 // extern ??? gUnknown_080D7F8C
 // extern ??? gUnknown_080D7F92
-// extern ??? gUnknown_080D7FB0
 // extern ??? gUnknown_080D7FD0
 // extern ??? gUnknown_080D8018
 // extern ??? gUnknown_080D8070
@@ -893,8 +891,6 @@ extern short gSinLookup[]; // gSinTable; needs to be non-const to match?
 // extern ??? gUnknown_080D8680
 // extern ??? gUnknown_080D868C
 // extern ??? gUnknown_080D8690
-// extern ??? gUnknown_080D86F4
-// extern ??? gUnknown_080D86F8
 // extern ??? gUnknown_080D8714
 // extern ??? gUnknown_080D8740
 // extern ??? gUnknown_080D9C9E
@@ -1139,9 +1135,9 @@ extern short gSinLookup[]; // gSinTable; needs to be non-const to match?
 // extern ??? gUnknown_080E834E
 // extern ??? gUnknown_080E836C
 // extern ??? gUnknown_080E838E
-// extern ??? gUnknown_0815A72C
-// extern ??? gUnknown_0815D488
-extern const char *const gUnknown_0815D48C[];
+// extern ??? gMsgHuffmanTable
+// extern ??? gMsgHuffmanTableRoot
+extern const u8 *const gMsgStringTable[];
 // extern ??? gUnknown_08205714
 // extern ??? gUnknown_0820579C
 // extern ??? gUnknown_08205824
@@ -1426,13 +1422,10 @@ extern const struct ProcCmd gUnknown_0859A548[]; // this is GENS/Camera Movement
 // extern ??? gUnknown_0859AA7C
 // extern ??? gUnknown_0859AA84
 // extern ??? gUnknown_0859AA9C
-// extern ??? gUnknown_0859AAD8
-// extern ??? gUnknown_0859AD08
-// extern ??? gUnknown_0859AD50
 // extern ??? gUnknown_0859AD88
 // extern ??? gUnknown_0859ADA0
 // extern ??? gUnknown_0859ADC8
-extern struct ProcCmd CONST_DATA gUnknown_0859AE18[];
+extern struct ProcCmd CONST_DATA gProcScr_ADJUSTSFROMXI[];
 // extern ??? gUnknown_0859AE38
 // extern ??? gUnknown_0859AE88
 // extern ??? gUnknown_0859AEA0
@@ -1447,14 +1440,7 @@ extern struct ProcCmd CONST_DATA gUnknown_0859AE18[];
 // extern ??? gUnknown_0859B070
 // extern ??? gUnknown_0859B0A0
 // extern ??? gUnknown_0859B0C0
-// extern ??? gUnknown_0859B0E0
-// extern ??? gUnknown_0859B108
-// extern ??? gUnknown_0859B120
-// extern ??? gUnknown_0859B132
-// extern ??? gUnknown_0859B144
-// extern ??? gUnknown_0859B160
-// extern ??? gUnknown_0859B180
-// extern ??? gUnknown_0859B1B0
+ extern struct ProcCmd gProcScr_ChapterIntro[];
 // extern ??? gUnknown_0859B358
 // extern ??? gUnknown_0859B3B0
 // extern ??? gUnknown_0859B3D0
@@ -1540,22 +1526,6 @@ extern struct ProcCmd CONST_DATA gUnknown_0859AE18[];
 // extern ??? gUnknown_0859E188
 // extern ??? gUnknown_0859E1B0
 // extern ??? gUnknown_0859E1B8
-// extern ??? gUnknown_0859E2D0
-// extern ??? gUnknown_0859E4F8
-// extern ??? gUnknown_0859E518
-// extern ??? gUnknown_0859E51C
-// extern ??? gUnknown_0859E520
-// extern ??? gUnknown_0859E5A0
-// extern ??? gUnknown_0859E5AC
-// extern ??? gUnknown_0859E5FC
-// extern ??? gUnknown_0859E64C
-// extern ??? gUnknown_0859E6EC
-// extern ??? gUnknown_0859E79C
-// extern ??? gUnknown_0859E7C8
-// extern ??? gUnknown_0859E7D4
-// extern ??? gUnknown_0859E804
-// extern ??? gUnknown_0859E82C
-// extern ??? gUnknown_0859E838
 // extern ??? gUnknown_0859E8E0
 // extern ??? gUnknown_0859ED70
 // extern ??? gUnknown_0859EDB0
@@ -1584,10 +1554,10 @@ extern u16 gUnknown_0859EFC0[];
 // extern ??? gUnknown_085A06D8
 // extern ??? gUnknown_085A0838
 // extern ??? gUnknown_085A08F0
-// extern ??? gUnknown_085A09A8
-// extern ??? gUnknown_085A0AEC
-// extern ??? gUnknown_085A0C80
-// extern ??? gUnknown_085A0D2C
+// extern ??? gTSA_BattleForecastStandard
+// extern ??? gTSA_BattleForecastExtended
+// extern ??? gBattleForecast_x2x4Gfx
+// extern ??? gBattleForecast_x2x4Pal
 // extern ??? gUnknown_085A0D4C
 extern u16 CONST_DATA gUnknown_085A0EA0[]; // ap
 // extern ??? gUnknown_085A0FF8
@@ -3347,6 +3317,7 @@ extern u16 CONST_DATA gUnknown_08A027FC[][0x10]; // color animation for each pag
 // extern ??? gUnknown_08A02A94
 // extern ??? gUnknown_08A02B3C
 // extern ??? gUnknown_08A02BAC
+extern u8 CONST_DATA gUnknown_08A02C34[];
 // extern ??? gUnknown_08A02EB4
 // extern ??? gUnknown_08A02F34
 // extern ??? gUnknown_08A02F94
