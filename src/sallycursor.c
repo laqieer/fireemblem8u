@@ -20,6 +20,10 @@
 #include "ev_triggercheck.h"
 #include "bmdifficulty.h"
 #include "playerphase.h"
+#include "minimap.h"
+#include "uichapterstatus.h"
+#include "player_interface.h"
+
 #include "sallycursor.h"
 
 // hino.s
@@ -55,7 +59,6 @@ bool8 IsCharacterForceDeployed(int);
 void SortPlayerUnitsForPrepScreen();
 void MakeShopArmory(int, int, ProcPtr);
 void MakeShopVendor(int, int, ProcPtr);
-void sub_808E79C(ProcPtr);
 bool8 sub_8094FF4();
 int sub_809541C();
 int sub_8095970();
@@ -72,15 +75,12 @@ void sub_80972B0();
 void sub_8097340(ProcPtr);
 void sub_8097394(ProcPtr);
 void sub_80A48F0(u8);
-void sub_80A87DC(ProcPtr);
 void sub_80ADDD4(ProcPtr);
 void BWL_IncrementDeployCountMaybe(u8);
 void sub_80B9FC0();
-void DeletePlayerPhaseInterface6Cs();
 void Make6C_savemenu2(ProcPtr);
 void NewPrepScreenTraineePromotionManager(ProcPtr);
 void PrepScreenTraineePromotionManagerExists(ProcPtr);
-void New6CPPInterfaceConstructor(ProcPtr);
 
 // code_sio.s
 int CheckSomethingSomewhere();
@@ -173,7 +173,7 @@ PROC_LABEL(9),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
     PROC_CALL(SMS_UpdateFromGameData),
-    PROC_CALL(New6CPPInterfaceConstructor),
+    PROC_CALL(StartPlayerPhaseSideWindows),
     PROC_REPEAT(sub_8033940),
     PROC_REPEAT(sub_8033978),
 
@@ -181,7 +181,7 @@ PROC_LABEL(9),
 
 PROC_LABEL(1),
     PROC_CALL(HideMoveRangeGraphics),
-    PROC_CALL(DeletePlayerPhaseInterface6Cs),
+    PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_CALL(DisplayActiveUnitEffectRange),
     PROC_REPEAT(sub_8033F34),
 
@@ -221,7 +221,7 @@ PROC_LABEL(6),
     PROC_GOTO(1),
 
 PROC_LABEL(3),
-    PROC_CALL(DeletePlayerPhaseInterface6Cs),
+    PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_CALL(SALLYCURSOR6C_StartUnitSwap),
     PROC_WHILE_EXISTS(gUnknown_0859A548),
     PROC_REPEAT(sub_8033C90),
@@ -552,7 +552,7 @@ void sub_8033634() {
 void sub_8033648(struct UnknownSALLYCURSORProc* proc) {
     LoadDialogueBoxGfx(0, -1);
     Font_InitForUIDefault();
-    DeletePlayerPhaseInterface6Cs();
+    EndPlayerPhaseSideWindows();
     HideMoveRangeGraphics();
 
     sub_8096FAC(proc);
@@ -736,7 +736,7 @@ void sub_8033978(ProcPtr proc) {
             if (gBmMapUnit[gUnknown_0202BCB0.playerCursor.y][gUnknown_0202BCB0.playerCursor.x]) {
                 if (CanShowUnitStatScreen(GetUnit(gBmMapUnit[gUnknown_0202BCB0.playerCursor.y][gUnknown_0202BCB0.playerCursor.x]))) {
                     MU_EndAll();
-                    DeletePlayerPhaseInterface6Cs();
+                    EndPlayerPhaseSideWindows();
                     SetStatScreenConfig(0x1F);
                     StartStatScreen(GetUnit(gBmMapUnit[gUnknown_0202BCB0.playerCursor.y][gUnknown_0202BCB0.playerCursor.x]), proc);
                     Proc_Goto(proc, 5);
@@ -746,7 +746,7 @@ void sub_8033978(ProcPtr proc) {
         }
 
         if (B_BUTTON & gKeyStatusPtr->newKeys) {
-            DeletePlayerPhaseInterface6Cs();
+            EndPlayerPhaseSideWindows();
             gRAMChapterData.xCursor = gUnknown_0202BCB0.playerCursor.x;
             gRAMChapterData.yCursor = gUnknown_0202BCB0.playerCursor.y;
             Proc_Goto(proc, 0);
@@ -759,7 +759,7 @@ void sub_8033978(ProcPtr proc) {
             switch (GetUnitSelectionValueThing(unit)) {
                 case 0:
                 case 1:
-                    DeletePlayerPhaseInterface6Cs();
+                    EndPlayerPhaseSideWindows();
                     gRAMChapterData.xCursor = gUnknown_0202BCB0.playerCursor.x;
                     gRAMChapterData.yCursor = gUnknown_0202BCB0.playerCursor.y;
 
@@ -800,8 +800,8 @@ void sub_8033978(ProcPtr proc) {
         }
 
         if (START_BUTTON & gKeyStatusPtr->newKeys) {
-            DeletePlayerPhaseInterface6Cs();
-            sub_80A87DC(proc);
+            EndPlayerPhaseSideWindows();
+            StartMinimapPrepPhase(proc);
             Proc_Goto(proc, 9);
             return;
         }

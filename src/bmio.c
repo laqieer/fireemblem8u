@@ -18,6 +18,7 @@
 #include "mu.h"
 #include "uimenu.h"
 #include "bmtrap.h"
+#include "gamecontrol.h"
 
 #include "bmio.h"
 
@@ -944,8 +945,8 @@ void InitPlaythroughState(int isDifficult, s8 unk) {
     // TODO: WHAT ARE THOSE
     gRAMChapterData.unk42_6 = unk;
     gRAMChapterData.unk42_2 = 0;
-    gRAMChapterData.unk40_2 = 0;
-    gRAMChapterData.unk40_3 = 0;
+    gRAMChapterData.cfgDisableTerrainDisplay = 0;
+    gRAMChapterData.cfgUnitDisplayType = 0;
     gRAMChapterData.unk40_5 = 0;
     gRAMChapterData.cfgTextSpeed = 1; // TODO: (DEFAULT?) TEXT SPEED DEFINITIONS
     gRAMChapterData.unk40_8 = 0;
