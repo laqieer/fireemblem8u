@@ -10,6 +10,7 @@ struct BattleUnit; // currently in bmunit.h
 struct UnitDefinition; // currently in bmunit.h
 struct Trap;
 struct BattleHit;
+struct PopupInstruction;
 
 // Type definitions for types without any other home :/
 
@@ -86,17 +87,17 @@ struct Struct02024CD4
 
 struct KeyStatusBuffer
 {
-    u8 repeatDelay;     // initial delay before generating auto-repeat presses
-    u8 repeatInterval;  // time between auto-repeat presses
-    u8 repeatTimer;     // (decreased by one each frame, reset to repeatDelay when Presses change and repeatInterval when reaches 0)
-    u16 heldKeys;       // keys that are currently held down
-    u16 repeatedKeys;   // auto-repeated keys
-    u16 newKeys;        // keys that went down this frame
-    u16 prevKeys;       // keys that were held down last frame
-    u16 LastPressState;
-    bool16 ABLRPressed; // 1 for Release (A B L R Only), 0 Otherwise
-    u16 newKeys2;
-    u16 TimeSinceStartSelect; // Time since last Non-Start Non-Select Button was pressed
+    /* 00 */ u8 repeatDelay;     // initial delay before generating auto-repeat presses
+    /* 01 */ u8 repeatInterval;  // time between auto-repeat presses
+    /* 02 */ u8 repeatTimer;     // (decreased by one each frame, reset to repeatDelay when Presses change and repeatInterval when reaches 0)
+    /* 04 */ u16 heldKeys;       // keys that are currently held down
+    /* 06 */ u16 repeatedKeys;   // auto-repeated keys
+    /* 08 */ u16 newKeys;        // keys that went down this frame
+    /* 0A */ u16 prevKeys;       // keys that were held down last frame
+    /* 0C */ u16 LastPressState;
+    /* 0E */ bool16 ABLRPressed; // 1 for Release (A B L R Only), 0 Otherwise
+    /* 10 */ u16 newKeys2;
+    /* 12 */ u16 TimeSinceStartSelect; // Time since last Non-Start Non-Select Button was pressed
 };
 
 typedef void (*InterruptHandler)(void);
@@ -133,8 +134,12 @@ struct Struct0202BCB0 // Game State Struct
     /* 2C */ u16 itemUnk2C;
     /* 2E */ u16 itemUnk2E;
 
-    /* 30 */ u8 _pad30[0x3C - 0x30];
+    /* 30 */ u8 _pad30[0x38 - 0x30];
 
+    /* 38 */ u8 altBlendACa;
+    /* 39 */ u8 altBlendACb;
+    /* 3A */ u8 altBlendBCa;
+    /* 3B */ u8 altBlendBCb;
     /* 3C */ u8 unk3C;
     /* 3D */ u8 unk3D;
     /* 3E */ u8 unk3E;
@@ -189,7 +194,7 @@ struct RAMChapterData { // Chapter Data Struct
     u32 unk40_1:1; // 1
     u32 cfgDisableTerrainDisplay:1; // 1
     u32 cfgUnitDisplayType:2; // 2
-    u32 unk40_5:1; // 1
+    u32 auto_cursor:1; // 1
     u32 cfgTextSpeed:2;
     u32 unk40_8:1; // 1
     u32 unk41_1:1; // 1
@@ -198,7 +203,7 @@ struct RAMChapterData { // Chapter Data Struct
     u32 unk41_5:1; // 1
     u32 unk41_6:1; // unk
     u32 unk41_7:1; // 1
-    u32 unk41_8:1; // 1
+    u32 cfgNoSubtitleHelp:1; // 1
     u32 cfgDisableGoalDisplay:1; // unk
     u32 unk42_2:2; // 2
     u32 cfgBattleForecastType:2; // 2
@@ -246,9 +251,10 @@ struct ActionData
 {
     // unknown stuff (sometimes RNs are pushed here) (maybe an union?)
     /* 00 */ u16 _u00[3];
-    /* 06 */ u16 unk6;
+    /* 06 */ u16 item;
 
-    /* 08 */ u16 unk08[2];
+    /* 08 */ u16 unk08;
+    /* 0A */ u16 unk0A;
 
     /* 0C */ u8 subjectIndex;
     /* 0D */ u8 targetIndex;
@@ -539,6 +545,17 @@ struct FaceVramEntry
 {
     /* 00 */ u32 tileOffset;
     /* 04 */ u16 paletteId;
+};
+
+struct SupportTalkEnt {
+    /* 00 */ u16 unitA;
+    /* 02 */ u16 unitB;
+
+    /* 04 */ u16 msgSupportC;
+    /* 06 */ u16 msgSupportB;
+    /* 08 */ u16 msgSupportA;
+
+    u16 _pad[3];
 };
 
 #endif // GUARD_TYPES_H

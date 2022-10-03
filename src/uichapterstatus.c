@@ -204,6 +204,120 @@ struct ProcCmd CONST_DATA gProcScr_08A01CA4[] = {
     PROC_END,
 };
 
+extern struct HelpBoxInfo sHelpInfo_ChapterStatus_TurnCount;
+extern struct HelpBoxInfo sHelpInfo_ChapterStatus_Funds;
+extern struct HelpBoxInfo sHelpInfo_ChapterStatus_AllyUnits;
+extern struct HelpBoxInfo sHelpInfo_ChapterStatus_EnemyUnits;
+extern struct HelpBoxInfo sHelpInfo_ChapterStatus_Leader;
+extern struct HelpBoxInfo sHelpInfo_ChapterStatus_TimePlayed;
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_Goal = {
+    &sHelpInfo_ChapterStatus_AllyUnits,
+    &sHelpInfo_ChapterStatus_TurnCount,
+    NULL,
+    &sHelpInfo_ChapterStatus_Leader,
+    36,
+    68,
+    0x6F1, // TODO: msgid "The goal of this chapter.[.]"
+    NULL,
+    NULL,
+};
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_TurnCount = {
+    &sHelpInfo_ChapterStatus_Goal,
+    &sHelpInfo_ChapterStatus_Funds,
+    NULL,
+    &sHelpInfo_ChapterStatus_TimePlayed,
+    16,
+    116,
+    0x6F2, // TODO: msgid "Number of turns played at this[NL]point in the current chapter.[.]"
+    NULL,
+    NULL,
+};
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_Funds = {
+    &sHelpInfo_ChapterStatus_TurnCount,
+    &sHelpInfo_ChapterStatus_AllyUnits,
+    NULL,
+    &sHelpInfo_ChapterStatus_TimePlayed,
+    16,
+    132,
+    0x6F3, // TODO: msgid "Money on hand."
+    NULL,
+    NULL,
+};
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_AllyUnits = {
+    &sHelpInfo_ChapterStatus_Funds,
+    &sHelpInfo_ChapterStatus_Goal,
+    NULL,
+    &sHelpInfo_ChapterStatus_EnemyUnits,
+    20,
+    43,
+    0x6ED, // TODO: msgid "Number of allied units.[.]"
+    NULL,
+    NULL,
+};
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_EnemyUnits = {
+    &sHelpInfo_ChapterStatus_Funds,
+    &sHelpInfo_ChapterStatus_Goal,
+    &sHelpInfo_ChapterStatus_AllyUnits,
+    &sHelpInfo_ChapterStatus_Leader,
+    76,
+    43,
+    0x6EE, // TODO: msgid "Number of enemy units."
+    NULL,
+    NULL,
+};
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_Leader = {
+    &sHelpInfo_ChapterStatus_TimePlayed,
+    &sHelpInfo_ChapterStatus_TimePlayed,
+    &sHelpInfo_ChapterStatus_Goal,
+    NULL,
+    136,
+    62,
+    0x6EF, // TODO: msgid "Name of the army commander.[.]"
+    NULL,
+    NULL,
+};
+
+struct HelpBoxInfo sHelpInfo_ChapterStatus_TimePlayed = {
+    &sHelpInfo_ChapterStatus_Leader,
+    &sHelpInfo_ChapterStatus_Leader,
+    &sHelpInfo_ChapterStatus_Funds,
+    NULL,
+    152,
+    127,
+    0x6F0, // TODO: msgid "Total time played."
+    NULL,
+    NULL,
+};
+
+
+void StartChapterStatusHelpBox(ProcPtr proc) {
+    LoadDialogueBoxGfx(OBJ_VRAM1 + 0x1000, 6);
+    StartMovingHelpBox(&sHelpInfo_ChapterStatus_AllyUnits, proc);
+
+    return;
+}
+
+struct Unit* sub_808DCD0() {
+    int i;
+
+    for (i = FACTION_BLUE + 1; i < FACTION_GREEN; i++) {
+        struct Unit* unit = GetUnit(i);
+
+        if (!UNIT_IS_VALID(unit)) {
+            continue;
+        }
+
+        return unit;
+    }
+
+    return NULL;
+}
 
 struct Unit* GetEnemyBossUnit() {
     int i;
@@ -326,7 +440,7 @@ void sub_808DE38(struct ChapterStatusProc* proc) {
     return;
 }
 
-char* SplitObjectiveTextOnNewline(char* str) {
+const char* SplitObjectiveTextOnNewline(const char* str) {
     if (str == 0) {
         return NULL;
     }
@@ -618,7 +732,7 @@ void DrawChapterStatusStatValues() {
 }
 
 void ChapterStatus_DrawText(struct ChapterStatusProc* proc) {
-    char* str;
+    const char* str;
 
     InitTextBatch(gTextBatch_ChapterStatus);
 
@@ -679,7 +793,7 @@ void ChapterStatus_LoopKeyHandler(struct ChapterStatusProc* proc) {
 
     if (gKeyStatusPtr->newKeys & R_BUTTON) {
         proc->helpTextActive = 1;
-        sub_808DCAC(proc);
+        StartChapterStatusHelpBox(proc);
 
         return;
 
@@ -815,7 +929,7 @@ void sub_808E818(struct ChapterStatusProc* proc) {
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 
     if (parent->units[parent->unitIndex]) {
-        sub_8027B60(4, 136, 61, parent->units[parent->unitIndex]);
+        PutUnitSprite(4, 136, 61, parent->units[parent->unitIndex]);
     }
 
     SMS_FlushDirect();

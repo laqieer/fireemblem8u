@@ -606,7 +606,7 @@ void DisplayBwl(void)
     if (!stats)
         return;
 
-    if (gUnknown_0202BCB0.gameStateBits & 0x40)
+    if (gGameState.gameStateBits & 0x40)
         return;
 
     if (gRAMChapterData.chapterStateBits & CHAPTER_FLAG_3)
@@ -1288,7 +1288,7 @@ void UnitSlide_FadeOutLoop(struct StatScreenEffectProc* proc)
     MU_SetDisplayPosition(gStatScreen.mu,
         80, 138 + gStatScreen.yDispOff);
 
-    gStatScreen.yDispOff = sub_8012DCC(2, proc->yDispInit, proc->yDispFinal, proc->timer, 0x10);
+    gStatScreen.yDispOff = Interpolate(2, proc->yDispInit, proc->yDispFinal, proc->timer, 0x10);
 
     proc->timer += 3;
 
@@ -1329,7 +1329,7 @@ void UnitSlide_FadeInLoop(struct StatScreenEffectProc* proc)
     MU_SetDisplayPosition(gStatScreen.mu,
         80, 138 + gStatScreen.yDispOff);
 
-    gStatScreen.yDispOff = sub_8012DCC(5, proc->yDispInit, proc->yDispFinal, proc->timer, 0x10);
+    gStatScreen.yDispOff = Interpolate(5, proc->yDispInit, proc->yDispFinal, proc->timer, 0x10);
 
     proc->timer += 3;
 
@@ -1613,8 +1613,8 @@ void PageNumCtrl_DisplayBlinkIcons(struct StatScreenPageNameProc* proc)
     {
         if ((gStatScreen.page == STATSCREEN_PAGE_0) && (gStatScreen.unit->state & US_RESCUING))
         {
-            sub_8015BD4(120, 40, 1);
-            sub_8015BD4(120, 56, 1);
+            UpdateStatArrowSprites(120, 40, 1);
+            UpdateStatArrowSprites(120, 56, 1);
 
             if (displayIcon)
             {
@@ -2066,10 +2066,10 @@ void HbRedirect_SSSupports(struct HelpBoxProc* proc)
 
 void UpdateHelpBoxDisplay(struct HelpBoxProc* proc, int arg1)
 {
-    proc->xBox = sub_8012DCC(arg1, proc->xBoxInit, proc->xBoxFinal, proc->timer, proc->timerMax);
-    proc->yBox = sub_8012DCC(arg1, proc->yBoxInit, proc->yBoxFinal, proc->timer, proc->timerMax);
-    proc->wBox = sub_8012DCC(arg1, proc->wBoxInit, proc->wBoxFinal, proc->timer, proc->timerMax);
-    proc->hBox = sub_8012DCC(arg1, proc->hBoxInit, proc->hBoxFinal, proc->timer, proc->timerMax);
+    proc->xBox = Interpolate(arg1, proc->xBoxInit, proc->xBoxFinal, proc->timer, proc->timerMax);
+    proc->yBox = Interpolate(arg1, proc->yBoxInit, proc->yBoxFinal, proc->timer, proc->timerMax);
+    proc->wBox = Interpolate(arg1, proc->wBoxInit, proc->wBoxFinal, proc->timer, proc->timerMax);
+    proc->hBox = Interpolate(arg1, proc->hBoxInit, proc->hBoxFinal, proc->timer, proc->timerMax);
 
     sub_8089980(proc->xBox, proc->yBox, proc->wBox, proc->hBox, proc->unk52);
 }

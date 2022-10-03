@@ -532,7 +532,7 @@ _0801BF9A:
 	adds r5, #1
 _0801BFAE:
 	mov r0, sp
-	bl LoadSomeUnitStatThingUnlockIdk
+	bl LoadAndVerifySecureHeaderSW
 	add r1, sp, #0x14
 	movs r2, #0
 	mov r0, sp
@@ -572,7 +572,7 @@ _0801BFF0:
 	strb r1, [r0, #0xe]
 _0801BFFA:
 	mov r0, sp
-	bl SaveSomeUnitStatThingUnlockIdk
+	bl SaveSecureHeader
 	adds r0, r6, #0
 	adds r1, r7, #0
 	bl DebugMenu_ClearDraw
@@ -667,7 +667,7 @@ DEBUGONLY_Startup: @ 0x0801C090
 	bl sub_8008A24
 	ldr r0, _0801C0EC  @ gDebugContinueMenuDef
 	bl StartOrphanMenu
-	ldr r4, _0801C0F0  @ gUnknown_0202BCB0
+	ldr r4, _0801C0F0  @ gGameState
 	ldrb r2, [r4, #4]
 	movs r1, #0x40
 	orrs r1, r2
@@ -690,7 +690,7 @@ _0801C0E0: .4byte SomeUpdateRoutine
 _0801C0E4: .4byte GeneralVBlankHandler
 _0801C0E8: .4byte gUnknown_080D7A7C
 _0801C0EC: .4byte gDebugContinueMenuDef
-_0801C0F0: .4byte gUnknown_0202BCB0
+_0801C0F0: .4byte gGameState
 _0801C0F4: .4byte 0x0600B000
 _0801C0F8: .4byte gUnknown_02023CE8
 
@@ -708,7 +708,7 @@ DebugContinueMenuInit: @ 0x0801C0FC
 	bl BG_EnableSyncByMask
 	add r0, sp, #4
 	movs r1, #3
-	bl sub_80A2EF8
+	bl SaveMetadata_Check
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
 	cmp r0, #1
@@ -1171,7 +1171,7 @@ DebugMenu_FogIdle: @ 0x0801C448
 	cmp r0, #2
 	bne _0801C488
 	movs r0, #3
-	bl sub_801E2E0
+	bl UpdateMapViewWithFog
 	b _0801C49E
 	.align 2, 0
 _0801C480: .4byte gKeyStatusPtr
@@ -1181,11 +1181,11 @@ _0801C488:
 	ldrsb r0, [r4, r0]
 	bl GetROMChapterStruct
 	ldrb r0, [r0, #0xc]
-	bl sub_801E2E0
+	bl UpdateMapViewWithFog
 	b _0801C49E
 _0801C498:
 	movs r0, #0
-	bl sub_801E2E0
+	bl UpdateMapViewWithFog
 _0801C49E:
 	adds r0, r5, #0
 	adds r1, r6, #0

@@ -17,6 +17,7 @@
 #include "uimenu.h"
 #include "uiselecttarget.h"
 #include "playerphase.h"
+#include "bb.h"
 
 #include "constants/characters.h"
 #include "constants/items.h"
@@ -43,11 +44,11 @@ void sub_803511C(struct Unit* unit, int number);
 void NewUnitInfoWindow_WithAllLines(ProcPtr proc);
 void DrawHammerneUnitInfoWindow(struct Unit* unit);
 
-void NewBottomHelpText(ProcPtr parent, const char* string);
-void DeleteEach6CBB(void);
+void StartSubtitleHelp(ProcPtr parent, const char* string);
+void EndSubtitleHelp(void);
 
-void sub_801E684(ProcPtr parent, struct Unit* unit, int x, int y);
-void sub_801E748(int number);
+void ForceMenuItemPanel(ProcPtr parent, struct Unit* unit, int x, int y);
+void UpdateMenuItemPanel(int number);
 
 void FillWarpRangeMap(struct Unit* caster, struct Unit* target);
 
@@ -69,7 +70,7 @@ static void DoUseTorchStaff(struct Unit* unit);
 
 extern struct Unit gStatGainSimUnit;
 
-extern struct ProcCmd CONST_DATA gProcScr_0859B600[]; // go back to unit menu proc
+extern struct ProcCmd CONST_DATA gProcScr_BackToUnitMenu[]; // go back to unit menu proc
 
 extern const struct MenuDef gMenuInfo_RepairItems;
 
@@ -682,7 +683,7 @@ void DoUseRescueStaff(struct Unit* unit, void(*func)(struct Unit*))
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection_Specialized(&gSelectInfo_0859D2F8, StaffSelectOnSelect),
         GetStringFromIndex(0x876)); // TODO: msgid "Select which character to bring next to you."
 }
@@ -693,7 +694,7 @@ void DoUseSpecialDance(struct Unit* unit, void(*func)(struct Unit*), int msgHelp
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection_Specialized(&gSelectInfo_0859D2F8, StaffSelectOnSelect),
         GetStringFromIndex(msgHelp));
 }
@@ -702,7 +703,7 @@ void WarpSelect_OnInit(struct WarpSelectProc* proc)
 {
     struct APHandle* ap;
 
-    NewBottomHelpText(proc, GetStringFromIndex(0x871)); // TODO: msgid "Select warp point."
+    StartSubtitleHelp(proc, GetStringFromIndex(0x871)); // TODO: msgid "Select warp point."
 
     EnsureCameraOntoPosition(proc,
         GetUnit(gActionData.targetIndex)->xPos,
@@ -712,7 +713,7 @@ void WarpSelect_OnInit(struct WarpSelectProc* proc)
 
     FillWarpRangeMap(gActiveUnit, GetUnit(gActionData.targetIndex));
 
-    gUnknown_0202BCB0.gameStateBits &= ~GMAP_STATE_BIT1;
+    gGameState.gameStateBits &= ~GMAP_STATE_BIT1;
 
     DisplayMoveRangeGraphics(1);
 
@@ -731,7 +732,7 @@ void WarpSelect_OnInit(struct WarpSelectProc* proc)
 
 void WarpSelect_OnIdle(struct WarpSelectProc* proc)
 {
-    s8 warpAllowed = ((s8**) gBmMapMovement)[gUnknown_0202BCB0.playerCursor.y][gUnknown_0202BCB0.playerCursor.x] != -1;
+    s8 warpAllowed = ((s8**) gBmMapMovement)[gGameState.playerCursor.y][gGameState.playerCursor.x] != -1;
 
     HandlePlayerCursorMovement();
 
@@ -741,8 +742,8 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
         {
             Proc_Break(proc);
 
-            gActionData.xOther = gUnknown_0202BCB0.playerCursor.x;
-            gActionData.yOther = gUnknown_0202BCB0.playerCursor.y;
+            gActionData.xOther = gGameState.playerCursor.x;
+            gActionData.yOther = gGameState.playerCursor.y;
 
             SetStaffUseAction(gActiveUnit);
 
@@ -775,8 +776,8 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
     }
 
     AP_Update(proc->ap,
-        gUnknown_0202BCB0.playerCursorDisplay.x - gUnknown_0202BCB0.camera.x,
-        gUnknown_0202BCB0.playerCursorDisplay.y - gUnknown_0202BCB0.camera.y);
+        gGameState.playerCursorDisplay.x - gGameState.camera.x,
+        gGameState.playerCursorDisplay.y - gGameState.camera.y);
 
     proc->prevWarpAllowed = warpAllowed;
 }
@@ -785,7 +786,7 @@ void WarpSelect_OnConfirm(struct WarpSelectProc* proc)
 {
     sub_8003D20();
     HideMoveRangeGraphics();
-    DeleteEach6CBB();
+    EndSubtitleHelp();
 
     SetCursorMapPosition(
         gActiveUnit->xPos,
@@ -800,13 +801,13 @@ void WarpSelect_OnCancel(struct WarpSelectProc* proc)
 {
     sub_8003D20();
     HideMoveRangeGraphics();
-    DeleteEach6CBB();
+    EndSubtitleHelp();
 
     SetCursorMapPosition(
         gActiveUnit->xPos,
         gActiveUnit->yPos);
 
-    Proc_Start(gProcScr_0859B600, PROC_TREE_3);
+    Proc_Start(gProcScr_BackToUnitMenu, PROC_TREE_3);
 }
 
 void WarpSelect_OnEnd(struct WarpSelectProc* proc)
@@ -832,7 +833,7 @@ void DoUseWarpStaff(struct Unit* unit)
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection_Specialized(&gSelectInfo_0859D2F8, WarpOnSelectTarget),
         GetStringFromIndex(0x875)); // TODO: msgid "Select character to warp."
 
@@ -855,7 +856,7 @@ void DoUsePutTrap(struct Unit* unit, void(*func)(struct Unit*), int msgHelp)
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection_Specialized(&gSelectInfo_PutTrap, OnSelectPutTrap),
         GetStringFromIndex(msgHelp));
 
@@ -868,7 +869,7 @@ int RepairSelectOnSelect(ProcPtr proc, struct SelectTarget* target)
 
     gActionData.targetIndex = target->uid;
 
-    sub_801E684(
+    ForceMenuItemPanel(
         StartOrphanMenu(&gMenuInfo_RepairItems),
         GetUnit(gActionData.targetIndex),
         16, 11);
@@ -889,7 +890,7 @@ void DoUseRepairStaff(struct Unit* unit)
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection(&gSelectInfo_Repair),
         GetStringFromIndex(0x878)); // TODO: msgid "Select the character whose weapon needs repair."
 
@@ -909,7 +910,7 @@ void RepairSelectOnInit(ProcPtr proc)
 
 int RepairMenuItemOnChange(struct MenuProc* menu, struct MenuItemProc* item)
 {
-    sub_801E748(item->itemNumber);
+    UpdateMenuItemPanel(item->itemNumber);
 }
 
 int RepairMenuItemOnChangeOut(struct MenuProc* menu, struct MenuItemProc* item)
@@ -976,7 +977,7 @@ void DoUseHealStaff(struct Unit* unit, void(*func)(struct Unit*))
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection(&gSelectInfo_Heal),
         GetStringFromIndex(0x874)); // TODO: msgid "Select a character to restore HP to."
 }
@@ -987,7 +988,7 @@ void DoUseRestoreStaff(struct Unit* unit, void(*func)(struct Unit*))
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection(&gSelectInfo_Restore),
         GetStringFromIndex(0x877)); // TODO: msgid "Select a character to restore to normal."
 }
@@ -1009,7 +1010,7 @@ void DoUseBarrierStaff(struct Unit* unit)
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection(&gSelectInfo_Barrier),
         GetStringFromIndex(0x879)); // TODO: msgid "Select a character to restore to normal."
 }
@@ -1031,7 +1032,7 @@ void DoUseAttackStaff(struct Unit* unit, void(*func)(struct Unit*))
 
     BmMapFill(gBmMapMovement, -1);
 
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection(&gSelectInfo_OffensiveStaff),
         GetStringFromIndex(0x87B)); // TODO: msgid "Select a unit to use the staff on."
 }
@@ -1052,7 +1053,7 @@ int sub_8029CE8(ProcPtr proc, struct SelectTarget* target)
 
 void sub_8029D28(ProcPtr proc)
 {
-    DeleteEach6CBB();
+    EndSubtitleHelp();
     ClearBg0Bg1();
 }
 
@@ -1066,16 +1067,16 @@ int sub_8029D38(struct Unit* unit)
 
 void sub_8029D6C(void)
 {
-    NewBottomHelpText(
+    StartSubtitleHelp(
         NewTargetSelection_Specialized(&gSelectInfo_0859D2F8, StaffSelectOnSelect),
         GetStringFromIndex(0x876)); // TODO: msgid "Select which character to bring next to you."
 }
 
 void TorchSelect_OnInit(struct WarpSelectProc* proc)
 {
-    gUnknown_0202BCB0.gameStateBits |= GMAP_STATE_BIT0;
+    gGameState.gameStateBits |= GMAP_STATE_BIT0;
 
-    NewBottomHelpText(proc,
+    StartSubtitleHelp(proc,
         GetStringFromIndex(0x87C)); // TODO: msgid "Select an area to light up."
 
     if (ShouldMoveCameraPosSomething(gActiveUnit->xPos, gActiveUnit->yPos))
@@ -1084,8 +1085,8 @@ void TorchSelect_OnInit(struct WarpSelectProc* proc)
 
 void TorchSelect_OnIdle(struct WarpSelectProc* proc)
 {
-    int xTorch = gUnknown_0202BCB0.playerCursor.x;
-    int yTorch = gUnknown_0202BCB0.playerCursor.y;
+    int xTorch = gGameState.playerCursor.x;
+    int yTorch = gGameState.playerCursor.y;
 
     s8 canTorch = ((s8**) gBmMapRange)[yTorch][xTorch];
 
@@ -1099,8 +1100,8 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
 
             Proc_Break(proc);
 
-            gActionData.xOther = gUnknown_0202BCB0.playerCursor.x;
-            gActionData.yOther = gUnknown_0202BCB0.playerCursor.y;
+            gActionData.xOther = gGameState.playerCursor.x;
+            gActionData.yOther = gGameState.playerCursor.y;
 
             SetStaffUseAction(gActiveUnit);
 
@@ -1123,8 +1124,8 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
     }
 
     DisplayCursor(
-        gUnknown_0202BCB0.playerCursorDisplay.x,
-        gUnknown_0202BCB0.playerCursorDisplay.y,
+        gGameState.playerCursorDisplay.x,
+        gGameState.playerCursorDisplay.y,
         TRUE);
 }
 

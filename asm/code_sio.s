@@ -3327,40 +3327,40 @@ _08042E74: .4byte gUnknown_085A92E0
 
 	THUMB_FUNC_START sub_8042E78
 sub_8042E78: @ 0x08042E78
-	ldr r2, _08042E84  @ gUnknown_0202BCB0
+	ldr r2, _08042E84  @ gGameState
 	ldrb r1, [r2, #4]
 	movs r0, #0x40
 	orrs r0, r1
 	strb r0, [r2, #4]
 	bx lr
 	.align 2, 0
-_08042E84: .4byte gUnknown_0202BCB0
+_08042E84: .4byte gGameState
 
 	THUMB_FUNC_END sub_8042E78
 
 	THUMB_FUNC_START sub_8042E88
 sub_8042E88: @ 0x08042E88
-	ldr r2, _08042E94  @ gUnknown_0202BCB0
+	ldr r2, _08042E94  @ gGameState
 	ldrb r1, [r2, #4]
 	movs r0, #0xbf
 	ands r0, r1
 	strb r0, [r2, #4]
 	bx lr
 	.align 2, 0
-_08042E94: .4byte gUnknown_0202BCB0
+_08042E94: .4byte gGameState
 
 	THUMB_FUNC_END sub_8042E88
 
 	THUMB_FUNC_START CheckSomethingSomewhere
 CheckSomethingSomewhere: @ 0x08042E98
-	ldr r0, _08042EA4  @ gUnknown_0202BCB0
+	ldr r0, _08042EA4  @ gGameState
 	ldrb r0, [r0, #4]
 	lsrs r0, r0, #6
 	movs r1, #1
 	ands r0, r1
 	bx lr
 	.align 2, 0
-_08042EA4: .4byte gUnknown_0202BCB0
+_08042EA4: .4byte gGameState
 
 	THUMB_FUNC_END CheckSomethingSomewhere
 
@@ -7685,7 +7685,7 @@ sub_8044FFC: @ 0x08044FFC
 	movs r0, #0
 	movs r1, #0xf
 	movs r2, #0
-	bl sub_8012DCC
+	bl Interpolate
 	strb r0, [r4]
 	ldrb r0, [r5]
 	adds r0, #1
@@ -7744,7 +7744,7 @@ sub_8045068: @ 0x08045068
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0xf
-	bl sub_8012DCC
+	bl Interpolate
 	strb r0, [r4]
 	ldrb r0, [r5]
 	adds r0, #1
@@ -8002,7 +8002,7 @@ _08045270:
 	str r0, [sp]
 	movs r0, #4
 	movs r2, #0
-	bl sub_8012DCC
+	bl Interpolate
 	str r0, [r6, #0x30]
 _08045288:
 	ldr r0, [r6, #0x3c]
@@ -13132,14 +13132,14 @@ sub_8047C60: @ 0x08047C60
 	movs r4, #0x20
 	str r4, [sp]
 	movs r0, #4
-	bl sub_8012DCC
+	bl Interpolate
 	adds r6, r0, #0
 	ldrb r2, [r5, #1]
 	ldr r3, [r7, #0x54]
 	str r4, [sp]
 	movs r0, #5
 	movs r1, #0xa0
-	bl sub_8012DCC
+	bl Interpolate
 	movs r5, #4
 	lsls r6, r6, #0x10
 	mov r8, r6
@@ -13218,7 +13218,7 @@ _08047D18:
 	movs r0, #4
 	mov r4, sl
 	ldrb r1, [r4]
-	bl sub_8012DCC
+	bl Interpolate
 	adds r4, r0, #0
 	mov r0, r9
 	ldrb r1, [r0]
@@ -13227,7 +13227,7 @@ _08047D18:
 	mov r0, r8
 	str r0, [sp]
 	movs r0, #4
-	bl sub_8012DCC
+	bl Interpolate
 	adds r2, r0, #0
 	lsls r1, r7, #2
 	adds r0, r5, #0
@@ -13696,7 +13696,7 @@ _080480F6:
 	movs r0, #4
 	mov r4, sl
 	ldrb r2, [r4]
-	bl sub_8012DCC
+	bl Interpolate
 	adds r4, r0, #0
 	ldrb r1, [r7, #1]
 	ldr r0, [sp, #4]
@@ -13705,7 +13705,7 @@ _080480F6:
 	mov r0, r9
 	str r0, [sp]
 	movs r0, #4
-	bl sub_8012DCC
+	bl Interpolate
 	adds r2, r0, #0
 	ldr r0, [r6]
 	lsls r4, r4, #0x10
@@ -14621,7 +14621,7 @@ sub_804881C: @ 0x0804881C
 	THUMB_FUNC_START sub_8048838
 sub_8048838: @ 0x08048838
 	push {lr}
-	bl sub_80A2DE4
+	bl InitNopSecHeader
 	bl sub_80A39B4
 	bl sub_80A3E28
 	bl sub_80A3F84
@@ -15082,7 +15082,7 @@ sub_8048B78: @ 0x08048B78
 	movs r0, #1
 	movs r1, #0x10
 	mov r2, r8
-	bl sub_8012DCC
+	bl Interpolate
 	mov sl, r0
 	ldr r4, _08048C40  @ gSinLookup
 	movs r1, #0x80
@@ -15228,7 +15228,7 @@ sub_8048CB8: @ 0x08048CB8
 	movs r4, #0x30
 	str r4, [sp]
 	movs r0, #5
-	bl sub_8012DCC
+	bl Interpolate
 	adds r5, r0, #0
 	movs r0, #0x2c
 	ldrsh r1, [r6, r0]
@@ -15237,7 +15237,7 @@ sub_8048CB8: @ 0x08048CB8
 	ldr r3, [r6, #0x3c]
 	str r4, [sp]
 	movs r0, #5
-	bl sub_8012DCC
+	bl Interpolate
 	adds r1, r0, #0
 	ldr r2, _08048D14  @ gObject_32x16
 	adds r0, r6, #0
@@ -15369,7 +15369,7 @@ sub_8048DD0: @ 0x08048DD0
 	movs r0, #0xa
 	str r0, [sp]
 	movs r0, #0
-	bl sub_8012DCC
+	bl Interpolate
 	adds r5, r0, #0
 	movs r0, #0
 	bl SetFont
@@ -15504,7 +15504,7 @@ sub_8048EB8: @ 0x08048EB8
 	str r0, [sp]
 	movs r0, #1
 	movs r1, #0x10
-	bl sub_8012DCC
+	bl Interpolate
 	mov sl, r0
 	ldr r4, _08048FB8  @ gSinLookup
 	ldr r2, _08048FBC  @ gCosLookup
@@ -15636,7 +15636,7 @@ sub_8048FD4: @ 0x08048FD4
 	movs r0, #4
 	mov r1, r8
 	movs r2, #0x10
-	bl sub_8012DCC
+	bl Interpolate
 	mov sl, r0
 	ldr r4, _080490D4  @ gSinLookup
 	movs r2, #0x80
@@ -16523,7 +16523,7 @@ sub_80496A4: @ 0x080496A4
 	mov r1, sp
 	movs r0, #0
 	strh r0, [r1]
-	ldr r4, _08049700  @ gUnknown_0202BCB0
+	ldr r4, _08049700  @ gGameState
 	ldr r2, _08049704  @ 0x01000020
 	mov r0, sp
 	adds r1, r4, #0
@@ -16559,7 +16559,7 @@ sub_80496A4: @ 0x080496A4
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08049700: .4byte gUnknown_0202BCB0
+_08049700: .4byte gGameState
 _08049704: .4byte 0x01000020
 _08049708: .4byte gRAMChapterData
 
@@ -16766,7 +16766,7 @@ _08049860:
 	ldrsb r1, [r0, r1]
 	adds r0, r2, #0
 	bl SetCursorMapPosition
-	ldr r0, _080498E8  @ gUnknown_0202BCB0
+	ldr r0, _080498E8  @ gGameState
 	strh r4, [r0, #0xc]
 	strh r4, [r0, #0xe]
 	bl LoadGameCoreGfx
@@ -16794,7 +16794,7 @@ _080498D8: .4byte gUnknown_0203DA24
 _080498DC: .4byte gUnknown_085AA158
 _080498E0: .4byte gUnknown_03001818
 _080498E4: .4byte gUnknown_0300182C
-_080498E8: .4byte gUnknown_0202BCB0
+_080498E8: .4byte gGameState
 _080498EC: .4byte gProc_MapTask
 _080498F0: .4byte gRAMChapterData
 
@@ -18493,7 +18493,7 @@ sub_804A614: @ 0x0804A614
 	adds r0, r6, #0
 	mov r1, r8
 	bl BattleGenerateReal
-	ldr r2, _0804A69C  @ gUnknown_0202BCB0
+	ldr r2, _0804A69C  @ gGameState
 	ldrb r1, [r2, #4]
 	movs r0, #0x40
 	orrs r0, r1
@@ -18514,7 +18514,7 @@ _0804A68C: .4byte gUnknown_03001818
 _0804A690: .4byte gUnknown_0203DD90
 _0804A694: .4byte gActionData
 _0804A698: .4byte gUnknown_03001834
-_0804A69C: .4byte gUnknown_0202BCB0
+_0804A69C: .4byte gGameState
 _0804A6A0: .4byte gUnknown_085AA75C
 
 	THUMB_FUNC_END sub_804A614
@@ -19958,7 +19958,7 @@ sub_804B190: @ 0x0804B190
 	lsls r1, r1, #4
 	movs r2, #2
 	adds r3, r4, #0
-	bl sub_8039ECC
+	bl StartAiTargetCursor
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -21329,7 +21329,7 @@ _0804BBC8:
 	movs r0, #0
 	movs r1, #0xa0
 	movs r2, #0xc0
-	bl sub_8012DCC
+	bl Interpolate
 	adds r6, r0, #0
 	movs r2, #0x88
 	lsls r2, r2, #1
@@ -21340,7 +21340,7 @@ _0804BBC8:
 	str r0, [sp]
 	movs r0, #1
 	movs r1, #0x10
-	bl sub_8012DCC
+	bl Interpolate
 	adds r5, r0, #0
 	ldr r4, _0804BC38  @ gUnknown_02001184
 	ldr r0, [r4]
@@ -21544,7 +21544,7 @@ _0804BD64:
 	movs r0, #4
 	movs r1, #0xc0
 	movs r2, #0xa0
-	bl sub_8012DCC
+	bl Interpolate
 	adds r6, r0, #0
 	movs r1, #0x88
 	lsls r1, r1, #1
@@ -21555,7 +21555,7 @@ _0804BD64:
 	str r0, [sp]
 	movs r0, #5
 	movs r2, #0x10
-	bl sub_8012DCC
+	bl Interpolate
 	adds r5, r0, #0
 	ldr r4, _0804BDD4  @ gUnknown_02001184
 	ldr r0, [r4]

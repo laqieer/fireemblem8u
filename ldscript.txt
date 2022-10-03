@@ -51,7 +51,8 @@ SECTIONS
         asm/evtcmd_gmap.o(.text);
         src/event.o(.text);
         asm/evtscr.o(.text);
-        asm/popup.o(.text);
+        src/ectscr_.o(.text);
+        src/popup.o(.text);
         asm/evtsub.o(.text);
         asm/hino.o(.text);
         asm/bm.o(.text);
@@ -62,13 +63,14 @@ SECTIONS
         src/bmdebug.o(.text);
         asm/bmdebug.o(.text);
         src/playerphase.o(.text);
-        asm/koido.o(.text);
-        asm/bmxfade.o(.text);
-        asm/bmcamadjust.o(.text);
-        asm/convoymenu.o(.text);
-        asm/code_801E2E0.o(.text); /* 2 fog related functions and FillWarpRangeMap */
-        asm/menuitempanel.o(.text);
-        asm/unitswapfx.o(.text);
+        src/koido.o(.text);
+        src/bmxfade.o(.text);
+        src/bmcamadjust.o(.text);
+        src/convoymenu.o(.text);
+        src/fogmap.o(.text);
+        src/menuitempanel.o(.text);
+        src/prep_unitswap.o(.text);
+        src/phasechangefx.o(.text);
         asm/phasechangefx.o(.text);
         src/unit_facing.o(.text);
         asm/trapfx.o(.text);
@@ -82,7 +84,7 @@ SECTIONS
         asm/emitstarfx.o(.text);
         asm/minefx.o(.text);
         asm/chapterintrofx_title.o(.text);
-        asm/bmmenu.o(.text);
+        src/bmmenu.o(.text);
         src/bmphase.o(.text);
         src/bmgold.o(.text);
         src/bmtarget.o(.text);
@@ -95,7 +97,7 @@ SECTIONS
         src/bmusemind.o(.text);
         src/bmio.o(.text);
         src/bmcontainer.o(.text);
-        asm/bmusort.o(.text);
+        src/bmusort.o(.text);
         asm/bmarena.o(.text);
         src/bmmind.o(.text);
         src/bmpatharrowdisp.o(.text);
@@ -103,7 +105,7 @@ SECTIONS
         asm/bmcommanddbg.o(.text);
         src/chapterdata.o(.text);
         asm/unitinfowindow.o(.text);
-        asm/bb.o(.text);
+        src/bb.o(.text);
         src/bmusailment.o(.text);
         src/bksel.o(.text);
         src/bmtrap.o(.text);
@@ -112,7 +114,7 @@ SECTIONS
         src/cp_phase.o(.text);
         src/cp_order.o(.text);
         src/cp_decide.o(.text);
-        asm/cpperform.o(.text);
+        src/cp_perform.o(.text);
         asm/code_cpextra.o(.text);
         src/cpextra_80407F0.o(.text);
         asm/code_sio.o(.text);
@@ -135,6 +137,8 @@ SECTIONS
         asm/code_808DAE4.o(.text);
         src/uichapterstatus.o(.text);
         asm/code.o(.text);
+        src/bmsave.o(.text);
+        asm/code_80A2C3C.o(.text);
         src/minimap.o(.text);
         asm/code_80A882C.o(.text);
         src/branched_promotion_main.o(.text);
@@ -211,7 +215,10 @@ SECTIONS
         . = ALIGN(4); src/bmunit.o(.rodata);
         . = ALIGN(4); data/const_data_D7A6C.o(.rodata);
         . = ALIGN(4); src/playerphase.o(.rodata);
-        . = ALIGN(4); data/const_data_D7B04.o(.rodata);
+        . = ALIGN(4); src/koido.o(.rodata);
+        . = ALIGN(4); src/bmxfade.o(.rodata);
+        . = ALIGN(4); src/bmcamadjust.o(.rodata);
+        . = ALIGN(4); data/const_data_D7B20.o(.rodata);
         . = ALIGN(4); src/bmreliance.o(.rodata);
         . = ALIGN(4); src/bmbattle.o(.rodata);
         . = ALIGN(4); src/bmtrade.o(.rodata);
@@ -221,12 +228,14 @@ SECTIONS
         . = ALIGN(4); data/const_data_D7F5C.o(.rodata);
         . = ALIGN(4); src/sallycursor.o(.rodata);
         . = ALIGN(4); data/const_data_D7F8C.o(.rodata);
+        . = ALIGN(4); src/bb.o(.rodata);
         . = ALIGN(4); src/bksel.o(.rodata);
         . = ALIGN(4); src/bmdifficulty.o(.rodata);
         . = ALIGN(4); src/cp_phase.o(.rodata);
         . = ALIGN(4); src/cp_order.o(.rodata);
         . = ALIGN(4); src/cp_decide.o(.rodata);
-        . = ALIGN(4); data/const_data_D80DC.o(.rodata);
+        . = ALIGN(4); src/cp_perform.o(.rodata);
+        . = ALIGN(4); data/const_data_D80F4.o(.rodata);
         . = ALIGN(4); src/cpextra_80407F0.o(.rodata);
         . = ALIGN(4); data/const_data_D8714.o(.rodata);
         . = ALIGN(4); src/uiutils.o(.rodata);
@@ -248,8 +257,7 @@ SECTIONS
         . = ALIGN(4); data/const_data_205DE9.o(.rodata);
         . = ALIGN(4); src/branched_promotion_main.o(.rodata);
         . = ALIGN(4); src/branched_promotion.o(.rodata);
-        FILL(0x00);
-        . = 0x207190; INCLUDE "linker_script_sound.txt"
+        . = ALIGN(4); INCLUDE "linker_script_sound.txt"
         . = ALIGN(4); src/agb_sram.o(.rodata);
         . = ALIGN(4); *libc.a:vfprintf.o(.rodata);
         . = ALIGN(4); *libc.a:dtoa.o(.rodata);
@@ -271,6 +279,8 @@ SECTIONS
         . = ALIGN(4); src/gamecontrol.o(.data);
         . = ALIGN(4); src/messdecode.o(.data);
         . = ALIGN(4); data/data_591AB4.o(.data);
+        . = ALIGN(4); src/popup.o(.data);
+        . = ALIGN(4); data/data_5924D8.o(.data);
         . = ALIGN(4); data/data_item_icon.o(.data);
         . = ALIGN(4); data/data_599714.o(.data);
         . = ALIGN(4); src/bmunit.o(.data);
@@ -279,9 +289,17 @@ SECTIONS
         . = ALIGN(4); src/bmdebug.o(.data);
         . = ALIGN(4); data/data_59AA7C.o(.data);
         . = ALIGN(4); src/playerphase.o(.data);
+        . = ALIGN(4); src/koido.o(.data);
+        . = ALIGN(4); src/bmxfade.o(.data);
+        . = ALIGN(4); src/bmcamadjust.o(.data);
+        . = ALIGN(4); src/convoymenu.o(.data);
+        . = ALIGN(4); src/menuitempanel.o(.data);
+        . = ALIGN(4); src/prep_unitswap.o(.data);
         . = ALIGN(4); data/data_59AD88.o(.data);
         . = ALIGN(4); src/chapterintrofx.o(.data);
         . = ALIGN(4); data/data_59B358.o(.data);
+        . = ALIGN(4); src/bmmenu.o(.data);
+        . = ALIGN(4); data/data_59B668.o(.data);
         . = ALIGN(4); src/bmreliance.o(.data);
         . = ALIGN(4); src/bmitemuse.o(.data);
         . = ALIGN(4); src/bmbattle.o(.data);
@@ -296,6 +314,7 @@ SECTIONS
         . = ALIGN(4); data/data_59DB6C.o(.data);
         . = ALIGN(4); src/sallycursor.o(.data);
         . = ALIGN(4); data/data_59E13C.o(.data);
+        . = ALIGN(4); src/bb.o(.data);
         . = ALIGN(4); src/bmusailment.o(.data);
         . = ALIGN(4); data/data_59E308.o(.data);
         . = ALIGN(4); src/bksel.o(.data);
@@ -305,7 +324,8 @@ SECTIONS
         . = ALIGN(4); src/cp_phase.o(.data);
         . = ALIGN(4); src/cp_order.o(.data);
         . = ALIGN(4); src/cp_decide.o(.data);
-        . = ALIGN(4); data/data_5A8004.o(.data);
+        . = ALIGN(4); src/cp_perform.o(.data);
+        . = ALIGN(4); data/data_5A80BC.o(.data);
         . = ALIGN(4); src/cpextra_80407F0.o(.data);
         . = ALIGN(4); data/data_5A92E0.o(.data);
         . = ALIGN(4); src/uiutils.o(.data);
@@ -323,6 +343,8 @@ SECTIONS
         . = ALIGN(4); data/data_9A2DB0.o(.data);
         . = ALIGN(4); src/unit_icon_move_data.o(.data);
         . = ALIGN(4); data/data_9A31F8.o(.data);
+        . = ALIGN(4); src/data_support_conversations.o(.data);
+        . = ALIGN(4); data/data_9ED64C.o(.data);
         . = ALIGN(4); src/statscreen.o(.data);
         . = ALIGN(4); src/chap_title_data.o(.data);
         . = ALIGN(4); data/data_A01628.o(.data);

@@ -503,14 +503,14 @@ struct SomeLocal {
     u8 whatever[0x64];
 };
 
-u8 LoadSomeUnitStatThingUnlockIdk(struct SomeLocal *);
+u8 LoadAndVerifySecureHeaderSW(struct SomeLocal *);
 
 u8 sub_80CCCA4(void) {
     struct SomeLocal local;
-    u8 unlock = LoadSomeUnitStatThingUnlockIdk(&local);
+    u8 unlock = LoadAndVerifySecureHeaderSW(&local);
     if (!unlock) {
-        sub_80A2DE4();
-        LoadSomeUnitStatThingUnlockIdk(&local);
+        InitNopSecHeader();
+        LoadAndVerifySecureHeaderSW(&local);
     }
 
     if (local.whatever[0xe] & 0x1c) {
@@ -1137,7 +1137,7 @@ void sub_80CD6B0(struct PromoProc4 *proc) {
 void sub_80CD790(struct Proc *proc) {
     struct PromoProc2 *parent = proc->proc_parent;
     parent->u29 = -1;
-    sub_8010E50();
+    ResetDialogueScreen();
     sub_8096C20();
     APProc_DeleteAll();
     EndBG3Slider_();
@@ -1401,7 +1401,7 @@ struct MenuDef gUnknown_08B12930 = {
     0,
     sub_80CDB18,
     0,
-    (void(*)(struct MenuProc*, struct MenuItemProc*))MenuStdHelpBox
+    MenuStdHelpBox
 };
 
 int PromotionCommand_OnTextDraw(struct MenuProc *a, struct MenuItemProc *b);
@@ -1664,3 +1664,7 @@ const char gProcName_E_guMenu2ReWriteUp[] = "E_guMenu2ReWriteUp";
 const char gProcName_E_guMenu2ReWriteDown[] = "E_guMenu2ReWriteDown";
 const char gProcName_E_guMess3ReWrite[] = "E_guMess3ReWrite";
 const char gProcName_E_Guide[] = "E_Guide";
+
+// Pad the data here so that the linker script doesn't need to specify the
+// exact location of data after this file.
+const u8 gPromotionData_Filler[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

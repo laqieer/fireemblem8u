@@ -1333,7 +1333,7 @@ sub_80121D4: @ 0x080121D4
 	strb r0, [r7, #0x13]
 	ldr r0, _08012260  @ gActionData
 	str r1, [r0, #0x18]
-	bl sub_803A024
+	bl AiRefreshMap
 	ldr r0, _08012264  @ gUnknown_030005FC
 	ldrh r1, [r0]
 	ldr r0, _08012268  @ 0x0000FFFF
@@ -1479,7 +1479,7 @@ _08012320: .4byte gBattleStats
 sub_8012324: @ 0x08012324
 	push {lr}
 	bl sub_808F270
-	bl sub_8010E50
+	bl ResetDialogueScreen
 	movs r0, #0
 	bl SetupBackgrounds
 	bl sub_80141B0
@@ -1634,7 +1634,7 @@ _08012448:
 	negs r0, r0
 	ands r1, r0
 	str r1, [r2, #0xc]
-	ldr r0, _08012478  @ gUnknown_0202BCB0
+	ldr r0, _08012478  @ gGameState
 	ldrb r1, [r0, #4]
 	movs r0, #0x40
 	ands r0, r1
@@ -1654,7 +1654,7 @@ _0801246A:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08012478: .4byte gUnknown_0202BCB0
+_08012478: .4byte gGameState
 
 	THUMB_FUNC_END sub_801240C
 
