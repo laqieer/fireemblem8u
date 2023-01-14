@@ -11,6 +11,7 @@
 #include "ctc.h"
 #include "bmio.h"
 #include "mu.h"
+#include "bm.h"
 
 #include "bmdifficulty.h"
 
@@ -72,7 +73,7 @@ const struct Outer080D7FD0 gUnknown_080D7FD0 = {
 void NewPopup_NewAlly(ProcPtr, int);
 
 // code.s
-int sub_80A49A4(void);
+int BWL_GetTotalExpGained(void);
 void sub_80AB760(u16*);
 void sub_80AB77C(void);
 
@@ -296,7 +297,7 @@ void UpdateDungeonStats(struct Dungeon* dungeon) {
 
     val = dungeon->expEarned;
 
-    val += (sub_80A49A4() - gRAMChapterData.unk_38_2);
+    val += (BWL_GetTotalExpGained() - gRAMChapterData.unk_38_2);
 
     if (val > 50000) {
         val = 50000;
@@ -436,7 +437,7 @@ struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_FromMenu[] = {
     PROC_CALL(PushGlobalTimer),
     PROC_CALL(AddSkipThread2),
     PROC_CALL(sub_8013D80),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_SLEEP(0),
     PROC_CALL(SetupDungeonRecordUi),
@@ -453,7 +454,7 @@ struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_FromMenu[] = {
     PROC_CALL(BMapDispResume),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(sub_8013DA4),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(SubSkipThread2),
 
     PROC_END,
@@ -469,8 +470,8 @@ extern struct ProcCmd CONST_DATA sProcScr_DungeonRecord_UpdateNewRecordValues[];
 struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_AfterDungeonClear[] = {
     PROC_CALL(PushGlobalTimer),
     PROC_CALL(AddSkipThread2),
-    PROC_CALL(sub_8013D68),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_CALL(StartFadeInBlackMedium),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(MU_EndAll),
     PROC_SLEEP(0),
@@ -560,8 +561,8 @@ void SetupDungeonRecordUi(ProcPtr proc) {
     BG_SetPosition(2, 0, 0);
     BG_SetPosition(3, 0, 0);
 
-    sub_8001ED0(0, 0, 1, 0, 0);
-    sub_8001F0C(0, 0, 0, 1, 0);
+    SetBlendTargetA(0, 0, 1, 0, 0);
+    SetBlendTargetB(0, 0, 0, 1, 0);
 
     sub_8001F48(0);
     sub_8001F64(0);
@@ -580,11 +581,11 @@ void SetupDungeonRecordUi(ProcPtr proc) {
 
     CopyDataWithPossibleUncomp(gUnknown_08A26380, (void *)(BG_VRAM + 0x4C00) + GetBackgroundTileDataOffset(2));
 
-    CopyDataWithPossibleUncomp(gUnknown_08A268F8, gUnknown_02020188);
+    CopyDataWithPossibleUncomp(gUnknown_08A268F8, gGenericBuffer);
 
     CopyToPaletteBuffer(gUnknown_08A268D8, 0xE0, 0x20);
 
-    CallARM_FillTileRect(gBG2TilemapBuffer, gUnknown_02020188, 0x7260);
+    CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer, 0x7260);
 
     // Load and display "Combat Record" graphic
 
@@ -906,7 +907,7 @@ void DrawDungeonRecordUiText(ProcPtr proc) {
 
     SetGameClock(time);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     Font_InitForUI(&gUnknown_020038AC, (void *)(VRAM + 0x20) + GetBackgroundTileDataOffset(0), 1, 0);
     SetFont(&gUnknown_020038AC);
@@ -1127,7 +1128,7 @@ extern u16 gUnknown_02003B88[];
 extern struct Struct0859E7D4 gUnknown_02003BA8[];
 
 // obj data?
-const u16 CONST_DATA gUnknown_0859E79C[] = {
+const u16 CONST_DATA obj_859E79C[] = {
     0x0002, 0x4000, 0x8000, 0x0100,
     0x4000, 0x8020, 0x0104, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000,
@@ -1198,7 +1199,7 @@ void sub_80390D4(struct BMDifficultyProc* proc) {
             4,
             (pos[0] >> 4) + ((u8)gUnknown_080D7FD0.current[proc->labelIndex].x * 8),
             ((pos[1] >> 4) + ((u8)gUnknown_080D7FD0.current[proc->labelIndex].y * 8)) & 0x000001FF,
-            gUnknown_0859E79C,
+            obj_859E79C,
             0x5000
         );
     } else {
@@ -1415,7 +1416,7 @@ void sub_80394A8(struct BMDifficultyProc* proc) {
             4,
             pos[0] >> 4,
             ((u32)(pos[1]) << 0x13) >> 0x17,
-            gUnknown_0859E79C,
+            obj_859E79C,
             0x5000
         );
     } else {

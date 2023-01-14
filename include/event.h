@@ -23,9 +23,12 @@ struct EventEngineProc {
     /* 46 */ // pad
 
     /* 48 */ const void* pUnitLoadData;
-    /* 4C */ u16 unitLoadCount;
+    /* 4C */ s16 unitLoadCount;
 
     /* 4E */ u8  idk4E;
+
+    /* 4F */ u8 _pad_4F[0x54 - 0x4F];
+    /* 54 */ struct Unit *unit;
 };
 
 enum EventExecType {
@@ -69,10 +72,10 @@ void CallEvent(const u16* events, u8 execType);
 struct EventEngineProc* EventEngine_Create(const u16* events, u8 idk);
 // ??? EventEngine_CreateBattle(???);
 s8 EventEngineExists(void);
-// ??? BattleEventEngineExists(???);
-// ??? DeleteEventEngines(???);
+int BattleEventEngineExists(void);
+void DeleteEventEngines(void);
 // ??? sub_800D1E4(???);
-// ??? SetEventSlotC(???);
+void SetEventSlotC(unsigned value);
 // ??? sub_800D204(???);
 int sub_800D208(void);
 // ??? CallBattleQuoteEvent(???);
@@ -93,7 +96,7 @@ void CallGameOverEvent(void);
 // ??? sub_800D524(???);
 // ??? SlotQueuePush(???);
 // ??? SlotQueuePop(???);
-// ??? SetEventSlotCounter(???);
-// ??? GetEventSlotCounter(???);
+void SetEventSlotCounter(unsigned value);
+unsigned GetEventSlotCounter(void);
 
 #endif // GUARD_EVENT_H

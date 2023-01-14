@@ -377,13 +377,13 @@ sub_8011A48: @ 0x08011A48
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #1
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	movs r0, #1
 	bl sub_8001F48
 	movs r0, #1
@@ -460,13 +460,13 @@ sub_8011AF4: @ 0x08011AF4
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #1
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	movs r0, #1
 	bl sub_8001F48
 	movs r0, #1
@@ -570,7 +570,7 @@ sub_8011BA4: @ 0x08011BA4
 	lsls r1, r1, #5
 	movs r2, #0x20
 	bl CopyToPaletteBuffer
-	ldr r0, _08011C84  @ gUnknown_0859EF00
+	ldr r0, _08011C84  @ Pal_UIFont
 	ldr r1, [r7, #0x3c]
 	adds r1, #0x11
 	lsls r1, r1, #5
@@ -632,7 +632,7 @@ _08011C1A:
 	.align 2, 0
 _08011C7C: .4byte gUnknown_085924D8
 _08011C80: .4byte gUnknown_08A4D0CC
-_08011C84: .4byte gUnknown_0859EF00
+_08011C84: .4byte Pal_UIFont
 _08011C88: .4byte gUnknown_08A4CF2C
 _08011C8C: .4byte 0x06010000
 _08011C90: .4byte 0x06010400
@@ -1267,7 +1267,7 @@ _0801216C:
 	bl UnitBeginAction
 	ldr r4, _08012198  @ gActiveUnit
 	ldr r0, [r4]
-	bl HideUnitSMS
+	bl HideUnitSprite
 	ldr r0, [r4]
 	bl MU_Create
 	bl MU_SetDefaultFacing_Auto
@@ -1374,7 +1374,7 @@ _08012238:
 	str r0, [r7, #0xc]
 _08012248:
 	bl RefreshEntityBmMaps
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
@@ -1433,7 +1433,7 @@ sub_8012270: @ 0x08012270
 	movs r1, #1
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	ldrb r1, [r4, #1]
 	movs r0, #0x21
 	negs r0, r0

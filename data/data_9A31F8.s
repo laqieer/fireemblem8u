@@ -1,760 +1,5 @@
     .section .data
 
-	.global gUnknown_089A31F8
-gUnknown_089A31F8:  @ 0x089A31F8
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AADC
-        @ PROC_SLEEP
-        .short 0xe, 0xf
-        .word 0x0
-        @ PROC_START_CHILD_BLOCKING
-        .short 0x6, 0x1
-        .word gUnknown_089A508C
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A3238
-gUnknown_089A3238:  @ 0x089A3238
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AADC
-        @ PROC_SLEEP
-        .short 0xe, 0xf
-        .word 0x0
-        @ PROC_START_CHILD_BLOCKING
-        .short 0x6, 0x1
-        .word gUnknown_089A50DC
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_START_CHILD_BLOCKING
-        .short 0x6, 0x1
-        .word gUnknown_089A5124
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A3288
-gUnknown_089A3288:  @ 0x089A3288
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AADC
-        @ PROC_SLEEP
-        .short 0xe, 0xf
-        .word 0x0
-        @ PROC_START_CHILD_BLOCKING
-        .short 0x6, 0x1
-        .word gUnknown_089A5154
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A32C8
-gUnknown_089A32C8:  @ 0x089A32C8
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_BeginSubjectFastAnim
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsTowardsTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsTowardsTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsTowardsTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsTowardsTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word PlaySoundIdA0
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsAwayFromTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsAwayFromTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsAwayFromTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveSubjectsAwayFromTarget
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A3398
-gUnknown_089A3398:  @ 0x089A3398
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AD1C
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word New6C_SummonGfx_FromActionPos
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A33C0
-gUnknown_089A33C0:  @ 0x089A33C0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AFD0
-        @ PROC_LABEL
-        .short 0xb, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B234
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B2B4
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B070
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x3
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B254
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B2B4
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B070
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x4
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B274
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B2B4
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B070
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B294
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B2B4
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807B070
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x6
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AFE0
-        @ PROC_LABEL
-        .short 0xb, 0x1
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A34B0
-gUnknown_089A34B0:  @ 0x089A34B0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_80812C0
-        @ PROC_SLEEP
-        .short 0xe, 0x50
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_8021B30
-        @ PROC_SLEEP
-        .short 0xe, 0xa
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_80813C0
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_JUMP
-        .short 0xd, 0x0
-        .word gUnknown_089A35B0
-
-	.global gUnknown_089A3508
-gUnknown_089A3508:  @ 0x089A3508
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word _InitFontForUIDefault
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_CallBattleQuoteEvents
-        @ PROC_WHILE
-        .short 0x14, 0x0
-        .word BattleEventEngineExists
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807ACAC
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word SetupBattleMOVEUNITs
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AADC
-        @ PROC_SLEEP
-        .short 0xe, 0xf
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x0
-        .word 0x0
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word MapAnim_PrepareNextBattleRound
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_DisplayRoundAnim
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_ShowPoisonEffectIfAny
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_GOTO
-        .short 0xc, 0x0
-        .word 0x0
-
-	.global gUnknown_089A35B0
-gUnknown_089A35B0:  @ 0x089A35B0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807A984
-        @ PROC_WHILE
-        .short 0x14, 0x0
-        .word BattleEventEngineExists
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AA00
-        @ PROC_WHILE_EXISTS
-        .short 0x8, 0x0
-        .word gProcScr_MUDeathFade
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word DeleteBattleAnimInfoThing
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807A708
-        @ PROC_YIELD
-        .short 0xe, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AA4C
-        @ PROC_YIELD
-        .short 0xe, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word DisplayWpnBrokePopup
-        @ PROC_SLEEP
-        .short 0xe, 0x8
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word DisplayWRankUpPopup
-        @ PROC_YIELD
-        .short 0xe, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_MoveCameraOntoSubject
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word SubSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_Cleanup
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-	.global gUnknown_089A3648
-gUnknown_089A3648:  @ 0x089A3648
-	.incbin "baserom.gba", 0x9A3648, 0x20
-
-	.global gUnknown_089A3668
-gUnknown_089A3668:  @ 0x089A3668
-	.incbin "baserom.gba", 0x9A3668, 0x8
-
-	.global gUnknown_089A3670
-gUnknown_089A3670:  @ 0x089A3670
-@ replacing .incbin "baserom.gba", 0x009a3670, 0x18
-.4byte gUnknown_089AD6A8 + 0x20
-.4byte gUnknown_089AD6A8 + 0x20
-.4byte gUnknown_089AD6A8 + 0x20
-.4byte gUnknown_089AD6A8 + 0x20
-.4byte gUnknown_089AD6A8 + 0xa4
-.4byte gUnknown_089AD6A8 + 0x6c
-
-	.global gUnknown_089A3688
-gUnknown_089A3688:  @ 0x089A3688
-        @ PROC_SET_END_CB
-        .short 0x4, 0x0
-        .word sub_807BBF0
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807BEF8
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807BC00
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_807BF54
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_807BCA8
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_089A36C0
-gUnknown_089A36C0:  @ 0x089A36C0
-	.incbin "baserom.gba", 0x9A36C0, 0x38
-
-	.global gUnknown_089A36F8
-gUnknown_089A36F8:  @ 0x089A36F8
-        @ PROC_SET_END_CB
-        .short 0x4, 0x0
-        .word sub_807BBF0
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807C02C
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807C14C
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_807C1AC
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807C0DC
-        @ PROC_SLEEP
-        .short 0xe, 0x2
-        .word 0x0
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_807C0F8
-        @ PROC_SLEEP
-        .short 0xe, 0x14
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807BBF0
-        @ PROC_SLEEP
-        .short 0xe, 0x8
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807C210
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_089A3770
-gUnknown_089A3770:  @ 0x089A3770
-@ replacing .incbin "baserom.gba", 0x009a3770, 0x28
-.4byte gUnknown_08205714 + 0x4c
-.4byte gUnknown_08205714 + 0x44
-.4byte gUnknown_08205714 + 0x3c
-.4byte gUnknown_08205714 + 0x34
-.4byte gUnknown_08205714 + 0x2c
-.4byte gUnknown_08205714 + 0x24
-.4byte gUnknown_08205714 + 0x1c
-.4byte gUnknown_08205714 + 0x14
-.4byte gUnknown_08205714 + 0xc
-.4byte gUnknown_08205714 + 0x4
-
-	.global gUnknown_089A3798
-gUnknown_089A3798:  @ 0x089A3798
-@ Replacing .incbin "baserom.gba", 0x9A3798, 0x50
-    .4byte 0x00010909
-    .4byte 0x00010100
-    .4byte 0x02030002
-    .4byte 0x00200002
-    .4byte 0x01030002
-    .4byte 0x00200001
-    .4byte 0x0304010b
-    .4byte 0x00800103
-    .4byte 0x0405030a
-    .4byte 0x00ce0104
-    .4byte 0x05060409
-    .4byte 0x000a0005
-    .4byte 0x06070505
-    .4byte 0x000a0006
-    .4byte 0x07080605
-    .4byte 0x000a0007
-    .4byte 0x08090705
-    .4byte 0x000a0008
-    .4byte 0x09000805
-    .4byte 0x000a0009
-
-	.global gUnknown_089A37E8
-gUnknown_089A37E8:  @ 0x089A37E8
-@ replacing .incbin "baserom.gba", 0x009a37e8, 0x28
-.4byte gUnknown_08205714 + 0x80
-.4byte gUnknown_08205714 + 0x78
-.4byte gUnknown_08205714 + 0x70
-.4byte gUnknown_08205714 + 0x68
-.4byte gUnknown_08205714 + 0x64
-.4byte gUnknown_08205714 + 0x60
-.4byte gUnknown_08205714 + 0x5c
-.4byte gUnknown_08205714 + 0x58
-.4byte gUnknown_08205714 + 0x54
-.4byte 0
-
-	.global gUnknown_089A3810
-gUnknown_089A3810:  @ 0x089A3810
-@ replacing .incbin "baserom.gba", 0x009a3810, 0x4
-.4byte gUnknown_03004FB0 + 0x10
-
-	.global gUnknown_089A3814
-gUnknown_089A3814:  @ 0x089A3814
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word EndPlayerPhaseSideWindows
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807C4F0
-        @ PROC_LABEL
-        .short 0xb, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807C568
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_807C680
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807CAA8
-        @ PROC_WHILE_EXISTS
-        .short 0x8, 0x0
-        .word gUnknown_089A3508
-        @ PROC_GOTO
-        .short 0xc, 0x0
-        .word 0x0
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_089A3874
-gUnknown_089A3874:  @ 0x089A3874
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word AddSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word _InitFontForUIDefault
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AADC
-        @ PROC_SLEEP
-        .short 0xe, 0xf
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x0
-        .word 0x0
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_807CAD0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_DisplayRoundAnim
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_ShowPoisonEffectIfAny
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_GOTO
-        .short 0xc, 0x0
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807AA00
-        @ PROC_WHILE_EXISTS
-        .short 0x8, 0x0
-        .word gProcScr_MUDeathFade
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word DeleteBattleAnimInfoThing
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word SubSkipThread2
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807CB04
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_089A3924
-gUnknown_089A3924:  @ 0x089A3924
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word WallBreakAnim_Init
-        @ PROC_WHILE
-        .short 0x14, 0x0
-        .word APProc_Exists
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_089A3944
-gUnknown_089A3944:  @ 0x089A3944
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word MapAnim_BeginPoisonAnim
-        @ PROC_WHILE
-        .short 0x14, 0x0
-        .word APProc_Exists
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_089A3964
-gUnknown_089A3964:  @ 0x089A3964
-        @ PROC_SLEEP
-        .short 0xe, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807CD60
-        @ PROC_WHILE
-        .short 0x14, 0x0
-        .word APProc_Exists
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_807CDB8
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
 	.global gUnknown_089A398C
 gUnknown_089A398C:  @ 0x089A398C
         @ PROC_SLEEP
@@ -2090,8 +1335,8 @@ gUnknown_089A4734:  @ 0x089A4734
         .word 0x0
 
 
-	.global gUnknown_089A4764
-gUnknown_089A4764:  @ 0x089A4764
+	.global ProcScr_MapAnimDefaultItemEffect
+ProcScr_MapAnimDefaultItemEffect:  @ 0x089A4764
         @ PROC_CALL
         .short 0x2, 0x0
         .word MapAnim_BeginSubjectFastAnim
@@ -3029,8 +2274,8 @@ gUnknown_089A5054:  @ 0x089A5054
         .short 0x0, 0x0
         .word 0x0
 
-	.global gUnknown_089A508C
-gUnknown_089A508C:  @ 0x089A508C
+	.global ProcScr_PoisonDmgMapEffect
+ProcScr_PoisonDmgMapEffect:  @ 0x089A508C
         @ PROC_CALL
         .short 0x2, 0x0
         .word MapAnim_MoveCameraOnTarget
@@ -3062,8 +2307,8 @@ gUnknown_089A508C:  @ 0x089A508C
         .short 0x0, 0x0
         .word 0x0
 
-	.global gUnknown_089A50DC
-gUnknown_089A50DC:  @ 0x089A50DC
+	.global ProcScr_EggDmgMapEffect1
+ProcScr_EggDmgMapEffect1:  @ 0x089A50DC
         @ PROC_CALL
         .short 0x2, 0x0
         .word MapAnim_MoveCameraOnTarget
@@ -3092,8 +2337,8 @@ gUnknown_089A50DC:  @ 0x089A50DC
         .short 0x0, 0x0
         .word 0x0
 
-	.global gUnknown_089A5124
-gUnknown_089A5124:  @ 0x089A5124
+	.global ProcScr_EggDmgMapEffect2
+ProcScr_EggDmgMapEffect2:  @ 0x089A5124
         @ PROC_CALL
         .short 0x2, 0x0
         .word MapAnim_MoveCameraOnTarget
@@ -3113,8 +2358,8 @@ gUnknown_089A5124:  @ 0x089A5124
         .short 0x0, 0x0
         .word 0x0
 
-	.global gUnknown_089A5154
-gUnknown_089A5154:  @ 0x089A5154
+	.global ProcScr_CritAtkMapEffect
+ProcScr_CritAtkMapEffect:  @ 0x089A5154
         @ PROC_CALL
         .short 0x2, 0x0
         .word MapAnim_MoveCameraOnTarget
@@ -3310,12 +2555,12 @@ gUnknown_089A61F8:  @ 0x089A61F8
 gUnknown_089A6254:  @ 0x089A6254
 	.incbin "baserom.gba", 0x9A6254, 0xCEC
 
-	.global gUnknown_089A6F40
-gUnknown_089A6F40:  @ 0x089A6F40
+	.global Obj_PoisonAnim
+Obj_PoisonAnim:  @ 0x089A6F40
 	.incbin "baserom.gba", 0x9A6F40, 0x98
 
-	.global gUnknown_089A6FD8
-gUnknown_089A6FD8:  @ 0x089A6FD8
+	.global Obj_WallBreakAnim
+Obj_WallBreakAnim:  @ 0x089A6FD8
 	.incbin "baserom.gba", 0x9A6FD8, 0x1F20
 
 	.global gUnknown_089A8EF8
@@ -3338,20 +2583,20 @@ gUnknown_089ABB70:  @ 0x089ABB70
 gUnknown_089AC024:  @ 0x089AC024
 	.incbin "baserom.gba", 0x9AC024, 0x80
 
-	.global gUnknown_089AC0A4
-gUnknown_089AC0A4:  @ 0x089AC0A4
+	.global Img_MapAnimMISS
+Img_MapAnimMISS:  @ 0x089AC0A4
 	.incbin "baserom.gba", 0x9AC0A4, 0xF0
 
-	.global gUnknown_089AC194
-gUnknown_089AC194:  @ 0x089AC194
+	.global Obj_MapAnimMISS
+Obj_MapAnimMISS:  @ 0x089AC194
 	.incbin "baserom.gba", 0x9AC194, 0x168
 
-	.global gUnknown_089AC2FC
-gUnknown_089AC2FC:  @ 0x089AC2FC
+	.global Img_MapAnimNODAMAGE
+Img_MapAnimNODAMAGE:  @ 0x089AC2FC
 	.incbin "baserom.gba", 0x9AC2FC, 0x144
 
-	.global gUnknown_089AC440
-gUnknown_089AC440:  @ 0x089AC440
+	.global obj_MapAnimNODAMAGE
+obj_MapAnimNODAMAGE:  @ 0x089AC440
 	.incbin "baserom.gba", 0x9AC440, 0x18C
 
 	.global gUnknown_089AC5CC
@@ -3378,32 +2623,44 @@ gUnknown_089ACC98:  @ 0x089ACC98
 gUnknown_089AD498:  @ 0x089AD498
 	.incbin "baserom.gba", 0x9AD498, 0x68
 
-	.global gUnknown_089AD500
-gUnknown_089AD500:  @ 0x089AD500
+	.global Img_MapBattleInfoBox
+Img_MapBattleInfoBox:  @ 0x089AD500
 	.incbin "baserom.gba", 0x9AD500, 0x148
 
-	.global gUnknown_089AD648
-gUnknown_089AD648:  @ 0x089AD648
+	.global Pal_MapBattleInfoBlue
+Pal_MapBattleInfoBlue:  @ 0x089AD648
 	.incbin "baserom.gba", 0x9AD648, 0x20
 
-	.global gUnknown_089AD668
-gUnknown_089AD668:  @ 0x089AD668
+	.global Pal_MapBattleInfoRed
+Pal_MapBattleInfoRed:  @ 0x089AD668
     .incbin "baserom.gba", 0x9AD668, 0x20
 
-	.global gUnknown_089AD688
-gUnknown_089AD688:  @ 0x089AD688
+	.global Pal_MapBattleInfoGreen
+Pal_MapBattleInfoGreen:  @ 0x089AD688
 	.incbin "baserom.gba", 0x9AD688, 0x20
 
-	.global gUnknown_089AD6A8
-gUnknown_089AD6A8:  @ 0x089AD6A8
-    .incbin "baserom.gba", 0x9AD6A8, 0xE4
+	.global Pal_MapBattleInfoPurple
+Pal_MapBattleInfoPurple:  @ 0x089AD6A8
+    .incbin "baserom.gba", 0x9AD6A8, 0x20
 
-	.global gUnknown_089AD78C
-gUnknown_089AD78C:  @ 0x089AD78C
+    .global Tsa_MapBattleBoxGfx1
+Tsa_MapBattleBoxGfx1:   @ 0x089AD6C8
+    .incbin "baserom.gba", 0x9AD6C8, 0x4C
+
+    .global Tsa_MapBattleBoxGfx2
+Tsa_MapBattleBoxGfx2:   @ 0x089AD714
+    .incbin "baserom.gba", 0x9AD714, 0x38
+
+    .global Tsa_MapBattleBoxGfx3
+Tsa_MapBattleBoxGfx3:   @ 0x089AD74C
+    .incbin "baserom.gba", 0x9AD74C, 0x40
+
+	.global Img_MapBattleInfoHpBar
+Img_MapBattleInfoHpBar:  @ 0x089AD78C
 	.incbin "baserom.gba", 0x9AD78C, 0xDC
 
-	.global gUnknown_089AD868
-gUnknown_089AD868:  @ 0x089AD868
+	.global Img_MapBattleInfoNum
+Img_MapBattleInfoNum:  @ 0x089AD868
 	.incbin "baserom.gba", 0x9AD868, 0xCC
 
 	.global gUnknown_089AD934
@@ -3414,24 +2671,24 @@ gUnknown_089AD934:  @ 0x089AD934
 gUnknown_089AD9F8:  @ 0x089AD9F8
 	.incbin "baserom.gba", 0x9AD9F8, 0x88
 
-	.global gUnknown_089ADA80
-gUnknown_089ADA80:  @ 0x089ADA80
+	.global Img_WallBreakAnim
+Img_WallBreakAnim:  @ 0x089ADA80
     .incbin "baserom.gba", 0x9ADA80, 0x28C
 
-	.global gUnknown_089ADD0C
-gUnknown_089ADD0C:  @ 0x089ADD0C
+	.global Pal_WallBreakAnim
+Pal_WallBreakAnim:  @ 0x089ADD0C
 	.incbin "baserom.gba", 0x9ADD0C, 0x40
 
 	.global gUnknown_089ADD4C
 gUnknown_089ADD4C:  @ 0x089ADD4C
 	.incbin "baserom.gba", 0x9ADD4C, 0x164
 
-	.global gUnknown_089ADEB0
-gUnknown_089ADEB0:  @ 0x089ADEB0
+	.global Img_PoisonAnim
+Img_PoisonAnim:  @ 0x089ADEB0
 	.incbin "baserom.gba", 0x9ADEB0, 0x354
 
-	.global gUnknown_089AE204
-gUnknown_089AE204:  @ 0x089AE204
+	.global Pal_PoisonAnim
+Pal_PoisonAnim:  @ 0x089AE204
 	.incbin "baserom.gba", 0x9AE204, 0x20
 
 	.global gUnknown_089AE224
@@ -3725,8 +2982,8 @@ gUnknown_089E857C:  @ 0x089E857C
     .4byte gUnknown_089EEA28 + 0xdd4
     .4byte 0x00000000
 
-	.global gEventTable_Prologue
-gEventTable_Prologue:  @ 0x089E863C
+	.global PrologueEvents
+PrologueEvents:  @ 0x089E863C
     .4byte gUnknown_089E857C + 0x10
     .4byte gUnknown_089E857C + 0x44
     .4byte gUnknown_089E857C + 0x48
@@ -3819,8 +3076,8 @@ gUnknown_089E868C:  @ 0x089E868C
     .4byte gUnknown_089EEA28 + 0x1848
     .4byte 0x00000000
 
-	.global gEventTable_Chapter1
-gEventTable_Chapter1:  @ 0x089E879C
+	.global Ch1Events
+Ch1Events:  @ 0x089E879C
     .4byte gUnknown_089E857C + 0x110
     .4byte gUnknown_089E857C + 0x144
     .4byte gUnknown_089E857C + 0x188
@@ -3927,8 +3184,8 @@ gUnknown_089E87EC:  @ 0x089E87EC
     .4byte gUnknown_089EEA28 + 0x270c
     .4byte 0x00000000
 
-	.global gEventTable_Chapter2
-gEventTable_Chapter2:  @ 0x089E8934
+	.global Ch2Events
+Ch2Events:  @ 0x089E8934
     .4byte gUnknown_089E857C + 0x270
     .4byte gUnknown_089E857C + 0x298
     .4byte gUnknown_089E857C + 0x2bc
@@ -3998,8 +3255,8 @@ gUnknown_089E8984:  @ 0x089E8984
     .4byte 0x00000000
     .4byte 0x00000000
 
-	.global gEventTable_Chapter3
-gEventTable_Chapter3:  @ 0x089E8A38
+	.global Ch3Events
+Ch3Events:  @ 0x089E8A38
     .4byte gUnknown_089E857C + 0x408
     .4byte gUnknown_089E857C + 0x424
     .4byte gUnknown_089E857C + 0x438
@@ -4061,6 +3318,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch4Events
+Ch4Events: @0x89e8b20
     .4byte gUnknown_089E857C + 0x50c
     .4byte gUnknown_089E857C + 0x534
     .4byte gUnknown_089E857C + 0x538
@@ -4139,6 +3399,8 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
 
+	.global Ch5EventData
+Ch5EventData: @0x89e8c54
     .4byte gUnknown_089E857C + 0x5f4
     .4byte gUnknown_089E857C + 0x61c
     .4byte gUnknown_089E857C + 0x630
@@ -4186,6 +3448,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch5XEvents
+Ch5XEvents: @0x89e8d0c
     .4byte gUnknown_089E857C + 0x728
     .4byte gUnknown_089E857C + 0x72c
     .4byte gUnknown_089E857C + 0x730
@@ -4232,6 +3497,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch6Events
+Ch6Events: @0x89e8dc4
     .4byte gUnknown_089E857C + 0x7e0
     .4byte gUnknown_089E857C + 0x7f0
     .4byte gUnknown_089E857C + 0x7f4
@@ -4275,6 +3543,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch7EventData
+Ch7EventData: @0x89e8e70
     .4byte gUnknown_089E857C + 0x898
     .4byte gUnknown_089E857C + 0x8a8
     .4byte gUnknown_089E857C + 0x8ac
@@ -4368,6 +3639,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch8EventData
+Ch8EventData: @0x89e8fe4
     .4byte gUnknown_089E857C + 0x944
     .4byte gUnknown_089E857C + 0x96c
     .4byte gUnknown_089E857C + 0x9f0
@@ -4455,6 +3729,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch9EirikaEvents
+Ch9EirikaEvents: @0x89e9140
     .4byte gUnknown_089E857C + 0xab8
     .4byte gUnknown_089E857C + 0xb28
     .4byte gUnknown_089E857C + 0xb4c
@@ -4547,6 +3824,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch10EirikaEvents
+Ch10EirikaEvents: @0x89e92b0
     .4byte gUnknown_089E857C + 0xc14
     .4byte gUnknown_089E857C + 0xc48
     .4byte gUnknown_089E857C + 0xcbc
@@ -4631,6 +3911,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch11EirikaEvents
+Ch11EirikaEvents: @0x89e9400
     .4byte gUnknown_089E857C + 0xd84
     .4byte gUnknown_089E857C + 0xdb8
     .4byte gUnknown_089E857C + 0xddc
@@ -4689,6 +3972,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch12EirikaEventData
+Ch12EirikaEventData: @0x89e94e8
     .4byte gUnknown_089E857C + 0xed4
     .4byte gUnknown_089E857C + 0xef0
     .4byte gUnknown_089E857C + 0xef4
@@ -4753,6 +4039,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch13EirikaEvents
+Ch13EirikaEvents: @0x89e95e8
     .4byte gUnknown_089E857C + 0xfbc
     .4byte gUnknown_089E857C + 0x1008
     .4byte gUnknown_089E857C + 0x103c
@@ -4867,6 +4156,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch14EirikaEvents
+Ch14EirikaEvents: @0x89e97b0
     .4byte gUnknown_089E857C + 0x10bc
     .4byte gUnknown_089E857C + 0x10fc
     .4byte gUnknown_089E857C + 0x1120
@@ -5015,6 +4307,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch15EirikaEvents
+Ch15EirikaEvents: @0x89e9a00
     .4byte gUnknown_089E857C + 0x1284
     .4byte gUnknown_089E857C + 0x12d0
     .4byte gUnknown_089E857C + 0x1394
@@ -5085,6 +4380,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch16EirEvents
+Ch16EirEvents: @0x89e9b18
     .4byte gUnknown_089E857C + 0x14d4
     .4byte gUnknown_089E857C + 0x14fc
     .4byte gUnknown_089E857C + 0x1500
@@ -5188,6 +4486,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch17EirikaEvents
+Ch17EirikaEvents: @0x89e9cb4
     .4byte gUnknown_089E857C + 0x15ec
     .4byte gUnknown_089E857C + 0x1698
     .4byte gUnknown_089E857C + 0x16cc
@@ -5249,6 +4550,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch18EirikaEvents
+Ch18EirikaEvents: @0x89e9da8
     .4byte gUnknown_089E857C + 0x1788
     .4byte gUnknown_089E857C + 0x17c8
     .4byte gUnknown_089E857C + 0x17cc
@@ -5337,6 +4641,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch19EirikaEvents
+Ch19EirikaEvents: @0x89e9f08
     .4byte gUnknown_089E857C + 0x187c
     .4byte gUnknown_089E857C + 0x18f8
     .4byte gUnknown_089E857C + 0x18fc
@@ -5410,6 +4717,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch20EirikaEvents
+Ch20EirikaEvents: @0x89ea02c
     .4byte gUnknown_089E857C + 0x19dc
     .4byte gUnknown_089E857C + 0x1a4c
     .4byte gUnknown_089E857C + 0x1a50
@@ -5477,6 +4787,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global FinalEirikaEvents1
+FinalEirikaEvents1: @0x89ea138
     .4byte gUnknown_089E857C + 0x1b00
     .4byte gUnknown_089E857C + 0x1b28
     .4byte gUnknown_089E857C + 0x1b2c
@@ -5511,6 +4824,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global FinalEirikaEvents2
+FinalEirikaEvents2: @0x89ea1c0
     .4byte gUnknown_089E857C + 0x1c0c
     .4byte gUnknown_089E857C + 0x1c10
     .4byte gUnknown_089E857C + 0x1c14
@@ -5609,6 +4925,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch9Events
+Ch9Events: @0x89ea348
     .4byte gUnknown_089E857C + 0x1c94
     .4byte gUnknown_089E857C + 0x1cc8
     .4byte gUnknown_089E857C + 0x1d0c
@@ -5697,6 +5016,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch10EphraimEvents
+Ch10EphraimEvents: @0x89ea4a8
     .4byte gUnknown_089E857C + 0x1e1c
     .4byte gUnknown_089E857C + 0x1e68
     .4byte gUnknown_089E857C + 0x1e9c
@@ -5766,6 +5088,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch11EphraimEvents
+Ch11EphraimEvents: @0x89ea5bc
     .4byte gUnknown_089E857C + 0x1f7c
     .4byte gUnknown_089E857C + 0x1fec
     .4byte gUnknown_089E857C + 0x2010
@@ -5834,6 +5159,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global Ch12EphraimEvents
+Ch12EphraimEvents: @0x89ea6cc
     .4byte gUnknown_089E857C + 0x2090
     .4byte gUnknown_089E857C + 0x20dc
     .4byte gUnknown_089E857C + 0x20f0
@@ -5931,6 +5259,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global Ch13EphraimEventData
+Ch13EphraimEventData: @0x89ea850
     .4byte gUnknown_089E857C + 0x21a0
     .4byte gUnknown_089E857C + 0x21d4
     .4byte gUnknown_089E857C + 0x2238
@@ -6090,6 +5421,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global Ch14EphraimEventData
+Ch14EphraimEventData: @0x89eaacc
     .4byte gUnknown_089E857C + 0x2324
     .4byte gUnknown_089E857C + 0x237c
     .4byte gUnknown_089E857C + 0x23a0
@@ -6227,6 +5561,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global Ch15EphraimEventData
+Ch15EphraimEventData: @0x89eacf0
     .4byte gUnknown_089E857C + 0x25a0
     .4byte gUnknown_089E857C + 0x25e0
     .4byte gUnknown_089E857C + 0x2684
@@ -6306,6 +5643,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global Ch16EphraimEventData
+Ch16EphraimEventData: @0x89eae2c
     .4byte gUnknown_089E857C + 0x27c4
     .4byte gUnknown_089E857C + 0x27f8
     .4byte gUnknown_089E857C + 0x27fc
@@ -6409,6 +5749,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch17EphraimEventData
+Ch17EphraimEventData: @0x89eafc8
     .4byte gUnknown_089E857C + 0x2900
     .4byte gUnknown_089E857C + 0x29ac
     .4byte gUnknown_089E857C + 0x29e0
@@ -6470,6 +5813,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global Ch18EphraimEventData
+Ch18EphraimEventData: @0x89eb0bc
     .4byte gUnknown_089E857C + 0x2a9c
     .4byte gUnknown_089E857C + 0x2adc
     .4byte gUnknown_089E857C + 0x2ae0
@@ -6558,6 +5904,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch19EphraimEventData
+Ch19EphraimEventData: @0x89eb21c
     .4byte gUnknown_089E857C + 0x2b90
     .4byte gUnknown_089E857C + 0x2c0c
     .4byte gUnknown_089E857C + 0x2c10
@@ -6631,6 +5980,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global Ch20EphraimEventData
+Ch20EphraimEventData: @0x89eb340
     .4byte gUnknown_089E857C + 0x2cf0
     .4byte gUnknown_089E857C + 0x2d60
     .4byte gUnknown_089E857C + 0x2d64
@@ -6698,6 +6050,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global FinalEphraimEvents1
+FinalEphraimEvents1: @0x89eb44c
     .4byte gUnknown_089E857C + 0x2e14
     .4byte gUnknown_089E857C + 0x2e3c
     .4byte gUnknown_089E857C + 0x2e40
@@ -6732,6 +6087,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global FinalEphraimEvents2
+FinalEphraimEvents2: @0x89eb4d4
     .4byte gUnknown_089E857C + 0x2f20
     .4byte gUnknown_089E857C + 0x2f24
     .4byte gUnknown_089E857C + 0x2f28
@@ -6772,6 +6130,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global TowerOfValni1Events
+TowerOfValni1Events: @0x89eb574
     .4byte gUnknown_089E857C + 0x2fa8
     .4byte gUnknown_089E857C + 0x2fac
     .4byte gUnknown_089E857C + 0x2fb0
@@ -6812,6 +6173,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global TowerOfValni2Events
+TowerOfValni2Events: @0x89eb614
     .4byte gUnknown_089E857C + 0x3048
     .4byte gUnknown_089E857C + 0x3058
     .4byte gUnknown_089E857C + 0x305c
@@ -6849,6 +6213,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global TowerOfValni3Events
+TowerOfValni3Events: @0x89eb6a8
     .4byte gUnknown_089E857C + 0x30e8
     .4byte gUnknown_089E857C + 0x30ec
     .4byte gUnknown_089E857C + 0x30f0
@@ -6883,6 +6250,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global TowerOfValni4Events
+TowerOfValni4Events: @0x89eb730
     .4byte gUnknown_089E857C + 0x317c
     .4byte gUnknown_089E857C + 0x3180
     .4byte gUnknown_089E857C + 0x3184
@@ -6926,6 +6296,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global TowerOfValni5Events
+TowerOfValni5Events: @0x89eb7dc
     .4byte gUnknown_089E857C + 0x3204
     .4byte gUnknown_089E857C + 0x3214
     .4byte gUnknown_089E857C + 0x3218
@@ -6972,6 +6345,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global TowerOfValni6Events
+TowerOfValni6Events: @0x89eb894
     .4byte gUnknown_089E857C + 0x32b0
     .4byte gUnknown_089E857C + 0x32b4
     .4byte gUnknown_089E857C + 0x32b8
@@ -7030,6 +6406,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global TowerOfValni7Events
+TowerOfValni7Events: @0x89eb97c
     .4byte gUnknown_089E857C + 0x3368
     .4byte gUnknown_089E857C + 0x3390
     .4byte gUnknown_089E857C + 0x3394
@@ -7067,6 +6446,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global TowerOfValni8Events
+TowerOfValni8Events: @0x89eba10
     .4byte gUnknown_089E857C + 0x3450
     .4byte gUnknown_089E857C + 0x3454
     .4byte gUnknown_089E857C + 0x3458
@@ -7119,6 +6501,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins1Event
+LagdouRuins1Event: @0x89ebae0
     .4byte gUnknown_089E857C + 0x34e4
     .4byte gUnknown_089E857C + 0x3518
     .4byte gUnknown_089E857C + 0x351c
@@ -7159,6 +6544,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+
+	.global LagdouRuins2Event
+LagdouRuins2Event: @0x89ebb80
     .4byte gUnknown_089E857C + 0x35b4
     .4byte gUnknown_089E857C + 0x35b8
     .4byte gUnknown_089E857C + 0x35bc
@@ -7232,6 +6620,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins3Event
+LagdouRuins3Event: @0x89ebca4
     .4byte gUnknown_089E857C + 0x3654
     .4byte gUnknown_089E857C + 0x3694
     .4byte gUnknown_089E857C + 0x3698
@@ -7278,6 +6669,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins4Event
+LagdouRuins4Event: @0x89ebd5c
     .4byte gUnknown_089E857C + 0x3778
     .4byte gUnknown_089E857C + 0x3794
     .4byte gUnknown_089E857C + 0x3798
@@ -7330,6 +6724,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins5Event
+LagdouRuins5Event: @0x89ebe2c
     .4byte gUnknown_089E857C + 0x3830
     .4byte gUnknown_089E857C + 0x3858
     .4byte gUnknown_089E857C + 0x385c
@@ -7388,6 +6785,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins6Event
+LagdouRuins6Event: @0x89ebf14
     .4byte gUnknown_089E857C + 0x3900
     .4byte gUnknown_089E857C + 0x3958
     .4byte gUnknown_089E857C + 0x395c
@@ -7461,6 +6861,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins7Event
+LagdouRuins7Event: @0x89ec038
     .4byte gUnknown_089E857C + 0x39e8
     .4byte gUnknown_089E857C + 0x3a4c
     .4byte gUnknown_089E857C + 0x3a50
@@ -7567,6 +6970,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins8Event
+LagdouRuins8Event: @0x89ec1e0
     .4byte gUnknown_089E857C + 0x3b0c
     .4byte gUnknown_089E857C + 0x3bd0
     .4byte gUnknown_089E857C + 0x3bd4
@@ -7613,6 +7019,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins9Event
+LagdouRuins9Event: @0x89ec298
     .4byte gUnknown_089E857C + 0x3cb4
     .4byte gUnknown_089E857C + 0x3cc4
     .4byte gUnknown_089E857C + 0x3cc8
@@ -7650,6 +7059,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LagdouRuins10Event
+LagdouRuins10Event: @0x89ec32c
     .4byte gUnknown_089E857C + 0x3d6c
     .4byte gUnknown_089E857C + 0x3d70
     .4byte gUnknown_089E857C + 0x3d74
@@ -7684,6 +7096,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global LordsSplitEvents
+LordsSplitEvents: @0x89ec3b4
     .4byte gUnknown_089E857C + 0x3e00
     .4byte gUnknown_089E857C + 0x3e04
     .4byte gUnknown_089E857C + 0x3e08
@@ -7718,6 +7133,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global MelkaenCoastEvent
+MelkaenCoastEvent: @0x89ec43c
     .4byte gUnknown_089E857C + 0x3e88
     .4byte gUnknown_089E857C + 0x3e8c
     .4byte gUnknown_089E857C + 0x3e90
@@ -7809,6 +7227,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global AnInterestingMapEvents
+AnInterestingMapEvents: @0x89ec5a8
     .4byte gUnknown_089E857C + 0x3f10
     .4byte gUnknown_089E857C + 0x4004
     .4byte gUnknown_089E857C + 0x4008
@@ -7858,6 +7279,9 @@ gUnknown_089E8A88:  @ 0x089E8A88
     .4byte 0x00000000
     .4byte 0x00000000
     .4byte 0x00000000
+    
+	.global DebugMapEvents
+DebugMapEvents: @0x89ec66c
     .4byte gUnknown_089E857C + 0x407c
     .4byte gUnknown_089E857C + 0x4080
     .4byte gUnknown_089E857C + 0x4084

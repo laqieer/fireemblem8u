@@ -5,9 +5,11 @@
 #include "soundwrapper.h"
 #include "fontgrp.h"
 #include "proc.h"
+#include "bm.h"
 #include "bmio.h"
 #include "uiutils.h"
 #include "statscreen.h"
+#include "face.h"
 
 #include "uimenu.h"
 
@@ -28,7 +30,7 @@ struct ProcCmd sProc_Menu[] =
     PROC_NAME("E_Menu"),
     PROC_SLEEP(0),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL(NewGreenTextColorManager),
     PROC_CALL(RedrawMenu),
@@ -407,7 +409,7 @@ void Menu_OnIdle(struct MenuProc* proc)
         ClearMenuBgs(proc);
 
     if (actions & MENU_ACT_ENDFACE)
-        DeleteFaceByIndex(0);
+        EndFaceById(0);
 
     if (actions & MENU_ACT_DOOM)
         proc->state |= MENU_STATE_DOOMED;

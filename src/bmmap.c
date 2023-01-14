@@ -225,7 +225,7 @@ void BmMapFillEdges(u8** map, u8 value) {
 }
 
 void UnpackChapterMap(void* into, int chapterId) {
-    // Decompress map data
+    // CopyDataWithPossibleUncomp map data
     CopyDataWithPossibleUncomp(
         GetChapterMapPointer(chapterId), into);
 
@@ -233,36 +233,36 @@ void UnpackChapterMap(void* into, int chapterId) {
     gBmMapSize.x = ((u8*)(into))[0];
     gBmMapSize.y = ((u8*)(into))[1];
 
-    // Decompress tileset config
+    // CopyDataWithPossibleUncomp tileset config
     CopyDataWithPossibleUncomp(
-        gChapterDataAssetTable[GetROMChapterStruct(chapterId)->mapTileConfigId], sTilesetConfig);
+        gChapterDataAssetTable[GetROMChapterStruct(chapterId)->map.tileConfigId], sTilesetConfig);
 
     // Setting max camera offsets (?) TODO: figure out
-    gGameState.unk28.x = gBmMapSize.x*16 - 240;
-    gGameState.unk28.y = gBmMapSize.y*16 - 160;
+    gGameState.cameraMax.x = gBmMapSize.x*16 - 240;
+    gGameState.cameraMax.y = gBmMapSize.y*16 - 160;
 }
 
 void UnpackChapterMapGraphics(int chapterId) {
-    // Decompress tileset graphics (part 1)
+    // CopyDataWithPossibleUncomp tileset graphics (part 1)
     CopyDataWithPossibleUncomp(
-        gChapterDataAssetTable[GetROMChapterStruct(chapterId)->mapObj1Id],
+        gChapterDataAssetTable[GetROMChapterStruct(chapterId)->map.obj1Id],
         (void*)(BG_VRAM + 0x20 * 0x400)); // TODO: tile id constant?
 
-    // Decompress tileset graphics (part 2, if it exists)
-    if (gChapterDataAssetTable[GetROMChapterStruct(chapterId)->mapObj2Id])
+    // CopyDataWithPossibleUncomp tileset graphics (part 2, if it exists)
+    if (gChapterDataAssetTable[GetROMChapterStruct(chapterId)->map.obj2Id])
         CopyDataWithPossibleUncomp(
-            gChapterDataAssetTable[GetROMChapterStruct(chapterId)->mapObj2Id],
+            gChapterDataAssetTable[GetROMChapterStruct(chapterId)->map.obj2Id],
             (void*)(BG_VRAM + 0x20 * 0x600)); // TODO: tile id constant?
 
     // Apply tileset palette
     CopyToPaletteBuffer(
-        gChapterDataAssetTable[GetROMChapterStruct(chapterId)->mapPaletteId],
+        gChapterDataAssetTable[GetROMChapterStruct(chapterId)->map.paletteId],
         0x20 * 6, 0x20 * 10); // TODO: palette id constant?
 }
 
 void UnpackChapterMapPalette(void) {
     CopyToPaletteBuffer(
-        gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapPaletteId],
+        gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->map.paletteId],
         0x20 * 6, 0x20 * 10); // TODO: palette id constant?
 }
 
@@ -542,7 +542,7 @@ void RefreshUnitsOnBmMap(void) {
 
     // 2. Red (& Purple) units
 
-    if (gRAMChapterData.chapterPhaseIndex != FACTION_RED) {
+    if (gRAMChapterData.faction != FACTION_RED) {
         // 2.1. No red phase
 
         for (i = FACTION_RED + 1; i < FACTION_PURPLE + 6; ++i) {

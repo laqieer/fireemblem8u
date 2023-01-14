@@ -10,6 +10,8 @@
 #include "uiutils.h"
 #include "uichapterstatus.h"
 #include "chapterdata.h"
+#include "face.h"
+#include "bm.h"
 
 #include "constants/terrains.h"
 
@@ -141,7 +143,7 @@ struct ProcCmd CONST_DATA gProcScr_TerrainDisplay[] = {
 
 PROC_LABEL(0),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_REPEAT(TerrainDisplay_Loop_OnSideChange),
     PROC_REPEAT(TerrainDisplay_Loop_SlideIn),
@@ -170,7 +172,7 @@ struct ProcCmd CONST_DATA gProcScr_UnitDisplay_MinimugBox[] = {
 
 PROC_LABEL(0),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_REPEAT(MMB_Loop_OnSideChange),
     PROC_REPEAT(MMB_Loop_SlideIn),
@@ -245,7 +247,7 @@ struct ProcCmd CONST_DATA gProcScr_GoalDisplay[] = {
 
 PROC_LABEL(0),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_REPEAT(GoalDisplay_Loop_OnSideChange),
     PROC_REPEAT(GoalDisplay_Loop_SlideIn),
@@ -273,7 +275,7 @@ struct ProcCmd CONST_DATA gProcScr_PrepMap_MenuButtonDisplay[] = {
 
 PROC_LABEL(0),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_WHILE(IsAnyPlayerSideWindowRetracting),
 
@@ -832,7 +834,7 @@ void InitMinimugBoxMaybe(struct PlayerInterfaceProc* proc, struct Unit* unit) {
         faceId = faceId + 1;
     }
 
-    sub_8005988(faceId, gBmFrameTmap0 + 0x21, 0xF0, 4, 0);
+    PutFaceChibi(faceId, gBmFrameTmap0 + 0x21, 0xF0, 4, 0);
 
     proc->unk_40 = gBmFrameTmap0 + 0x65;
 
@@ -1087,7 +1089,7 @@ void TerrainDisplay_Loop_Display(struct PlayerInterfaceProc* proc) {
         return;
     }
 
-    if (!Proc_Find(gUnknown_0859A548)) {
+    if (!Proc_Find(gProcScr_CamMove)) {
         int cursorQuadrant = GetCursorQuadrant();
 
         if ((cursorQuadrant == proc->unk_50) || ((sPlayerInterfaceConfigLut[cursorQuadrant].xTerrain == sPlayerInterfaceConfigLut[proc->unk_50].xTerrain) && (sPlayerInterfaceConfigLut[cursorQuadrant].yTerrain == sPlayerInterfaceConfigLut[proc->unk_50].yTerrain))) {
@@ -1170,7 +1172,7 @@ void MMB_Loop_Display(struct PlayerInterfaceProc* proc) {
         return;
     }
 
-    if (unit && !Proc_Find(gUnknown_0859A548)) {
+    if (unit && !Proc_Find(gProcScr_CamMove)) {
         int cursorQuadrant = GetCursorQuadrant();
 
         if ((cursorQuadrant == proc->unk_50) || ((sPlayerInterfaceConfigLut[cursorQuadrant].xMinimug == sPlayerInterfaceConfigLut[proc->unk_50].xMinimug) && (sPlayerInterfaceConfigLut[cursorQuadrant].yMinimug == sPlayerInterfaceConfigLut[proc->unk_50].yMinimug))) {
@@ -1228,7 +1230,7 @@ void BurstDisplay_Loop_Display(struct PlayerInterfaceProc* proc) {
         return;
     }
 
-    if ((proc->unk_4b == 0) || (Proc_Find(gUnknown_0859A548) != 0)) {
+    if ((proc->unk_4b == 0) || (Proc_Find(gProcScr_CamMove) != 0)) {
         return;
     }
 
@@ -1294,11 +1296,11 @@ void InitPlayerPhaseInterface() {
 
     SetSpecialColorEffectsParameters(1, 0xD, 3, 0);
 
-    sub_8001ED0(0, 1, 0, 0, 0);
+    SetBlendTargetA(0, 1, 0, 0, 0);
 
     sub_8001F48(0);
 
-    sub_8001F0C(0, 0, 1, 1, 1);
+    SetBlendTargetB(0, 0, 1, 1, 1);
 
     CopyDataWithPossibleUncomp(gGfx_PlayerInterfaceFontTiles, (void*)(VRAM + 0x2000));
     CopyDataWithPossibleUncomp(gGfx_PlayerInterfaceNumbers, (void*)(VRAM + 0x15C00));
@@ -1309,7 +1311,7 @@ void InitPlayerPhaseInterface() {
 
     LoadIconPalette(1, 2);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     if (gRAMChapterData.cfgDisableTerrainDisplay == 0) {
         Proc_Start(gProcScr_TerrainDisplay, PROC_TREE_3);
@@ -1538,8 +1540,6 @@ void GoalDisplay_Loop_OnSideChange(struct PlayerInterfaceProc* proc) {
     return;
 }
 
-#if NONMATCHING
-
 void sub_808D514(int param_1, int param_2, int param_3) {
 
     int x = sPlayerInterfaceConfigLut[param_1].xGoal;
@@ -1549,247 +1549,38 @@ void sub_808D514(int param_1, int param_2, int param_3) {
         TileMap_FillRect(gBG1TilemapBuffer, 12, 6, 0);
         TileMap_FillRect(gBG0TilemapBuffer, 12, 6, 0);
 
-        TileMap_CopyRect(gUnknown_02004254 + TILEMAP_INDEX(1, (16 - param_2)), gBG1TilemapBuffer, 12, param_2);
-        TileMap_CopyRect(gUnknown_02003D54 + TILEMAP_INDEX(1, (18 - param_2)), gBG0TilemapBuffer, 12, param_2);
+        TileMap_CopyRect(gUnknown_02004254 + TILEMAP_INDEX(0, (16 - param_2)), gBG1TilemapBuffer, 12, param_2);
+        TileMap_CopyRect(gUnknown_02003D54 + TILEMAP_INDEX(0, (18 - param_2)), gBG0TilemapBuffer, 12, param_2);
     }
 
     if ((x > 0) && (y < 0)) {
         TileMap_FillRect(gBG1TilemapBuffer + 0x13, 12, 6, 0);
         TileMap_FillRect(gBG0TilemapBuffer + 0x13, 12, 6, 0);
 
-        TileMap_CopyRect(gUnknown_02004254 + TILEMAP_INDEX(1, (16 - param_2)), gBG1TilemapBuffer + 0x13, 12, param_2);
-        TileMap_CopyRect(gUnknown_02003D54 + TILEMAP_INDEX(1, (18 - param_2)), gBG0TilemapBuffer + 0x13, 12, param_2);
+        TileMap_CopyRect(gUnknown_02004254 + TILEMAP_INDEX(0, (16 - param_2)), gBG1TilemapBuffer + 0x13, 12, param_2);
+        TileMap_CopyRect(gUnknown_02003D54 + TILEMAP_INDEX(0, (18 - param_2)), gBG0TilemapBuffer + 0x13, 12, param_2);
     }
 
     if ((x < 0) && (y > 0)) {
         TileMap_FillRect(gBG1TilemapBuffer + 0x1C0, 12, 6, 0);
         TileMap_FillRect(gBG0TilemapBuffer + 0x1C0, 12, 6, 0);
 
-        TileMap_CopyRect(gUnknown_020044D4, gBG1TilemapBuffer + 0x1C0 + TILEMAP_INDEX((1 - param_3), (20 - param_2)) - 0x1C0, 12, param_2);
-        TileMap_CopyRect(gUnknown_02004054, gBG0TilemapBuffer + 0x1C0 + TILEMAP_INDEX((1 - param_3), (20 - param_2)) - 0x1C0, 12, param_2);
+        TileMap_CopyRect(gUnknown_020044D4, gBG1TilemapBuffer + 0x1C0 + 0x20 * (({ (1 - param_3) * 2 + 20; }) - param_2) - 0x1C0, 12, param_2);
+        TileMap_CopyRect(gUnknown_02004054, gBG0TilemapBuffer + 0x1C0 + 0x20 * (({ (1 - param_3) * 2 + 20; }) - param_2) - 0x1C0, 12, param_2);
     }
 
     if ((x > 0) && (y > 0)) {
         TileMap_FillRect(gBG1TilemapBuffer + 0x1D3, 12, 6, 0);
         TileMap_FillRect(gBG0TilemapBuffer + 0x1D3, 12, 6, 0);
 
-        TileMap_CopyRect(gUnknown_020044D4, gBG1TilemapBuffer + 0x1D3 + TILEMAP_INDEX((1 - param_3), (20 - param_2)) - 0x1C0, 12, param_2);
-        TileMap_CopyRect(gUnknown_02004054, gBG0TilemapBuffer + 0x1D3 + TILEMAP_INDEX((1 - param_3), (20 - param_2)) - 0x1C0, 12, param_2);
+        TileMap_CopyRect(gUnknown_020044D4, gBG1TilemapBuffer + 0x1D3 + 0x20 * (({ (1 - param_3) * 2 + 20; }) - param_2) - 0x1C0, 12, param_2);
+        TileMap_CopyRect(gUnknown_02004054, gBG0TilemapBuffer + 0x1D3 + 0x20 * (({ (1 - param_3) * 2 + 20; }) - param_2) - 0x1C0, 12, param_2);
     }
 
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
 
     return;
 }
-
-#else // if !NONMATCHING
-
-__attribute__((naked))
-void sub_808D514(int param_1, int param_2, int param_3) {
-    asm("\n\
-        .syntax unified\n\
-        push {r4, r5, r6, r7, lr}\n\
-        mov r7, sl\n\
-        mov r6, r9\n\
-        mov r5, r8\n\
-        push {r5, r6, r7}\n\
-        adds r7, r1, #0\n\
-        mov sl, r2\n\
-        ldr r1, _0808D69C  @ sPlayerInterfaceConfigLut\n\
-        lsls r0, r0, #3\n\
-        adds r0, r0, r1\n\
-        movs r1, #4\n\
-        ldrsb r1, [r0, r1]\n\
-        mov r8, r1\n\
-        ldrb r0, [r0, #5]\n\
-        lsls r0, r0, #0x18\n\
-        asrs r0, r0, #0x18\n\
-        mov r9, r0\n\
-        cmp r1, #0\n\
-        bge _0808D582\n\
-        cmp r0, #0\n\
-        bge _0808D582\n\
-        ldr r4, _0808D6A0  @ gBG1TilemapBuffer\n\
-        adds r0, r4, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        ldr r5, _0808D6A4  @ gBG0TilemapBuffer\n\
-        adds r0, r5, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        movs r0, #0x10\n\
-        subs r0, r0, r7\n\
-        lsls r0, r0, #6\n\
-        ldr r1, _0808D6A8  @ gUnknown_02004254\n\
-        adds r0, r0, r1\n\
-        adds r1, r4, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-        movs r0, #0x12\n\
-        subs r0, r0, r7\n\
-        lsls r0, r0, #6\n\
-        ldr r1, _0808D6AC  @ gUnknown_02003D54\n\
-        adds r0, r0, r1\n\
-        adds r1, r5, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-    _0808D582:\n\
-        mov r0, r8\n\
-        cmp r0, #0\n\
-        ble _0808D5D2\n\
-        mov r1, r9\n\
-        cmp r1, #0\n\
-        bge _0808D5D2\n\
-        ldr r4, _0808D6B0  @ gUnknown_020234CE\n\
-        adds r0, r4, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        ldr r5, _0808D6B4  @ gUnknown_02022CCE\n\
-        adds r0, r5, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        movs r0, #0x10\n\
-        subs r0, r0, r7\n\
-        lsls r0, r0, #6\n\
-        ldr r1, _0808D6A8  @ gUnknown_02004254\n\
-        adds r0, r0, r1\n\
-        adds r1, r4, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-        movs r0, #0x12\n\
-        subs r0, r0, r7\n\
-        lsls r0, r0, #6\n\
-        ldr r1, _0808D6AC  @ gUnknown_02003D54\n\
-        adds r0, r0, r1\n\
-        adds r1, r5, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-    _0808D5D2:\n\
-        mov r0, r8\n\
-        cmp r0, #0\n\
-        bge _0808D62C\n\
-        mov r1, r9\n\
-        cmp r1, #0\n\
-        ble _0808D62C\n\
-        ldr r5, _0808D6B8  @ gUnknown_02023828\n\
-        adds r0, r5, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        ldr r6, _0808D6BC  @ gUnknown_02023028\n\
-        adds r0, r6, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        ldr r0, _0808D6C0  @ gUnknown_020044D4\n\
-        movs r4, #1\n\
-        mov r1, sl\n\
-        subs r4, r4, r1\n\
-        lsls r4, r4, #1\n\
-        adds r4, #0x14\n\
-        subs r4, r4, r7\n\
-        lsls r4, r4, #6\n\
-        ldr r1, _0808D6C4  @ 0xFFFFFC80\n\
-        adds r5, r5, r1\n\
-        adds r5, r4, r5\n\
-        adds r1, r5, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-        ldr r0, _0808D6C8  @ gUnknown_02004054\n\
-        ldr r1, _0808D6C4  @ 0xFFFFFC80\n\
-        adds r6, r6, r1\n\
-        adds r4, r4, r6\n\
-        adds r1, r4, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-    _0808D62C:\n\
-        mov r0, r8\n\
-        cmp r0, #0\n\
-        ble _0808D686\n\
-        mov r1, r9\n\
-        cmp r1, #0\n\
-        ble _0808D686\n\
-        ldr r5, _0808D6CC  @ gUnknown_0202384E\n\
-        adds r0, r5, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        ldr r6, _0808D6D0  @ gUnknown_0202304E\n\
-        adds r0, r6, #0\n\
-        movs r1, #0xc\n\
-        movs r2, #6\n\
-        movs r3, #0\n\
-        bl TileMap_FillRect\n\
-        ldr r0, _0808D6C0  @ gUnknown_020044D4\n\
-        movs r4, #1\n\
-        mov r1, sl\n\
-        subs r4, r4, r1\n\
-        lsls r4, r4, #1\n\
-        adds r4, #0x14\n\
-        subs r4, r4, r7\n\
-        lsls r4, r4, #6\n\
-        ldr r1, _0808D6C4  @ 0xFFFFFC80\n\
-        adds r5, r5, r1\n\
-        adds r5, r4, r5\n\
-        adds r1, r5, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-        ldr r0, _0808D6C8  @ gUnknown_02004054\n\
-        ldr r1, _0808D6C4  @ 0xFFFFFC80\n\
-        adds r6, r6, r1\n\
-        adds r4, r4, r6\n\
-        adds r1, r4, #0\n\
-        movs r2, #0xc\n\
-        adds r3, r7, #0\n\
-        bl TileMap_CopyRect\n\
-    _0808D686:\n\
-        movs r0, #3\n\
-        bl BG_EnableSyncByMask\n\
-        pop {r3, r4, r5}\n\
-        mov r8, r3\n\
-        mov r9, r4\n\
-        mov sl, r5\n\
-        pop {r4, r5, r6, r7}\n\
-        pop {r0}\n\
-        bx r0\n\
-        .align 2, 0\n\
-    _0808D69C: .4byte sPlayerInterfaceConfigLut\n\
-    _0808D6A0: .4byte gBG1TilemapBuffer\n\
-    _0808D6A4: .4byte gBG0TilemapBuffer\n\
-    _0808D6A8: .4byte gUnknown_02004254\n\
-    _0808D6AC: .4byte gUnknown_02003D54\n\
-    _0808D6B0: .4byte gUnknown_020234CE\n\
-    _0808D6B4: .4byte gUnknown_02022CCE\n\
-    _0808D6B8: .4byte gUnknown_02023828\n\
-    _0808D6BC: .4byte gUnknown_02023028\n\
-    _0808D6C0: .4byte gUnknown_020044D4\n\
-    _0808D6C4: .4byte 0xFFFFFC80\n\
-    _0808D6C8: .4byte gUnknown_02004054\n\
-    _0808D6CC: .4byte gUnknown_0202384E\n\
-    _0808D6D0: .4byte gUnknown_0202304E\n\
-        .syntax divided\n\
-    ");
-}
-
-#endif // NONMATCHING
 
 void GoalDisplay_Loop_SlideIn(struct PlayerInterfaceProc* proc) {
     int unk = sGoalSlideInWidthLut[proc->unk_58];
@@ -1855,7 +1646,7 @@ void GoalDisplay_Loop_Display(struct PlayerInterfaceProc* proc) {
         return;
     }
 
-    if (!Proc_Find(gUnknown_0859A548)) {
+    if (!Proc_Find(gProcScr_CamMove)) {
 
         int cursorQuadrant = GetCursorQuadrant();
         int quadrant = proc->unk_50;
@@ -1987,7 +1778,7 @@ void MenuButtonDisp_Loop_Display(struct PlayerInterfaceProc* proc) {
         return;
     }
 
-    if (!Proc_Find(gUnknown_0859A548)) {
+    if (!Proc_Find(gProcScr_CamMove)) {
         int cursorQuadrant = GetCursorQuadrant();
         int quadrant = proc->unk_50;
 

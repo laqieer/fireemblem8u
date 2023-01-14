@@ -22,6 +22,8 @@
 #include "bmtrap.h"
 #include "minimap.h"
 #include "player_interface.h"
+#include "bmudisp.h"
+#include "bm.h"
 
 #include "playerphase.h"
 
@@ -45,13 +47,6 @@ extern u16 gUnknown_08A02FF4[];
 
 extern u8 gUnknown_08A02EB4[];
 
-// bm.s
-void HandleCursorMovement(u16 keys);
-void MoveCameraByStepMaybe(int step);
-void sub_801588C(int step);
-
-// bmudisp.s
-void sub_8027A40(ProcPtr);
 void TrySwitchViewedUnit(int, int);
 int GetUnitSelectionValueThing(struct Unit* unit);
 void DisplayMoveRangeGraphics(int config);
@@ -68,10 +63,6 @@ s8 sub_80844B0(void);
 s8 sub_8084508(void);
 void sub_8084590(ProcPtr);
 void TryCallSelectEvents(ProcPtr);
-
-// bmudisp.s
-void sub_8027A4C(void);
-s8 sub_8027B0C(int, int);
 
 extern struct ProcCmd gProcScr_0859ACE8[];
 
@@ -101,20 +92,20 @@ PROC_LABEL(0),
 
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
-    PROC_CALL(SMS_UpdateFromGameData),
+    PROC_CALL(RefreshUnitSprites),
 
     PROC_CALL(sub_8084590),
     PROC_WHILE(EventEngineExists),
 
     PROC_CALL(PlayerPhase_HandleAutoEnd),
 
-    PROC_CALL(sub_80160D0),
+    PROC_CALL(StartMapSongBgm),
 
     // fallthrough
 
 PROC_LABEL(9),
     PROC_CALL(StartPlayerPhaseSideWindows),
-    PROC_CALL(sub_8027A40),
+    PROC_CALL(ResetUnitSpriteHover),
 
     PROC_REPEAT(PlayerPhase_MainIdle),
 
@@ -126,7 +117,7 @@ PROC_LABEL(1),
     PROC_WHILE(DoesBMXFADEExist),
 
     PROC_CALL(SetAllUnitNotBackSprite),
-    PROC_CALL(SMS_UpdateFromGameData),
+    PROC_CALL(RefreshUnitSprites),
 
     PROC_START_CHILD_BLOCKING(gProcScr_0859ACE8),
 
@@ -145,7 +136,7 @@ PROC_LABEL(2),
     // fallthrough
 
 PROC_LABEL(7),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL_2(PlayerPhase_PrepareAction),
 
@@ -273,15 +264,15 @@ void PlayerPhase_Suspend() {
 void HandlePlayerCursorMovement() {
 
     if ((gKeyStatusPtr->heldKeys & B_BUTTON) && !(gGameState.playerCursorDisplay.x & 7) && !(gGameState.playerCursorDisplay.y & 7)) {
-        HandleCursorMovement(gKeyStatusPtr->newKeys2);
+        HandleMapCursorInput(gKeyStatusPtr->newKeys2);
 
-        MoveCameraByStepMaybe(8);
-        sub_801588C(8);
+        HandleMoveMapCursor(8);
+        HandleMoveCameraWithMapCursor(8);
     } else {
-        HandleCursorMovement(gKeyStatusPtr->repeatedKeys);
+        HandleMapCursorInput(gKeyStatusPtr->repeatedKeys);
 
-        MoveCameraByStepMaybe(4);
-        sub_801588C(4);
+        HandleMoveMapCursor(4);
+        HandleMoveCameraWithMapCursor(4);
     }
 
     if (((gGameState.playerCursorDisplay.x | gGameState.playerCursorDisplay.y) & 0xF) != 0) {
@@ -339,10 +330,10 @@ void PlayerPhase_MainIdle(ProcPtr proc) {
 
                     if (unit) {
                         MU_EndAll();
-                        ShowUnitSMS(unit);
+                        ShowUnitSprite(unit);
                     }
 
-                    StartOrphanMenuAdjusted(&gMapMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 0x17);
+                    StartOrphanMenuAdjusted(&gMapMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 0x17);
                     sub_80832CC();
 
                     Proc_Goto(proc, 9);
@@ -368,7 +359,7 @@ void PlayerPhase_MainIdle(ProcPtr proc) {
 
             if (unit) {
                 MU_EndAll();
-                ShowUnitSMS(unit);
+                ShowUnitSprite(unit);
             }
 
             EndPlayerPhaseSideWindows();
@@ -381,12 +372,12 @@ void PlayerPhase_MainIdle(ProcPtr proc) {
     }
 
 _0801CB38:
-    sub_8027A4C();
+    UnitSpriteHoverUpdate();
 
-    DisplayCursor(
+    PutMapCursor(
         gGameState.playerCursorDisplay.x, 
         gGameState.playerCursorDisplay.y, 
-        sub_8027B0C(gGameState.playerCursor.x, gGameState.playerCursor.y) ? 3 : 0
+        IsUnitSpriteHoverEnabledAt(gGameState.playerCursor.x, gGameState.playerCursor.y) ? 3 : 0
     );
 
     return;
@@ -562,7 +553,7 @@ _0801CDE2:
             HideMoveRangeGraphics();
             
             RefreshEntityBmMaps();
-            SMS_UpdateFromGameData();
+            RefreshUnitSprites();
             
             PlaySoundEffect(0x6B);
             
@@ -627,7 +618,7 @@ _0801CDE2:
         DrawUpdatedPathArrow();
     }
     
-    DisplayCursor(gGameState.playerCursorDisplay.x, gGameState.playerCursorDisplay.y, 1);
+    PutMapCursor(gGameState.playerCursorDisplay.x, gGameState.playerCursorDisplay.y, 1);
 
     return;
 }
@@ -651,7 +642,7 @@ void PlayerPhase_BackToMove(ProcPtr proc) {
 
     RefreshEntityBmMaps();
     RenderBmMap();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     if (!(gActiveUnit->state & US_HAS_MOVED)) {
         UnitBeginAction(gActiveUnit);
@@ -659,7 +650,7 @@ void PlayerPhase_BackToMove(ProcPtr proc) {
         UnitBeginCantoAction(gActiveUnit);
     }
 
-    HideUnitSMS(gActiveUnit);
+    HideUnitSprite(gActiveUnit);
     MU_EndAll();
     MU_Create(gActiveUnit);
 
@@ -811,7 +802,7 @@ void PlayerPhase_FinishAction(ProcPtr proc) {
 
         NewBMXFADE(0);
 
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
     } else {
         MoveActiveUnit(gActionData.xMove, gActionData.yMove);
 
@@ -825,7 +816,7 @@ void PlayerPhase_FinishAction(ProcPtr proc) {
     gRAMChapterData.yCursor = gGameState.playerCursor.y;
 
     if (TryMakeCantoUnit(proc)) {
-        HideUnitSMS(gActiveUnit);
+        HideUnitSprite(gActiveUnit);
         return;
     }
 
@@ -834,7 +825,7 @@ void PlayerPhase_FinishAction(ProcPtr proc) {
 
         RefreshEntityBmMaps();
         RenderBmMap();
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
 
         sub_808326C();
 
@@ -849,11 +840,11 @@ void PlayerPhase_FinishAction(ProcPtr proc) {
 }
 
 void sub_801D404() {  
-    if (gRAMChapterData.chapterPhaseIndex == 0) {
+    if (gRAMChapterData.faction == 0) {
         MoveActiveUnit(gActionData.xMove, gActionData.yMove);
         RefreshEntityBmMaps();
         RenderBmMap();
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
         MU_EndAll();
     }
 
@@ -863,7 +854,7 @@ void sub_801D404() {
 void sub_801D434(ProcPtr proc) {
 
     if (gActionData.unitActionType != UNIT_ACTION_TRAPPED) {
-        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 0x16);
+        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 0x16);
     }
 
     Proc_Break(proc);
@@ -882,7 +873,7 @@ void PlayerPhase_ApplyUnitMovement(ProcPtr proc) {
         gActionData.moveCount = gBmMapMovement[gActionData.yMove][gActionData.xMove];
     }
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     if (sub_8084508() == 1) {
         sub_801D434(proc);
@@ -890,7 +881,7 @@ void PlayerPhase_ApplyUnitMovement(ProcPtr proc) {
     }
 
     if (gActionData.unitActionType != UNIT_ACTION_TRAPPED) {
-        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 0x16);
+        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 0x16);
     }
 
     Proc_Break(proc);
@@ -899,7 +890,7 @@ void PlayerPhase_ApplyUnitMovement(ProcPtr proc) {
 }
 
 int GetUnitSelectionValueThing(struct Unit* unit) {
-    u8 faction = gRAMChapterData.chapterPhaseIndex;
+    u8 faction = gRAMChapterData.faction;
 
     if (!unit) {
         return 0;
@@ -1002,7 +993,7 @@ void PlayerPhase_ResumeRangeDisplay(ProcPtr proc) {
 
     switch (GetUnitSelectionValueThing(gActiveUnit)) {
         case 2:
-            HideUnitSMS(gActiveUnit);
+            HideUnitSprite(gActiveUnit);
             break;
         case 3:
             Proc_Goto(proc, 11);
@@ -1022,10 +1013,10 @@ void PlayerPhase_ReloadGameGfx() {
 void MakeMoveunitForActiveUnit() {
 
     if (!MU_Exists()) {
-        if (UNIT_FACTION(gActiveUnit) == gRAMChapterData.chapterPhaseIndex) {
+        if (UNIT_FACTION(gActiveUnit) == gRAMChapterData.faction) {
             if ((gActiveUnit->statusIndex != UNIT_STATUS_SLEEP) && (gActiveUnit->statusIndex != UNIT_STATUS_BERSERK)) {
                 MU_Create(gActiveUnit);
-                HideUnitSMS(gActiveUnit);
+                HideUnitSprite(gActiveUnit);
             }
         }
     }
@@ -1054,7 +1045,7 @@ void ClearActiveUnit(ProcPtr proc) {
 
     HideMoveRangeGraphics();
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
     UnitBeginAction(proc);
 
     gActiveUnit->state &= ~US_HIDDEN;
@@ -1065,7 +1056,7 @@ void ClearActiveUnit(ProcPtr proc) {
     SetCursorMapPosition(gActiveUnitMoveOrigin.x, gActiveUnitMoveOrigin.y);
 
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     return;
 }
@@ -1174,13 +1165,13 @@ void MoveLimitView_OnInit(ProcPtr proc) {
 
     SetSpecialColorEffectsParameters(1, 10, 6, 0);
 
-    sub_8001ED0(0, 0, 1, 0, 0);
+    SetBlendTargetA(0, 0, 1, 0, 0);
     sub_8001F48(0);
 
-    sub_8001F0C(0, 0, 0, 1, 1);
+    SetBlendTargetB(0, 0, 0, 1, 1);
     sub_8001F64(1);
 
-    SetupBackgroundForWeatherMaybe();
+    InitBmBgLayers();
 
     return;
 }
@@ -1216,7 +1207,7 @@ void MoveLimitView_OnEnd(struct MoveLimitViewProc* proc) {
 
     gGameState.gameStateBits &= ~((1 << 0) | (1 << 1));
 
-    SetupBackgroundForWeatherMaybe();
+    InitBmBgLayers();
 
     return;
 }
@@ -1300,7 +1291,7 @@ void TrySwitchViewedUnit(int x, int y) {
 
 void PlayerPhase_HandleAutoEnd(ProcPtr proc) {
 
-    if (!(gRAMChapterData.unk41_7) && (GetPhaseAbleUnitCount(gRAMChapterData.chapterPhaseIndex) == 0)) {
+    if (!(gRAMChapterData.cfgDisableAutoEndTurns) && (GetPhaseAbleUnitCount(gRAMChapterData.faction) == 0)) {
         Proc_Goto(proc, 3);
     }
 

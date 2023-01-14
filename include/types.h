@@ -11,6 +11,10 @@ struct UnitDefinition; // currently in bmunit.h
 struct Trap;
 struct BattleHit;
 struct PopupInstruction;
+struct MAInfoFrameProc;
+struct MAExpBarProc;
+struct ProcAtMenu;
+struct PrepUnitList;
 
 // Type definitions for types without any other home :/
 
@@ -65,7 +69,7 @@ struct Struct0858791C
 
 struct TileDataTransfer
 {
-    void *src;
+    const void *src;
     void *dest;
     u16 size;
     u16 mode;
@@ -107,7 +111,7 @@ struct Vec2u { u16 x, y; };
 
 struct Struct0202BCB0 // Game State Struct
 {
-    /* 00 */ u8  mainLoopEndedFlag;
+    /* 00 */ s8  mainLoopEndedFlag;
 
     /* 01 */ s8  gameLogicSemaphore;
     /* 02 */ s8  gameGfxSemaphore;
@@ -125,17 +129,20 @@ struct Struct0202BCB0 // Game State Struct
     /* 0C */ struct Vec2 camera;
     /* 10 */ struct Vec2 cameraPrevious;
     /* 14 */ struct Vec2 playerCursor;
-    /* 18 */ struct Vec2 unk18;
-    /* 1C */ struct Vec2 unk1C;
+    /* 18 */ struct Vec2 cursorPrevious;
+    /* 1C */ struct Vec2 cursorTarget;
     /* 20 */ struct Vec2 playerCursorDisplay;
     /* 24 */ struct Vec2u mapRenderOrigin;
-    /* 28 */ struct Vec2 unk28;
+    /* 28 */ struct Vec2 cameraMax;
 
     /* 2C */ u16 itemUnk2C;
     /* 2E */ u16 itemUnk2E;
 
-    /* 30 */ u8 _pad30[0x38 - 0x30];
-
+    /* 30 */ u16 unk30;
+    /* 32 */ s16 unk32;
+    /* 34 */ s16 unk34;
+    /* 36 */ s8 unk36;
+    /* 37 */ s8 unk37;
     /* 38 */ u8 altBlendACa;
     /* 39 */ u8 altBlendACb;
     /* 3A */ u8 altBlendBCa;
@@ -156,7 +163,7 @@ struct RAMChapterData { // Chapter Data Struct
     /* 0D */ u8  chapterVisionRange; // 0 means no fog
     /* 0E */ s8  chapterIndex;
 
-    /* 0F */ u8  chapterPhaseIndex; // 0x00 = Player phase, 0x40 = NPC phase, 0x80 = Enemy phase (0xC0 = link arena 4th team?)
+    /* 0F */ u8  faction; // 0x00 = Player phase, 0x40 = NPC phase, 0x80 = Enemy phase (0xC0 = link arena 4th team?)
 
     /* 10 */ u16 chapterTurnNumber;
 
@@ -176,13 +183,22 @@ struct RAMChapterData { // Chapter Data Struct
     // has to do with allowing unusable weapons to be used
     /* 1C */ u8  unk1C[4];
 
-    /* 20 */ char playerName[0x2C - 0x20]; // unused outside of link arena (was tactician name in FE7); Size unknown
+    /* 20 */ char playerName[0x2B - 0x20]; // unused outside of link arena (was tactician name in FE7); Size unknown
 
-    u32 unk_2C_1:23;
+    /* 2B */ u8 unk_2B_00 : 0x01;
+             u8 unk_2B_01 : 0x07;
+
+    u32 unk_2C_1:1;
+    u32 unk_2C_01 : 0x03;
+    u32 unk_2C_04 : 0x09;
+    u32 unk_2C_0D : 0x0A;
     u32 unk_2C_2:5;
     u32 unk_2C_3:4;
 
-    /* 30 */ u8  _unk30[0x38-0x30];
+    /* 30 */ int total_gold;
+
+    /* 34 */ u32 unk_34_00 : 0x14;
+             u32 unk_34_14 : 0x0C;
 
     u32 unk_38_1:8;
     u32 unk_38_2:20; // Used by bmdifficulty (Valni/Lagdou)
@@ -191,24 +207,24 @@ struct RAMChapterData { // Chapter Data Struct
     u8 _unk3A[0x40-0x3C];
 
     // option bits
-    u32 unk40_1:1; // 1
+    u32 cfgUnitColor:1; // 1
     u32 cfgDisableTerrainDisplay:1; // 1
     u32 cfgUnitDisplayType:2; // 2
-    u32 auto_cursor:1; // 1
+    u32 cfgAutoCursor:1; // 1
     u32 cfgTextSpeed:2;
-    u32 unk40_8:1; // 1
-    u32 unk41_1:1; // 1
-    u32 unk41_2:1; // 1
+    u32 cfgGameSpeed:1; // 1
+    u32 cfgDisableBgm:1; // 1
+    u32 cfgDisableSoundEffects:1; // 1
     u32 cfgWindowColor:2;
     u32 unk41_5:1; // 1
     u32 unk41_6:1; // unk
-    u32 unk41_7:1; // 1
+    u32 cfgDisableAutoEndTurns:1; // 1
     u32 cfgNoSubtitleHelp:1; // 1
     u32 cfgDisableGoalDisplay:1; // unk
-    u32 unk42_2:2; // 2
+    u32 cfgAnimationType:2; // 2
     u32 cfgBattleForecastType:2; // 2
-    u32 unk42_6:1; // 1
-    u32 unk42_7:1; // unk
+    u32 cfgController:1; // 1
+    u32 cfgRankDisplay:1; // unk
     u32 unk42_8:2; // 2 (!)
     u32 unk43_2:2; // 2
     u32 unk43_4:5; // unk
@@ -217,9 +233,9 @@ struct RAMChapterData { // Chapter Data Struct
 
     u16 unk48;
 
-    unsigned unk4A_1 : 1;
-    unsigned unk4A_2 : 3;
-    unsigned unk4A_5 : 4;
+    u8 unk4A_1 : 1;
+    u8 unk4A_2 : 3;
+    u8 unk4A_5 : 4;
     u8 unk4B;
 };
 
@@ -233,9 +249,19 @@ enum
     CHAPTER_FLAG_POSTGAME   = (1 << 2),
     CHAPTER_FLAG_3          = (1 << 3),
     CHAPTER_FLAG_PREPSCREEN = (1 << 4),
-    CHAPTER_FLAG_5          = (1 << 5),
+    CHAPTER_FLAG_COMPLETE          = (1 << 5),
     CHAPTER_FLAG_DIFFICULT  = (1 << 6),
     CHAPTER_FLAG_7          = (1 << 7)
+};
+
+/**
+ * Use with RAMChapterData field chapterModeIndex
+ */
+
+enum {
+    CHAPTER_MODE_COMMON = 1,
+    CHAPTER_MODE_EIRIKA = 2,
+    CHAPTER_MODE_EPHRAIM = 3,
 };
 
 struct TextBuffer0202A6AC
@@ -362,7 +388,7 @@ enum
 
 enum
 {
-    WEATHER_NONE = 0,
+    WEATHER_FINE = 0,
     WEATHER_SNOW = 1,
     WEATHER_SNOWSTORM = 2,
     WEATHER_3 = 3,
@@ -370,6 +396,15 @@ enum
     WEATHER_FLAMES = 5,
     WEATHER_SANDSTORM = 6,
     WEATHER_CLOUDS = 7
+};
+
+enum
+{
+    GOAL_TYPE_SEIZE = 0,
+    GOAL_TYPE_DEFEAT_ALL = 1,
+    GOAL_TYPE_DEFENSE = 2,
+    GOAL_TYPE_DEFEAT_BOSS = 3,
+    GOAL_TYPE_SPECIAL = 4,
 };
 
 struct SMSHandle
@@ -399,24 +434,17 @@ struct MapAnimActorState
     /* 13 */ u8 u13;
 };
 
-struct CurrentRound {
-    /* 00 */ u32 a:16;
-    /* 10 */ u32 b:3;
-    /* 13 */ u32 c:5;
-    /* 18 */ s32 d:8;
-};
-
 struct MapAnimState
 {
     /* 00 */ struct MapAnimActorState actors[4];
 
-    /* 50 */ struct CurrentRound* pCurrentRound;
-    /* 54 */ const struct ProcCmd* pItemMapAnimProcScript;
+    /* 50 */ struct BattleHit* pCurrentRound;
+    /* 54 */ const struct ProcCmd* specialProcScr;
     /* 58 */ u8 subjectActorId;
     /* 59 */ u8 targetActorId;
-    /* 5A */ u16 roundBits;
-    /* 5C */ u8 u5C;
-    /* 5D */ u8 u5D;
+    /* 5A */ u16 hitAttributes;
+    /* 5C */ u8 hitInfo;
+    /* 5D */ u8 hitDamage;
     /* 5E */ u8 actorCount_maybe;
     /* 5F */ u8 u5F;
     /* 60 */ u8 u60;
@@ -428,28 +456,6 @@ struct MMSData
 {
     const void* pGraphics;
     const void* pAnimation;
-};
-
-struct ArenaData
-{
-    /* 00 */ struct Unit* playerUnit;
-    /* 04 */ struct Unit* opponentUnit;
-    /* 08 */ short unk08;
-    /* 0A */ u8 unk0A;
-    /* 0B */ u8 unk0B;
-    /* 0C */ u8 range;
-    /* 0D */ u8 playerWpnType;
-    /* 0E */ u8 opponentWpnType;
-    /* 0F */ u8 playerClassId;
-    /* 10 */ u8 opponentClassId;
-    /* 11 */ u8 playerLevel;
-    /* 12 */ u8 oppenentLevel;
-    /* 13 */ s8 playerIsMagic;
-    /* 14 */ s8 opponentIsMagic;
-    /* 16 */ short playerPowerWeight;
-    /* 18 */ short opponentPowerWeight;
-    /* 1A */ u16 playerWeapon;
-    /* 1C */ u16 opponentWeapon;
 };
 
 struct GMapData
@@ -508,6 +514,16 @@ struct UnitUsageStats
 	/* 120 */ /* 8bit pad */
 };
 
+#define BWL_ARRAY_NUM 0x46
+
+struct ChapterWinData {
+    /* 00 */ u16 chapter_index : 0x07;
+             u16 chapter_turn  : 0x09;
+             u16 chapter_time  : 0x10;
+};
+
+#define WIN_ARRAY_NUM 0x30
+
 enum { UNIT_SUPPORT_MAX_COUNT = 7 };
 
 enum
@@ -556,6 +572,19 @@ struct SupportTalkEnt {
     /* 08 */ u16 msgSupportA;
 
     u16 _pad[3];
+};
+
+struct Struct202B6B0 {
+    u8 _pad00_[0x2A - 0x00];
+    u16 unk2A;
+    u8 _pad2C[0x5A - 0x2C];
+    u16 unk5A;
+    u8 _pad5C[0x8A - 0x5C];
+    u16 unk8A;
+};
+
+struct Struct203E87C {
+    u8 unk00[5];
 };
 
 #endif // GUARD_TYPES_H

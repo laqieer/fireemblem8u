@@ -91,7 +91,7 @@ gUnknown_085A937C:  @ 0x085A937C
         @ PROC_END
         .short 0x0, 0x0
         .word 0x0
-    .4byte gUnknown_02020188
+    .4byte gGenericBuffer
 
 	.global gUnknown_085A93A0
 gUnknown_085A93A0:  @ 0x085A93A0
@@ -555,7 +555,7 @@ gUnknown_085A9864:  @ 0x085A9864
 	.global gUnknown_085A9884
 gUnknown_085A9884:  @ 0x085A9884
 @ replacing .incbin "baserom.gba", 0x005a9884, 0x4
-.4byte gUnknown_02020188
+.4byte gGenericBuffer
 
 	.global gUnknown_085A9888
 gUnknown_085A9888:  @ 0x085A9888
@@ -930,7 +930,7 @@ gUnknown_085A9BA0:  @ 0x085A9BA0
         .word 0x0
         @ PROC_CALL
         .short 0x2, 0x0
-        .word sub_8096468
+        .word StartPrepAtMenuWithConfig
         @ PROC_LABEL
         .short 0xb, 0x5
         .word 0x0
@@ -2293,16 +2293,16 @@ gUnknown_085AAB68:  @ 0x085AAB68
         .word gProcScr_PhaseIntroText
         @ PROC_START_CHILD
         .short 0x5, 0x0
-        .word gProcScr_PhaseIntroBlendBox
+        .word gProcScr_PhaseIntroSquares
         @ PROC_START_CHILD
         .short 0x5, 0x0
-        .word gUnknown_0859AF60
+        .word gProcScr_PhaseIntroBlendBox
         @ PROC_CALL
         .short 0x2, 0x0
-        .word sub_801F3A8
+        .word PhaseIntro_InitDisp
         @ PROC_REPEAT
         .short 0x3, 0x0
-        .word sub_801F490
+        .word PhaseIntro_WaitForEnd
         @ PROC_CALL
         .short 0x2, 0x0
         .word StopBGM2

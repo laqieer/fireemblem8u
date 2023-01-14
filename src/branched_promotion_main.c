@@ -1,6 +1,9 @@
 #include "branched_promotion.h"
 
+#include "bm.h"
 #include "bmio.h"
+#include "bmudisp.h"
+#include "face.h"
 #include "fontgrp.h"
 #include "hardware.h"
 #include "proc.h"
@@ -88,9 +91,9 @@ void sub_80CC4AC(struct PromoProc2 *proc) {
         EndGreenTextColorManager();
         gparent->u40 = GetThread2SkipStack();
         EndHelpPromptSprite();
-        sub_80ADC90();
-        DeleteEach6CDifferedLoop();
-        DeleteFaceByIndex(0);
+        EndSmallBrownNameBoxes();
+        EndAllParallelWorkers();
+        EndFaceById(0);
         sub_80ACA84(0);
         ResetFaces();
         Font_InitForUIDefault();
@@ -156,9 +159,9 @@ void sub_80CC66C(struct PromoProc2 *proc) {
             break;
         case 2:
             BMapDispResume();
-            SMS_UpdateFromGameData();
+            RefreshUnitSprites();
             SetupMapSpritesPalettes();
-            SMS_FlushIndirect();
+            ForceSyncUnitSpriteSheet();
             Font_LoadForUI();
             break;
     }
@@ -172,7 +175,7 @@ void sub_80CC698(struct PromoProc2 *proc) {
         sub_8002620(0x34);
     }
     parent->u30 = 2;
-    sub_80ADDD4(proc);
+    EndAllProcChildren(proc);
     Proc_End(proc);
 }
 

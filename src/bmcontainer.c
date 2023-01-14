@@ -20,7 +20,7 @@ void ClearConvoyItems() {
 
 void ShrinkConvoyItemList() {
     u16 i;
-    u16* buffer = (void*) gUnknown_02020188;
+    u16* buffer = (void*) gGenericBuffer;
     u16* bufferIt = buffer;
     u16* convoy = GetConvoyItemArray();
 
@@ -88,7 +88,7 @@ int GetConvoyItemSlot(int r0) {
 
 bool8 HasConvoyAccess() {
     unsigned int chapterId;
-    if (GMAP_STATE_BIT0 & gUnknown_03005280.state) {
+    if (GMAP_STATE_BIT0 & gGMData.state) {
         chapterId = sub_80BD048();
         if (chapterId <= 1) {
             return 0;
@@ -111,7 +111,7 @@ bool8 HasConvoyAccess() {
 
 bool8 sub_8031660() {
     const struct ROMChapterData* chapterData = GetROMChapterStruct(gRAMChapterData.chapterIndex);
-    if (chapterData->_unk81[1] == 0xFF) { // ROM Chapter Data @ 0x82
+    if (chapterData->merchantPosX == 0xFF) { // ROM Chapter Data @ 0x82
         return 0;
     }
     return 1;

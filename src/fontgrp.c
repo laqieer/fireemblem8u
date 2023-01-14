@@ -361,7 +361,7 @@ void SetFontGlyphSet(int a)
         gCurrentFont->glyphs = gUnknown_0858F6F4;
 }
 
-void sub_8003D20(void)
+void Font_ResetAllocation(void)
 {
     gCurrentFont->unk12 = 0;
     gUnknown_02028E78[0].unk0 = -1;
@@ -860,7 +860,7 @@ void Font_SpecializedGlyphDrawer(struct TextHandle *th, struct Glyph *glyph)
 
 void Font_LoadForUI(void)
 {
-    CopyToPaletteBuffer(gUnknown_0859EF00, gCurrentFont->paletteNum * 32, 32);
+    CopyToPaletteBuffer(Pal_UIFont, gCurrentFont->paletteNum * 32, 32);
     gPaletteBuffer[gCurrentFont->paletteNum * 16] = 0;
     gCurrentFont->drawGlyph = Font_StandardGlyphDrawer;
     SetFontGlyphSet(0);

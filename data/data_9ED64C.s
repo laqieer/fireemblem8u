@@ -45,7 +45,7 @@ gUnknown_089EDF78:  @ 0x089EDF78
         .word sub_80853B0
         @ PROC_CALL
         .short 0x2, 0x0
-        .word sub_8021518
+        .word StartGameOverScreen
         @ PROC_YIELD
         .short 0xe, 0x0
         .word 0x0
@@ -17857,8 +17857,8 @@ gUnknown_089F36A0:  @ 0x089F36A0
 gUnknown_089FF480:  @ 0x089FF480
 	.incbin "baserom.gba", 0x9FF480, 0x7B0
 
-	.global gUnknown_089FFC30
-gUnknown_089FFC30:  @ 0x089FFC30
+	.global gEvent_SkirmishCommonBeginning
+gEvent_SkirmishCommonBeginning:  @ 0x089FFC30
 @ Replacing .incbin "baserom.gba", 0x9FFC30, 0x134
     .4byte 0x000d0540
     .4byte 0x00000000
@@ -18564,8 +18564,8 @@ gEvent_EphraimModeGameEnd:  @ 0x08A0048C
     .4byte 0x00002a20
     .4byte 0x00000120
 
-	.global gUnknown_08A006E4
-gUnknown_08A006E4:  @ 0x08A006E4
+	.global ProcScr_SlidingWallBg
+ProcScr_SlidingWallBg:  @ 0x08A006E4
         @ PROC_CALL
         .short 0x2, 0x0
         .word sub_8086B74

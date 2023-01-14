@@ -8,10 +8,10 @@
 #include "mu.h"
 #include "rng.h"
 #include "event.h"
+#include "opinfo.h"
+#include "bm.h"
 
 #include "gamecontrol.h"
-
-extern u16 gGmMonsterRnState[];
 
 extern u16 gEvent_8A0035C[];
 extern u16 gEvent_8A00364[];
@@ -21,38 +21,6 @@ extern u16 gEvent_EphraimModeGameEnd[];
 extern struct ProcCmd CONST_DATA gUnknown_08AA7680[]; // pre-intro cutscene
 extern struct ProcCmd CONST_DATA gUnknown_08AA71C8[]; // intro cutscene
 extern struct ProcCmd CONST_DATA gUnknown_08A3DD50[]; // world map wrapper
-
-// hino.s
-void sub_8013D68(ProcPtr);
-void sub_8013D8C(ProcPtr);
-
-// code_sio.s
-void sub_80481E0(ProcPtr);
-void sub_8048850(ProcPtr);
-
-// ev_triggercheck.s
-void sub_8083D18(void);
-void ClearLocalEvents(void);
-
-// code.s
-void sub_8086BB8(ProcPtr, u8*, int);
-void EndBG3Slider(ProcPtr);
-void sub_80A41C8(void);
-int sub_80A4BB0(void);
-void sub_80A4CD8(void);
-s8 sub_80A5218(int);
-void sub_80A522C(int, struct RAMChapterData*);
-void sub_80A5A20(int);
-void sub_80A6D38(void);
-void Make6C_savemenu(ProcPtr);
-void Make6C_savemenu2(ProcPtr);
-void Make6C_opinfo(int, ProcPtr);
-void EndWM(ProcPtr);
-void sub_80B7598(ProcPtr);
-void sub_80C541C(ProcPtr);
-void sub_80C6424(ProcPtr);
-void sub_80C6444(ProcPtr);
-void sub_80C645C(ProcPtr);
 
 s8 sub_80099E4(ProcPtr);
 void GameControl_HandleSelectRightL(ProcPtr);
@@ -132,19 +100,19 @@ PROC_LABEL(3),
 
 PROC_LABEL(4),
     PROC_CALL(GameControl_EnableSoundEffects),
-    PROC_CALL(sub_80C6424),
+    PROC_CALL(StartTitleScreen_WithMusic),
 
     PROC_GOTO(26),
 
 PROC_LABEL(24),
     PROC_CALL(GameControl_EnableSoundEffects),
-    PROC_CALL(sub_80C645C),
+    PROC_CALL(StartTitleScreen_FlagTrue),
 
     PROC_GOTO(26),
 
 PROC_LABEL(25),
     PROC_CALL(GameControl_EnableSoundEffects),
-    PROC_CALL(sub_80C6444),
+    PROC_CALL(StartTitleScreen_FlagFalse),
 
     PROC_GOTO(26),
 
@@ -253,7 +221,7 @@ PROC_LABEL(16),
     // fallthrough
 
 PROC_LABEL(17),
-    PROC_CALL(GameCtrl_DeclareCompletedPlaythrough),
+    PROC_CALL(GameCtrl_RegisterCompletedPlaythrough),
 
     PROC_CALL(CallGameEndingEvent),
     PROC_SLEEP(0),
@@ -271,15 +239,15 @@ PROC_LABEL(18),
     PROC_CALL(sub_8009A24),
 
     PROC_CALL(sub_8013D8C),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
 
     PROC_CALL(sub_8048850),
 
     PROC_WHILE(EventEngineExists),
     PROC_SLEEP(0),
 
-    PROC_CALL(sub_8013D68),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_CALL(StartFadeInBlackMedium),
+    PROC_REPEAT(WaitForFade),
 
     PROC_CALL(EndBG3Slider),
 
@@ -379,7 +347,7 @@ u8 sub_8009950() {
     int i;
     struct RAMChapterData chapterData;
 
-    if (sub_80A4BB0() != 0) {
+    if (GetGlobalCompletionCount() != 0) {
         return 9;
     }
 
@@ -387,11 +355,11 @@ u8 sub_8009950() {
 
     for (i = 0; i < 3; i++) {
 
-        if (sub_80A5218(i) == 0) {
+        if (SaveMetadata_LoadId(i) == 0) {
             continue;
         }
 
-        sub_80A522C(i, &chapterData);
+        LoadSavedChapterState(i, &chapterData);
 
         if (chapterData.unk_2C_2 != 0) {
             return 9;
@@ -428,7 +396,7 @@ u8 sub_8009950() {
 
 s8 sub_80099E4(ProcPtr proc) {
 
-    Make6C_opinfo(sub_8009950(), proc);
+    StartClassReel(sub_8009950(), proc);
 
     return 0;
 }
@@ -479,7 +447,7 @@ void sub_8009A84(ProcPtr proc) {
 
     Proc_ForAll(EndProcIfNotMarkedB);
 
-    SetMainUpdateRoutine(SomeUpdateRoutine);
+    SetMainUpdateRoutine(OnGameLoopMain);
 
     return;
 }
@@ -651,9 +619,9 @@ void sub_8009CA4(ProcPtr proc) {
 }
 
 void sub_8009CC0(ProcPtr proc) {
-    sub_80A5A20(3);
+    ClearSaveBlock(3);
 
-    gRAMChapterData.unk41_1 = 0;
+    gRAMChapterData.cfgDisableBgm = 0;
 
     return;
 }
@@ -680,56 +648,20 @@ void GameControl_PostChapterSwitch(struct GameCtrlProc* proc) {
     return;
 }
 
-#if NONMATCHING
-
 void sub_8009D1C(struct GameCtrlProc* proc) {
-    if ((gRAMChapterData.unk4A_2 == 4) || (gRAMChapterData.unk4A_2 == 8)) {
+    if ((gRAMChapterData.unk4A_2 == 2) || (gRAMChapterData.unk4A_2 == 4)) {
         Proc_Goto(proc, 6);
     }
 
     return;
 }
 
-#else // if !NONMATCHING
-
-__attribute__((naked))
-void sub_8009D1C(struct GameCtrlProc* proc) {
-
-    asm("\n\
-        .syntax unified\n\
-        push {lr}\n\
-        adds r2, r0, #0\n\
-        ldr r0, _08009D40  @ gRAMChapterData\n\
-        adds r0, #0x4a\n\
-        ldrb r0, [r0]\n\
-        movs r1, #0xe\n\
-        ands r1, r0\n\
-        cmp r1, #4\n\
-        beq _08009D32\n\
-        cmp r1, #8\n\
-        bne _08009D3A\n\
-    _08009D32:\n\
-        adds r0, r2, #0\n\
-        movs r1, #6\n\
-        bl Proc_Goto\n\
-    _08009D3A:\n\
-        pop {r0}\n\
-        bx r0\n\
-        .align 2, 0\n\
-    _08009D40: .4byte gRAMChapterData\n\
-        .syntax divided\n\
-    ");
-
-}
-
-#endif // NONMATCHING
-
 void sub_8009D44(struct GameCtrlProc* proc) {
     if (gRAMChapterData.chapterStateBits & CHAPTER_FLAG_POSTGAME) {
         return;
     }
 
-    if (!(gRAMChapterData.chapterStateBits & CHAPTER_FLAG_5)) {
+    if (!(gRAMChapterData.chapterStateBits & CHAPTER_FLAG_COMPLETE)) {
         return;
     }
 
@@ -787,7 +719,7 @@ void sub_8009E00(struct GameCtrlProc* proc) {
         return;
     }
 
-    sub_80C541C(proc);
+    StartIntroMonologue(proc);
 
     return;
 }
@@ -795,7 +727,7 @@ void sub_8009E00(struct GameCtrlProc* proc) {
 void sub_8009E28(ProcPtr proc) {
 
     SetSpecialColorEffectsParameters(3, 0, 0, 16);
-    sub_8001ED0(1, 1, 1, 1, 1);
+    SetBlendTargetA(1, 1, 1, 1, 1);
     sub_8001F48(1);
 
     return;
@@ -857,9 +789,9 @@ void sub_8009EFC(ProcPtr proc) {
 void StartGame() {
     struct GameCtrlProc* proc;
 
-    SetMainUpdateRoutine(SomeUpdateRoutine);
+    SetMainUpdateRoutine(OnGameLoopMain);
 
-    SetInterrupt_LCDVBlank(GeneralVBlankHandler);
+    SetInterrupt_LCDVBlank(OnVBlank);
 
     proc = Proc_Start(gProcScr_GameControl, PROC_TREE_3);
     proc->nextAction = GAME_ACTION_0;
@@ -928,21 +860,21 @@ void nullsub_9() {
 }
 
 void GameControl_EnableSoundEffects(ProcPtr proc) {
-    gRAMChapterData.unk41_1 = 0;
-    gRAMChapterData.unk41_2 = 0;
+    gRAMChapterData.cfgDisableBgm = 0;
+    gRAMChapterData.cfgDisableSoundEffects = 0;
 
     return;
 }
 
 void sub_8009FF8(ProcPtr proc) {
 
-    gRAMChapterData.unk42_2 = 0;
+    gRAMChapterData.cfgAnimationType = 0;
     gRAMChapterData.cfgTextSpeed = 1;
-    gRAMChapterData.unk40_8 = 0;
-    gRAMChapterData.unk41_1 = 0;
-    gRAMChapterData.unk41_2 = 1;
+    gRAMChapterData.cfgGameSpeed = 0;
+    gRAMChapterData.cfgDisableBgm = 0;
+    gRAMChapterData.cfgDisableSoundEffects = 1;
     gRAMChapterData.cfgWindowColor = 0;
-    gRAMChapterData.unk40_1 = 0;
+    gRAMChapterData.cfgUnitColor = 0;
 
     return;
 }

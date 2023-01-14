@@ -1,4 +1,6 @@
 #include "global.h"
+#include "functions.h"
+#include "variables.h"
 #include "proc.h"
 #include "bmcontainer.h"
 #include "icon.h"
@@ -9,8 +11,9 @@
 #include "bmmenu.h"
 #include "bmitem.h"
 #include "hardware.h"
-#include "functions.h"
-#include "variables.h"
+#include "popup.h"
+#include "face.h"
+
 
 struct ProcCmd CONST_DATA gProcCmd_ConvoyMenu[] = {
     PROC_CALL_2(ConvoyMenuProc_StarMenu),
@@ -78,11 +81,11 @@ void ConvoyMenuProc_ExecBootlegPopup(ProcPtr proc)
 {
     if (HasConvoyAccess()) {
         if (gConvoyItemCount < 100)
-            sub_801FD80(proc, gActionData.item);
+            NewPopup2_SendItem(proc, gActionData.item);
         else
-            sub_801FD70(proc, gActionData.item);
+            NewPopup2_DropItem(proc, gActionData.item);
     } else
-        sub_801FD70(proc, gActionData.item);
+        NewPopup2_DropItem(proc, gActionData.item);
 }
 
 void HandleNewItemGetFromDrop(struct Unit* unit, int item, ProcPtr proc)
@@ -93,8 +96,8 @@ void HandleNewItemGetFromDrop(struct Unit* unit, int item, ProcPtr proc)
 
     gActiveUnit = unit;
     gGameState.itemUnk2C = item;
-    NewFace(0, GetUnitPortraitId(unit), 0xB0, 4, 2);
-    sub_8006458(0, 5);
+    StartFace(0, GetUnitPortraitId(unit), 0xB0, 4, 2);
+    SetFaceBlinkControlById(0, 5);
     ForceMenuItemPanel(proc, unit, 0xF, 0xA);
 
     if (HasConvoyAccess() && GetConvoyItemCount() < 100)
@@ -162,7 +165,7 @@ u8 SendToConvoyMenu_Selected2(struct MenuProc* proc_menu, struct MenuItemProc* p
 
 u8 SendToConvoyMenu_Idle(struct MenuProc* proc_menu, struct MenuItemProc* proc_cmd)
 {
-    if (1 != sub_8008A00())
+    if (1 != GetDialoguePromptResult())
         return 0;
 
     gKeyStatusPtr->newKeys = 0;

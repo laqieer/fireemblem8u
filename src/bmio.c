@@ -19,13 +19,13 @@
 #include "uimenu.h"
 #include "bmtrap.h"
 #include "gamecontrol.h"
+#include "bmarena.h"
+#include "bmudisp.h"
+#include "bm.h"
 
 #include "bmio.h"
 
 // General Battle Map System Stuff, mostly low level hardware stuff but also more
-
-// TODO: move to where appropriate
-extern const struct ProcCmd gProc_BMapMain[]; // gProc_BMapMain
 
 struct WeatherParticle {
     /* 00 */ short xPosition;
@@ -126,7 +126,7 @@ PROC_LABEL(0),
     PROC_CALL(BMapVSync_UpdateMapImgAnimations),
     PROC_CALL(BMapVSync_UpdateMapPalAnimations),
 
-    PROC_CALL(SMS_FlushDirect),
+    PROC_CALL(SyncUnitSpriteSheet),
     PROC_CALL(WfxVSync),
 
     PROC_REPEAT(BMapVSync_OnLoop),
@@ -142,7 +142,7 @@ CONST_DATA struct ProcCmd gProc_MapTask[] = { // gProc_MapTask
     PROC_SLEEP(0),
 
 PROC_LABEL(0),
-    PROC_CALL(SMS_DisplayAllFromInfoStructs),
+    PROC_CALL(PutUnitSpritesOam),
     PROC_CALL(WfxUpdate),
     PROC_CALL(UpdateBmMapDisplay),
 
@@ -270,10 +270,10 @@ void BMapVSync_InitMapAnimations(struct BMVSyncProc* proc) {
     proc->tilePalAnimClock = 0;
 
     proc->tileGfxAnimStart = proc->tileGfxAnimCurrent =
-        gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapTileAnim1Id];
+        gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->map.objAnimId];
 
     proc->tilePalAnimStart = proc->tilePalAnimCurrent =
-        gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapTileAnim2Id];
+        gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->map.paletteAnimId];
 }
 
 void BMapVSync_OnEnd(struct BMVSyncProc* proc) {
@@ -453,8 +453,8 @@ void WfxSandStorm_Init(void) {
 
     AllocWeatherParticles(gRAMChapterData.chapterWeatherId);
 
-    CopyDataWithPossibleUncomp(gUnknown_085A3964, gUnknown_02020188);
-    CopyTileGfxForObj(gUnknown_02020188, OBJ_VRAM0 + 0x1C * 0x20, 4, 4);
+    CopyDataWithPossibleUncomp(gUnknown_085A3964, gGenericBuffer);
+    CopyTileGfxForObj(gGenericBuffer, OBJ_VRAM0 + 0x1C * 0x20, 4, 4);
 
     for (i = 0; i < 0x40; ++i) {
         sWeatherEffect.particles[i].xPosition = AdvanceGetLCGRNValue();
@@ -493,8 +493,8 @@ void WfxSnowStorm_Init(void) {
 
     AllocWeatherParticles(gRAMChapterData.chapterWeatherId);
 
-    CopyDataWithPossibleUncomp(gUnknown_085A39EC, gUnknown_02020188);
-    CopyTileGfxForObj(gUnknown_02020188, OBJ_VRAM0 + 0x18 * 0x20, 8, 4);
+    CopyDataWithPossibleUncomp(gUnknown_085A39EC, gGenericBuffer);
+    CopyTileGfxForObj(gGenericBuffer, OBJ_VRAM0 + 0x18 * 0x20, 8, 4);
 
     for (i = 0; i < 0x40; ++i) {
         unsigned type = typeLookup[i & 7];
@@ -767,7 +767,7 @@ void WfxCloudsOffsetGraphicsEffect(u32* lines) {
 }
 
 void WfxClouds_Init(void) {
-    AllocWeatherParticles(WEATHER_NONE);
+    AllocWeatherParticles(WEATHER_FINE);
 
     CopyDataWithPossibleUncomp(
         gUnknown_085A3B00,
@@ -823,7 +823,7 @@ void WfxClouds_Update(void) {
 void WfxInit(void) {
     switch (gRAMChapterData.chapterWeatherId) {
 
-    case WEATHER_NONE:
+    case WEATHER_FINE:
         WfxNone_Init();
         break;
 
@@ -909,7 +909,7 @@ void ResetMapPaletteAnimations(void) {
 
     if (proc)
         proc->tilePalAnimStart = proc->tilePalAnimCurrent =
-            gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapTileAnim2Id];
+            gChapterDataAssetTable[GetROMChapterStruct(gRAMChapterData.chapterIndex)->map.paletteAnimId];
 }
 
 void SetWeather(unsigned weatherId) {
@@ -925,7 +925,7 @@ u8 GetTextDisplaySpeed(void) {
 }
 
 int IsFirstPlaythrough(void) {
-    u8 tmp = sub_80A3870();
+    u8 tmp = IsGamePlayedThrough();
     if (!tmp)
         return TRUE;
 
@@ -944,22 +944,22 @@ void InitPlaythroughState(int isDifficult, s8 unk) {
         gRAMChapterData.chapterStateBits |= CHAPTER_FLAG_DIFFICULT;
 
     // TODO: WHAT ARE THOSE
-    gRAMChapterData.unk42_6 = unk;
-    gRAMChapterData.unk42_2 = 0;
+    gRAMChapterData.cfgController = unk;
+    gRAMChapterData.cfgAnimationType = 0;
     gRAMChapterData.cfgDisableTerrainDisplay = 0;
     gRAMChapterData.cfgUnitDisplayType = 0;
-    gRAMChapterData.auto_cursor = 0;
+    gRAMChapterData.cfgAutoCursor = 0;
     gRAMChapterData.cfgTextSpeed = 1; // TODO: (DEFAULT?) TEXT SPEED DEFINITIONS
-    gRAMChapterData.unk40_8 = 0;
-    gRAMChapterData.unk41_1 = 0;
-    gRAMChapterData.unk41_2 = 0;
+    gRAMChapterData.cfgGameSpeed = 0;
+    gRAMChapterData.cfgDisableBgm = 0;
+    gRAMChapterData.cfgDisableSoundEffects = 0;
     gRAMChapterData.cfgWindowColor = 0;
-    gRAMChapterData.unk41_7 = 0;
+    gRAMChapterData.cfgDisableAutoEndTurns = 0;
     gRAMChapterData.cfgNoSubtitleHelp = 0;
     gRAMChapterData.cfgBattleForecastType = 0;
     gRAMChapterData.unk42_8 = 0;
     gRAMChapterData.unk43_2 = 0;
-    gRAMChapterData.unk40_1 = 0;
+    gRAMChapterData.cfgUnitColor = 0;
     gRAMChapterData.unk41_5 = 0;
 }
 
@@ -975,18 +975,18 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
 
     SetupBackgrounds(NULL);
 
-    SetMainUpdateRoutine(SomeUpdateRoutine);
-    SetInterrupt_LCDVBlank(GeneralVBlankHandler);
+    SetMainUpdateRoutine(OnGameLoopMain);
+    SetInterrupt_LCDVBlank(OnVBlank);
 
     ClearBattleMapState();
     sub_80156D4();
     SetupMapSpritesPalettes();
     ClearLocalEvents();
-    SMS_ClearUsageTable();
+    ResetUnitSprites();
     ResetMenuOverrides();
     ClearTraps();
 
-    gRAMChapterData.chapterPhaseIndex = FACTION_GREEN; // TODO: PHASE/ALLEGIANCE DEFINITIONS
+    gRAMChapterData.faction = FACTION_GREEN; // TODO: PHASE/ALLEGIANCE DEFINITIONS
     gRAMChapterData.chapterTurnNumber = 0;
 
     // TODO: BATTLE MAP/CHAPTER/OBJECTIVE TYPE DEFINITION (STORY/TOWER/SKIRMISH)
@@ -1001,7 +1001,7 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
     gRAMChapterData.chapterWeatherId =
         GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialWeather;
 
-    SetupBackgroundForWeatherMaybe();
+    InitBmBgLayers();
     InitChapterMap(gRAMChapterData.chapterIndex);
     InitMapObstacles();
 
@@ -1034,7 +1034,7 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
     gPaletteBuffer[0] = 0;
     EnablePaletteSync();
 
-    sub_8001ED0(TRUE, TRUE, TRUE, TRUE, TRUE);
+    SetBlendTargetA(TRUE, TRUE, TRUE, TRUE, TRUE);
     sub_8001F48(TRUE);
 
     SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
@@ -1043,19 +1043,19 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
 void RestartBattleMap(void) {
     SetupBackgrounds(NULL);
 
-    SetMainUpdateRoutine(SomeUpdateRoutine);
-    SetInterrupt_LCDVBlank(GeneralVBlankHandler);
+    SetMainUpdateRoutine(OnGameLoopMain);
+    SetInterrupt_LCDVBlank(OnVBlank);
 
     sub_80156D4();
     SetupMapSpritesPalettes();
-    SMS_ClearUsageTable();
+    ResetUnitSprites();
 
     ClearTraps();
 
     gRAMChapterData.chapterWeatherId =
         GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialWeather;
 
-    SetupBackgroundForWeatherMaybe();
+    InitBmBgLayers();
 
     InitChapterMap(gRAMChapterData.chapterIndex);
 
@@ -1089,8 +1089,8 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
 
     SetupBackgrounds(NULL);
 
-    SetMainUpdateRoutine(SomeUpdateRoutine);
-    SetInterrupt_LCDVBlank(GeneralVBlankHandler);
+    SetMainUpdateRoutine(OnGameLoopMain);
+    SetInterrupt_LCDVBlank(OnVBlank);
 
     ClearBattleMapState();
 
@@ -1101,7 +1101,7 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
 
     LoadGameCoreGfx();
     SetupMapSpritesPalettes();
-    SMS_ClearUsageTable();
+    ResetUnitSprites();
 
     InitChapterMap(gRAMChapterData.chapterIndex);
 
@@ -1109,8 +1109,8 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
 
     mapMain = StartBMapMain(gameCtrl);
 
-    gGameState.camera.x = sub_8015A40(16 * gGameState.playerCursor.x);
-    gGameState.camera.y = sub_8015A6C(16 * gGameState.playerCursor.y);
+    gGameState.camera.x = GetCameraCenteredX(16 * gGameState.playerCursor.x);
+    gGameState.camera.y = GetCameraCenteredY(16 * gGameState.playerCursor.y);
 
     switch (gActionData.suspendPointType) {
 
@@ -1137,15 +1137,15 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
 
     } // switch (gActionData.suspendPointType)
 
-    sub_8001ED0(TRUE, TRUE, TRUE, TRUE, TRUE);
+    SetBlendTargetA(TRUE, TRUE, TRUE, TRUE, TRUE);
     sub_8001F48(TRUE);
 
     SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
 }
 
 void RefreshBMapDisplay_FromBattle(void) {
-    SetMainUpdateRoutine(SomeUpdateRoutine);
-    SetInterrupt_LCDVBlank(GeneralVBlankHandler);
+    SetMainUpdateRoutine(OnGameLoopMain);
+    SetInterrupt_LCDVBlank(OnVBlank);
 
     LoadGameCoreGfx();
     SetupMapSpritesPalettes();
@@ -1177,9 +1177,9 @@ void InitMoreBMapGraphics(void) {
     UnpackChapterMapGraphics(gRAMChapterData.chapterIndex);
     AllocWeatherParticles(gRAMChapterData.chapterWeatherId);
     RenderBmMap();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
     SetupMapSpritesPalettes();
-    SMS_FlushIndirect();
+    ForceSyncUnitSpriteSheet();
     Font_LoadForUI();
 }
 
@@ -1269,7 +1269,7 @@ void ChapterChangeUnitCleanup(void) {
 
 void MapMain_ResumeFromPhaseIdle(struct BMapMainProc* mapMain) {
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     gLCDControlBuffer.dispcnt.bg0_on = FALSE;
     gLCDControlBuffer.dispcnt.bg1_on = FALSE;
@@ -1282,7 +1282,7 @@ void MapMain_ResumeFromPhaseIdle(struct BMapMainProc* mapMain) {
 
 void MapMain_ResumeFromAction(struct BMapMainProc* mapMain) {
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     gLCDControlBuffer.dispcnt.bg0_on = FALSE;
     gLCDControlBuffer.dispcnt.bg1_on = FALSE;
@@ -1295,7 +1295,7 @@ void MapMain_ResumeFromAction(struct BMapMainProc* mapMain) {
     gActiveUnit = GetUnit(gActionData.subjectIndex);
     gBmMapUnit[gActiveUnit->yPos][gActiveUnit->xPos] = 0;
 
-    HideUnitSMS(GetUnit(gActionData.subjectIndex));
+    HideUnitSprite(GetUnit(gActionData.subjectIndex));
 
     MU_Create(gActiveUnit);
     MU_SetDefaultFacing_Auto();
@@ -1303,7 +1303,7 @@ void MapMain_ResumeFromAction(struct BMapMainProc* mapMain) {
 
 void MapMain_ResumeFromBskPhase(struct BMapMainProc* mapMain) {
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     gLCDControlBuffer.dispcnt.bg0_on = FALSE;
     gLCDControlBuffer.dispcnt.bg1_on = FALSE;
@@ -1317,7 +1317,7 @@ void MapMain_ResumeFromBskPhase(struct BMapMainProc* mapMain) {
 void MapMain_ResumeFromArenaFight(struct BMapMainProc* mapMain) {
     gActiveUnit = GetUnit(gActionData.subjectIndex);
 
-    PrepareArena2(gActiveUnit);
+    ArenaResume(gActiveUnit);
 
     BattleGenerateArena(gActiveUnit);
     BeginBattleAnimations();
@@ -1332,7 +1332,7 @@ void MapMain_ResumeFromArenaFight(struct BMapMainProc* mapMain) {
 
     gBmMapUnit[gActionData.yMove][gActionData.xMove] = 0;
 
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     Proc_Goto(mapMain, 10);
 
@@ -1341,7 +1341,7 @@ void MapMain_ResumeFromArenaFight(struct BMapMainProc* mapMain) {
 
 void MapMain_ResumeFromPhaseChange(struct BMapMainProc* mapMain) {
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 
     gLCDControlBuffer.dispcnt.bg0_on = FALSE;
     gLCDControlBuffer.dispcnt.bg1_on = FALSE;
@@ -1356,14 +1356,14 @@ void GameCtrl_DeclareCompletedChapter(void) {
     RegisterChapterTimeAndTurnCount(&gRAMChapterData);
 
     ComputeChapterRankings();
-    SaveChapterRankings();
+    SaveEndgameRankings();
 
-    gRAMChapterData.chapterStateBits |= CHAPTER_FLAG_5;
+    gRAMChapterData.chapterStateBits |= CHAPTER_FLAG_COMPLETE;
 }
 
-void GameCtrl_DeclareCompletedPlaythrough(void) {
+void GameCtrl_RegisterCompletedPlaythrough(void) {
     SetNextGameActionId(GAME_ACTION_3);
-    DeclareCompletedPlaythrough();
+    RegisterCompletedPlaythrough();
 }
 
 char* GetTacticianName(void) {

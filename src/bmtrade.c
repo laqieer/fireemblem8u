@@ -8,7 +8,9 @@
 #include "fontgrp.h"
 #include "uiutils.h"
 #include "statscreen.h"
+#include "face.h"
 
+#include "bm.h"
 #include "bmitem.h"
 #include "bmtrade.h"
 #include "bmunit.h"
@@ -166,7 +168,7 @@ static struct ProcCmd sProcScr_TradeMenu[] = {
     PROC_CALL(AddSkipThread2),
     PROC_YIELD,
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL(TradeMenu_InitItemDisplay),
     PROC_CALL(TradeMenu_InitUnitNameDisplay),
@@ -256,7 +258,7 @@ void TradeMenu_InitUnitNameDisplay(struct TradeMenuProc* proc)
     int xStart;
 
     // TODO: constants
-    sub_80ADB7C(6, 0x4800, 0x08, 0x800, 0x400, (struct Proc*) (proc));
+    StartSmallBrownNameBoxes(6, 0x4800, 0x08, 0x800, 0x400, (struct Proc*) (proc));
 
     sub_80ADBFC(0, -40, -1, 1);
     sub_80ADBFC(1, 184, -1, 0);
@@ -265,8 +267,8 @@ void TradeMenu_InitUnitNameDisplay(struct TradeMenuProc* proc)
     SetSpecialColorEffectsParameters(1, 12, 6, 0);
 
     // TODO: name functions
-    sub_8001ED0(FALSE, FALSE, FALSE, FALSE, FALSE);
-    sub_8001F0C(TRUE,  TRUE,  TRUE,  TRUE,  TRUE);
+    SetBlendTargetA(FALSE, FALSE, FALSE, FALSE, FALSE);
+    SetBlendTargetB(TRUE,  TRUE,  TRUE,  TRUE,  TRUE);
 
     // TODO: text color constants
 
@@ -479,7 +481,7 @@ void TradeMenu_InitItemDisplay(struct TradeMenuProc* proc)
     DrawUiFrame2(1,  8, 14, 12, 0);
     DrawUiFrame2(15, 8, 14, 12, 0);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     ResetIconGraphics();
     LoadIconPalettes(4); // TODO: palette id constant
@@ -488,11 +490,11 @@ void TradeMenu_InitItemDisplay(struct TradeMenuProc* proc)
     TradeMenu_RefreshItemText(proc);
 
     // TODO: face display type (arg 5) constants
-    NewFace(0, GetUnitPortraitId(proc->units[0]), 64,  -4, 3);
-    NewFace(1, GetUnitPortraitId(proc->units[1]), 176, -4, 2);
+    StartFace(0, GetUnitPortraitId(proc->units[0]), 64,  -4, 3);
+    StartFace(1, GetUnitPortraitId(proc->units[1]), 176, -4, 2);
 
-    sub_8006458(0, 5);
-    sub_8006458(1, 5);
+    SetFaceBlinkControlById(0, 5);
+    SetFaceBlinkControlById(1, 5);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
 }
@@ -631,8 +633,8 @@ s8 TradeMenu_LoadForcedInitialHover(struct TradeMenuProc* proc)
 
 void TradeMenu_ClearDisplay(struct TradeMenuProc* proc)
 {
-    DeleteFaceByIndex(0);
-    DeleteFaceByIndex(1);
+    EndFaceById(0);
+    EndFaceById(1);
 }
 
 void TradeMenu_HelpBox_OnInit(struct Proc* proc)

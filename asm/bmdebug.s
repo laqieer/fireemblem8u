@@ -166,7 +166,7 @@ EndMenuAndClear: @ 0x0801BCCC
 	push {lr}
 	bl EndMenu
 	movs r0, #0
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	bl ClearBg0Bg1
 	movs r0, #1
 	pop {r1}
@@ -178,7 +178,7 @@ EndMenuAndClear: @ 0x0801BCCC
 DebugMapMenu_DisplayInfoDraw: @ 0x0801BCE4
 	push {r4, r5, r6, lr}
 	adds r5, r1, #0
-	ldr r0, _0801BD4C  @ gUnknown_0859AA5C
+	ldr r0, _0801BD4C  @ ProcScr_DebugMonitor
 	bl Proc_Find
 	adds r4, r0, #0
 	adds r6, r5, #0
@@ -222,7 +222,7 @@ DebugMapMenu_DisplayInfoDraw: @ 0x0801BCE4
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801BD4C: .4byte gUnknown_0859AA5C
+_0801BD4C: .4byte ProcScr_DebugMonitor
 _0801BD50: .4byte gUnknown_0859AA7C
 _0801BD54: .4byte gBG0TilemapBuffer
 
@@ -233,7 +233,7 @@ DebugMapMenu_DisplayInfoIdle: @ 0x0801BD58
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r5, r1, #0
-	ldr r0, _0801BD98  @ gUnknown_0859AA5C
+	ldr r0, _0801BD98  @ ProcScr_DebugMonitor
 	bl Proc_Find
 	adds r2, r0, #0
 	ldr r0, _0801BD9C  @ gKeyStatusPtr
@@ -261,7 +261,7 @@ _0801BD90:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801BD98: .4byte gUnknown_0859AA5C
+_0801BD98: .4byte ProcScr_DebugMonitor
 _0801BD9C: .4byte gKeyStatusPtr
 
 	THUMB_FUNC_END DebugMapMenu_DisplayInfoIdle
@@ -282,7 +282,7 @@ DebugMenu_WeatherDraw: @ 0x0801BDA4
 	mov r0, sp
 	movs r2, #0xe
 	bl memcpy
-	ldr r0, _0801BE20  @ gUnknown_0859AA5C
+	ldr r0, _0801BE20  @ ProcScr_DebugMonitor
 	bl Proc_Find
 	adds r6, r0, #0
 	adds r4, r5, #0
@@ -327,7 +327,7 @@ DebugMenu_WeatherDraw: @ 0x0801BDA4
 	bx r1
 	.align 2, 0
 _0801BE1C: .4byte gUnknown_080D7A6C
-_0801BE20: .4byte gUnknown_0859AA5C
+_0801BE20: .4byte ProcScr_DebugMonitor
 _0801BE24: .4byte gBG0TilemapBuffer
 
 	THUMB_FUNC_END DebugMenu_WeatherDraw
@@ -337,7 +337,7 @@ DebugMenu_WeatherIdle: @ 0x0801BE28
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r7, r1, #0
-	ldr r0, _0801BE94  @ gUnknown_0859AA5C
+	ldr r0, _0801BE94  @ ProcScr_DebugMonitor
 	bl Proc_Find
 	adds r4, r0, #0
 	ldr r5, _0801BE98  @ gKeyStatusPtr
@@ -391,7 +391,7 @@ _0801BE70:
 	ldr r0, [r0]
 	mov pc, r0
 	.align 2, 0
-_0801BE94: .4byte gUnknown_0859AA5C
+_0801BE94: .4byte ProcScr_DebugMonitor
 _0801BE98: .4byte gKeyStatusPtr
 _0801BE9C: .4byte _0801BEA0
 _0801BEA0: @ jump table
@@ -468,7 +468,7 @@ DebugMenu_ClearDraw: @ 0x0801BF00
 	movs r1, #0x48
 	movs r2, #2
 	bl Text_InsertString
-	bl sub_80A4BB0
+	bl GetGlobalCompletionCount
 	adds r3, r0, #0
 	adds r3, #1
 	adds r0, r4, #0
@@ -508,7 +508,7 @@ DebugMenu_ClearIdle: @ 0x0801BF6C
 	ands r0, r1
 	cmp r0, #0
 	beq _0801C008
-	bl sub_80A4BB0
+	bl GetGlobalCompletionCount
 	adds r5, r0, #0
 	ldr r0, [r4]
 	ldrh r1, [r0, #6]
@@ -532,7 +532,7 @@ _0801BF9A:
 	adds r5, #1
 _0801BFAE:
 	mov r0, sp
-	bl LoadAndVerifySecureHeaderSW
+	bl LoadGeneralGameMetadata
 	add r1, sp, #0x14
 	movs r2, #0
 	mov r0, sp
@@ -549,7 +549,7 @@ _0801BFCA:
 	adds r4, #1
 	mov r0, sp
 	adds r1, r4, #0
-	bl sub_80A4BD0
+	bl GGM_RegisterCompletedPlaythrough
 	cmp r4, r5
 	blt _0801BFCA
 _0801BFD8:
@@ -572,7 +572,7 @@ _0801BFF0:
 	strb r1, [r0, #0xe]
 _0801BFFA:
 	mov r0, sp
-	bl SaveSecureHeader
+	bl SaveGeneralGameMetadata
 	adds r0, r6, #0
 	adds r1, r7, #0
 	bl DebugMenu_ClearDraw
@@ -609,14 +609,14 @@ _0801C02C: .4byte gDebugClearMenuDef
 	THUMB_FUNC_START DebugClearMenu_ClearFile
 DebugClearMenu_ClearFile: @ 0x0801C030
 	push {lr}
-	bl DeclareCompletedPlaythrough
+	bl RegisterCompletedPlaythrough
 	ldr r2, _0801C058  @ gRAMChapterData
 	ldrb r1, [r2, #0x14]
 	movs r0, #0xef
 	ands r0, r1
 	strb r0, [r2, #0x14]
 	bl ChapterChangeUnitCleanup
-	bl sub_80A4DA0
+	bl GetLastUsedGameSaveSlot
 	bl SaveGame
 	movs r0, #0xff
 	bl SoftReset
@@ -655,9 +655,9 @@ _0801C08C: .4byte gUnknown_02022D76
 	THUMB_FUNC_START DEBUGONLY_Startup
 DEBUGONLY_Startup: @ 0x0801C090
 	push {r4, lr}
-	ldr r0, _0801C0E0  @ SomeUpdateRoutine
+	ldr r0, _0801C0E0  @ OnGameLoopMain
 	bl SetMainUpdateRoutine
-	ldr r0, _0801C0E4  @ GeneralVBlankHandler
+	ldr r0, _0801C0E4  @ OnVBlank
 	bl SetInterrupt_LCDVBlank
 	bl RefreshBMapGraphics
 	movs r0, #2
@@ -686,8 +686,8 @@ DEBUGONLY_Startup: @ 0x0801C090
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0801C0E0: .4byte SomeUpdateRoutine
-_0801C0E4: .4byte GeneralVBlankHandler
+_0801C0E0: .4byte OnGameLoopMain
+_0801C0E4: .4byte OnVBlank
 _0801C0E8: .4byte gUnknown_080D7A7C
 _0801C0EC: .4byte gDebugContinueMenuDef
 _0801C0F0: .4byte gGameState
@@ -708,7 +708,7 @@ DebugContinueMenuInit: @ 0x0801C0FC
 	bl BG_EnableSyncByMask
 	add r0, sp, #4
 	movs r1, #3
-	bl SaveMetadata_Check
+	bl SaveMetadata_Load
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
 	cmp r0, #1
@@ -727,7 +727,7 @@ _0801C12C:
 	movs r1, #0x14
 	movs r2, #0x20
 	movs r3, #0x50
-	bl NewFace
+	bl StartFace
 	movs r0, #0x81
 	lsls r0, r0, #1
 	str r0, [sp]
@@ -748,7 +748,7 @@ _0801C14C:
 	movs r0, #0
 	movs r2, #0x20
 	movs r3, #0x50
-	bl NewFace
+	bl StartFace
 	ldr r0, [sp, #0x10]
 	movs r1, #0xff
 	lsls r1, r1, #8
@@ -764,7 +764,7 @@ _0801C14C:
 _0801C182:
 	movs r2, #0xd0
 	movs r3, #0x50
-	bl NewFace
+	bl StartFace
 	movs r0, #0
 	add sp, #0x14
 	pop {r1}
@@ -778,9 +778,9 @@ _0801C194: .4byte 0x00000103
 DebugContinueMenuEnd: @ 0x0801C198
 	push {lr}
 	movs r0, #0
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	movs r0, #1
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	ldr r2, _0801C1D4  @ gLCDControlBuffer
 	ldrb r1, [r2, #1]
 	movs r0, #2
@@ -819,7 +819,7 @@ sub_801C1DC: @ 0x0801C1DC
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
-	bl sub_80A4E70
+	bl SaveNewGame
 	ldr r0, _0801C21C  @ 0x0000026A
 	bl GetStringFromIndex
 	bl SetTacticianName
@@ -881,7 +881,7 @@ sub_801C248: @ 0x0801C248
 	movs r0, #0
 	movs r1, #1
 	movs r2, #0
-	bl sub_80A4E70
+	bl SaveNewGame
 	b _0801C28A
 	.align 2, 0
 _0801C278: .4byte gKeyStatusPtr
@@ -891,7 +891,7 @@ _0801C27C:
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
-	bl sub_80A4E70
+	bl SaveNewGame
 _0801C28A:
 	ldr r0, _0801C2C4  @ 0x0000026A
 	bl GetStringFromIndex

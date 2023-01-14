@@ -18,6 +18,8 @@
 #include "bmtrick.h"
 #include "bmtrap.h"
 #include "bmtarget.h"
+#include "popup.h"
+#include "bmudisp.h"
 
 #include "bmusemind.h"
 
@@ -27,6 +29,8 @@ extern s8 CONST_DATA gUnknown_080D7C44[];
 
 static int sub_802EF70(ProcPtr);
 static int sub_802EF80(void);
+
+s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
 static struct ProcCmd CONST_DATA sProcScr_ExecWarpStaff[] = {
     PROC_SLEEP(0),
@@ -54,16 +58,12 @@ static struct ProcCmd CONST_DATA sProcScr_ExecNightmareStaff[] = {
     PROC_END,
 };
 
-// notifybox.s
-void sub_801F9FC(ProcPtr, int, char*);
-void sub_801FA8C(ProcPtr, int, s8, int, char*);
-
 // lightrunefx.s
-void sub_8021684(ProcPtr, int, int);
-void sub_8021818(ProcPtr, int, int);
+void StartLightRuneAnim(ProcPtr, int, int);
+void StartLightRuneAnim2(ProcPtr, int, int);
 
 // minefx.s
-void sub_8022300(ProcPtr, int, int);
+void StartMineAnim(ProcPtr, int, int);
 
 // ev_triggercheck.s
 void sub_80831C8(s8, s8);
@@ -257,8 +257,8 @@ int sub_802EF80() {
 
     RefreshEntityBmMaps();
     RenderBmMap();
-    SMS_UpdateFromGameData();
-    SMS_FlushIndirect();
+    RefreshUnitSprites();
+    ForceSyncUnitSpriteSheet();
 
     // return; // BUG?
 }
@@ -312,7 +312,7 @@ void ExecStatusStaff(ProcPtr proc) {
                 gBattleTarget.statusOut = UNIT_STATUS_SLEEP;
                 break;
             case ITEM_MONSTER_STONE:
-                switch (gRAMChapterData.chapterPhaseIndex) {
+                switch (gRAMChapterData.faction) {
                     case FACTION_BLUE:
                         if (UNIT_FACTION(&gBattleTarget.unit) == FACTION_BLUE) {
                             gBattleTarget.statusOut = UNIT_STATUS_13;
@@ -759,7 +759,7 @@ void ExecStatBoostItem(ProcPtr proc) {
 
     PlaySoundEffect(0x5A);
 
-    sub_801F9FC(proc, GetItemIconId(item), GetStringFromIndex(messageId));
+    NewPopup2_PlanA(proc, GetItemIconId(item), GetStringFromIndex(messageId));
 
     return;
 }
@@ -806,7 +806,7 @@ void ExecJunaFruitItem(ProcPtr proc) {
 
     PlaySoundEffect(0x5A);
 
-    sub_801FA8C(proc, GetItemIconId(itemId), 0, levelCount, GetStringFromIndex(0x1E));
+    NewPopup2_PlanB(proc, GetItemIconId(itemId), 0, levelCount, GetStringFromIndex(0x1E));
 
     return;
 }
@@ -821,7 +821,7 @@ void ExecMine(ProcPtr proc) {
 
     gBattleTarget.statusOut = -1;
 
-    sub_8022300(proc, gActionData.xOther, gActionData.yOther);
+    StartMineAnim(proc, gActionData.xOther, gActionData.yOther);
 
     return;
 }
@@ -834,7 +834,7 @@ void ExecLightRune(ProcPtr proc) {
 
     BattleApplyItemEffect(proc);
 
-    sub_8021684(proc, gActionData.xOther, gActionData.yOther);
+    StartLightRuneAnim(proc, gActionData.xOther, gActionData.yOther);
 
     gBattleTarget.statusOut = -1;
 
@@ -852,7 +852,7 @@ void sub_802FAD0(ProcPtr proc) {
     xPos = gActionData.xOther;
     yPos = gActionData.yOther;
 
-    sub_8021818(proc, xPos, yPos);
+    StartLightRuneAnim2(proc, xPos, yPos);
 
     // Seems to be required
     unit = 0;

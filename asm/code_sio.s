@@ -3020,7 +3020,7 @@ sub_8042C44: @ 0x08042C44
 	push {r4, r5, r6, lr}
 	sub sp, #4
 	adds r4, r0, #0
-	ldr r5, _08042C80  @ gUnknown_02020188
+	ldr r5, _08042C80  @ gGenericBuffer
 	ldrh r1, [r4, #0x38]
 	ldrh r0, [r4, #0x36]
 	subs r0, #1
@@ -3046,7 +3046,7 @@ sub_8042C44: @ 0x08042C44
 	strb r0, [r1]
 	b _08042CC8
 	.align 2, 0
-_08042C80: .4byte gUnknown_02020188
+_08042C80: .4byte gGenericBuffer
 _08042C84:
 	adds r0, r5, #0
 	mov r1, sp
@@ -3386,13 +3386,13 @@ sub_8042EB4: @ 0x08042EB4
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #1
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
@@ -3429,13 +3429,13 @@ _08042F0C:
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #1
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	lsls r1, r4, #0x18
 	lsrs r1, r1, #0x18
 	movs r2, #0x10
@@ -4765,7 +4765,7 @@ sub_8043904: @ 0x08043904
 	push {r7}
 	sub sp, #0xc
 	adds r7, r0, #0
-	ldr r5, _08043AD0  @ gUnknown_0859EF00
+	ldr r5, _08043AD0  @ Pal_UIFont
 	bl sub_8043044
 	bl sub_804C33C
 	movs r4, #0
@@ -4814,11 +4814,11 @@ _08043968:
 	ldr r0, _08043AF8  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl sub_8043164
 	bl SetupMapSpritesPalettes
-	bl SMS_ClearUsageTable
-	bl SMS_FlushIndirect
+	bl ResetUnitSprites
+	bl ForceSyncUnitSpriteSheet
 	ldr r0, [r7, #0x3c]
 	ldr r1, _08043AFC  @ gUnknown_0203DA24
 	ldrb r1, [r1]
@@ -4967,7 +4967,7 @@ _080439EA:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08043AD0: .4byte gUnknown_0859EF00
+_08043AD0: .4byte Pal_UIFont
 _08043AD4: .4byte gUnknown_085ABD68
 _08043AD8: .4byte 0x06014800
 _08043ADC: .4byte gUnknown_02023DBA
@@ -6608,7 +6608,7 @@ sub_8044768: @ 0x08044768
 	ldr r0, _080447F4  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl CheckSomethingSomewhere
 	lsls r0, r0, #0x18
 	asrs r1, r0, #0x18
@@ -7946,7 +7946,7 @@ sub_8045208: @ 0x08045208
 	lsls r3, r3, #1
 	adds r1, r1, r3
 	adds r2, #0xa
-	bl sub_80059CC
+	bl UnpackFaceChibiSprGraphics
 	movs r0, #0
 	str r0, [r4, #0x3c]
 	subs r0, #0x26
@@ -8528,7 +8528,7 @@ sub_8045640: @ 0x08045640
 	movs r2, #0x80
 	bl CopyToPaletteBuffer
 	ldr r0, _080457D0  @ gUnknown_085B089C
-	ldr r4, _080457D4  @ gUnknown_02020188
+	ldr r4, _080457D4  @ gGenericBuffer
 	adds r1, r4, #0
 	bl CopyDataWithPossibleUncomp
 	ldr r0, _080457D8  @ gBG3TilemapBuffer
@@ -8540,14 +8540,14 @@ sub_8045640: @ 0x08045640
 	ldr r1, _080457E0  @ 0x06012000
 	movs r2, #0xe
 	bl InitSomeOtherGraphicsRelatedStruct
-	ldr r0, _080457E4  @ gUnknown_0859EF00
+	ldr r0, _080457E4  @ Pal_UIFont
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	movs r2, #0x20
 	bl CopyToPaletteBuffer
 	movs r0, #0
 	bl SetFontGlyphSet
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	ldr r4, _080457E8  @ gUnknown_0203DB14
 	movs r5, #1
 _080456EC:
@@ -8613,13 +8613,13 @@ _080456EC:
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	adds r0, r6, #0
 	bl sub_8045610
 	movs r0, #8
@@ -8643,11 +8643,11 @@ _080457C4: .4byte gUnknown_085ADE08
 _080457C8: .4byte gUnknown_085AF170
 _080457CC: .4byte gUnknown_085B081C
 _080457D0: .4byte gUnknown_085B089C
-_080457D4: .4byte gUnknown_02020188
+_080457D4: .4byte gGenericBuffer
 _080457D8: .4byte gBG3TilemapBuffer
 _080457DC: .4byte gUnknown_02000C60
 _080457E0: .4byte 0x06012000
-_080457E4: .4byte gUnknown_0859EF00
+_080457E4: .4byte Pal_UIFont
 _080457E8: .4byte gUnknown_0203DB14
 _080457EC: .4byte gUnknown_085A92E0
 _080457F0: .4byte 0x01000010
@@ -9247,7 +9247,7 @@ sub_8045C68: @ 0x08045C68
 	adds r6, r3, #0
 	bl sub_8006978
 	bl sub_8008250
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, r8
@@ -9446,7 +9446,7 @@ _08045DFC:
 	ldr r0, _08045EEC  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl sub_8043164
 	movs r5, #0
 	adds r4, #0x9c
@@ -9492,7 +9492,7 @@ _08045E46:
 	movs r1, #0x64
 	movs r2, #0xd0
 	movs r3, #0x50
-	bl NewFace
+	bl StartFace
 	ldr r0, [r6, #0x2c]
 	ldr r2, _08045EF8  @ gUnknown_080D9D5E
 	ldr r1, _08045EE8  @ gUnknown_0203DA24
@@ -10632,7 +10632,7 @@ sub_80467AC: @ 0x080467AC
 	bl sub_8086CE8
 	bl sub_804D6B4
 	movs r0, #3
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	ldr r4, _08046828  @ gUnknown_0203DA78
 	adds r0, r4, #0
 	bl Text_Clear
@@ -10713,7 +10713,7 @@ sub_8046838: @ 0x08046838
 	movs r0, #0
 	bl sub_804C3A4
 	ldr r0, _08046984  @ gUnknown_085AE778
-	ldr r4, _08046988  @ gUnknown_02020188
+	ldr r4, _08046988  @ gGenericBuffer
 	adds r1, r4, #0
 	bl CopyDataWithPossibleUncomp
 	ldr r0, _0804698C  @ gUnknown_02023DEA
@@ -10723,7 +10723,7 @@ sub_8046838: @ 0x08046838
 	bl CallARM_FillTileRect
 	ldr r0, _08046990  @ gUnknown_0203DB64
 	bl SetFont
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl sub_8043164
 	bl sub_804CEB0
 	add r0, sp, #4
@@ -10808,7 +10808,7 @@ _08046978: .4byte gUnknown_085ABD68
 _0804697C: .4byte 0x06014800
 _08046980: .4byte gUnknown_085ADC48
 _08046984: .4byte gUnknown_085AE778
-_08046988: .4byte gUnknown_02020188
+_08046988: .4byte gGenericBuffer
 _0804698C: .4byte gUnknown_02023DEA
 _08046990: .4byte gUnknown_0203DB64
 _08046994: .4byte gUnknown_080D9E50
@@ -10866,7 +10866,7 @@ sub_80469C4: @ 0x080469C4
 	ldr r0, _08046AC0  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	movs r0, #0xc0
 	movs r1, #0x10
 	adds r2, r7, #0
@@ -10901,13 +10901,13 @@ _08046A4A:
 	movs r0, #0
 	strb r0, [r4]
 	mov r0, r9
-	bl sub_80A5218
+	bl SaveMetadata_LoadId
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08046B34
 	mov r0, r9
 	add r1, sp, #4
-	bl sub_80A522C
+	bl LoadSavedChapterState
 	add r0, sp, #4
 	bl sub_8089768
 	adds r2, r7, #0
@@ -10975,7 +10975,7 @@ _08046AE0:
 	strb r0, [r4]
 _08046AE4:
 	add r0, sp, #4
-	bl sub_80A52BC
+	bl CheckChapterCompleted
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08046B02
@@ -11385,7 +11385,7 @@ _08046DE8: .4byte gUnknown_0203DA24
 sub_8046DEC: @ 0x08046DEC
 	push {r4, lr}
 	adds r4, r0, #0
-	ldr r0, _08046E08  @ gUnknown_08A1829C
+	ldr r0, _08046E08  @ ProcScr_AtMenu
 	bl Proc_Find
 	cmp r0, #0
 	bne _08046E00
@@ -11396,7 +11396,7 @@ _08046E00:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08046E08: .4byte gUnknown_08A1829C
+_08046E08: .4byte ProcScr_AtMenu
 
 	THUMB_FUNC_END sub_8046DEC
 
@@ -11416,7 +11416,7 @@ sub_8046E0C: @ 0x08046E0C
 	bl sub_804C590
 	bl sub_804C31C
 	bl BMapVSync_End
-	bl sub_8096454
+	bl StartPrepAtMenu
 	adds r0, r4, #0
 	movs r1, #5
 	bl Proc_Goto
@@ -11696,7 +11696,7 @@ sub_8047008: @ 0x08047008
 	ldr r0, _080471E0  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	movs r1, #0
 	movs r0, #0xc8
 	strh r0, [r7, #0x36]
@@ -12061,7 +12061,7 @@ sub_8047324: @ 0x08047324
 	ldr r0, _08047548  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	adds r1, r7, #0
 	adds r1, #0x34
 	movs r0, #5
@@ -12578,7 +12578,7 @@ sub_8047780: @ 0x08047780
 	movs r0, #0
 	bl sub_804C3A4
 	ldr r0, _08047904  @ gUnknown_085AE778
-	ldr r4, _08047908  @ gUnknown_02020188
+	ldr r4, _08047908  @ gGenericBuffer
 	adds r1, r4, #0
 	bl CopyDataWithPossibleUncomp
 	ldr r0, _0804790C  @ gUnknown_02023DEA
@@ -12588,7 +12588,7 @@ sub_8047780: @ 0x08047780
 	bl CallARM_FillTileRect
 	ldr r0, _08047910  @ gUnknown_0203DB64
 	bl SetFont
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl sub_8043164
 	mov r1, r8
 	str r5, [r1, #0x30]
@@ -12701,7 +12701,7 @@ _080478F8: .4byte gUnknown_085ABD68
 _080478FC: .4byte 0x06014800
 _08047900: .4byte gUnknown_085ADC48
 _08047904: .4byte gUnknown_085AE778
-_08047908: .4byte gUnknown_02020188
+_08047908: .4byte gGenericBuffer
 _0804790C: .4byte gUnknown_02023DEA
 _08047910: .4byte gUnknown_0203DB64
 _08047914: .4byte gUnknown_080D9E50
@@ -12923,15 +12923,15 @@ sub_8047AB8: @ 0x08047AB8
 	movs r4, #0
 _08047ABE:
 	adds r0, r4, #0
-	bl sub_80A5218
+	bl SaveMetadata_LoadId
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08047AE2
 	adds r0, r4, #0
 	mov r1, sp
-	bl sub_80A522C
+	bl LoadSavedChapterState
 	mov r0, sp
-	bl sub_80A52BC
+	bl CheckChapterCompleted
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08047AE2
@@ -13016,7 +13016,7 @@ sub_8047B34: @ 0x08047B34
 	ldr r0, _08047BD4  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl sub_8043164
 	str r4, [r6, #0x4c]
 	bl sub_80A6A68
@@ -13100,7 +13100,7 @@ _08047BFC:
 	movs r1, #0x64
 	movs r2, #0xd0
 	movs r3, #0x50
-	bl NewFace
+	bl StartFace
 	movs r0, #0
 	str r0, [r6, #0x54]
 	movs r0, #0x38
@@ -13303,7 +13303,7 @@ sub_8047D88: @ 0x08047D88
 	ldr r0, _08047E30  @ gUnknown_0203DB64
 	bl SetFont
 	bl Font_LoadForUI
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	bl sub_8043164
 	str r4, [r6, #0x4c]
 	bl sub_80A6A68
@@ -13398,7 +13398,7 @@ _08047E68:
 	movs r1, #0x64
 	movs r2, #0xd0
 	movs r3, #0x50
-	bl NewFace
+	bl StartFace
 	adds r0, r6, #0
 	movs r1, #0
 	bl sub_8047A54
@@ -13759,7 +13759,7 @@ sub_8048168: @ 0x08048168
 	stm r1!, {r2, r3}
 	bl EndBG3Slider
 	movs r0, #3
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	adds r5, r6, #0
 	adds r5, #0x2c
 	movs r4, #4
@@ -13777,7 +13777,7 @@ _0804818A:
 	bl BMapVSync_End
 	bl nullsub_13
 	bl sub_8042E88
-	ldr r0, _080481C4  @ gUnknown_0859AA5C
+	ldr r0, _080481C4  @ ProcScr_DebugMonitor
 	bl Proc_EndEach
 	adds r0, r6, #0
 	bl Proc_End
@@ -13785,7 +13785,7 @@ _0804818A:
 	.align 2, 0
 _080481BC: .4byte gUnknown_080D9EFC
 _080481C0: .4byte gUnknown_0203DA24
-_080481C4: .4byte gUnknown_0859AA5C
+_080481C4: .4byte ProcScr_DebugMonitor
 _080481C8:
 	strb r2, [r1, #1]
 	ldrb r0, [r1]
@@ -13813,7 +13813,7 @@ sub_80481E0: @ 0x080481E0
 	movs r3, #0
 	bl Font_InitForUI
 	movs r0, #5
-	bl sub_80A5218
+	bl SaveMetadata_LoadId
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08048204
@@ -13841,7 +13841,7 @@ _08048204:
 	ldr r0, _08048258  @ gUnknown_085A9E88
 	adds r1, r4, #0
 	bl Proc_StartBlocking
-	ldr r0, _0804825C  @ gUnknown_0859AA5C
+	ldr r0, _0804825C  @ ProcScr_DebugMonitor
 	movs r1, #3
 	bl Proc_Start
 	pop {r4}
@@ -13853,7 +13853,7 @@ _0804824C: .4byte 0x06001800
 _08048250: .4byte gUnknown_0203DA24
 _08048254: .4byte gRAMChapterData
 _08048258: .4byte gUnknown_085A9E88
-_0804825C: .4byte gUnknown_0859AA5C
+_0804825C: .4byte ProcScr_DebugMonitor
 
 	THUMB_FUNC_END sub_80481E0
 
@@ -14091,7 +14091,7 @@ sub_8048418: @ 0x08048418
 	push {r4, r5, lr}
 	sub sp, #4
 	adds r5, r0, #0
-	bl sub_8008A00
+	bl GetDialoguePromptResult
 	cmp r0, #1
 	bne _08048430
 	ldr r1, _0804842C  @ gUnknown_0203DD8C
@@ -14269,7 +14269,7 @@ _08048548:
 	subs r4, r4, r1
 	str r4, [sp, #8]
 	movs r1, #0xe
-	bl sub_8086B2C
+	bl DrawStatBarGfx
 	movs r0, #1
 	bl BG_EnableSyncByMask
 _0804857C:
@@ -14325,7 +14325,7 @@ _080485B8:
 	subs r4, r4, r1
 	str r4, [sp, #8]
 	movs r1, #0xe
-	bl sub_8086B2C
+	bl DrawStatBarGfx
 	movs r0, #1
 	bl BG_EnableSyncByMask
 _080485EC:
@@ -14527,7 +14527,7 @@ sub_8048730: @ 0x08048730
 	str r5, [sp, #4]
 	str r1, [sp, #8]
 	movs r1, #0xd
-	bl sub_8086B2C
+	bl DrawStatBarGfx
 	movs r0, #1
 	bl BG_EnableSyncByMask
 	add sp, #0xc
@@ -14569,7 +14569,7 @@ sub_80487C0: @ 0x080487C0
 	push {r4, r5, lr}
 	ldr r4, [r0, #0x14]
 	movs r0, #3
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	adds r5, r4, #0
 	adds r5, #0x2c
 	movs r4, #4
@@ -14621,7 +14621,7 @@ sub_804881C: @ 0x0804881C
 	THUMB_FUNC_START sub_8048838
 sub_8048838: @ 0x08048838
 	push {lr}
-	bl InitNopSecHeader
+	bl InitSaveMetadata
 	bl sub_80A39B4
 	bl sub_80A3E28
 	bl sub_80A3F84
@@ -14827,7 +14827,7 @@ sub_8048988: @ 0x08048988
 	bl CopyToPaletteBuffer
 	movs r0, #0
 	bl SetFont
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	movs r0, #0
 	mov r9, r0
 	ldr r0, _08048A54  @ gUnknown_080D9F28
@@ -15757,7 +15757,7 @@ sub_80490EC: @ 0x080490EC
 	mov r9, r3
 	movs r0, #0
 	mov sl, r0
-	ldr r0, _080491C4  @ gUnknown_0859EF00
+	ldr r0, _080491C4  @ Pal_UIFont
 	movs r1, #0xc8
 	lsls r1, r1, #2
 	movs r2, #0x20
@@ -15768,7 +15768,7 @@ sub_80490EC: @ 0x080490EC
 	bl InitSomeOtherGraphicsRelatedStruct
 	movs r0, #0
 	bl SetFontGlyphSet
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	ldr r4, _080491D0  @ gUnknown_02000C78
 	adds r0, r4, #0
 	bl Text_Init3
@@ -15843,7 +15843,7 @@ _080491A4:
 	add sl, r0
 	b _080491F0
 	.align 2, 0
-_080491C4: .4byte gUnknown_0859EF00
+_080491C4: .4byte Pal_UIFont
 _080491C8: .4byte gUnknown_02000C60
 _080491CC: .4byte 0x06016800
 _080491D0: .4byte gUnknown_02000C78
@@ -15995,7 +15995,7 @@ _080492D4: .4byte gUnknown_03001840
 sub_80492D8: @ 0x080492D8
 	push {lr}
 	bl sub_8049594
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	pop {r0}
 	bx r0
 
@@ -16206,7 +16206,7 @@ _0804944C:
 	movs r1, #1
 	orrs r0, r1
 	str r0, [r5, #0xc]
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	movs r0, #0x10
 	ldrsb r0, [r5, r0]
 	adds r4, r7, r6
@@ -16653,7 +16653,7 @@ sub_80497A0: @ 0x080497A0
 	bl SetupBackgrounds
 	bl sub_80156D4
 	bl SetupMapSpritesPalettes
-	bl SMS_FlushIndirect
+	bl ForceSyncUnitSpriteSheet
 	bl sub_8049788
 	bl Font_LoadForUI
 	ldr r1, _080497C8  @ gUnknown_0203DD90
@@ -16771,8 +16771,8 @@ _08049860:
 	strh r4, [r0, #0xe]
 	bl LoadGameCoreGfx
 	bl SetupMapSpritesPalettes
-	bl SMS_ClearUsageTable
-	bl SMS_UpdateFromGameData
+	bl ResetUnitSprites
+	bl RefreshUnitSprites
 	bl sub_8049788
 	bl sub_804B38C
 	ldr r0, _080498EC  @ gProc_MapTask
@@ -17257,7 +17257,7 @@ sub_8049C18: @ 0x08049C18
 	beq _08049C4C
 	bl MU_EndAll
 	adds r0, r5, #0
-	bl ShowUnitSMS
+	bl ShowUnitSprite
 _08049C4C:
 	cmp r4, #0
 	beq _08049C80
@@ -17281,7 +17281,7 @@ _08049C4C:
 	bl MU_Create
 	bl MU_DisableAttractCamera
 	adds r0, r4, #0
-	bl HideUnitSMS
+	bl HideUnitSprite
 _08049C80:
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -17583,7 +17583,7 @@ _08049EE2:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl DisplayCursor
+	bl PutMapCursor
 	ldr r0, _08049F30  @ gUnknown_0203DD90
 	ldrb r0, [r0, #2]
 	cmp sl, r0
@@ -17684,7 +17684,7 @@ _08049FB0:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl DisplayCursor
+	bl PutMapCursor
 	ldr r2, _0804A024  @ gKeyStatusPtr
 	ldr r0, [r2]
 	ldrh r1, [r0, #8]
@@ -17834,7 +17834,7 @@ _0804A104: .4byte gRAMChapterData
 sub_804A108: @ 0x0804A108
 	push {r4, lr}
 	adds r4, r0, #0
-	bl sub_8003D20
+	bl Font_ResetAllocation
 	ldr r2, _0804A148  @ gUnknown_0203DD90
 	movs r0, #0xff
 	strb r0, [r2, #6]
@@ -18277,7 +18277,7 @@ _0804A494:
 	negs r1, r1
 	ands r0, r1
 	str r0, [r4, #0xc]
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	ldr r1, _0804A4D0  @ gUnknown_0203DD90
 	ldrb r0, [r1, #5]
 	strb r0, [r1, #2]
@@ -18478,7 +18478,7 @@ sub_804A614: @ 0x0804A614
 	bl GetUnit
 	mov r8, r0
 	adds r0, r6, #0
-	bl HideUnitSMS
+	bl HideUnitSprite
 	ldr r1, _0804A694  @ gActionData
 	movs r0, #2
 	strb r0, [r1, #0x11]
@@ -18591,7 +18591,7 @@ sub_804A6A4: @ 0x0804A6A4
 	cmp r0, #0
 	beq _0804A750
 	adds r0, r6, #0
-	bl ShowUnitSMS
+	bl ShowUnitSprite
 	ldr r0, [r6, #0xc]
 	movs r1, #2
 	negs r1, r1
@@ -19008,7 +19008,7 @@ sub_804AA88: @ 0x0804AA88
 	bl MU_EndAll
 	bl sub_8049594
 	bl sub_80495F4
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	pop {r0}
 	bx r0
 
@@ -19126,7 +19126,7 @@ _0804AB54:
 	movs r1, #0x60
 	movs r2, #0
 	movs r3, #0
-	bl NewPopupSimple
+	bl NewPopup_Simple
 	adds r0, r5, #0
 	movs r1, #3
 	bl Proc_Goto
@@ -19141,7 +19141,7 @@ _0804AB8C:
 	movs r1, #0x60
 	movs r2, #0
 	movs r3, #0
-	bl NewPopupSimple
+	bl NewPopup_Simple
 	adds r0, r5, #0
 	movs r1, #4
 	bl Proc_Goto
@@ -19223,7 +19223,7 @@ _0804AC24:
 	negs r1, r1
 	ands r0, r1
 	str r0, [r4, #0xc]
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	adds r0, r5, #0
 	movs r1, #0
 	bl Proc_Goto
@@ -19355,7 +19355,7 @@ _0804AD1C:
 	negs r1, r1
 	ands r0, r1
 	str r0, [r6, #0xc]
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	adds r0, r7, #0
 	movs r1, #1
 	bl Proc_Goto
@@ -20136,7 +20136,7 @@ _0804B2D0:
 	ldr r1, [sp]
 	subs r4, r4, r1
 	adds r0, r6, #0
-	bl GetUnitSpritePaletteIndexWrapper
+	bl GetUnitDisplayedSpritePalette
 	adds r3, r0, #0
 	mov r0, r9
 	ands r3, r0
@@ -20158,7 +20158,7 @@ _0804B2D0:
 	subs r4, r4, r0
 	adds r4, #8
 	adds r0, r6, #0
-	bl GetUnitSpritePaletteIndexWrapper
+	bl GetUnitDisplayedSpritePalette
 	adds r3, r0, #0
 	mov r1, r9
 	ands r3, r1
@@ -20592,9 +20592,9 @@ _0804B654:
 	.align 2, 0
 _0804B65C: .4byte 0x00010004
 _0804B660:
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	adds r0, r6, #0
-	bl HideUnitSMS
+	bl HideUnitSprite
 	adds r0, r6, #0
 	bl MU_Create
 	adds r4, r0, #0
@@ -20642,7 +20642,7 @@ sub_804B6B8: @ 0x0804B6B8
 	push {lr}
 	bl sub_8049594
 	bl sub_80495F4
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	pop {r0}
 	bx r0
 
@@ -20651,7 +20651,7 @@ sub_804B6B8: @ 0x0804B6B8
 	THUMB_FUNC_START sub_804B6CC
 sub_804B6CC: @ 0x0804B6CC
 	push {lr}
-	bl sub_8008A00
+	bl GetDialoguePromptResult
 	adds r1, r0, #0
 	cmp r1, #1
 	bne _0804B6E4
@@ -20880,11 +20880,11 @@ _0804B86C:
 	ldrsb r0, [r5, r0]
 	cmp r0, #0
 	bne _0804B8B8
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	movs r0, #0xb
 	ldrsb r0, [r5, r0]
 	bl GetUnit
-	bl HideUnitSMS
+	bl HideUnitSprite
 	adds r0, r5, #0
 	bl MU_Create
 	adds r4, r0, #0
@@ -22014,13 +22014,13 @@ _0804C0C4:
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #1
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	movs r0, #1
 	movs r1, #0xc
 	movs r2, #0xc
@@ -22481,7 +22481,7 @@ sub_804C3EC: @ 0x0804C3EC
 	adds r1, r1, r3
 	bl CopyDataWithPossibleUncomp
 	ldr r0, _0804C468  @ gUnknown_085AAE0C
-	ldr r6, _0804C46C  @ gUnknown_02020188
+	ldr r6, _0804C46C  @ gGenericBuffer
 	adds r1, r6, #0
 	bl CopyDataWithPossibleUncomp
 	adds r4, r4, r5
@@ -22512,7 +22512,7 @@ sub_804C3EC: @ 0x0804C3EC
 	.align 2, 0
 _0804C464: .4byte gUnknown_085B0DE8
 _0804C468: .4byte gUnknown_085AAE0C
-_0804C46C: .4byte gUnknown_02020188
+_0804C46C: .4byte gGenericBuffer
 _0804C470: .4byte 0x06014000
 _0804C474: .4byte gBG2TilemapBuffer
 _0804C478: .4byte gUnknown_085B0F2C
@@ -22612,13 +22612,13 @@ sub_804C508: @ 0x0804C508
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldr r2, _0804C554  @ gLCDControlBuffer
 	ldrb r1, [r2, #1]
 	movs r0, #0x21
@@ -22654,13 +22654,13 @@ sub_804C558: @ 0x0804C558
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	add sp, #4
 	pop {r4}
 	pop {r0}
@@ -24425,10 +24425,10 @@ sub_804D2A4: @ 0x0804D2A4
 	stm r1!, {r2, r3, r4}
 	ldr r0, [r0]
 	str r0, [r1]
-	ldr r0, _0804D354  @ gUnknown_0859F020
+	ldr r0, _0804D354  @ Img_PhaseChangeUnk
 	ldr r1, _0804D358  @ 0x06014000
 	bl CopyDataWithPossibleUncomp
-	ldr r0, _0804D35C  @ gUnknown_085A06D8
+	ldr r0, _0804D35C  @ Img_PhaseChangeSquares
 	ldr r1, _0804D360  @ 0x06002000
 	bl CopyDataWithPossibleUncomp
 	ldr r0, _0804D364  @ gUnknown_085AE7EC
@@ -24439,7 +24439,7 @@ sub_804D2A4: @ 0x0804D2A4
 	lsls r0, r0, #2
 	add r0, sp
 	ldr r0, [r0]
-	ldr r4, _0804D370  @ gUnknown_02020188
+	ldr r4, _0804D370  @ gGenericBuffer
 	adds r1, r4, #0
 	bl CopyDataWithPossibleUncomp
 	ldr r1, _0804D374  @ 0x06002980
@@ -24478,14 +24478,14 @@ sub_804D2A4: @ 0x0804D2A4
 _0804D348: .4byte gUnknown_080DA20C
 _0804D34C: .4byte gUnknown_080DA21C
 _0804D350: .4byte gUnknown_080DA22C
-_0804D354: .4byte gUnknown_0859F020
+_0804D354: .4byte Img_PhaseChangeUnk
 _0804D358: .4byte 0x06014000
-_0804D35C: .4byte gUnknown_085A06D8
+_0804D35C: .4byte Img_PhaseChangeSquares
 _0804D360: .4byte 0x06002000
 _0804D364: .4byte gUnknown_085AE7EC
 _0804D368: .4byte 0x06002800
 _0804D36C: .4byte gRAMChapterData
-_0804D370: .4byte gUnknown_02020188
+_0804D370: .4byte gGenericBuffer
 _0804D374: .4byte 0x06002980
 _0804D378: .4byte gUnknown_03001860
 
@@ -25040,13 +25040,13 @@ sub_804D778: @ 0x0804D778
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #1
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	add sp, #4
 	pop {r4}
 	pop {r0}

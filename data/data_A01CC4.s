@@ -289,8 +289,8 @@ gUnknown_08A079B4:  @ 0x08A079B4
 gUnknown_08A07A98:  @ 0x08A07A98
 	.incbin "baserom.gba", 0xA07A98, 0x40
 
-	.global gUnknown_08A07AD8
-gUnknown_08A07AD8:  @ 0x08A07AD8
+	.global gPal_08A07AD8
+gPal_08A07AD8:  @ 0x08A07AD8
 	.incbin "baserom.gba", 0xA07AD8, 0x12
 
 	.global gUnknown_08A07AEA
@@ -309,42 +309,42 @@ gUnknown_08A07BEA:  @ 0x08A07BEA
 gUnknown_08A07C0A:  @ 0x08A07C0A
 	.incbin "baserom.gba", 0xA07C0A, 0x4E
 
-	.global gUnknown_08A07C58
-gUnknown_08A07C58:  @ 0x08A07C58
+	.global gPal_08A07C58
+gPal_08A07C58:  @ 0x08A07C58
 	.incbin "baserom.gba", 0xA07C58, 0x180
 
-	.global gUnknown_08A07DD8
-gUnknown_08A07DD8:  @ 0x08A07DD8
+	.global Img_ChapterIntroFog
+Img_ChapterIntroFog:  @ 0x08A07DD8
 	.incbin "baserom.gba", 0xA07DD8, 0x1C84
 
 	.global gUnknown_08A09A5C
 gUnknown_08A09A5C:  @ 0x08A09A5C
 	.incbin "baserom.gba", 0xA09A5C, 0x3F0
 
-	.global gUnknown_08A09E4C
-gUnknown_08A09E4C:  @ 0x08A09E4C
+	.global gGfx_08A09E4C
+gGfx_08A09E4C:  @ 0x08A09E4C
 	.incbin "baserom.gba", 0xA09E4C, 0x69C
 
 	.global gUnknown_08A0A4E8
 gUnknown_08A0A4E8:  @ 0x08A0A4E8
     .incbin "baserom.gba", 0xA0A4E8, 0x510
 
-	.global gUnknown_08A0A9F8
-gUnknown_08A0A9F8:  @ 0x08A0A9F8
+	.global gTsa_08A0A9F8
+gTsa_08A0A9F8:  @ 0x08A0A9F8
 	.incbin "baserom.gba", 0xA0A9F8, 0x114
 
-	.global gUnknown_08A0AB0C
-gUnknown_08A0AB0C:  @ 0x08A0AB0C
+	.global Img_GameOverText
+Img_GameOverText:  @ 0x08A0AB0C
 	.incbin "baserom.gba", 0xA0AB0C, 0x338
 
-	.global gUnknown_08A0AE44
-gUnknown_08A0AE44:  @ 0x08A0AE44
+	.global Pal_GameOverText2
+Pal_GameOverText2:  @ 0x08A0AE44
     .incbin "baserom.gba", 0xA0AE44, 0x20
 
-	.global gUnknown_08A0AE64
-gUnknown_08A0AE64:  @ 0x08A0AE64
+	.global Pal_GameOverText1
+Pal_GameOverText1:  @ 0x08A0AE64
 	.incbin "baserom.gba", 0xA0AE64, 0x20
 
-	.global gUnknown_08A0AE84
-gUnknown_08A0AE84:  @ 0x08A0AE84
+	.global Tsa_GameOverFx
+Tsa_GameOverFx:  @ 0x08A0AE84
 	.incbin "baserom.gba", 0xA0AE84, 0x44

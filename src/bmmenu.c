@@ -28,6 +28,10 @@
 #include "bmarch.h"
 #include "event.h"
 #include "bb.h"
+#include "bmarena.h"
+#include "face.h"
+#include "uiconfig.h"
+#include "bm.h"
 
 #include "constants/characters.h"
 #include "constants/classes.h"
@@ -74,7 +78,7 @@ struct ProcCmd CONST_DATA gProcScr_BackToUnitMenu[] = {
     PROC_CALL(AddSkipThread2),
 
     PROC_CALL(BackToUnitMenu_CamWatch),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL(BackToUnitMenu_RestartMenu),
 
@@ -92,7 +96,7 @@ struct ProcCmd CONST_DATA gProcScr_0859B630[] = {
     PROC_CALL(sub_8022E38),
 
     PROC_WHILE_EXISTS(gProcScr_BKSEL),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL(sub_8022E54),
 
@@ -220,12 +224,12 @@ u8 GenericSelection_BackToUM(ProcPtr proc) {
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     HideMoveRangeGraphics();
 
     EnsureCameraOntoPosition(
-        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 22),
+        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 22),
         gActiveUnit->xPos,
         gActiveUnit->yPos
     );
@@ -235,14 +239,14 @@ u8 GenericSelection_BackToUM(ProcPtr proc) {
 
 void BackToUnitMenu_CamWatch(ProcPtr proc) {
 
-    if (ShouldMoveCameraPosSomething(gActiveUnit->xPos, gActiveUnit->yPos)) {
+    if (IsCameraNotWatchingPosition(gActiveUnit->xPos, gActiveUnit->yPos)) {
 
         int y = gActiveUnit->yPos;
 
-        Proc_EndEach(gUnknown_0859A548);
+        Proc_EndEach(gProcScr_CamMove);
 
-        if (GetSomeAdjustedCameraY(y << 4) > gGameState.unk28.y) {
-            y = (gGameState.unk28.y >> 4) + 2;
+        if (GetCameraAdjustedY(y << 4) > gGameState.cameraMax.y) {
+            y = (gGameState.cameraMax.y >> 4) + 2;
         }
 
         EnsureCameraOntoPosition(proc, gActiveUnit->xPos, y);
@@ -252,7 +256,7 @@ void BackToUnitMenu_CamWatch(ProcPtr proc) {
 }
 
 void BackToUnitMenu_RestartMenu(void) {
-    StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 22);
+    StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 22);
 
     return;
 }
@@ -266,7 +270,7 @@ u8 GenericSelection_BackToUM_CamWait(ProcPtr proc) {
 
     HideMoveRangeGraphics();
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     Proc_Start(gProcScr_BackToUnitMenu, PROC_TREE_3);
 
@@ -277,9 +281,9 @@ u8 ItemMenu_ButtonBPressed(struct MenuProc* menu, struct MenuItemProc* menuItem)
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
-    StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 22);
+    StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 22);
 
     HideMoveRangeGraphics();
 
@@ -479,8 +483,8 @@ u8 sub_8022B8C(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     ProcPtr proc = StartOrphanMenu(&gBallistaRangeMenuDef);
 
-    NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
-    sub_8006458(0, 5);
+    StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+    SetFaceBlinkControlById(0, 5);
 
     ForceMenuItemPanel(proc, gActiveUnit, 0xF, 0xB);
 
@@ -491,8 +495,8 @@ u8 sub_8022BD8(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     ProcPtr proc = StartOrphanMenu(&gUnknownMenuDef);
 
     if (gActiveUnit->pClassData->number != CLASS_PHANTOM) {
-        NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
-        sub_8006458(0, 5);
+        StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+        SetFaceBlinkControlById(0, 5);
     }
 
     ForceMenuItemPanel(proc, gActiveUnit, 0xF, 0xB);
@@ -876,8 +880,8 @@ u8 PlayCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     } else {
         ProcPtr proc = StartOrphanMenu(&gItemMenuDef);
 
-        NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
-        sub_8006458(0, 5);
+        StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+        SetFaceBlinkControlById(0, 5);
         ForceMenuItemPanel(proc, gActiveUnit, 0xF, 0xB);
 
         ResetIconGraphics();
@@ -923,13 +927,13 @@ u8 ItemCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     ResetIconGraphics();
     LoadIconPalettes(4);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     proc = StartOrphanMenu(&gItemSelectMenuDef);
 
-    NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+    StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
 
-    sub_8006458(0, 5);
+    SetFaceBlinkControlById(0, 5);
 
     ForceMenuItemPanel(proc, gActiveUnit, 0xF, 0xB);
 
@@ -1035,7 +1039,7 @@ u8 MenuCommand_SelectNo(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
 u8 sub_8023538(struct MenuProc* menu) {
     SetFont(NULL);
-    sub_8003D20();
+    Font_ResetAllocation();
 
     EndAllMenus();
 
@@ -1063,9 +1067,9 @@ u8 sub_8023550(struct MenuProc* menu) {
 
     proc = StartOrphanMenu(&gItemSelectMenuDef);
 
-    NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+    StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
 
-    sub_8006458(0, 5);
+    SetFaceBlinkControlById(0, 5);
     ForceMenuItemPanel(proc, gActiveUnit, 15, 11);
 
     return MENU_ENABLED;
@@ -1080,9 +1084,9 @@ u8 sub_80235A8(struct MenuProc* menu) {
     if (GetUnitItemCount(gActiveUnit) == 0) {
         ClearBg0Bg1();
 
-        DeleteFaceByIndex(0);
+        EndFaceById(0);
 
-        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.unk1C.x - gGameState.camera.x, 1, 0x16);
+        StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gGameState.cursorTarget.x - gGameState.camera.x, 1, 0x16);
 
         return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6B | MENU_ACT_CLEAR;
     }
@@ -1097,9 +1101,9 @@ u8 sub_80235A8(struct MenuProc* menu) {
 
     proc = StartOrphanMenu(&gItemSelectMenuDef);
 
-    NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+    StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
 
-    sub_8006458(0, 5);
+    SetFaceBlinkControlById(0, 5);
 
     ForceMenuItemPanel(proc, gActiveUnit, 0xF, 0xB);
 
@@ -1164,7 +1168,7 @@ u8 ItemSubMenu_UseItem(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     SetFont(NULL);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     EndAllMenus();
 
@@ -1188,7 +1192,7 @@ u8 ItemSubMenu_TradeItem(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     sub_8023538(menu);
 
-    DeleteFaceByIndex(0);
+    EndFaceById(0);
 
     TradeCommandEffect(menu, menuItem);
 
@@ -1335,9 +1339,9 @@ u8 StaffCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     proc = StartOrphanMenu(&gStaffItemSelectMenuDef);
 
-    NewFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
+    StartFace(0, GetUnitPortraitId(gActiveUnit), 0xB0, 0xC, 2);
 
-    sub_8006458(0, 5);
+    SetFaceBlinkControlById(0, 5);
 
     ForceMenuItemPanel(proc, gActiveUnit, 0xF, 0xB);
 
@@ -1662,7 +1666,7 @@ u8 SupplyCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     gActionData.unitActionType = UNIT_ACTION_TRADED_1D;
 
-    sub_809EB38(gActiveUnit, NULL);
+    StartBmSupply(gActiveUnit, NULL);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
@@ -1742,7 +1746,7 @@ u8 ArenaCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    return sub_8031F50(gActiveUnit)
+    return ArenaIsUnitAllowed(gActiveUnit)
         ? MENU_ENABLED : MENU_DISABLED;
 }
 
@@ -1833,7 +1837,7 @@ int sub_8024260(ProcPtr proc, struct SelectTarget* target) {
 
     DrawTextInline(0, gBG0TilemapBuffer + 0x63, 0, pos, 7, GetStringFromIndex(GetUnit(gActionData.targetIndex)->pCharacterData->nameTextId));
 
-    sub_8005CA4(gBG0TilemapBuffer + 0x63 + 0x40, GetUnitPortraitId(GetUnit(gActionData.targetIndex)), 0x200, 5);
+    PutFace80x72_Core(gBG0TilemapBuffer + 0x63 + 0x40, GetUnitPortraitId(GetUnit(gActionData.targetIndex)), 0x200, 5);
 
     return 0;
 }

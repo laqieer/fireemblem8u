@@ -4,12 +4,14 @@
 #include "constants/classes.h"
 
 #include "ap.h"
+#include "bm.h"
 #include "bmio.h"
 #include "bmunit.h"
 #include "bmmap.h"
 #include "bmtrick.h"
 #include "bmbattle.h"
 #include "bmarch.h"
+#include "bmudisp.h"
 #include "hardware.h"
 #include "m4a.h"
 #include "mapanim.h"
@@ -623,7 +625,7 @@ struct MUProc* MU_Create(struct Unit* pUnit) {
         classIndex,
 
         -1,
-        GetUnitMapSpritePaletteIndex(pUnit)
+        GetUnitSpritePalette(pUnit)
     );
 
     proc->pUnit = pUnit;
@@ -770,70 +772,26 @@ s8 MU_Exists(void) {
     return Proc_Find(gProcScr_MoveUnit) ? TRUE : FALSE;
 }
 
-#if NONMATCHING
-
 s8 MU_IsAnyActive(void) {
-    struct MUProc* proc;
     int i;
 
     for (i = 0; i < MU_MAX_COUNT; ++i) {
-        if (sMUConfigArray[i].muIndex) {
-			proc = sMUConfigArray[i].pMUProc;
-
-            if (proc->stateId != MU_STATE_NONACTIVE)
-				break;
+#ifndef NONMATCHING
+        asm(""::"r"(&sMUConfigArray[i].muIndex));
+        asm(""::"r"(&sMUConfigArray[i].pMUProc));
+#endif
+        if (sMUConfigArray[i].muIndex == 0) continue;
+        while (0) ;
+        if (sMUConfigArray[i].pMUProc->stateId != MU_STATE_NONACTIVE) {
+            return TRUE;
         }
     }
 
-    if (i >= 4)
+    if (i >= MU_MAX_COUNT)
         return FALSE;
 
     return TRUE;
 }
-
-#else // NONMATCHING
-
-__attribute__((naked))
-s8 MU_IsAnyActive(void) {
-    asm(
-        ".syntax unified\n"
-
-        "push {lr}\n"
-        "movs r3, #0\n"
-        "ldr r0, _08078764  @ sMUConfigArray\n"
-        "adds r2, r0, #0\n"
-        "adds r2, #0x48\n"
-        "adds r1, r0, #0\n"
-    "_08078744:\n"
-        "ldrb r0, [r1]\n"
-        "cmp r0, #0\n"
-        "beq _08078754\n"
-        "ldr r0, [r2]\n"
-        "adds r0, #0x3f\n"
-        "ldrb r0, [r0]\n"
-        "cmp r0, #1\n"
-        "bne _08078768\n"
-    "_08078754:\n"
-        "adds r2, #0x4c\n"
-        "adds r1, #0x4c\n"
-        "adds r3, #1\n"
-        "cmp r3, #3\n"
-        "ble _08078744\n"
-        "movs r0, #0\n"
-        "b _0807876A\n"
-        ".align 2, 0\n"
-    "_08078764: .4byte sMUConfigArray\n"
-    "_08078768:\n"
-        "movs r0, #1\n"
-    "_0807876A:\n"
-        "pop {r1}\n"
-        "bx r1\n"
-
-        ".syntax divided\n"
-    );
-}
-
-#endif // NONMATCHING
 
 int MU_IsActive(struct MUProc* proc) {
     if (proc->pMUConfig->muIndex && proc->stateId != MU_STATE_NONACTIVE)
@@ -1103,9 +1061,9 @@ static void MU_State_DuringMovement(struct MUProc* proc) {
         proc->ySubPosition &= ~0xF;
     }
 
-    if (proc->boolAttractCamera && !Proc_Find(gUnknown_0859A548)) {
-        gGameState.camera.x = GetSomeAdjustedCameraX(proc->xSubPosition >> MU_SUBPIXEL_PRECISION);
-        gGameState.camera.y = GetSomeAdjustedCameraY(proc->ySubPosition >> MU_SUBPIXEL_PRECISION);
+    if (proc->boolAttractCamera && !Proc_Find(gProcScr_CamMove)) {
+        gGameState.camera.x = GetCameraAdjustedX(proc->xSubPosition >> MU_SUBPIXEL_PRECISION);
+        gGameState.camera.y = GetCameraAdjustedY(proc->ySubPosition >> MU_SUBPIXEL_PRECISION);
     }
 
     if (!(proc->moveConfig & 0x80))
@@ -1471,7 +1429,7 @@ static u16 MU_GetMovementSpeed(struct MUProc* proc) {
 
             if (speed & 0x40)
                 speed ^= 0x40;
-            else if (gRAMChapterData.unk40_8 || (gKeyStatusPtr->heldKeys & A_BUTTON))
+            else if (gRAMChapterData.cfgGameSpeed || (gKeyStatusPtr->heldKeys & A_BUTTON))
                 speed *= 4;
 
             if (speed > 0x80)
@@ -1483,7 +1441,7 @@ static u16 MU_GetMovementSpeed(struct MUProc* proc) {
         if (!IsFirstPlaythrough() && (gKeyStatusPtr->heldKeys & A_BUTTON))
             return 0x80;
 
-        if (gRAMChapterData.unk40_8)
+        if (gRAMChapterData.cfgGameSpeed)
             return 0x40;
     }
 
@@ -1532,7 +1490,7 @@ void MU_StartDeathFade(struct MUProc* muProc) {
 
     if (muProc->pUnit->state & US_IN_BALLISTA) {
         TryRemoveUnitFromBallista(muProc->pUnit);
-        HideUnitSMS(muProc->pUnit);
+        HideUnitSprite(muProc->pUnit);
     }
 }
 

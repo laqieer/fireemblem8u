@@ -18,6 +18,7 @@
 #include "proc.h"
 #include "mu.h"
 #include "bmarch.h"
+#include "bmarena.h"
 #include "bmbattle.h"
 
 struct WeaponTriangleRule {
@@ -202,7 +203,7 @@ void BattleGenerateRealInternal(struct Unit* actor, struct Unit* target) {
 
     if (gBattleTarget.unit.index) {
         BattleApplyExpGains();
-        sub_80A4AA4();
+        RecordUnitBattleResult();
 
         sub_80A44C8(actor);
         sub_80A44C8(target);
@@ -280,7 +281,7 @@ void BattleGenerateUiStats(struct Unit* unit, s8 itemSlot) {
     } else
         InitBattleUnit(&gBattleActor, unit);
 
-    if (gUnknown_03005280.state & GMAP_STATE_BIT0)
+    if (gGMData.state & GMAP_STATE_BIT0)
         SetBattleUnitTerrainBonuses(&gBattleActor, 0); // TODO: TERRAIN ID DEFINITIONS
     else
         SetBattleUnitTerrainBonusesAuto(&gBattleActor);
@@ -436,7 +437,7 @@ void SetBattleUnitWeapon(struct BattleUnit* bu, int itemSlot) {
 
         bu->weaponSlotIndex = 0;
 
-        bu->weapon = gUnknown_0203A8F0.playerWeapon;
+        bu->weapon = gArenaState.playerWeapon;
         bu->canCounter = FALSE;
 
         break;
@@ -446,7 +447,7 @@ void SetBattleUnitWeapon(struct BattleUnit* bu, int itemSlot) {
 
         bu->weaponSlotIndex = 0;
 
-        bu->weapon = gUnknown_0203A8F0.opponentWeapon;
+        bu->weapon = gArenaState.opponentWeapon;
         bu->canCounter = FALSE;
 
         break;
@@ -1191,7 +1192,7 @@ void BattleGenerateHitEffects(struct BattleUnit* attacker, struct BattleUnit* de
 
         if (defender->unit.pClassData->number != CLASS_DEMON_KING) {
             if (GetItemWeaponEffect(attacker->weapon) == WPN_EFFECT_PETRIFY) {
-                switch (gRAMChapterData.chapterPhaseIndex) {
+                switch (gRAMChapterData.faction) {
 
                 case FACTION_BLUE:
                     if (UNIT_FACTION(&defender->unit) == FACTION_BLUE)
@@ -1217,7 +1218,7 @@ void BattleGenerateHitEffects(struct BattleUnit* attacker, struct BattleUnit* de
 
                     break;
 
-                } // switch (gRAMChapterData.chapterPhaseIndex)
+                } // switch (gRAMChapterData.faction)
 
                 gBattleHitIterator->attributes |= BATTLE_HIT_ATTR_PETRIFY;
             }
@@ -2119,8 +2120,8 @@ int GetBattleAnimType(void) {
     // TODO: battle anim type constants
 
     // If not solo anim, return global type
-    if (gRAMChapterData.unk42_2 != 2)
-        return gRAMChapterData.unk42_2;
+    if (gRAMChapterData.cfgAnimationType != 2)
+        return gRAMChapterData.cfgAnimationType;
 
     // If both units are players, use actor solo anim type
     if (UNIT_FACTION(&gBattleActor.unit) == FACTION_BLUE)
@@ -2255,7 +2256,7 @@ int GetOffensiveStaffAccuracy(struct Unit* actor, struct Unit* target) {
 }
 
 void BattleGenerateArena(struct Unit* actor) {
-    struct Unit* target = gUnknown_0203A8F0.opponentUnit;
+    struct Unit* target = gArenaState.opponentUnit;
     int something = gGameState.unk3C;
 
     gBattleStats.config = BATTLE_CONFIG_REAL | BATTLE_CONFIG_ARENA;
@@ -2268,9 +2269,9 @@ void BattleGenerateArena(struct Unit* actor) {
         gBattleTarget.hpInitial = gActionData.trapType;
     }
 
-    gBattleStats.range = gUnknown_0203A8F0.range;
+    gBattleStats.range = gArenaState.range;
 
-    gBattleTarget.unit.xPos = gBattleActor.unit.xPos + gUnknown_0203A8F0.range;
+    gBattleTarget.unit.xPos = gBattleActor.unit.xPos + gArenaState.range;
     gBattleTarget.unit.yPos = gBattleActor.unit.yPos;
 
     SetBattleUnitWeapon(&gBattleActor, BU_ISLOT_ARENA_PLAYER);
@@ -2292,7 +2293,7 @@ void BattleGenerateArena(struct Unit* actor) {
     UpdateUnitDuringBattle(actor, &gBattleActor);
 
     if (!something || (gBattleTarget.unit.curHP == 0)) {
-        sub_80A4AA4();
+        RecordUnitBattleResult();
 
         actor->state = (actor->state &~ (US_BIT17 | US_BIT18 | US_BIT19))
             + ((((UNIT_ARENA_LEVEL(actor) + 1) <= 7) ? (UNIT_ARENA_LEVEL(actor) + 1) << 17 : 7 << 17));
@@ -2341,7 +2342,10 @@ void BattleGenerateHitScriptedDamage(struct BattleUnit* bu) {
     }
 }
 
-#if NONMATCHING
+static inline u32 BattleHitGetInfo(struct BattleHit *bh) {
+    u32 var = bh->info;
+    return var;
+}
 
 void BattleUnwindScripted(void) {
     struct BattleUnit* attacker;
@@ -2393,7 +2397,7 @@ void BattleUnwindScripted(void) {
             attacker->wexpMultiplier++;
 
             gBattleHitIterator->info |= BATTLE_HIT_INFO_FINISHES;
-
+            BattleHitGetInfo(gBattleHitIterator); // dummy
             (gBattleHitIterator + 1)->info = BATTLE_HIT_INFO_END;
 
             break;
@@ -2402,208 +2406,6 @@ void BattleUnwindScripted(void) {
 
     gActionData.scriptedBattleHits = NULL;
 }
-
-#else // if !NONMATCHING
-
-__attribute__((naked))
-void BattleUnwindScripted(void) {
-    /* :( */
-
-    asm("\n\
-        .syntax unified\n\
-        push {r4, r5, r6, r7, lr}\n\
-        ldr r0, _0802CFA4  @ gActionData\n\
-        ldr r3, [r0, #0x18]\n\
-        ldr r4, _0802CFA8  @ gBattleHitArray\n\
-        ldr r2, [r3]\n\
-        lsls r0, r2, #8\n\
-        lsrs r0, r0, #0x1b\n\
-        movs r1, #0x10\n\
-        ands r0, r1\n\
-        adds r5, r4, #0\n\
-        ldr r6, _0802CFAC  @ gBattleHitIterator\n\
-        cmp r0, #0\n\
-        bne _0802CF76\n\
-    _0802CF66:\n\
-        stm r4!, {r2}\n\
-        adds r3, #4\n\
-        ldr r2, [r3]\n\
-        lsls r0, r2, #8\n\
-        lsrs r0, r0, #0x1b\n\
-        ands r0, r1\n\
-        cmp r0, #0\n\
-        beq _0802CF66\n\
-    _0802CF76:\n\
-        ldr r0, [r3]\n\
-        str r0, [r4]\n\
-        str r5, [r6]\n\
-        ldr r0, [r5]\n\
-        lsls r0, r0, #8\n\
-        lsrs r0, r0, #0x1b\n\
-        movs r1, #0x10\n\
-        ands r0, r1\n\
-        cmp r0, #0\n\
-        beq _0802CF8C\n\
-        b _0802D0AC\n\
-    _0802CF8C:\n\
-        movs r7, #7\n\
-    _0802CF8E:\n\
-        ldr r0, [r6]\n\
-        ldr r0, [r0]\n\
-        lsls r0, r0, #8\n\
-        lsrs r0, r0, #0x1b\n\
-        movs r1, #8\n\
-        ands r0, r1\n\
-        cmp r0, #0\n\
-        beq _0802CFB8\n\
-        ldr r4, _0802CFB0  @ gBattleTarget\n\
-        ldr r5, _0802CFB4  @ gBattleActor\n\
-        b _0802CFBC\n\
-        .align 2, 0\n\
-    _0802CFA4: .4byte gActionData\n\
-    _0802CFA8: .4byte gBattleHitArray\n\
-    _0802CFAC: .4byte gBattleHitIterator\n\
-    _0802CFB0: .4byte gBattleTarget\n\
-    _0802CFB4: .4byte gBattleActor\n\
-    _0802CFB8:\n\
-        ldr r4, _0802D034  @ gBattleActor\n\
-        ldr r5, _0802D038  @ gBattleTarget\n\
-    _0802CFBC:\n\
-        adds r0, r4, #0\n\
-        adds r1, r5, #0\n\
-        bl BattleUpdateBattleStats\n\
-        adds r0, r4, #0\n\
-        bl BattleGenerateHitScriptedDamage\n\
-        adds r0, r4, #0\n\
-        adds r1, r5, #0\n\
-        bl BattleGenerateHitEffects\n\
-        movs r0, #0x13\n\
-        ldrsb r0, [r4, r0]\n\
-        cmp r0, #0\n\
-        beq _0802CFE2\n\
-        movs r0, #0x13\n\
-        ldrsb r0, [r5, r0]\n\
-        cmp r0, #0\n\
-        bne _0802D040\n\
-    _0802CFE2:\n\
-        adds r1, r4, #0\n\
-        adds r1, #0x7b\n\
-        ldrb r0, [r1]\n\
-        adds r0, #1\n\
-        strb r0, [r1]\n\
-        ldr r5, _0802D03C  @ gBattleHitIterator\n\
-        ldr r3, [r5]\n\
-        ldr r1, [r3]\n\
-        lsls r1, r1, #8\n\
-        lsrs r1, r1, #0x1b\n\
-        movs r0, #2\n\
-        orrs r1, r0\n\
-        lsls r1, r1, #3\n\
-        ldrb r2, [r3, #2]\n\
-        movs r4, #7\n\
-        adds r0, r4, #0\n\
-        ands r0, r2\n\
-        orrs r0, r1\n\
-        strb r0, [r3, #2]\n\
-        ldr r0, _0802D038  @ gBattleTarget\n\
-        ldrb r0, [r0, #0x13]\n\
-        lsls r0, r0, #0x18\n\
-        asrs r0, r0, #0x18\n\
-        cmp r0, #0\n\
-        bne _0802D02C\n\
-        ldr r3, [r5]\n\
-        ldr r1, [r3]\n\
-        lsls r1, r1, #8\n\
-        lsrs r1, r1, #0x1b\n\
-        movs r0, #4\n\
-        orrs r1, r0\n\
-        lsls r1, r1, #3\n\
-        ldrb r2, [r3, #2]\n\
-        adds r0, r4, #0\n\
-        ands r0, r2\n\
-        orrs r0, r1\n\
-        strb r0, [r3, #2]\n\
-    _0802D02C:\n\
-        ldr r2, [r5]\n\
-        ldrb r1, [r2, #6]\n\
-        adds r0, r4, #0\n\
-        b _0802D08C\n\
-        .align 2, 0\n\
-    _0802D034: .4byte gBattleActor\n\
-    _0802D038: .4byte gBattleTarget\n\
-    _0802D03C: .4byte gBattleHitIterator\n\
-    _0802D040:\n\
-        adds r0, r5, #0\n\
-        adds r0, #0x30\n\
-        ldrb r0, [r0]\n\
-        movs r1, #0xf\n\
-        ands r1, r0\n\
-        cmp r1, #0xb\n\
-        beq _0802D064\n\
-        cmp r1, #0xd\n\
-        beq _0802D064\n\
-        adds r0, r5, #0\n\
-        adds r0, #0x6f\n\
-        ldrb r0, [r0]\n\
-        lsls r0, r0, #0x18\n\
-        asrs r0, r0, #0x18\n\
-        cmp r0, #0xb\n\
-        beq _0802D064\n\
-        cmp r0, #0xd\n\
-        bne _0802D096\n\
-    _0802D064:\n\
-        adds r1, r4, #0\n\
-        adds r1, #0x7b\n\
-        ldrb r0, [r1]\n\
-        adds r0, #1\n\
-        strb r0, [r1]\n\
-        ldr r3, [r6]\n\
-        ldr r1, [r3]\n\
-        lsls r1, r1, #8\n\
-        lsrs r1, r1, #0x1b\n\
-        movs r0, #2\n\
-        orrs r1, r0\n\
-        lsls r1, r1, #3\n\
-        ldrb r2, [r3, #2]\n\
-        adds r0, r7, #0\n\
-        ands r0, r2\n\
-        orrs r0, r1\n\
-        strb r0, [r3, #2]\n\
-        ldr r2, [r6]\n\
-        ldrb r1, [r2, #6]\n\
-        adds r0, r7, #0\n\
-    _0802D08C:\n\
-        ands r0, r1\n\
-        movs r1, #0x80\n\
-        orrs r0, r1\n\
-        strb r0, [r2, #6]\n\
-        b _0802D0AC\n\
-    _0802D096:\n\
-        ldr r1, [r6]\n\
-        adds r0, r1, #4\n\
-        str r0, [r6]\n\
-        ldr r0, [r1, #4]\n\
-        lsls r0, r0, #8\n\
-        lsrs r0, r0, #0x1b\n\
-        movs r1, #0x10\n\
-        ands r0, r1\n\
-        cmp r0, #0\n\
-        bne _0802D0AC\n\
-        b _0802CF8E\n\
-    _0802D0AC:\n\
-        ldr r1, _0802D0B8  @ gActionData\n\
-        movs r0, #0\n\
-        str r0, [r1, #0x18]\n\
-        pop {r4, r5, r6, r7}\n\
-        pop {r0}\n\
-        bx r0\n\
-        .align 2, 0\n\
-    _0802D0B8: .4byte gActionData\n\
-        .syntax divided\n\
-    ");
-}
-
-#endif // !NONMATCHING
 
 void UnitLevelUp(struct Unit* unit) {
     if (unit->level != 20) {

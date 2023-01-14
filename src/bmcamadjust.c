@@ -3,6 +3,7 @@
 #include "bmunit.h"
 #include "sallycursor.h"
 #include "bmphase.h"
+#include "bm.h"
 #include "variables.h"
 #include "functions.h"
 
@@ -33,7 +34,7 @@ void GetPlayerStartCursorPosition(int *px, int *py)
         gRAMChapterData.yCursor = unit->yPos;
     }
 
-    if (1 != gRAMChapterData.auto_cursor) {
+    if (1 != gRAMChapterData.cfgAutoCursor) {
         unit = GetUnitFromCharId(GetPlayerLeaderUnitId());
         *px = unit->xPos;
         *py = unit->yPos;
@@ -47,7 +48,7 @@ void GetEnemyStartCursorPosition(int *px, int *py)
 {
     int i;
 
-    for (i = gRAMChapterData.chapterPhaseIndex + 1; i < gRAMChapterData.chapterPhaseIndex + 0x40; i++) {
+    for (i = gRAMChapterData.faction + 1; i < gRAMChapterData.faction + 0x40; i++) {
         struct Unit *unit = GetUnit(i);
         if (!UNIT_IS_VALID(unit))
             continue;
@@ -70,12 +71,12 @@ void ProcFun_ResetCursorPosition(ProcPtr proc)
     x = -1;
     y = -1;
 
-    if (0 == GetPhaseAbleUnitCount(gRAMChapterData.chapterPhaseIndex)) {
+    if (0 == GetPhaseAbleUnitCount(gRAMChapterData.faction)) {
         Proc_End(proc);
         return;
     }
 
-    switch (gRAMChapterData.chapterPhaseIndex) {
+    switch (gRAMChapterData.faction) {
     case FACTION_BLUE:
         GetPlayerStartCursorPosition(&x, &y);
         break;

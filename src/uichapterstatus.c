@@ -11,6 +11,9 @@
 #include "soundwrapper.h"
 #include "ctc.h"
 #include "bmio.h"
+#include "face.h"
+#include "bmudisp.h"
+#include "bm.h"
 
 #include "uichapterstatus.h"
 
@@ -126,7 +129,7 @@ struct ProcCmd CONST_DATA gProcScr_ChapterStatusScreen[] = {
     PROC_CALL(AddSkipThread2),
 
     PROC_CALL(sub_8013D80),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
 
     PROC_CALL(ChapterStatus_Init),
@@ -146,7 +149,7 @@ PROC_LABEL(1),
     PROC_CALL(BMapDispResume),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(sub_8013DA4),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
 
     PROC_CALL(ChapterStatus_MaybeFocusLeaderUnit),
     PROC_SLEEP(0),
@@ -508,8 +511,8 @@ void ChapterStatus_Init(struct ChapterStatusProc* proc) {
 
     CopyToPaletteBuffer(gUiFramePaletteA, 0x40, 0x60);
     CopyDataWithPossibleUncomp(gUnknown_08A2E5EC, (void*)(BG_VRAM + 0x5800));
-    CopyDataWithPossibleUncomp(gUnknown_08A2E4C4, gUnknown_02020188);
-    CallARM_FillTileRect(gBG2TilemapBuffer, gUnknown_02020188, 0x1000);
+    CopyDataWithPossibleUncomp(gUnknown_08A2E4C4, gGenericBuffer);
+    CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer, 0x1000);
 
     CopyDataWithPossibleUncomp(gUnknown_08A2D32C, OBJ_VRAM0 + 0x3000);
     CopyToPaletteBuffer(gUnknown_08A2E1B8, 0x300, 0x40);
@@ -528,7 +531,7 @@ void ChapterStatus_Init(struct ChapterStatusProc* proc) {
 
     proc->numAllyUnits = CountUnitsByFaction(FACTION_BLUE);
 
-    proc->timesCompleted = sub_80A4BB0();
+    proc->timesCompleted = GetGlobalCompletionCount();
 
     if (proc->units[0]->state & US_UNSELECTABLE) {
         proc->units[0]->state &= ~US_UNSELECTABLE;
@@ -552,10 +555,10 @@ void ChapterStatus_Init(struct ChapterStatusProc* proc) {
             continue;
         }
 
-        SMS_RegisterUsage(GetUnitSMSId(proc->units[i]));
+        UseUnitSprite(GetUnitSMSId(proc->units[i]));
     }
 
-    SMS_FlushIndirect();
+    ForceSyncUnitSpriteSheet();
 
     gLCDControlBuffer.dispcnt.win0_on = 1;
     gLCDControlBuffer.dispcnt.win1_on = 0;
@@ -649,7 +652,7 @@ void DrawChapterStatusTextForUnit(struct Unit* unit) {
                 Text_AppendNumberOr2Dashes(&ptr->th, GetUnitMaxHp(unit));
             }
 
-            sub_8005988(GetUnitMiniPortraitId(unit), gBG0TilemapBuffer + 0x139, 0x280, 4, 0);
+            PutFaceChibi(GetUnitMiniPortraitId(unit), gBG0TilemapBuffer + 0x139, 0x280, 4, 0);
 
             sub_808DEF0(0);
         }
@@ -675,9 +678,9 @@ void DrawChapterStatusTextForUnit(struct Unit* unit) {
 
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 
-    sub_8001ED0(0, 0, 1, 0, 0);
+    SetBlendTargetA(0, 0, 1, 0, 0);
 
-    sub_8001F0C(0, 0, 0, 1, 0);
+    SetBlendTargetB(0, 0, 0, 1, 0);
 
     SetSpecialColorEffectsParameters(1, 13, 3, 0);
 
@@ -699,7 +702,7 @@ void sub_808E3D4() {
 }
 
 void ChapterStatus_SetupFont(ProcPtr proc) {
-    CopyToPaletteBuffer(gUnknown_0859EF00, 0x340, 0x20);
+    CopyToPaletteBuffer(Pal_UIFont, 0x340, 0x20);
 
     InitSomeOtherGraphicsRelatedStruct(&gUnknown_02004BBC.font, OBJ_VRAM0 + 0x7800, 0x1A);
 
@@ -932,7 +935,7 @@ void sub_808E818(struct ChapterStatusProc* proc) {
         PutUnitSprite(4, 136, 61, parent->units[parent->unitIndex]);
     }
 
-    SMS_FlushDirect();
+    SyncUnitSpriteSheet();
 
     if (parent->timesCompleted != 0) {
         if (!(gRAMChapterData.chapterStateBits & CHAPTER_FLAG_POSTGAME)) {

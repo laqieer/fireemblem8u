@@ -16,6 +16,8 @@
 #include "bmtrap.h"
 #include "playerphase.h"
 #include "popup.h"
+#include "bmudisp.h"
+#include "bm.h"
 
 #include "cp_perform.h"
 
@@ -46,7 +48,7 @@ void AiTargetCursor_Main(struct UnkProcA* proc);
 struct ProcCmd CONST_DATA gProcScr_AiTargetCursor[] = {
     PROC_SLEEP(0),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
     PROC_REPEAT(AiTargetCursor_Main),
 
     PROC_END,
@@ -94,7 +96,7 @@ s8 AiWaitAndClearScreenAction(struct CpPerformProc*);
 
 void AiTargetCursor_Main(struct UnkProcA* proc) {
 
-    DisplayCursor(proc->unk_2C, proc->unk_30, proc->unk_58);
+    PutMapCursor(proc->unk_2C, proc->unk_30, proc->unk_58);
 
     if ((gKeyStatusPtr->heldKeys & (A_BUTTON | START_BUTTON)) || (proc->unk_64 > 45)) {
         Proc_Break(proc);
@@ -120,7 +122,7 @@ void StartAiTargetCursor(int x, int y, int kind, ProcPtr parent) {
 
 void CpPerform_UpdateMapMusic() {
     if (!Proc_Find(gMusicProc3Script)) {
-        sub_80160D0();
+        StartMapSongBgm();
     }
 
     return;
@@ -129,7 +131,7 @@ void CpPerform_UpdateMapMusic() {
 void CpPerform_MoveCameraOntoUnit(struct CpPerformProc* proc) {
     proc->isUnitVisible = 1;
 
-    if ((gRAMChapterData.chapterVisionRange != 0) && (gRAMChapterData.chapterPhaseIndex == FACTION_RED)) {
+    if ((gRAMChapterData.chapterVisionRange != 0) && (gRAMChapterData.faction == FACTION_RED)) {
         if ((gBmMapFog[gActiveUnit->yPos][gActiveUnit->xPos] != 0) || (gBmMapFog[gAiDecision.yMove][gAiDecision.xMove] != 0)) {
             EnsureCameraOntoPosition(proc, gActiveUnit->xPos, gActiveUnit->yPos);
         } else {
@@ -150,7 +152,7 @@ void CpPerform_BeginUnitMovement(struct CpPerformProc* proc) {
 
     UnitBeginAction(gActiveUnit);
 
-    HideUnitSMS(gActiveUnit);
+    HideUnitSprite(gActiveUnit);
 
     GenerateUnitMovementMap(gActiveUnit);
     SetWorkingBmMap(gBmMapMovement);
@@ -187,8 +189,8 @@ void AiRefreshMap() {
     MU_EndAll();
     RefreshEntityBmMaps();
 
-    ShowUnitSMS(gActiveUnit);
-    SMS_UpdateFromGameData();
+    ShowUnitSprite(gActiveUnit);
+    RefreshUnitSprites();
 
     return;
 }
@@ -244,7 +246,7 @@ void AiStartStealAction(struct CpPerformProc* proc) {
     UnitAddItem(gActiveUnit, item);
     UnitRemoveItem(unit, gAiDecision.itemSlot);
 
-    CreatedItemStealingPopUp(item, proc);
+    NewPopup_ItemStealing(item, proc);
 
     return;
 }
@@ -258,23 +260,24 @@ struct PopupInstruction CONST_DATA gPopup_085A80A4[] = {
 s8 AiPillageAction(struct CpPerformProc* proc) {
 
     int x = gAiDecision.xMove;
-    register int y asm("r4") = gAiDecision.yMove;
+    int y = gAiDecision.yMove;
 
     if (gBmMapTerrain[y][x] == TERRAIN_CHEST_21) {
         gActiveUnit->xPos = gAiDecision.xMove;
         gActiveUnit->yPos = gAiDecision.yMove;
 
         gActionData.unitActionType = UNIT_ACTION_USE_ITEM;
+        gAiDecision.itemSlot = gAiDecision.itemSlot; // dummy
         gActionData.itemSlotIndex = gAiDecision.itemSlot;
 
         ActionStaffDoorChestUseItem(proc);
     } else {
         s8 y2 = y - 1;
-        sub_80840C4((s8)x, (s8)(y2));
+        sub_80840C4((s8)x, y2);
 
         PlaySoundEffect(0xAB);
 
-        NewPopupSimple(gPopup_085A80A4, 0x60, 0, proc);
+        NewPopup_Simple(gPopup_085A80A4, 0x60, 0, proc);
     }
 
     return 1;

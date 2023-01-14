@@ -18,6 +18,8 @@
 #include "sallycursor.h"
 #include "uiselecttarget.h"
 #include "bmdifficulty.h"
+#include "cp_utility.h"
+#include "bmudisp.h"
 
 EWRAM_DATA u8 gActiveUnitId = 0;
 EWRAM_DATA struct Vec2 gActiveUnitMoveOrigin = {};
@@ -920,7 +922,7 @@ void UnitDrop(struct Unit* actor, int xTarget, int yTarget) {
     actor->state = actor->state &~ (US_RESCUING | US_RESCUED);
     target->state = target->state &~ (US_RESCUING | US_RESCUED | US_HIDDEN);
 
-    if (UNIT_FACTION(target) == gRAMChapterData.chapterPhaseIndex)
+    if (UNIT_FACTION(target) == gRAMChapterData.faction)
         target->state |= US_UNSELECTABLE; // TODO: US_GRAYED
 
     actor->rescueOtherUnit = 0;
@@ -1102,7 +1104,7 @@ void MoveActiveUnit(int x, int y) {
 void ClearActiveFactionGrayedStates(void) {
     int i;
 
-    if (gRAMChapterData.chapterPhaseIndex == FACTION_BLUE) {
+    if (gRAMChapterData.faction == FACTION_BLUE) {
         int i;
 
         for (i = 1; i < 0x40; ++i) {
@@ -1117,11 +1119,11 @@ void ClearActiveFactionGrayedStates(void) {
             if (unit->state & (US_UNAVAILABLE | US_UNSELECTABLE))
                 continue;
 
-            StoreSomeUnitSetFlags(unit->pCharacterData->number);
+            BWL_FavorReduced(unit->pCharacterData->number);
         }
     }
 
-    for (i = gRAMChapterData.chapterPhaseIndex + 1; i < gRAMChapterData.chapterPhaseIndex + 0x40; ++i) {
+    for (i = gRAMChapterData.faction + 1; i < gRAMChapterData.faction + 0x40; ++i) {
         struct Unit* unit = GetUnit(i);
 
         if (UNIT_IS_VALID(unit))
@@ -1134,7 +1136,7 @@ void TickActiveFactionTurn(void) {
 
     InitTargets(0, 0);
 
-    for (i = gRAMChapterData.chapterPhaseIndex + 1; i < gRAMChapterData.chapterPhaseIndex + 0x40; ++i) {
+    for (i = gRAMChapterData.faction + 1; i < gRAMChapterData.faction + 0x40; ++i) {
         struct Unit* unit = GetUnit(i);
 
         if (!UNIT_IS_VALID(unit))
@@ -1165,7 +1167,7 @@ void TickActiveFactionTurn(void) {
         RefreshEntityBmMaps();
         RenderBmMap();
         NewBMXFADE(TRUE);
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
     }
 }
 
@@ -1480,7 +1482,7 @@ void ClearTemporaryUnits(void) {
     }
 
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 }
 
 s8 IsUnitSlotAvailable(int faction) {
@@ -1616,5 +1618,5 @@ void sub_8019108(void) {
     }
 
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
 }

@@ -2269,7 +2269,7 @@ _0800E5F8:
 	.align 2, 0
 _0800E5FC: .4byte gUnknown_08A016E0
 _0800E600:
-	bl sub_8008A00
+	bl GetDialoguePromptResult
 	ldr r1, _0800E638  @ gEventSlots
 _0800E606:
 	str r0, [r1, #0x30]
@@ -2329,7 +2329,7 @@ _0800E668:
 	beq _0800E686
 	bl sub_80081A8
 	ldr r0, _0800E68C  @ gProcScr_E_FACE
-	ldr r1, _0800E690  @ sub_8005F38
+	ldr r1, _0800E690  @ StartFaceFadeOut
 	bl Proc_ForEach
 	ldr r0, _0800E694  @ gUnknown_08591DE8
 	adds r1, r4, #0
@@ -2340,7 +2340,7 @@ _0800E686:
 	bx r0
 	.align 2, 0
 _0800E68C: .4byte gProcScr_E_FACE
-_0800E690: .4byte sub_8005F38
+_0800E690: .4byte StartFaceFadeOut
 _0800E694: .4byte gUnknown_08591DE8
 
 	THUMB_FUNC_END sub_800E640
@@ -2900,13 +2900,13 @@ _0800EACE:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldrb r1, [r5, #0xc]
 	movs r2, #4
 	negs r2, r2
@@ -2940,7 +2940,7 @@ _0800EB22:
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	b _0800EB5E
 _0800EB40:
@@ -2954,7 +2954,7 @@ _0800EB40:
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 _0800EB5E:
@@ -2962,7 +2962,7 @@ _0800EB5E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldrb r1, [r5, #0xc]
 	movs r2, #4
 	negs r2, r2
@@ -3348,12 +3348,12 @@ _0800EE88:
 	ldrb r0, [r4, #0x15]
 	bl AllocWeatherParticles
 	bl RenderBmMap
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	ldr r0, [r5, #0x34]
 	adds r0, #0x44
 	ldrh r0, [r0]
 	bl sub_800BCDC
-	bl SMS_FlushIndirect
+	bl ForceSyncUnitSpriteSheet
 	ldr r0, [r5, #0x34]
 	bl Event24_
 	b _0800EEBE
@@ -3555,14 +3555,14 @@ _0800EFE2:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	mov r0, r8
 	str r0, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	movs r0, #1
 	bl sub_8001F48
 	movs r0, #1
@@ -3730,15 +3730,15 @@ _0800F198:
 	strb r4, [r0, #0xe]
 	bl RestartBattleMap
 	lsls r0, r6, #4
-	bl sub_8015A40
+	bl GetCameraCenteredX
 	ldr r4, _0800F200  @ gGameState
 	strh r0, [r4, #0xc]
 	lsls r0, r7, #4
-	bl sub_8015A6C
+	bl GetCameraCenteredY
 	strh r0, [r4, #0xe]
 	bl RefreshEntityBmMaps
 	bl RenderBmMap
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	bl RefreshBMapGraphics
 	adds r0, r5, #0
 	adds r0, #0x44
@@ -5231,7 +5231,7 @@ TryPrepareEventUnitMovement: @ 0x0800FC90
 	ands r0, r1
 	cmp r0, #0
 	beq _0800FCBE
-	ldr r0, _0800FCCC  @ gUnknown_0859A548
+	ldr r0, _0800FCCC  @ gProcScr_CamMove
 	bl Proc_Find
 	cmp r0, #0
 	bne _0800FCD0
@@ -5250,7 +5250,7 @@ _0800FCBE:
 	movs r0, #1
 	b _0800FCD2
 	.align 2, 0
-_0800FCCC: .4byte gUnknown_0859A548
+_0800FCCC: .4byte gProcScr_CamMove
 _0800FCD0:
 	movs r0, #0
 _0800FCD2:
@@ -5608,7 +5608,7 @@ _0800FF36:
 	cmp r0, #1
 	beq _0800FF60
 	bl RefreshEntityBmMaps
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	bl RenderBmMap
 	ldr r0, _0800FF5C  @ gBmMapOther
 	ldr r0, [r0]
@@ -6269,7 +6269,7 @@ _0801044C:
 	cmp r0, #0
 	bne _080104A6
 	adds r0, r5, #0
-	bl HideUnitSMS
+	bl HideUnitSprite
 	ldr r0, [r5, #0xc]
 	movs r1, #1
 	orrs r0, r1
@@ -6298,7 +6298,7 @@ _08010494:
 	bl ClearUnit
 _0801049A:
 	bl RefreshEntityBmMaps
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	bl RenderBmMap
 _080104A6:
 	movs r0, #0
@@ -6370,7 +6370,7 @@ _08010518:
 	str r0, [r5, #4]
 _08010522:
 	bl RefreshEntityBmMaps
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	bl RenderBmMap
 _0801052E:
 	movs r0, #0
@@ -6473,7 +6473,7 @@ _080105D8:
 	ldr r0, _080105E4  @ gEventSlots
 	ldrh r2, [r0, #0xc]
 	adds r0, r5, #0
-	bl NewItemGot
+	bl NewPopup_ItemGot
 	b _0801060C
 	.align 2, 0
 _080105E4: .4byte gEventSlots
@@ -6481,7 +6481,7 @@ _080105E8:
 	ldr r0, _080105F4  @ gEventSlots
 	ldr r2, [r0, #0xc]
 	adds r0, r5, #0
-	bl NewGoldGotPopup
+	bl NewPopup_GoldGot
 	b _0801060C
 	.align 2, 0
 _080105F4: .4byte gEventSlots
@@ -6657,7 +6657,7 @@ _0801071C:
 	lsls r0, r3, #0x10
 	asrs r0, r0, #0x10
 	adds r2, r4, #0
-	bl NewPopupVerySimple
+	bl NewPopup_VerySimple
 	b _08010740
 _0801072A:
 	ldrh r2, [r1, #6]
@@ -6704,7 +6704,7 @@ _0801075E:
 	ldrsh r1, [r1, r2]
 	lsls r1, r1, #4
 	movs r2, #0
-	bl DisplayCursor
+	bl PutMapCursor
 	b _08010796
 _0801077A:
 	adds r0, r2, #0
@@ -7367,10 +7367,10 @@ _08010C44:
 	str r4, [sp]
 _08010C4E:
 	adds r0, r5, #0
-	bl sub_8012950
+	bl StartEventWarpAnim_ret
 	b _08010C66
 _08010C56:
-	bl sub_8012974
+	bl EventWarpAnimExists_ret
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
 	cmp r0, #1

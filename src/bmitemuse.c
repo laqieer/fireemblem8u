@@ -18,6 +18,8 @@
 #include "uiselecttarget.h"
 #include "playerphase.h"
 #include "bb.h"
+#include "face.h"
+#include "bm.h"
 
 #include "constants/characters.h"
 #include "constants/items.h"
@@ -99,10 +101,10 @@ struct ProcCmd CONST_DATA gProcScr_SquareSelectWarp[] =
 
     PROC_CALL(AddSkipThread2),
 
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL(WarpSelect_OnInit),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_REPEAT(WarpSelect_OnIdle),
 
@@ -128,7 +130,7 @@ struct ProcCmd CONST_DATA gProcScr_SquareSelectTorch[] =
     PROC_CALL(AddSkipThread2),
 
     PROC_CALL(TorchSelect_OnInit),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_REPEAT(TorchSelect_OnIdle),
 
@@ -345,7 +347,7 @@ int GetItemCantUseMsgid(struct Unit* unit, int item)
 void DoItemUse(struct Unit* unit, int item)
 {
     ClearBg0Bg1();
-    DeleteFaceByIndex(0);
+    EndFaceById(0);
 
     switch (GetItemIndex(item))
     {
@@ -784,7 +786,7 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
 
 void WarpSelect_OnConfirm(struct WarpSelectProc* proc)
 {
-    sub_8003D20();
+    Font_ResetAllocation();
     HideMoveRangeGraphics();
     EndSubtitleHelp();
 
@@ -799,7 +801,7 @@ void WarpSelect_OnConfirm(struct WarpSelectProc* proc)
 
 void WarpSelect_OnCancel(struct WarpSelectProc* proc)
 {
-    sub_8003D20();
+    Font_ResetAllocation();
     HideMoveRangeGraphics();
     EndSubtitleHelp();
 
@@ -865,7 +867,7 @@ void DoUsePutTrap(struct Unit* unit, void(*func)(struct Unit*), int msgHelp)
 
 int RepairSelectOnSelect(ProcPtr proc, struct SelectTarget* target)
 {
-    sub_8003D20();
+    Font_ResetAllocation();
 
     gActionData.targetIndex = target->uid;
 
@@ -875,10 +877,10 @@ int RepairSelectOnSelect(ProcPtr proc, struct SelectTarget* target)
         16, 11);
 
     // TODO: UNIT_HAS_PORTRAIT macro?
-    if (GetPortraitStructPointer(GetUnitPortraitId(GetUnit(gActionData.targetIndex)))->img)
+    if (GetPortraitData(GetUnitPortraitId(GetUnit(gActionData.targetIndex)))->img)
     {
-        NewFace(0, GetUnitPortraitId(GetUnit(gActionData.targetIndex)), 184, 12, 2);
-        sub_8006458(0, 5);
+        StartFace(0, GetUnitPortraitId(GetUnit(gActionData.targetIndex)), 184, 12, 2);
+        SetFaceBlinkControlById(0, 5);
     }
 
     return 0x17; // TODO: Map Select Return Constants
@@ -1079,7 +1081,7 @@ void TorchSelect_OnInit(struct WarpSelectProc* proc)
     StartSubtitleHelp(proc,
         GetStringFromIndex(0x87C)); // TODO: msgid "Select an area to light up."
 
-    if (ShouldMoveCameraPosSomething(gActiveUnit->xPos, gActiveUnit->yPos))
+    if (IsCameraNotWatchingPosition(gActiveUnit->xPos, gActiveUnit->yPos))
         EnsureCameraOntoPosition(proc, gActiveUnit->xPos, gActiveUnit->yPos);
 }
 
@@ -1123,7 +1125,7 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
         PlaySoundEffect(0x6B); // TODO: song ids
     }
 
-    DisplayCursor(
+    PutMapCursor(
         gGameState.playerCursorDisplay.x,
         gGameState.playerCursorDisplay.y,
         TRUE);

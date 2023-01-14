@@ -15,16 +15,17 @@
 #include "bmmap.h"
 #include "bmarch.h"
 #include "bmusailment.h"
+#include "bmudisp.h"
 
 #include "bmtrap.h"
 
 // code.s
-void sub_80A4594(u8);
+void RecordUnitLossData(u8);
 void BWL_AddWinOrLossIdk(u8, u8, int);
 
 // trapfx.s
-void sub_801F68C(ProcPtr, int, int);
-void sub_801F6BC(ProcPtr, int, int);
+void StartFireTrapAnim(ProcPtr, int, int);
+void StartFireTrapAnim2(ProcPtr, int, int);
 
 // ev_triggercheck.s
 s8 CheckForWaitEvents(void);
@@ -33,7 +34,7 @@ struct TrapData* GetCurrentChapterBallistaePtr(void);
 struct TrapData* GetCurrentChapterBallistae2Ptr(void);
 
 // notifybox.s
-void sub_801F9FC(ProcPtr, int, char*);
+void NewPopup2_PlanA(ProcPtr, int, char*);
 
 struct UnknownBMTrapProc {
     /* 00 */ PROC_HEADER;
@@ -88,19 +89,19 @@ void sub_80374F4(struct UnknownBMTrapProc* proc) {
     struct Unit* unit = proc->unit;
 
     if (GetUnitCurrentHp(unit) <= 10) {
-        sub_80A4594(unit->pCharacterData->number);
+        RecordUnitLossData(unit->pCharacterData->number);
     }
 
     return;
 }
 
 void sub_8037510(struct UnknownBMTrapProc* proc) {
-    sub_801F68C(proc, proc->unit->xPos, proc->unit->yPos);
+    StartFireTrapAnim(proc, proc->unit->xPos, proc->unit->yPos);
     return;
 }
 
 void sub_8037528(struct UnknownBMTrapProc* proc) {
-    sub_801F6BC(proc, proc->unit->xPos, proc->unit->yPos);
+    StartFireTrapAnim2(proc, proc->unit->xPos, proc->unit->yPos);
     return;
 }
 
@@ -124,7 +125,7 @@ void sub_8037540(struct UnknownBMTrapProc* proc) {
     }
 
     gActionData.trapType = TRAP_TORCHLIGHT;
-    sub_803592C(unit, TRAP_TORCHLIGHT);
+    BeginUnitCritDamageAnim(unit, TRAP_TORCHLIGHT);
 
     return;
 }
@@ -132,7 +133,7 @@ void sub_8037540(struct UnknownBMTrapProc* proc) {
 void sub_80375A0(struct UnknownBMTrapProc* proc) {
     struct Unit* unit = proc->unit;
 
-    sub_80357A8(proc, unit, -10, -1);
+    ApplyHazardHealing(proc, unit, -10, -1);
 
     if (GetUnitCurrentHp(unit) == 0) {
         struct Unit* tmp = gActiveUnit;
@@ -202,13 +203,13 @@ int ExecTrap(ProcPtr proc, struct Unit* unit, int param_3) {
         case 0xF:
             RemoveTrap(GetTrapAt(unit->xPos, unit->yPos));
             PlaySoundEffect(0xB1);
-            sub_801F9FC(proc, -1, GetStringFromIndex(0x20));
+            NewPopup2_PlanA(proc, -1, GetStringFromIndex(0x20));
             break;
 
         case 0x10:
             RemoveTrap(GetTrapAt(unit->xPos, unit->yPos));
             PlaySoundEffect(0xB1);
-            sub_801F9FC(proc, -1, GetStringFromIndex(0x21));
+            NewPopup2_PlanA(proc, -1, GetStringFromIndex(0x21));
             UnitAddItem(unit, MakeNewItem(ITEM_MINE));
             break;
     }
@@ -244,7 +245,7 @@ s8 HandlePostActionTraps(ProcPtr proc) {
     SaveSuspendedGame(3);
 
     if (GetBattleAnimType() == 1) {
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
     }
 
     return ExecTrap(proc, gActiveUnit, 0);
@@ -259,7 +260,7 @@ s8 sub_80377F0(ProcPtr proc, struct Unit* unit) {
         MU_End(MU_GetByUnit(unit));
         RenderBmMap();
         RefreshEntityBmMaps();
-        SMS_FlushIndirect();
+        ForceSyncUnitSpriteSheet();
         return 1;
     }
 

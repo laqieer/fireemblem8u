@@ -6,6 +6,9 @@
 #include "variables.h"
 #include "chapterdata.h"
 #include "hardware.h"
+#include "bmudisp.h"
+
+s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
 void UpdateMapViewWithFog(int vision_range)
 {
@@ -15,7 +18,7 @@ void UpdateMapViewWithFog(int vision_range)
     RenderBmMapOnBg2();
     gRAMChapterData.chapterVisionRange = vision_range;
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
     RenderBmMap();
     NewBMXFADE(1);
 }
@@ -27,7 +30,7 @@ void FastUpdateMapViewWithFog(int vision_range)
 
     gRAMChapterData.chapterVisionRange = vision_range;
     RefreshEntityBmMaps();
-    SMS_UpdateFromGameData();
+    RefreshUnitSprites();
     RenderBmMap();
 }
 

@@ -1044,7 +1044,7 @@ _080504CA:
 	cmp r0, #0
 	bne _08050510
 	movs r0, #1
-	bl sub_8031EE4
+	bl ArenaSetResult
 	b _080505CC
 	.align 2, 0
 _080504FC: .4byte gUnknown_0201FB04
@@ -1059,7 +1059,7 @@ _08050510:
 	bne _08050522
 	movs r0, #2
 _0805051A:
-	bl sub_8031EE4
+	bl ArenaSetResult
 	strh r7, [r4, #2]
 	b _080505CC
 _08050522:
@@ -1122,7 +1122,7 @@ _08050586:
 	adds r0, r4, #0
 	bl sub_80533D0
 _08050598:
-	bl sub_8031EF0
+	bl ArenaContinueBattle
 	bl sub_80581EC
 	bl AnimClearAll
 	bl sub_80599E8
@@ -2596,7 +2596,7 @@ _0805106C:
 	movs r1, #0xef
 	lsls r1, r1, #1
 	bl LoadIconObjectGraphics
-	ldr r0, _08051168  @ gUnknown_0859ED70
+	ldr r0, _08051168  @ gPal_MiscUiGraphics
 	movs r1, #0x80
 	lsls r1, r1, #2
 	movs r2, #0x20
@@ -2633,7 +2633,7 @@ _08051158: .4byte 0x06013A00
 _0805115C: .4byte 0x06013E00
 _08051160: .4byte gUnknown_0203E188
 _08051164: .4byte gUnknown_0203E18C
-_08051168: .4byte gUnknown_0859ED70
+_08051168: .4byte gPal_MiscUiGraphics
 
 	THUMB_FUNC_END NewEkrGauge
 
@@ -4475,7 +4475,7 @@ _08051F18: .4byte gUnknown_0203E102
 sub_8051F1C: @ 0x08051F1C
 	push {r4, r5, r6, lr}
 	sub sp, #8
-	ldr r4, _08051F5C  @ gUnknown_0859EF00
+	ldr r4, _08051F5C  @ Pal_UIFont
 	adds r0, r4, #0
 	movs r1, #0x40
 	movs r2, #0x20
@@ -4501,7 +4501,7 @@ sub_8051F1C: @ 0x08051F1C
 	ldr r5, _08051F74  @ gUnknown_085B9354
 	b _08051F86
 	.align 2, 0
-_08051F5C: .4byte gUnknown_0859EF00
+_08051F5C: .4byte Pal_UIFont
 _08051F60: .4byte gUnknown_02017648
 _08051F64: .4byte 0x06001880
 _08051F68: .4byte gUnknown_08801C14
@@ -6796,13 +6796,13 @@ sub_80531A4: @ 0x080531A4
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldr r1, _08053208  @ gLCDControlBuffer
 	adds r1, #0x3d
 	ldrb r0, [r1]
@@ -6929,14 +6929,14 @@ sub_805328C: @ 0x0805328C
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	mov r2, r8
 	str r2, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #0
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldr r4, _08053364  @ gLCDControlBuffer
 	ldrb r0, [r4, #1]
 	movs r2, #0x20
@@ -10386,7 +10386,7 @@ _08054DF8:
 	bl sub_80715F4
 _08054E16:
 	bl RefreshEntityBmMaps
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	bl MU_EndAll
 	b _08054E3E
 	.align 2, 0
@@ -10906,14 +10906,14 @@ sub_80551B0: @ 0x080551B0
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldr r0, _08055268  @ gLCDControlBuffer
 	mov ip, r0
 	ldrb r0, [r0, #1]
@@ -12455,7 +12455,7 @@ ekrBattleStarting_8055CF0: @ 0x08055CF0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	ldr r7, _08055DF0  @ gLCDControlBuffer
 	mov r8, r7
 	mov r1, r8
@@ -13127,7 +13127,7 @@ ekrBattleEnding_8056288: @ 0x08056288
 	bl EndEkrGauge
 	adds r0, r4, #0
 	bl Proc_Break
-	bl SetupBackgroundForWeatherMaybe
+	bl InitBmBgLayers
 	ldr r0, _0805630C  @ gLCDControlBuffer
 	mov ip, r0
 	ldrb r0, [r0, #1]
@@ -13191,10 +13191,10 @@ ekrBattleEnding_8056310: @ 0x08056310
 	strh r4, [r5, #0x2c]
 	movs r0, #0xf
 	strh r0, [r5, #0x2e]
-	bl SMS_ClearUsageTable
+	bl ResetUnitSprites
 	bl BMapDispResume_FromBattleDelayed
-	bl SMS_UpdateFromGameData
-	bl SMS_FlushIndirect
+	bl RefreshUnitSprites
+	bl ForceSyncUnitSpriteSheet
 	bl SetupMapSpritesPalettes
 	movs r0, #3
 	movs r1, #0
@@ -13206,7 +13206,7 @@ ekrBattleEnding_8056310: @ 0x08056310
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	ldr r2, _0805638C  @ gLCDControlBuffer
 	adds r3, r2, #0
 	adds r3, #0x34
@@ -13389,13 +13389,13 @@ sub_805649C: @ 0x0805649C
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	ldr r1, _080564F8  @ gLCDControlBuffer
 	adds r1, #0x3d
 	ldrb r0, [r1]
@@ -23381,9 +23381,9 @@ sub_805B320: @ 0x0805B320
 	adds r4, r0, #0
 	bl EndEkrBattleDeamon
 	bl EndEkrGauge
-	ldr r0, _0805B344  @ SomeUpdateRoutine
+	ldr r0, _0805B344  @ OnGameLoopMain
 	bl SetMainUpdateRoutine
-	ldr r0, _0805B348  @ GeneralVBlankHandler
+	ldr r0, _0805B348  @ OnVBlank
 	bl SetInterrupt_LCDVBlank
 	adds r0, r4, #0
 	bl Proc_Break
@@ -23391,8 +23391,8 @@ sub_805B320: @ 0x0805B320
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0805B344: .4byte SomeUpdateRoutine
-_0805B348: .4byte GeneralVBlankHandler
+_0805B344: .4byte OnGameLoopMain
+_0805B348: .4byte OnVBlank
 
 	THUMB_FUNC_END sub_805B320
 
@@ -37072,14 +37072,14 @@ _08061F26:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	mov r1, r8
 	str r1, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	add sp, #4
 	pop {r3}
 	mov r8, r3
@@ -37460,7 +37460,7 @@ _0806222A:
 	ands r0, r1
 	str r0, [r4, #0xc]
 	bl RefreshEntityBmMaps
-	bl SMS_UpdateFromGameData
+	bl RefreshUnitSprites
 	bl MU_EndAll
 _08062260:
 	adds r0, r6, #0
@@ -38897,14 +38897,14 @@ sub_8062D30: @ 0x08062D30
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	mov r1, r8
 	str r1, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	adds r4, #0x3d
 	ldrb r0, [r4]
 	orrs r0, r6
@@ -44362,14 +44362,14 @@ _080658CE:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	movs r0, #1
 	str r0, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	adds r0, r5, #0
 	movs r1, #0x3c
 	movs r2, #0x1e
@@ -72103,14 +72103,14 @@ sub_80730C4: @ 0x080730C4
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	mov r1, r8
 	str r1, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #1
 	movs r3, #1
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	adds r4, #0x3d
 	ldrb r0, [r4]
 	orrs r0, r6
@@ -73606,8 +73606,8 @@ _08073DBA:
 	adds r1, r4, #0
 	movs r2, #0xbc
 	movs r3, #0x50
-	bl NewFace
-	ldr r0, _08073E0C  @ gUnknown_03004980
+	bl StartFace
+	ldr r0, _08073E0C  @ gFaces
 	ldr r1, [r0]
 	movs r2, #0
 	movs r0, #0xa0
@@ -73631,7 +73631,7 @@ _08073DBA:
 	.align 2, 0
 _08073E04: .4byte gUnknown_087592CC
 _08073E08: .4byte 0x00001042
-_08073E0C: .4byte gUnknown_03004980
+_08073E0C: .4byte gFaces
 _08073E10: .4byte gBG2TilemapBuffer
 _08073E14: .4byte 0x01000200
 
@@ -73794,7 +73794,7 @@ _08073EE2:
 	mov r3, r9
 	bl Interpolate
 	strh r0, [r5]
-	ldr r0, _08073FA8  @ gUnknown_03004980
+	ldr r0, _08073FA8  @ gFaces
 	ldr r1, [r0]
 	movs r0, #0x50
 	mov r2, r8
@@ -73840,7 +73840,7 @@ _08073F8E:
 	.align 2, 0
 _08073FA0: .4byte gUnknown_02020134
 _08073FA4: .4byte gUnknown_02020136
-_08073FA8: .4byte gUnknown_03004980
+_08073FA8: .4byte gFaces
 _08073FAC: .4byte gUnknown_020165C8
 _08073FB0: .4byte gPaletteBuffer
 
@@ -74316,7 +74316,7 @@ sub_80742F8: @ 0x080742F8
 	movs r2, #0
 	bl Interpolate
 	adds r6, r0, #0
-	ldr r0, _080743B4  @ gUnknown_03004980
+	ldr r0, _080743B4  @ gFaces
 	ldr r1, [r0]
 	movs r0, #0x50
 	subs r0, r0, r5
@@ -74362,7 +74362,7 @@ _080743A2:
 	.align 2, 0
 _080743AC: .4byte gUnknown_02020134
 _080743B0: .4byte gUnknown_02020136
-_080743B4: .4byte gUnknown_03004980
+_080743B4: .4byte gFaces
 _080743B8: .4byte gUnknown_020165C8
 _080743BC: .4byte gPaletteBuffer
 
@@ -74532,7 +74532,7 @@ _08074500:
 	strb r0, [r3, #0x18]
 _0807452C:
 	movs r0, #0
-	bl DeleteFaceByIndex
+	bl EndFaceById
 	adds r0, r5, #0
 	bl Proc_Break
 	add sp, #0x2c
@@ -77299,7 +77299,7 @@ sub_8075A50: @ 0x08075A50
 	push {lr}
 	lsls r1, r0, #1
 	adds r1, r1, r0
-	ldr r0, _08075A68  @ gUnknown_0875A794
+	ldr r0, _08075A68  @ gBattleBGDataTable
 	lsls r1, r1, #2
 	adds r1, r1, r0
 	ldr r0, [r1]
@@ -77308,7 +77308,7 @@ sub_8075A50: @ 0x08075A50
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08075A68: .4byte gUnknown_0875A794
+_08075A68: .4byte gBattleBGDataTable
 _08075A6C: .4byte 0x06008000
 
 	THUMB_FUNC_END sub_8075A50
@@ -77320,7 +77320,7 @@ sub_8075A70: @ 0x08075A70
 	lsls r1, r0, #1
 	adds r1, r1, r0
 	adds r1, #1
-	ldr r0, _08075AA8  @ gUnknown_0875A794
+	ldr r0, _08075AA8  @ gBattleBGDataTable
 	lsls r1, r1, #2
 	adds r1, r1, r0
 	ldr r0, [r1]
@@ -77341,7 +77341,7 @@ sub_8075A70: @ 0x08075A70
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08075AA8: .4byte gUnknown_0875A794
+_08075AA8: .4byte gBattleBGDataTable
 _08075AAC: .4byte gUnknown_02019790
 _08075AB0: .4byte gBG3TilemapBuffer
 
@@ -77353,7 +77353,7 @@ sub_8075AB4: @ 0x08075AB4
 	lsls r1, r0, #1
 	adds r1, r1, r0
 	adds r1, #2
-	ldr r0, _08075AD0  @ gUnknown_0875A794
+	ldr r0, _08075AD0  @ gBattleBGDataTable
 	lsls r1, r1, #2
 	adds r1, r1, r0
 	ldr r0, [r1]
@@ -77362,7 +77362,7 @@ sub_8075AB4: @ 0x08075AB4
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08075AD0: .4byte gUnknown_0875A794
+_08075AD0: .4byte gBattleBGDataTable
 _08075AD4: .4byte gUnknown_02022968
 
 	THUMB_FUNC_END sub_8075AB4
@@ -78709,9 +78709,9 @@ sub_8076514: @ 0x08076514
 	adds r4, r0, #0
 	bl EndEkrBattleDeamon
 	bl EndEkrGauge
-	ldr r0, _08076538  @ SomeUpdateRoutine
+	ldr r0, _08076538  @ OnGameLoopMain
 	bl SetMainUpdateRoutine
-	ldr r0, _0807653C  @ GeneralVBlankHandler
+	ldr r0, _0807653C  @ OnVBlank
 	bl SetInterrupt_LCDVBlank
 	adds r0, r4, #0
 	bl Proc_Break
@@ -78719,8 +78719,8 @@ sub_8076514: @ 0x08076514
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08076538: .4byte SomeUpdateRoutine
-_0807653C: .4byte GeneralVBlankHandler
+_08076538: .4byte OnGameLoopMain
+_0807653C: .4byte OnVBlank
 
 	THUMB_FUNC_END sub_8076514
 
@@ -81941,13 +81941,13 @@ sub_8077DC8: @ 0x08077DC8
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001ED0
+	bl SetBlendTargetA
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl sub_8001F0C
+	bl SetBlendTargetB
 	add sp, #0xc
 	pop {r4, r5}
 	pop {r0}

@@ -20,7 +20,7 @@ struct CharacterData
     /* 06 */ u16 portraitId;
     /* 08 */ u8 miniPortrait;
     /* 09 */ u8 affinity;
-    /* 0A */ u8 _u0A;
+    /* 0A */ u8 sort_order;
 
     /* 0B */ s8 baseLevel;
     /* 0C */ s8 baseHP;
@@ -51,7 +51,9 @@ struct CharacterData
     /* 28 */ u32 attributes;
 
     /* 2C */ const struct SupportData* pSupportData;
-    /* 30 */ void* _pU30;
+    /* 30 */ u8 visit_group;
+
+    /* 31 */ u8 _pad_[0x34 - 0x31];
 };
 
 struct ClassData
@@ -63,7 +65,7 @@ struct ClassData
     /* 06 */ u8 SMSId;
     /* 07 */ u8 slowWalking;
     /* 08 */ u16 defaultPortraitId;
-    /* 0A */ u8 _u0A;
+    /* 0A */ u8 sort_order;
 
     /* 0B */ s8 baseHP;
     /* 0C */ s8 basePow;
@@ -230,7 +232,7 @@ enum
     // = (1 << 24),
     US_BIT25 = (1 << 25),
     US_BIT26 = (1 << 26),
-    // = (1 << 27),
+    US_BIT27 = (1 << 27),
     // = (1 << 28),
     // = (1 << 29),
     // = (1 << 30),
@@ -324,9 +326,21 @@ enum
     UNIT_USEBIT_STAFF  = (1 << 1),
 };
 
+enum unit_affinity_index {
+    UNIT_AFFIN_FIRE = 1,
+    UNIT_AFFIN_THUNDER,
+    UNIT_AFFIN_WIND,
+    UNIT_AFFIN_ICE,
+    UNIT_AFFIN_DARK,
+    UNIT_AFFIN_LIGHT,
+    UNIT_AFFIN_ANIMA,
+};
+
 // TODO: MOVE ELSEWHERE
-extern const struct ClassData gClassData[]; // gClassData
-extern const struct CharacterData gCharacterData[]; // gCharacterData
+extern CONST_DATA struct ClassData gClassData[]; // gClassData
+extern CONST_DATA struct CharacterData gCharacterData[]; // gCharacterData
+extern struct UnitDefinition gUnitDef1;
+extern struct UnitDefinition gUnitDef2;
 
 void ClearUnits(void);
 void ClearUnit(struct Unit* unit);
@@ -420,10 +434,10 @@ struct Unit* GetUnit(int id);
 const struct ClassData* GetClassData(int classId);
 const struct CharacterData* GetCharacterData(int charId);
 void UnitRemoveItem(struct Unit* unit, int slot);
-s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
 #define UNIT_IS_VALID(aUnit) ((aUnit) && (aUnit)->pCharacterData)
-
+#define UNIT_CHAR_ID(aUnit) ((aUnit)->pCharacterData->number)
+#define UNIT_CLASS_ID(aUnit) ((aUnit)->pClassData->number)
 #define UNIT_FACTION(aUnit) ((aUnit)->index & 0xC0)
 
 #define UNIT_CATTRIBUTES(aUnit) ((aUnit)->pCharacterData->attributes | (aUnit)->pClassData->attributes)

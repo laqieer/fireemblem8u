@@ -22,7 +22,9 @@ s8 IsThereClosedDoorAt(s8, s8);
 
 // code.s
 void BWL_AddWinOrLossIdk(u8, u8, int);
-void sub_80A4594(u8);
+void RecordUnitLossData(u8);
+
+s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
 void ForEachUnitInMovement(void(*func)(struct Unit* unit)) {
     int ix;
@@ -1241,7 +1243,7 @@ void sub_8026414(int unk) {
 
         if (GetUnitCurrentHp(unit) <= target->extra) {
             BWL_AddWinOrLossIdk(unit->pCharacterData->number, 0, unk);
-            sub_80A4594(unit->pCharacterData->number);
+            RecordUnitLossData(unit->pCharacterData->number);
         }
     }
 

@@ -24,24 +24,23 @@
 #include "uichapterstatus.h"
 #include "player_interface.h"
 #include "bb.h"
+#include "bmshop.h"
+#include "uiconfig.h"
+#include "bmudisp.h"
+#include "bm.h"
 
 #include "sallycursor.h"
 
 // hino.s
 void ArchiveCurrentPalettes();
 void WriteFadedPaletteFromArchive(int, int, int, int);
-void ContinueUntilSomeTransistion6CExists(ProcPtr);
+void WaitForFade(ProcPtr);
 void sub_8013800();
 void sub_8013844(ProcPtr);
-void sub_8013D68(ProcPtr);
+void StartFadeInBlackMedium(ProcPtr);
 void sub_8013D80(ProcPtr);
 void sub_8013D8C(ProcPtr);
 void sub_8013DA4(ProcPtr);
-
-// bmusort.s
-void InitUnitStack(u8*); // accepts generic buffer
-void PushUnit(struct Unit*);
-void LoadPlayerUnitsFromUnitStack2();
 
 // ev_triggercheck.s
 const struct UnitDefinition* GetChapterAllyUnitDataPointer();
@@ -52,32 +51,28 @@ void InitPlayerUnitPositionsForPrepScreen();
 void sub_801240C();
 
 // code.s
-bool8 IsCharacterForceDeployed(int);
+s8 IsCharacterForceDeployed(int);
 void SortPlayerUnitsForPrepScreen();
-void MakeShopArmory(int, int, ProcPtr);
-void MakeShopVendor(int, int, ProcPtr);
-bool8 sub_8094FF4();
-int sub_809541C();
-int sub_8095970();
-void sub_8096454(ProcPtr);
-void sub_80966B0(ProcPtr);
-void sub_8096FAC();
-void sub_8096FD0(const void*);
-void sub_8096FEC(const void*);
-void sub_8097008(const void*);
-void sub_8097024(int, const void*, int, int, int);
-void sub_80970CC(int);
-void sub_8097154(int, int);
-void sub_80972B0();
-void sub_8097340(ProcPtr);
-void sub_8097394(ProcPtr);
-void sub_80A48F0(u8);
-void sub_80ADDD4(ProcPtr);
+u8 CanPrepScreenSave();
+int CalcForceDeployedUnitCounts();
+void StartPrepAtMenu(ProcPtr);
+void PrepAtMenuExists(ProcPtr);
+void StartPrepScreenMenu(ProcPtr);
+void SetPrepScreenMenuOnBPress(const void*);
+void SetPrepScreenMenuOnStartPress(const void*);
+void SetPrepScreenMenuOnEnd(const void*);
+void SetPrepScreenMenuItem(int, const void*, int, int, int);
+void SetPrepScreenMenuSelectedItem(int);
+void DrawPrepScreenMenuFrameAt(int, int);
+int PrepScreenMenuExists();
+void EnablePrepScreenMenu(ProcPtr);
+void BWL_FavorReduced_H(u8);
 void BWL_IncrementDeployCountMaybe(u8);
 void sub_80B9FC0();
 void Make6C_savemenu2(ProcPtr);
 void NewPrepScreenTraineePromotionManager(ProcPtr);
-void PrepScreenTraineePromotionManagerExists(ProcPtr);
+int PrepScreenTraineePromotionManagerExists(ProcPtr);
+int CheckSomethingSomewhere();
 
 // asmcs.s
 void nullsub_20(ProcPtr);
@@ -87,7 +82,6 @@ extern struct Vec2 gActiveUnitMoveOrigin;
 
 extern struct ProcCmd CONST_DATA gProcScr_ADJUSTSFROMXI[];
 extern u16 CONST_DATA gUnknown_085A0EA0[]; // ap
-extern struct ProcCmd CONST_DATA gUnknown_08A2ED88[];
 
 static struct ProcCmd CONST_DATA sProcScr_SALLYCURSORHelpPrompt[] = {
     PROC_CALL(sub_8033548),
@@ -116,18 +110,18 @@ struct ProcCmd CONST_DATA gProcScr_SALLYCURSOR[] = {
     PROC_WHILE(PrepScreenTraineePromotionManagerExists),
 
 PROC_LABEL(2),
-    PROC_CALL(sub_8096454),
-    PROC_WHILE(sub_80966B0),
+    PROC_CALL(StartPrepAtMenu),
+    PROC_WHILE(PrepAtMenuExists),
     PROC_SLEEP(0),
     PROC_CALL(sub_80338C0),
 
     PROC_GOTO(0x32),
 
 PROC_LABEL(0x33),
-    PROC_CALL(sub_8013D68),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
-    PROC_CALL(sub_8096454),
-    PROC_WHILE(sub_80966B0),
+    PROC_CALL(StartFadeInBlackMedium),
+    PROC_REPEAT(WaitForFade),
+    PROC_CALL(StartPrepAtMenu),
+    PROC_WHILE(PrepAtMenuExists),
     PROC_SLEEP(0),
 
     // fallthrough
@@ -136,24 +130,24 @@ PROC_LABEL(0x32),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
-    PROC_CALL(SMS_UpdateFromGameData),
-    PROC_CALL(sub_80334BC),
+    PROC_CALL(RefreshUnitSprites),
+    PROC_CALL(PrepScreenProc_InitMapMenu),
     PROC_CALL(sub_80334CC),
     PROC_CALL(sub_8013D8C),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
 
     PROC_GOTO(0x3D),
 
 PROC_LABEL(0),
     PROC_CALL(sub_8033514),
     PROC_WHILE(sub_8013844),
-    PROC_CALL(sub_8033648),
+    PROC_CALL(PrepScreenProc_StartMapMenu),
 
     // fallthrough
 
 PROC_LABEL(0x3D),
-    PROC_CALL(sub_8097394),
-    PROC_WHILE(sub_8097340),
+    PROC_CALL(EnablePrepScreenMenu),
+    PROC_WHILE(PrepScreenMenuExists),
     PROC_CALL(sub_80334E8),
     PROC_WHILE(sub_8013844),
 
@@ -163,10 +157,10 @@ PROC_LABEL(9),
     PROC_WHILE(IsSubtitleHelpActive),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
-    PROC_CALL(SMS_UpdateFromGameData),
+    PROC_CALL(RefreshUnitSprites),
     PROC_CALL(StartPlayerPhaseSideWindows),
     PROC_REPEAT(sub_8033940),
-    PROC_REPEAT(sub_8033978),
+    PROC_REPEAT(PrepScreenProc_MapIdle),
 
     // fallthrough
 
@@ -174,20 +168,20 @@ PROC_LABEL(1),
     PROC_CALL(HideMoveRangeGraphics),
     PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_CALL(DisplayActiveUnitEffectRange),
-    PROC_REPEAT(sub_8033F34),
+    PROC_REPEAT(PrepScreenProc_MapMovementLoop),
 
     PROC_GOTO(9),
 
 PROC_LABEL(0x35),
     PROC_CALL(sub_803348C),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
     PROC_CALL(SALLYCURSOR_DeploySupplyUnit), // add convoy unit?
 
     PROC_GOTO(0x34),
 
 PROC_LABEL(0x36),
     PROC_CALL(sub_803348C),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
     PROC_CALL(SALLYCURSOR_RemoveSupplyUnit), // remove convoy unit?
 
     PROC_GOTO(0x34),
@@ -214,15 +208,15 @@ PROC_LABEL(6),
 PROC_LABEL(3),
     PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_CALL(SALLYCURSOR6C_StartUnitSwap),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
     PROC_REPEAT(sub_8033C90),
     PROC_CALL(HideMoveRangeGraphics),
     PROC_CALL(sub_8033E08),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
     PROC_WHILE(PrepUnitSwapProcExits),
     PROC_CALL(sub_8033E8C),
     PROC_CALL(RefreshEntityBmMaps),
-    PROC_CALL(SMS_UpdateFromGameData),
+    PROC_CALL(RefreshUnitSprites),
     PROC_SLEEP(0),
     PROC_CALL(sub_8033EA4),
 
@@ -230,7 +224,7 @@ PROC_LABEL(3),
 
 PROC_LABEL(4),
     PROC_CALL(HideMoveRangeGraphics),
-    PROC_WHILE_EXISTS(gUnknown_0859A548),
+    PROC_WHILE_EXISTS(gProcScr_CamMove),
     PROC_CALL(sub_8033DD8),
     PROC_SLEEP(0),
 
@@ -242,7 +236,7 @@ PROC_LABEL(0xB),
 
 PROC_LABEL(0x39),
     PROC_CALL(sub_8013D80),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(sub_803334C),
     PROC_CALL(sub_8033EC0),
@@ -253,7 +247,7 @@ PROC_LABEL(0x39),
 
 PROC_LABEL(0x38),
     PROC_CALL(sub_8013D80),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(sub_803334C),
     PROC_CALL(sub_808E79C),
@@ -264,10 +258,10 @@ PROC_LABEL(0x38),
 
 PROC_LABEL(0x3B),
     PROC_CALL(sub_8013D80),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(sub_803334C),
-    PROC_CALL(sub_803410C),
+    PROC_CALL(StartPrepSaveScreen),
     PROC_SLEEP(0),
     PROC_CALL(BMapDispResume),
     PROC_CALL(sub_8034168),
@@ -275,13 +269,13 @@ PROC_LABEL(0x3B),
     PROC_GOTO(0x3E),
 
 PROC_LABEL(0x37),
-    PROC_CALL(sub_8013D68),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_CALL(StartFadeInBlackMedium),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(sub_8034078),
     PROC_CALL(nullsub_20),
     PROC_SLEEP(0),
     PROC_CALL(sub_801240C),
-    PROC_CALL(sub_8034278),
+    PROC_CALL(EndPrepScreen),
 
     PROC_BLOCK,
 
@@ -289,17 +283,17 @@ PROC_LABEL(0x3E),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
-    PROC_CALL(SMS_UpdateFromGameData),
-    PROC_CALL(sub_8033648),
+    PROC_CALL(RefreshUnitSprites),
+    PROC_CALL(PrepScreenProc_StartMapMenu),
     PROC_CALL(sub_80334CC),
     PROC_CALL(sub_8013DA4),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
 
     PROC_GOTO(0x3D),
 
 PROC_LABEL(0x3C),
-    PROC_CALL(sub_8013D68),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_CALL(StartFadeInBlackMedium),
+    PROC_REPEAT(WaitForFade),
     PROC_CALL(HideMoveRangeGraphics),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(CallCursorShop),
@@ -308,17 +302,17 @@ PROC_LABEL(0x3C),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
-    PROC_CALL(SMS_UpdateFromGameData),
+    PROC_CALL(RefreshUnitSprites),
     PROC_CALL(sub_8034194),
     PROC_CALL(sub_8033608),
     PROC_CALL(sub_8013D8C),
-    PROC_REPEAT(ContinueUntilSomeTransistion6CExists),
+    PROC_REPEAT(WaitForFade),
 
     PROC_GOTO(9),
 
 PROC_LABEL(0x3A),
     PROC_SLEEP(0),
-    PROC_CALL(sub_8033648),
+    PROC_CALL(PrepScreenProc_StartMapMenu),
 
     PROC_GOTO(0x3D),
 
@@ -376,7 +370,7 @@ void sub_80332D0() {
     const struct UnitDefinition* uDef = GetChapterAllyUnitDataPointer();
     BmMapFill(gBmMapRange, 0);
     BmMapFill(gBmMapMovement, -1);
-    uDef += sub_809541C(); // TODO - Seems to be count of non-deployable / force-deployed characters
+    uDef += CalcForceDeployedUnitCounts(); // TODO - Seems to be count of non-deployable / force-deployed characters
 
     if (uDef->charIndex != 0) {
         while (uDef->charIndex) {
@@ -391,18 +385,18 @@ void sub_80332D0() {
 }
 
 void sub_803334C() {
-    sub_80972B0();
+    EndPrepScreenMenu();
     return;
 }
 
-void sub_8033358(struct UnknownSALLYCURSORProc* proc) {
+void PrepMapMenu_OnViewMap(struct UnknownSALLYCURSORProc* proc) {
     proc->unk_58 = 1;
     Proc_Break(proc);
     sub_803334C();
     return;
 }
 
-void sub_803336C(struct UnknownSALLYCURSORProc* proc) {
+void PrepMapMenu_OnFormation(struct UnknownSALLYCURSORProc* proc) {
     s16 x, y;
     proc->unk_58 = 2;
 
@@ -413,21 +407,21 @@ void sub_803336C(struct UnknownSALLYCURSORProc* proc) {
 
     x = gGameState.playerCursorDisplay.x;
     y = gGameState.playerCursorDisplay.y;
-    DisplayCursor(x, y, 0);
+    PutMapCursor(x, y, 0);
 
     Proc_Break(proc);
     sub_803334C();
 }
 
-bool8 sub_80333A4(ProcPtr proc) {
-    if (sub_8095970() == 0) {
+bool8 PrepMapMenu_OnStartPress(ProcPtr proc) {
+    if (PrepGetDeployedUnitAmt() == 0) {
         return 0;
     }
     Proc_Goto(proc, 55);
     return 1;
 }
 
-bool8 sub_80333C4(ProcPtr proc) {
+bool8 PrepMapMenu_OnBPress(ProcPtr proc) {
     Proc_Goto(proc, 51);
     return 1;
 }
@@ -437,16 +431,16 @@ void SALLYCURSOR_DeploySupplyUnit() {
     if (unit) {
         unit->state &= ~US_NOT_DEPLOYED;
 
-        unit->xPos = GetROMChapterStruct(gRAMChapterData.chapterIndex)->_unk81[1];
-        unit->yPos = GetROMChapterStruct(gRAMChapterData.chapterIndex)->_unk81[3];
+        unit->xPos = GetROMChapterStruct(gRAMChapterData.chapterIndex)->merchantPosX;
+        unit->yPos = GetROMChapterStruct(gRAMChapterData.chapterIndex)->merchantPosY;
 
         RefreshEntityBmMaps();
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
     }
     return;
 }
 
-void sub_803341C(struct UnknownSALLYCURSORProc* proc) {
+void PrepMapMenu_OnOptions(struct UnknownSALLYCURSORProc* proc) {
     proc->unk_58 = 8;
     Proc_Goto(proc, 0x39);
     return;
@@ -461,12 +455,12 @@ void SALLYCURSOR_RemoveSupplyUnit() {
         unit->yPos = 0xFF;
 
         RefreshEntityBmMaps();
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
     }
     return;
 }
 
-void sub_8033458(struct UnknownSALLYCURSORProc* proc) {
+void PrepMapMenu_OnSave(struct UnknownSALLYCURSORProc* proc) {
     proc->unk_58 = 9;
     Proc_Goto(proc, 0x3B);
     return;
@@ -482,14 +476,14 @@ void sub_8033468(struct UnknownSALLYCURSORProc* proc) {
 
 void sub_803348C(ProcPtr proc) {
     EnsureCameraOntoPosition(proc,
-        GetROMChapterStruct(gRAMChapterData.chapterIndex)->_unk81[1],
-            GetROMChapterStruct(gRAMChapterData.chapterIndex)->_unk81[3]);
+        GetROMChapterStruct(gRAMChapterData.chapterIndex)->merchantPosX,
+            GetROMChapterStruct(gRAMChapterData.chapterIndex)->merchantPosY);
     return;
 }
 
-void sub_80334BC(struct UnknownSALLYCURSORProc* proc) {
+void PrepScreenProc_InitMapMenu(struct UnknownSALLYCURSORProc* proc) {
     proc->unk_58 = 1;
-    sub_8033648(proc);
+    PrepScreenProc_StartMapMenu(proc);
     return;
 }
 
@@ -535,44 +529,44 @@ void sub_8033620(ProcPtr proc) {
     Proc_Start(sProcScr_SALLYCURSORHelpPrompt, proc);
 }
 
-void sub_8033634() {
+void PrepMapMenu_OnEnd() {
     EndHelpPromptSprite();
     Proc_EndEach(sProcScr_SALLYCURSORHelpPrompt);
 }
 
-void sub_8033648(struct UnknownSALLYCURSORProc* proc) {
+void PrepScreenProc_StartMapMenu(struct UnknownSALLYCURSORProc* proc) {
     LoadDialogueBoxGfx(0, -1);
     Font_InitForUIDefault();
     EndPlayerPhaseSideWindows();
     HideMoveRangeGraphics();
 
-    sub_8096FAC(proc);
+    StartPrepScreenMenu(proc);
 
-    sub_8097024(1, *sub_8033358, 0, 0x590, 0x5BB);
+    SetPrepScreenMenuItem(1, *PrepMapMenu_OnViewMap, 0, 0x590, 0x5BB);
 
-    sub_8097024(2, *sub_803336C, (sub_8095970() ? 0 : 1), 0x591, 0x5BC);
+    SetPrepScreenMenuItem(2, *PrepMapMenu_OnFormation, (PrepGetDeployedUnitAmt() ? 0 : 1), 0x591, 0x5BC);
 
-    sub_8097024(8, *sub_803341C, 0, 0x592, 0x5BD);
+    SetPrepScreenMenuItem(8, *PrepMapMenu_OnOptions, 0, 0x592, 0x5BD);
 
-    if ((sub_8094FF4() << 0x18) != 0) {
-        sub_8097024(9, *sub_8033458, 0, 0x579, 0x5BE);
+    if (CanPrepScreenSave() != 0) {
+        SetPrepScreenMenuItem(9, *PrepMapMenu_OnSave, 0, 0x579, 0x5BE);
     } else {
-        sub_8097024(9, *sub_8033458, 1, 0x579, 0x5BE);
+        SetPrepScreenMenuItem(9, *PrepMapMenu_OnSave, 1, 0x579, 0x5BE);
     }
 
     sub_8033620(proc);
-    sub_8096FD0(*sub_80333C4);
-    sub_8096FEC(*sub_80333A4);
-    sub_8097008(*sub_8033634);
-    sub_8097154(0xA, 2);
+    SetPrepScreenMenuOnBPress(*PrepMapMenu_OnBPress);
+    SetPrepScreenMenuOnStartPress(*PrepMapMenu_OnStartPress);
+    SetPrepScreenMenuOnEnd(*PrepMapMenu_OnEnd);
+    DrawPrepScreenMenuFrameAt(0xA, 2);
 
-    sub_80970CC(proc->unk_58);
+    SetPrepScreenMenuSelectedItem(proc->unk_58);
     BG_EnableSyncByMask(3);
     return;
 }
 
 bool8 CanCharacterBePrepMoved(int unitId) {
-    if ((IsCharacterForceDeployed(unitId) << 0x18) == 0) {
+    if ((IsCharacterForceDeployed(unitId)) == 0) {
         if (unitId != 0x100) {
             return 1;
         }
@@ -668,8 +662,8 @@ void InitPrepScreenUnitsAndCamera() {
         gRAMChapterData.chapterStateBits |= CHAPTER_FLAG_PREPSCREEN;
     }
 
-    gGameState.camera.x = sub_8015A40(0);
-    gGameState.camera.y = sub_8015A6C(0);
+    gGameState.camera.x = GetCameraCenteredX(0);
+    gGameState.camera.y = GetCameraCenteredY(0);
     gGameState.gameStateBits |= CHAPTER_FLAG_PREPSCREEN;
 
     RefreshEntityBmMaps();
@@ -684,17 +678,17 @@ void sub_80338C0() {
     s8 y;
     struct Unit* unit = GetUnitFromCharId(GetPlayerLeaderUnitId());
 
-    if (unit && sub_8095970()) {
+    if (unit && PrepGetDeployedUnitAmt()) {
         SetCursorMapPosition(unit->xPos, unit->yPos);
     } else {
         uDef = GetChapterAllyUnitDataPointer();
-        uDef = uDef + sub_809541C();
+        uDef = uDef + CalcForceDeployedUnitCounts();
         GetPreferredPositionForUNIT(uDef, &x, &y, 0);
         SetCursorMapPosition(x, y);
     }
 
-    gGameState.camera.x = sub_8015A40(gGameState.playerCursor.x * 16);
-    gGameState.camera.y = sub_8015A6C(gGameState.playerCursor.y * 16);
+    gGameState.camera.x = GetCameraCenteredX(gGameState.playerCursor.x * 16);
+    gGameState.camera.y = GetCameraCenteredY(gGameState.playerCursor.y * 16);
 
     return;
 }
@@ -708,13 +702,13 @@ void sub_8033940(struct UnknownSALLYCURSORProc* proc) {
         Proc_Break(proc);
     }
 
-    DisplayCursor(gGameState.playerCursorDisplay.x,
+    PutMapCursor(gGameState.playerCursorDisplay.x,
         gGameState.playerCursorDisplay.y, 0);
 
     return;
 }
 
-void sub_8033978(ProcPtr proc) {
+void PrepScreenProc_MapIdle(ProcPtr proc) {
     HandlePlayerCursorMovement();
     if (!DoesBMXFADEExist()) {
         if (L_BUTTON & gKeyStatusPtr->newKeys) {
@@ -799,7 +793,7 @@ void sub_8033978(ProcPtr proc) {
     }
 
     showcursor:
-    DisplayCursor(gGameState.playerCursorDisplay.x, gGameState.playerCursorDisplay.y, 0);
+    PutMapCursor(gGameState.playerCursorDisplay.x, gGameState.playerCursorDisplay.y, 0);
 
     return;
 }
@@ -909,15 +903,15 @@ void sub_8033EA4() {
 }
 
 void sub_8033EC0(ProcPtr proc) {
-    Proc_StartBlocking(gUnknown_08A2ED88, proc);
+    Proc_StartBlocking(gProcScr_Config2, proc);
     return;
 }
 
 void CallCursorShop(ProcPtr proc) {
     struct EventCheckBuffer r0;
-    const struct ChapterEventInfo *einfo = GetChapterEventDataPointer(gRAMChapterData.chapterIndex);
+    const struct ChapterEventGroup *einfo = GetChapterEventDataPointer(gRAMChapterData.chapterIndex);
     struct EventCheckBuffer *buf;
-    r0.eventDef = einfo->unk_08;
+    r0.eventDef = einfo->locationBasedEvents;
 
     r0.xPos = gGameState.playerCursor.x;
     r0.yPos = gGameState.playerCursor.y;
@@ -928,17 +922,17 @@ void CallCursorShop(ProcPtr proc) {
 
     switch (r0.commandId) {
         case 0x16:
-            MakeShopArmory(0, r0.eventCode, proc);
+            StartArmoryScreen(0, (u16*) r0.eventCode, proc);
             break;
         case 0x17:
-            MakeShopVendor(0, r0.eventCode, proc);
+            StartVendorScreen(0, (u16*) r0.eventCode, proc);
             break;
     }
 
     return;
 }
 
-void sub_8033F34(ProcPtr proc) {
+void PrepScreenProc_MapMovementLoop(ProcPtr proc) {
     HandlePlayerCursorMovement();
 
     if (gKeyStatusPtr->newKeys & (A_BUTTON | B_BUTTON)) {
@@ -948,7 +942,7 @@ void sub_8033F34(ProcPtr proc) {
 
         HideMoveRangeGraphics();
         RefreshEntityBmMaps();
-        SMS_UpdateFromGameData();
+        RefreshUnitSprites();
 
         PlaySoundEffect(0x6B);
         Proc_Goto(proc, 9);
@@ -981,14 +975,14 @@ void sub_8033F34(ProcPtr proc) {
         }
     }
 
-    DisplayCursor(gGameState.playerCursorDisplay.x, gGameState.playerCursorDisplay.y, 1);
+    PutMapCursor(gGameState.playerCursorDisplay.x, gGameState.playerCursorDisplay.y, 1);
 
     return;
 }
 
 void sub_8034078(ProcPtr proc) {
     SetupBackgrounds(0);
-    sub_80ADDD4(proc);
+    EndAllProcChildren(proc);
     return;
 }
 
@@ -1012,7 +1006,7 @@ void sub_8034090(ProcPtr proc) {
     return;
 }
 
-void sub_803410C(ProcPtr proc) {
+void StartPrepSaveScreen(ProcPtr proc) {
     gRAMChapterData.unk4A_2 = 2;
 
     if (!(0x20 & gRAMChapterData.chapterStateBits) && ((GetChapterThing() - 1) <= 1)) {
@@ -1037,7 +1031,7 @@ void sub_8034194() {
         return;
     }
 
-    if (GMAP_STATE_BIT0 & gUnknown_03005280.state) {
+    if (GMAP_STATE_BIT0 & gGMData.state) {
         sub_80B9FC0();
         return;
     }
@@ -1080,7 +1074,7 @@ void ShrinkPlayerUnits() {
         return;
     }
 
-    InitUnitStack(gUnknown_02020188);
+    InitUnitStack(gGenericBuffer);
     for (uid = 1; uid <= 0x3F; ++uid) {
         struct Unit* unit = GetUnit(uid);
         if (UNIT_IS_VALID(unit)) {
@@ -1093,7 +1087,7 @@ void ShrinkPlayerUnits() {
     return;
 }
 
-void sub_8034278() {
+void EndPrepScreen() {
     int uid;
     for (uid = 1; uid <= 0x3F; ++uid) {
         struct Unit* unit = GetUnit(uid);
@@ -1113,7 +1107,7 @@ void sub_8034278() {
         }
 
         if (unit->state & US_NOT_DEPLOYED) {
-            sub_80A48F0(unit->pCharacterData->number);
+            BWL_FavorReduced_H(unit->pCharacterData->number);
         } else {
             BWL_IncrementDeployCountMaybe(unit->pCharacterData->number);
         }

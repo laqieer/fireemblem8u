@@ -17,6 +17,9 @@
 #include "bmreliance.h"
 #include "uiutils.h"
 #include "mu.h"
+#include "face.h"
+#include "bmudisp.h"
+#include "bm.h"
 
 #include "constants/classes.h"
 
@@ -668,7 +671,7 @@ void DrawStatWithBar(int num, int x, int y, int base, int total, int max)
         diff = total - base;
     }
 
-    sub_8086B2C(0x401 + num*6, 6,
+    DrawStatBarGfx(0x401 + num*6, 6,
         gBmFrameTmap1 + TILEMAP_INDEX(x - 2, y + 1),
         TILEREF(0, STATSCREEN_BGPAL_6), max * 41 / 30, base * 41 / 30, diff * 41 / 30);
 }
@@ -841,11 +844,11 @@ void DisplayPage1(void)
 
     CopyDataWithPossibleUncomp(
         gUnknown_08A02204,
-        gUnknown_02020188);
+        gGenericBuffer);
 
     CallARM_FillTileRect(
         gBmFrameTmap1 + TILEMAP_INDEX(1, 11),
-        gUnknown_02020188, TILEREF(0x40, STATSCREEN_BGPAL_3));
+        gGenericBuffer, TILEREF(0x40, STATSCREEN_BGPAL_3));
 
     DisplayTexts(sPage1TextInfo);
 
@@ -1016,7 +1019,7 @@ void DisplayWeaponExp(int num, int x, int y, int wtype)
 
     GetWeaponExpProgressState(wexp, &progress, &progressMax);
 
-    sub_8086B2C(0x401 + num*6, 5,
+    DrawStatBarGfx(0x401 + num*6, 5,
         gBmFrameTmap1 + TILEMAP_INDEX(x + 2, y + 1), TILEREF(0, STATSCREEN_BGPAL_6),
         0x22, (progress*34)/(progressMax-1), 0);
 }
@@ -1212,8 +1215,8 @@ void GlowBlendCtrl_OnInit(struct StatScreenEffectProc* proc)
 
     SetSpecialColorEffectsParameters(1, proc->timer, 0x10, 0);
 
-    sub_8001ED0(0, 1, 0, 0, 0);
-    sub_8001F0C(0, 0, 0, 1, 0);
+    SetBlendTargetA(0, 1, 0, 0, 0);
+    SetBlendTargetB(0, 0, 0, 1, 0);
 }
 
 static
@@ -1263,8 +1266,8 @@ void UnitSlide_InitFadeOut(struct StatScreenEffectProc* proc)
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 0;
 
-    sub_8001ED0(0, 0, 0, 1, 0);
-    sub_8001F0C(1, 1, 1, 0, 1);
+    SetBlendTargetA(0, 0, 0, 1, 0);
+    SetBlendTargetB(1, 1, 1, 0, 1);
 
     sub_8001F64(0);
 
@@ -1306,8 +1309,8 @@ void UnitSlide_InitFadeIn(struct StatScreenEffectProc* proc)
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 0;
 
-    sub_8001ED0(0, 0, 0, 1, 0);
-    sub_8001F0C(1, 1, 1, 0, 1);
+    SetBlendTargetA(0, 0, 0, 1, 0);
+    SetBlendTargetB(1, 1, 1, 0, 1);
 
     if (proc->direction > 0)
     {
@@ -1647,7 +1650,7 @@ void StatScreen_BlackenScreen(void)
 
     SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
 
-    sub_8001ED0(0, 0, 0, 0, 0);
+    SetBlendTargetA(0, 0, 0, 0, 0);
     sub_8001F48(1);
     sub_8001F64(0);
 
@@ -1713,10 +1716,10 @@ void StatScreen_InitDisplay(struct Proc* proc)
     ApplyPalette(gUnknown_08A0731C, STATSCREEN_BGPAL_HALO);
 
     CopyDataWithPossibleUncomp(
-        gUnknown_08A071FC, gUnknown_02020188);
+        gUnknown_08A071FC, gGenericBuffer);
 
     CallARM_FillTileRect(gBG1TilemapBuffer + TILEMAP_INDEX(12, 0),
-        gUnknown_02020188, TILEREF(0x220, STATSCREEN_BGPAL_HALO));
+        gGenericBuffer, TILEREF(0x220, STATSCREEN_BGPAL_HALO));
 
     // Load and display Background
 
@@ -1725,9 +1728,9 @@ void StatScreen_InitDisplay(struct Proc* proc)
 
     ApplyPalettes(gUnknown_08A06460, STATSCREEN_BGPAL_BACKGROUND, 4);
 
-    CopyDataWithPossibleUncomp(gUnknown_08A05F10, gUnknown_02020188);
+    CopyDataWithPossibleUncomp(gUnknown_08A05F10, gGenericBuffer);
 
-    CallARM_FillTileRect(gBG3TilemapBuffer, gUnknown_02020188,
+    CallARM_FillTileRect(gBG3TilemapBuffer, gGenericBuffer,
         TILEREF(0x180, 12));
 
     // Load object graphics
@@ -1778,10 +1781,10 @@ void StatScreen_Display(struct Proc* proc)
 
     // Display portrait
 
-    sub_8005E98(proc, gBG2TilemapBuffer + TILEMAP_INDEX(1, 1), fid,
+    PutFace80x72(proc, gBG2TilemapBuffer + TILEMAP_INDEX(1, 1), fid,
         0x4E0, STATSCREEN_BGPAL_FACE);
 
-    if (GetPortraitStructPointer(fid)->img)
+    if (GetPortraitData(fid)->img)
         ApplyPalette(gUnknown_08A01EE4, STATSCREEN_BGPAL_2);
     else
         ApplyPalette(gUnknown_08A01F04, STATSCREEN_BGPAL_2);
@@ -1820,7 +1823,7 @@ void StatScreen_OnIdle(struct Proc* proc)
 
         SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
 
-        sub_8001ED0(0, 0, 0, 0, 0);
+        SetBlendTargetA(0, 0, 0, 0, 0);
         sub_8001F48(1);
 
         // TODO: ResetBackdropColor macro?
@@ -2578,7 +2581,7 @@ struct Proc* StartHelpPromptSprite(int x, int y, int palid, struct Proc* parent)
 {
     struct HelpPromptSprProc* proc = (void*) Proc_Find(gProcScr_HelpPromptSpr);
 
-    ApplyPalette(gUnknown_08A1D79C, palid + 0x10);
+    ApplyPalette(Pal_MapBattleInfoNum, palid + 0x10);
 
     if (!proc)
         proc = (void*) Proc_Start(gProcScr_HelpPromptSpr, parent);

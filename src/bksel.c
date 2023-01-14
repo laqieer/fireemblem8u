@@ -13,6 +13,7 @@
 #include "event.h"
 #include "bmmap.h"
 #include "statscreen.h"
+#include "bm.h"
 
 #include "bksel.h"
 
@@ -430,11 +431,11 @@ void InitBattleForecastFramePalettes() {
 
 void BattleForecast_Init(struct BattleForecastProc* proc) {
 
-    CopyDataWithPossibleUncomp(gBattleForecast_x2x4Gfx, gUnknown_02020188);
-    CopyTileGfxForObj(gUnknown_02020188, (void*)0x06015D00, 4, 2);
+    CopyDataWithPossibleUncomp(gBattleForecast_x2x4Gfx, gGenericBuffer);
+    CopyTileGfxForObj(gGenericBuffer, (void*)0x06015D00, 4, 2);
     CopyToPaletteBuffer(gBattleForecast_x2x4Pal, 0x240, 0x20);
 
-    sub_8003D20();
+    Font_ResetAllocation();
 
     ResetIconGraphics_();
 
@@ -713,7 +714,7 @@ void NewBattleForecast() {
     struct BattleForecastProc* proc;
 
     if (gRAMChapterData.cfgBattleForecastType == 2) {
-        sub_8003D20();
+        Font_ResetAllocation();
         return;
     }
 

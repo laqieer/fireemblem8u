@@ -784,7 +784,7 @@ _08083374:
 	ldr r0, [r4, #0x28]
 	b _080833A8
 _08083378:
-	ldr r1, _08083394  @ gUnknown_03005280
+	ldr r1, _08083394  @ gGMData
 	adds r2, r1, #0
 	adds r2, #0xcc
 	adds r1, #0xc9
@@ -799,7 +799,7 @@ _08083378:
 	beq _0808339E
 	b _080833A8
 	.align 2, 0
-_08083394: .4byte gUnknown_03005280
+_08083394: .4byte gGMData
 _08083398:
 	cmp r1, #2
 	beq _080833A6
@@ -829,7 +829,7 @@ sub_80833B0: @ 0x080833B0
 	bl GetChapterEventDataPointer
 	adds r2, r0, #0
 	movs r3, #0
-	ldr r0, _080833E4  @ gUnknown_03005280
+	ldr r0, _080833E4  @ gGMData
 	adds r1, r0, #0
 	adds r1, #0xcc
 	adds r0, #0xc9
@@ -845,7 +845,7 @@ sub_80833B0: @ 0x080833B0
 	b _080833F8
 	.align 2, 0
 _080833E0: .4byte gRAMChapterData
-_080833E4: .4byte gUnknown_03005280
+_080833E4: .4byte gGMData
 _080833E8:
 	cmp r0, #2
 	beq _080833F6
@@ -3010,7 +3010,7 @@ _080842D8:
 	ldr r0, _080842EC  @ gActiveUnit
 	ldr r0, [r0]
 	ldr r1, [sp, #4]
-	bl sub_80B41D0
+	bl StartArmoryScreenOrphaned
 	b _08084326
 	.align 2, 0
 _080842EC: .4byte gActiveUnit
@@ -3021,7 +3021,7 @@ _080842F0:
 	ldr r0, _08084304  @ gActiveUnit
 	ldr r0, [r0]
 	ldr r1, [sp, #4]
-	bl sub_80B41F0
+	bl StartVendorScreenOrphaned
 	b _08084326
 	.align 2, 0
 _08084304: .4byte gActiveUnit
@@ -3032,7 +3032,7 @@ _08084308:
 	ldr r0, _0808431C  @ gActiveUnit
 	ldr r0, [r0]
 	ldr r1, [sp, #4]
-	bl sub_80B4210
+	bl StartSecretShopScreenOrphaned
 	b _08084326
 	.align 2, 0
 _0808431C: .4byte gActiveUnit

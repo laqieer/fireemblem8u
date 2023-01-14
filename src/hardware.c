@@ -1,5 +1,6 @@
 #include "global.h"
 #include "proc.h"
+#include "bm.h"
 #include "hardware.h"
 
 EWRAM_DATA struct Struct02024CD4 gUnknown_02024CD4 = {0};
@@ -696,7 +697,7 @@ void sub_80016C4(u16 *a, struct UnknownDmaStruct *b)
     }
 }
 
-void sub_8001710(void)
+void MaybeResetSomePal(void)
 {
     int i;
 
@@ -704,7 +705,7 @@ void sub_8001710(void)
         gUnknown_02022288[i] = 0;
 }
 
-void sub_800172C(u16 *src, int b, int c, int d)
+void MaybeSmoothChangeSomePal(u16 *src, int b, int c, int d)
 {
     int i;
     int j;
@@ -894,7 +895,7 @@ void SetupBackgrounds(u16 *bgConfig)
         BG_Fill(BG_GetMapBuffer(bg), 0);
         CpuFastFill16(0, (void *)(VRAM + GetBackgroundTileDataOffset(bg)), 64);
     }
-    SetupBackgroundForWeatherMaybe();
+    InitBmBgLayers();
     sModifiedBGs |= 0xF;
 
     SetupOAMBufferSplice(0);
@@ -1049,13 +1050,13 @@ void SetSpecialColorEffectsParameters(u16 effect, u8 coeffA, u8 coeffB, u8 blend
     gLCDControlBuffer.blendY = blendY;
 }
 
-void sub_8001ED0(int a, int b, int c, int d, int e)
+void SetBlendTargetA(int a, int b, int c, int d, int e)
 {
     gUnknown_030030BC &= 0xFFE0;
     gUnknown_030030BC |= (a << 0) | (b << 1) | (c << 2) | (d << 3) | (e << 4);
 }
 
-void sub_8001F0C(int a, int b, int c, int d, int e)
+void SetBlendTargetB(int a, int b, int c, int d, int e)
 {
     gUnknown_030030BC &= 0xE0FF;
     gUnknown_030030BC |= (a << 8) | (b << 9) | (c << 10) | (d << 11) | (e << 12);
@@ -1120,7 +1121,7 @@ void ClearTileRigistry(void)
     gUnknown_02024CDC[0].src = 0;
 }
 
-void RegisterTileGraphics(void *a, void *b, int c)
+void RegisterTileGraphics(const void *a, void *b, int c)
 {
     struct TileDataTransfer *ptr = &gUnknown_02024CDC[gUnknown_02024CD4.unk0];
 
@@ -1132,7 +1133,7 @@ void RegisterTileGraphics(void *a, void *b, int c)
     gUnknown_02024CD4.unk0++;
 }
 
-void RegisterFillTile(void *a, void *b, int c)
+void RegisterFillTile(const void *a, void *b, int c)
 {
     struct TileDataTransfer *ptr = &gUnknown_02024CDC[gUnknown_02024CD4.unk0];
 

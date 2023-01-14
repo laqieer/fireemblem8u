@@ -17,7 +17,7 @@ static void SortAiUnitList(int count);
 static void CpOrderFunc_End(ProcPtr proc);
 
 static
-u32* CONST_DATA sUnitPriorityArray = (void*) gUnknown_02020188;
+u32* CONST_DATA sUnitPriorityArray = (void*) gGenericBuffer;
 
 struct ProcCmd CONST_DATA gProcScr_CpOrder[] =
 {
@@ -54,7 +54,7 @@ void CpOrderBerserkInit(ProcPtr proc)
 {
     int i, aiNum = 0;
 
-    u32 faction = gRAMChapterData.chapterPhaseIndex;
+    u32 faction = gRAMChapterData.faction;
 
     int factionUnitCountLut[3] = { 62, 20, 50 }; // TODO: named constant for those
 
@@ -168,7 +168,7 @@ int BuildAiUnitList(void)
 {
     int i, aiNum = 0;
 
-    u32 faction = gRAMChapterData.chapterPhaseIndex;
+    u32 faction = gRAMChapterData.faction;
     u32* prioIt = sUnitPriorityArray;
 
     int factionUnitCountLut[3] = { 62, 20, 50 }; // TODO: named constant for those
@@ -204,7 +204,7 @@ void SortAiUnitList(int count)
 
     if (count <= 1) // Redundant check
         return;
-	++count; --count;
+    ++count; --count;
 
     // this is a bubble sort, I think
 
