@@ -850,7 +850,7 @@ _0800DB88:
 	ands r4, r0
 	cmp r4, #0
 	beq _0800DBB6
-	ldr r0, _0800DBCC  @ gRAMChapterData
+	ldr r0, _0800DBCC  @ gPlaySt
 	adds r0, #0x40
 	ldrb r0, [r0]
 	lsrs r0, r0, #7
@@ -878,7 +878,7 @@ _0800DBC4:
 	strh r0, [r2, #0x3e]
 	b _0800DBD8
 	.align 2, 0
-_0800DBCC: .4byte gRAMChapterData
+_0800DBCC: .4byte gPlaySt
 _0800DBD0: .4byte gKeyStatusPtr
 _0800DBD4:
 	strh r3, [r2, #0x3e]
@@ -1342,7 +1342,7 @@ Event16_: @ 0x0800DED4
 	ldr r0, _0800DF18  @ gEventSlots
 	ldrh r1, [r0, #8]
 _0800DEFE:
-	ldr r0, _0800DF1C  @ gRAMChapterData
+	ldr r0, _0800DF1C  @ gPlaySt
 	adds r0, #0x41
 	ldrb r0, [r0]
 	lsls r0, r0, #0x1e
@@ -1356,7 +1356,7 @@ _0800DF10:
 	bx r1
 	.align 2, 0
 _0800DF18: .4byte gEventSlots
-_0800DF1C: .4byte gRAMChapterData
+_0800DF1C: .4byte gPlaySt
 
 	THUMB_FUNC_END Event16_
 
@@ -1580,12 +1580,12 @@ _0800E090: @ jump table
 	.4byte _0800E158 @ case 10
 _0800E0BC:
 	ldr r0, _0800E0C4  @ gEventSlots
-	ldr r1, _0800E0C8  @ gRAMChapterData
+	ldr r1, _0800E0C8  @ gPlaySt
 	ldrb r1, [r1, #0x1b]
 	b _0800E17A
 	.align 2, 0
 _0800E0C4: .4byte gEventSlots
-_0800E0C8: .4byte gRAMChapterData
+_0800E0C8: .4byte gPlaySt
 _0800E0CC:
 	ldr r0, _0800E0D8  @ gEventSlots
 	adds r1, r2, #0
@@ -1595,20 +1595,20 @@ _0800E0CC:
 	.align 2, 0
 _0800E0D8: .4byte gEventSlots
 _0800E0DC:
-	ldr r0, _0800E0E4  @ gRAMChapterData
+	ldr r0, _0800E0E4  @ gPlaySt
 	ldrb r1, [r0, #0x14]
 	movs r0, #0x40
 	b _0800E15E
 	.align 2, 0
-_0800E0E4: .4byte gRAMChapterData
+_0800E0E4: .4byte gPlaySt
 _0800E0E8:
 	ldr r0, _0800E0F0  @ gEventSlots
-	ldr r1, _0800E0F4  @ gRAMChapterData
+	ldr r1, _0800E0F4  @ gPlaySt
 	ldrh r1, [r1, #0x10]
 	b _0800E17A
 	.align 2, 0
 _0800E0F0: .4byte gEventSlots
-_0800E0F4: .4byte gRAMChapterData
+_0800E0F4: .4byte gPlaySt
 _0800E0F8:
 	bl CountRedUnits
 	b _0800E14A
@@ -1619,7 +1619,7 @@ _0800E104:
 	bl GetChapterThing
 	b _0800E138
 _0800E10A:
-	ldr r1, _0800E12C  @ gRAMChapterData
+	ldr r1, _0800E12C  @ gPlaySt
 	adds r0, r1, #0
 	adds r0, #0x42
 	ldrb r0, [r0]
@@ -1637,7 +1637,7 @@ _0800E122:
 	str r0, [r1, #0x30]
 	b _0800E17C
 	.align 2, 0
-_0800E12C: .4byte gRAMChapterData
+_0800E12C: .4byte gPlaySt
 _0800E130: .4byte gEventSlots
 _0800E134:
 	bl GetPartyGoldAmount
@@ -1659,7 +1659,7 @@ _0800E14A:
 	.align 2, 0
 _0800E154: .4byte gEventSlots
 _0800E158:
-	ldr r0, _0800E170  @ gRAMChapterData
+	ldr r0, _0800E170  @ gPlaySt
 	ldrb r1, [r0, #0x14]
 	movs r0, #0x20
 _0800E15E:
@@ -1674,7 +1674,7 @@ _0800E168:
 	str r0, [r1, #0x30]
 	b _0800E17C
 	.align 2, 0
-_0800E170: .4byte gRAMChapterData
+_0800E170: .4byte gPlaySt
 _0800E174: .4byte gEventSlots
 _0800E178:
 	ldr r0, _0800E184  @ gEventSlots
@@ -1704,7 +1704,7 @@ Event1A_TEXTSTART: @ 0x0800E188
 	beq _0800E1C8
 	cmp r5, #5
 	beq _0800E1C8
-	bl sub_8006A7C
+	bl EndTalk
 	bl sub_808F270
 	bl sub_808BB74
 	adds r0, r4, #0
@@ -1770,14 +1770,14 @@ sub_800E210: @ 0x0800E210
 	movs r0, #0x80
 	movs r1, #2
 	movs r2, #1
-	bl sub_800680C
+	bl InitTalk
 _0800E22A:
 	ldrh r1, [r4, #0x3c]
 	movs r0, #0x40
 	ands r0, r1
 	cmp r0, #1
 	bne _0800E258
-	ldr r2, _0800E254  @ gRAMChapterData
+	ldr r2, _0800E254  @ gPlaySt
 	adds r2, #0x40
 	ldrb r3, [r2]
 	lsls r0, r3, #0x19
@@ -1793,7 +1793,7 @@ _0800E22A:
 	strb r0, [r2]
 	b _0800E260
 	.align 2, 0
-_0800E254: .4byte gRAMChapterData
+_0800E254: .4byte gPlaySt
 _0800E258:
 	adds r1, r4, #0
 	adds r1, #0x40
@@ -1803,14 +1803,14 @@ _0800E260:
 	movs r0, #1
 	movs r1, #1
 	adds r2, r5, #0
-	bl sub_8006A30
+	bl StartTalkMsg
 	ldrh r1, [r4, #0x3c]
 	movs r0, #0x20
 	ands r0, r1
 	cmp r0, #0
 	beq _0800E27A
 	movs r0, #4
-	bl sub_8006AA8
+	bl SetTalkFlag
 _0800E27A:
 	ldrh r1, [r4, #0x3c]
 	movs r0, #0x40
@@ -1818,7 +1818,7 @@ _0800E27A:
 	cmp r0, #0
 	beq _0800E28A
 	movs r0, #8
-	bl sub_8006AA8
+	bl SetTalkFlag
 _0800E28A:
 	pop {r4, r5}
 	pop {r0}
@@ -1866,7 +1866,7 @@ _0800E2BA:
 	movs r0, #0x80
 	movs r1, #0
 	movs r2, #1
-	bl sub_800680C
+	bl InitTalk
 	movs r0, #1
 	bl BG_EnableSyncByMask
 	str r5, [sp]
@@ -2126,7 +2126,7 @@ _0800E4DE:
 	ldr r1, _0800E510  @ 0x0000FFF7
 	ands r1, r0
 	strh r1, [r4, #0x3c]
-	bl sub_8006A7C
+	bl EndTalk
 	bl sub_808F270
 	bl sub_808BB74
 	adds r0, r4, #0
@@ -2164,7 +2164,7 @@ Event1C_TEXTCONT: @ 0x0800E51C
 	ands r0, r1
 	cmp r0, #0
 	beq _0800E554
-	bl sub_8006A7C
+	bl EndTalk
 	bl sub_808F270
 	bl sub_808BB74
 	adds r0, r4, #0
@@ -2181,7 +2181,7 @@ _0800E54C:
 	bl sub_800E640
 	b _0800E558
 _0800E554:
-	bl sub_8006EF0
+	bl ResumeTalk
 _0800E558:
 	movs r0, #2
 	pop {r4}
@@ -2200,7 +2200,7 @@ Event1D_TEXTEND: @ 0x0800E560
 	ands r0, r1
 	cmp r0, #0
 	beq _0800E5A0
-	bl sub_8006A7C
+	bl EndTalk
 	bl sub_808F270
 	bl sub_808BB74
 	adds r0, r4, #0
@@ -2222,11 +2222,11 @@ _0800E590:
 _0800E59C: .4byte gEventSlots
 _0800E5A0:
 	movs r5, #0
-	bl sub_80089D0
+	bl IsTalkActive
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0800E5B6
-	bl sub_8006ED8
+	bl IsTalkLocked
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0800E5CA
@@ -2269,7 +2269,7 @@ _0800E5F8:
 	.align 2, 0
 _0800E5FC: .4byte gUnknown_08A016E0
 _0800E600:
-	bl GetDialoguePromptResult
+	bl GetTalkChoiceResult
 	ldr r1, _0800E638  @ gEventSlots
 _0800E606:
 	str r0, [r1, #0x30]
@@ -2281,7 +2281,7 @@ _0800E606:
 	negs r0, r0
 	cmp r1, r0
 	beq _0800E62E
-	ldr r2, _0800E63C  @ gRAMChapterData
+	ldr r2, _0800E63C  @ gPlaySt
 	adds r2, #0x40
 	movs r0, #3
 	ands r1, r0
@@ -2300,7 +2300,7 @@ _0800E630:
 	bx r1
 	.align 2, 0
 _0800E638: .4byte gEventSlots
-_0800E63C: .4byte gRAMChapterData
+_0800E63C: .4byte gPlaySt
 
 	THUMB_FUNC_END Event1D_TEXTEND
 
@@ -2314,7 +2314,7 @@ sub_800E640: @ 0x0800E640
 	ands r0, r1
 	cmp r0, #0
 	beq _0800E668
-	bl sub_80081A8
+	bl ClearTalkBubble
 	ldr r0, _0800E664  @ gProcScr_E_FACE
 	bl Proc_EndEach
 	bl ResetFaces
@@ -2323,11 +2323,11 @@ sub_800E640: @ 0x0800E640
 	.align 2, 0
 _0800E664: .4byte gProcScr_E_FACE
 _0800E668:
-	bl Face6CExists
+	bl FaceExists
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0800E686
-	bl sub_80081A8
+	bl ClearTalkBubble
 	ldr r0, _0800E68C  @ gProcScr_E_FACE
 	ldr r1, _0800E690  @ StartFaceFadeOut
 	bl Proc_ForEach
@@ -2349,7 +2349,7 @@ _0800E694: .4byte gUnknown_08591DE8
 _WhileFace6CExists: @ 0x0800E698
 	push {r4, lr}
 	adds r4, r0, #0
-	bl Face6CExists
+	bl FaceExists
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0800E6AC
@@ -2409,7 +2409,7 @@ _0800E6D4:
 	movs r0, #0x80
 	movs r1, #2
 	movs r2, #1
-	bl sub_800680C
+	bl InitTalk
 	b _0800E766
 	.align 2, 0
 _0800E714: .4byte gEventSlots
@@ -2425,12 +2425,12 @@ _0800E71C:
 	movs r0, #1
 	strb r0, [r1, #2]
 	strb r2, [r1, #3]
-	bl sub_80081A8
+	bl ClearTalkBubble
 	b _0800E766
 	.align 2, 0
 _0800E738: .4byte gUnknown_03000428
 _0800E73C:
-	bl sub_8006A7C
+	bl EndTalk
 	bl sub_808F270
 	bl sub_808BB74
 	adds r0, r4, #0
@@ -2451,7 +2451,7 @@ _0800E766:
 	ldr r2, _0800E778  @ gUnknown_03000428
 	movs r0, #0
 	movs r1, #0
-	bl sub_8006A70
+	bl StartTalk
 _0800E770:
 	movs r0, #0
 _0800E772:
@@ -2492,7 +2492,7 @@ Event1F_: @ 0x0800E77C
 	strb r3, [r2, #3]
 	movs r0, #0
 	movs r1, #0
-	bl sub_8006A70
+	bl StartTalk
 _0800E7B6:
 	movs r0, #0
 	pop {r4}
@@ -2506,7 +2506,7 @@ _0800E7C0: .4byte gUnknown_03000430
 	THUMB_FUNC_START Event20_
 Event20_: @ 0x0800E7C4
 	push {lr}
-	bl sub_80081A8
+	bl ClearTalkBubble
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -3341,7 +3341,7 @@ _0800EE70: @ jump table
 	.4byte _0800EE88 @ case 4
 	.4byte _0800EE88 @ case 5
 _0800EE88:
-	ldr r4, _0800EEB8  @ gRAMChapterData
+	ldr r4, _0800EEB8  @ gPlaySt
 	movs r0, #0xe
 	ldrsb r0, [r4, r0]
 	bl UnpackChapterMapGraphics
@@ -3358,7 +3358,7 @@ _0800EE88:
 	bl Event24_
 	b _0800EEBE
 	.align 2, 0
-_0800EEB8: .4byte gRAMChapterData
+_0800EEB8: .4byte gPlaySt
 _0800EEBC:
 	b _0800EEBC
 _0800EEBE:
@@ -3637,7 +3637,7 @@ Event22_: @ 0x0800F0C8
 	bl BG_EnableSyncByMask
 	movs r0, #2
 	bl BG_EnableSyncByMask
-	bl sub_80081A8
+	bl ClearTalkBubble
 	ldr r0, _0800F120  @ gProcScr_E_FACE
 	bl Proc_EndEach
 	bl ResetFaces
@@ -3726,12 +3726,12 @@ Event25_: @ 0x0800F17C
 _0800F198:
 	adds r0, r5, #0
 	bl Event24_
-	ldr r0, _0800F1FC  @ gRAMChapterData
+	ldr r0, _0800F1FC  @ gPlaySt
 	strb r4, [r0, #0xe]
 	bl RestartBattleMap
 	lsls r0, r6, #4
 	bl GetCameraCenteredX
-	ldr r4, _0800F200  @ gGameState
+	ldr r4, _0800F200  @ gBmSt
 	strh r0, [r4, #0xc]
 	lsls r0, r7, #4
 	bl GetCameraCenteredY
@@ -3760,8 +3760,8 @@ _0800F198:
 	bx r1
 	.align 2, 0
 _0800F1F8: .4byte gUnknown_030004E4
-_0800F1FC: .4byte gRAMChapterData
-_0800F200: .4byte gGameState
+_0800F1FC: .4byte gPlaySt
+_0800F200: .4byte gBmSt
 _0800F204: .4byte gBG0TilemapBuffer
 _0800F208: .4byte gBG1TilemapBuffer
 
@@ -4106,7 +4106,7 @@ _0800F474:
 	lsls r0, r2, #0x10
 	asrs r0, r0, #0x10
 	bl SetNextChapterId
-	ldr r2, _0800F494  @ gRAMChapterData
+	ldr r2, _0800F494  @ gPlaySt
 	adds r2, #0x4a
 	ldrb r1, [r2]
 	movs r0, #0xf
@@ -4118,12 +4118,12 @@ _0800F474:
 	movs r0, #1
 	b _0800F4D8
 	.align 2, 0
-_0800F494: .4byte gRAMChapterData
+_0800F494: .4byte gPlaySt
 _0800F498:
 	lsls r0, r2, #0x10
 	asrs r0, r0, #0x10
 	bl SetNextChapterId
-	ldr r2, _0800F4B8  @ gRAMChapterData
+	ldr r2, _0800F4B8  @ gPlaySt
 	adds r2, #0x4a
 	ldrb r1, [r2]
 	movs r0, #0xf
@@ -4135,13 +4135,13 @@ _0800F498:
 	movs r0, #2
 	b _0800F4D8
 	.align 2, 0
-_0800F4B8: .4byte gRAMChapterData
+_0800F4B8: .4byte gPlaySt
 _0800F4BC:
 	adds r0, r2, #0
 	bl GotoChapterWithoutSave
 	b _0800F4E8
 _0800F4C4:
-	ldr r2, _0800F508  @ gRAMChapterData
+	ldr r2, _0800F508  @ gPlaySt
 	adds r2, #0x4a
 	ldrb r1, [r2]
 	movs r0, #0xf
@@ -4174,7 +4174,7 @@ _0800F4E8:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0800F508: .4byte gRAMChapterData
+_0800F508: .4byte gPlaySt
 
 	THUMB_FUNC_END Event2A_MoveToChapter
 
@@ -4598,7 +4598,7 @@ _0800F7FA:
 	ldrb r0, [r0, #4]
 	cmp r0, #0x3b
 	bls _0800F888
-	ldr r2, _0800F850  @ gRAMChapterData
+	ldr r2, _0800F850  @ gPlaySt
 	adds r0, r2, #0
 	adds r0, #0x42
 	ldrb r0, [r0]
@@ -4622,7 +4622,7 @@ _0800F7FA:
 	.align 2, 0
 _0800F848: .4byte 0xFFBFFFFF
 _0800F84C: .4byte 0x0000FFFE
-_0800F850: .4byte gRAMChapterData
+_0800F850: .4byte gPlaySt
 _0800F854:
 	ldrb r1, [r2, #0x14]
 	movs r0, #0x40
@@ -5658,7 +5658,7 @@ _0800FF8E:
 	movs r0, #6
 	b _0800FFE8
 _0800FFA0:
-	ldr r0, _0800FFC8  @ gRAMChapterData
+	ldr r0, _0800FFC8  @ gPlaySt
 	adds r0, #0x41
 	ldrb r0, [r0]
 	lsls r0, r0, #0x1e
@@ -5677,7 +5677,7 @@ _0800FFB2:
 	bl DisplayUnitEffectRange
 	b _0800FFE6
 	.align 2, 0
-_0800FFC8: .4byte gRAMChapterData
+_0800FFC8: .4byte gPlaySt
 _0800FFCC: .4byte gUnknown_03000434
 _0800FFD0: .4byte gActiveUnit
 _0800FFD4:
@@ -6842,7 +6842,7 @@ Event3C_: @ 0x08010850
 	b _080108A2
 _08010864:
 	ldr r2, _08010874  @ gUnknown_030004E8
-	ldr r1, _08010878  @ gGameState
+	ldr r1, _08010878  @ gBmSt
 	ldrh r0, [r1, #0x14]
 	strh r0, [r2]
 	ldrh r0, [r1, #0x16]
@@ -6850,7 +6850,7 @@ _08010864:
 	b _080108A2
 	.align 2, 0
 _08010874: .4byte gUnknown_030004E8
-_08010878: .4byte gGameState
+_08010878: .4byte gBmSt
 _0801087C:
 	ldrh r0, [r2, #2]
 	lsrs r1, r0, #8

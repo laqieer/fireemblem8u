@@ -1,6 +1,16 @@
 #ifndef GUARD_TYPES_H
 #define GUARD_TYPES_H
 
+#include "gba/types.h"
+
+#ifndef bool
+typedef s8 bool;
+enum { false, true };
+#define false	false
+#define true	true
+#define __bool_true_false_are_defined	1
+#endif /* bool */
+
 // Forward declarations for common types
 struct Proc;
 struct Unit;
@@ -15,6 +25,7 @@ struct MAInfoFrameProc;
 struct MAExpBarProc;
 struct ProcAtMenu;
 struct PrepUnitList;
+struct TextHandle;
 
 // Type definitions for types without any other home :/
 
@@ -109,7 +120,7 @@ typedef void (*InterruptHandler)(void);
 struct Vec2 { short x, y; };
 struct Vec2u { u16 x, y; };
 
-struct Struct0202BCB0 // Game State Struct
+struct BmSt // Game State Struct
 {
     /* 00 */ s8  mainLoopEndedFlag;
 
@@ -147,15 +158,25 @@ struct Struct0202BCB0 // Game State Struct
     /* 39 */ u8 altBlendACb;
     /* 3A */ u8 altBlendBCa;
     /* 3B */ u8 altBlendBCb;
-    /* 3C */ u8 unk3C;
+    /* 3C */ u8 just_resumed;
     /* 3D */ u8 unk3D;
     /* 3E */ u8 unk3E;
     /* 3F */ s8 unk3F;
 };
 
-struct RAMChapterData { // Chapter Data Struct
-    /* 00 */ u32 unk0; // a time value
-    /* 04 */ u32 unk4; // a time value
+enum BmSt_gameStateBits {
+    BM_FLAG_0 = (1 << 0),
+    BM_FLAG_1 = (1 << 1),
+    BM_FLAG_2 = (1 << 2),
+    BM_FLAG_3 = (1 << 3),
+    BM_FLAG_4 = (1 << 4),
+    BM_FLAG_5 = (1 << 5),
+    BM_FLAG_LINKARENA = (1 << 6),
+};
+
+struct PlaySt { // Chapter Data Struct
+    /* 00 */ u32 time_saved;
+    /* 04 */ u32 time_chapter_started;
 
     /* 08 */ u32 partyGoldAmount;
     /* 0C */ u8  gameSaveSlot;
@@ -204,7 +225,14 @@ struct RAMChapterData { // Chapter Data Struct
     u32 unk_38_2:20; // Used by bmdifficulty (Valni/Lagdou)
     u32 unk_38_3:4;
 
-    u8 _unk3A[0x40-0x3C];
+    /* 3C */ u32 unk_3C_00 : 6;
+    /* 3C */ u32 combatRank : 3;
+    /* 3D */ u32 expRank : 3;
+    /* 3D */ u32 unk_3D_04 : 3;
+    /* 3D */ u32 fundsRank : 3;
+    /* 3E */ u32 tacticsRank : 3;
+    /* 3E */ u32 survivalRank : 3;
+    /* 3F */ u32 unk_3F_00 : 8;
 
     // option bits
     u32 cfgUnitColor:1; // 1
@@ -240,25 +268,28 @@ struct RAMChapterData { // Chapter Data Struct
 };
 
 /**
- * Use with RAMChapterData field chapterStateBits
+ * Use with PlaySt field chapterStateBits
  */
-enum
-{
-    CHAPTER_FLAG_0          = (1 << 0),
-    CHAPTER_FLAG_1          = (1 << 1),
-    CHAPTER_FLAG_POSTGAME   = (1 << 2),
-    CHAPTER_FLAG_3          = (1 << 3),
-    CHAPTER_FLAG_PREPSCREEN = (1 << 4),
-    CHAPTER_FLAG_COMPLETE          = (1 << 5),
-    CHAPTER_FLAG_DIFFICULT  = (1 << 6),
-    CHAPTER_FLAG_7          = (1 << 7)
+
+enum PlaySt_chapterStateBits {
+    PLAY_FLAG_STATSCREENPAGE0 = (1 << 0),
+    PLAY_FLAG_STATSCREENPAGE1 = (1 << 1),
+    PLAY_FLAG_POSTGAME        = (1 << 2),
+    PLAY_FLAG_TUTORIAL        = (1 << 3),
+    PLAY_FLAG_PREPSCREEN      = (1 << 4),
+    PLAY_FLAG_COMPLETE        = (1 << 5),
+    PLAY_FLAG_HARD            = (1 << 6),
+    PLAY_FLAG_7               = (1 << 7),
+
+    PLAY_FLAG_STATSCREENPAGE_SHIFT = 0,
+    PLAY_FLAG_STATSCREENPAGE_MASK = PLAY_FLAG_STATSCREENPAGE0 | PLAY_FLAG_STATSCREENPAGE1,
 };
 
 /**
- * Use with RAMChapterData field chapterModeIndex
+ * Use with PlaySt field chapterModeIndex
  */
 
-enum {
+enum PlaySt_chapterModeIndex {
     CHAPTER_MODE_COMMON = 1,
     CHAPTER_MODE_EIRIKA = 2,
     CHAPTER_MODE_EPHRAIM = 3,
@@ -305,7 +336,7 @@ struct ActionData
 
     /* 18 */ struct BattleHit* scriptedBattleHits;
 
-    /* 1C+ TODO (sizeof(struct ActionData) == 0x38) */
+    /* 1C */ u8 _pad_1C[0x38 - 0x1C];
 };
 
 enum
@@ -516,7 +547,7 @@ struct UnitUsageStats
 
 #define BWL_ARRAY_NUM 0x46
 
-struct ChapterWinData {
+struct ChapterStats {
     /* 00 */ u16 chapter_index : 0x07;
              u16 chapter_turn  : 0x09;
              u16 chapter_time  : 0x10;

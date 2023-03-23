@@ -1088,7 +1088,7 @@ void AiTryMoveTowards(s16 x, s16 y, u8 action, u8 maxDanger, u8 unk) {
                 }
             }
 
-            if (!sub_803E448(ix, iy, maxDanger)) {
+            if (!AiCheckDangerAt(ix, iy, maxDanger)) {
                 continue;
             }
 
@@ -1151,7 +1151,7 @@ void sub_803BBF4(s16 x, s16 y, u8 action, u8 maxDanger, u8 unk) {
                 }
             }
 
-            if (!sub_803E448(ix, iy, maxDanger)) {
+            if (!AiCheckDangerAt(ix, iy, maxDanger)) {
                 continue;
             }
 
@@ -1482,7 +1482,7 @@ s8 sub_803C284(struct Vec2* out) {
                 continue;
             }
 
-            val = ((sub_803E23C(ix, iy) + sub_803E27C(ix, iy)) - gBmMapOther[iy][ix] / 8) + 0x7FFFFFFF;
+            val = ((AiGetTerrainCombatPositionScoreComponent(ix, iy) + AiGetFriendZoneCombatPositionScoreComponent(ix, iy)) - gBmMapOther[iy][ix] / 8) + 0x7FFFFFFF;
 
             if (maxVal >= val) {
                 continue;

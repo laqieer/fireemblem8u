@@ -211,16 +211,16 @@ void sub_8096958(struct ProcPrepSpecialChar *proc)
             PutSpriteExt(4, 0x80 + i * 0x20, 0x18, gObject_32x16, 0xB6C0 + 4 * i);
     
         if (proc->blink_Start || (1 & (proc->unk36 >> 2)))
-                PutSpriteExt(4, 0x14, 0x8C, gUnknown_08A18E4E, 0x300);
+                PutSpriteExt(4, 0x14, 0x8C, obj_08A18E4E, 0x300);
     
         if (proc->blink_B || (1 & (proc->unk36 >> 2)))
-            PutSpriteExt(4, 0x64, 0x8C, gUnknown_08A18E76, 0x300);
+            PutSpriteExt(4, 0x64, 0x8C, obj_08A18E76, 0x300);
     
         PutObj8A1856E(0x74, 0x28, 0x9380);
 
     } else {
         if (0 != Prep_HasUnitDeployed())
-            PutSpriteExt(4, 0x14, 0x8C, gUnknown_08A18E62, 0x300);
+            PutSpriteExt(4, 0x14, 0x8C, obj_08A18E62, 0x300);
 
         PutObj8A1856E(0x74, 0x20, 0x9380);
     }
@@ -240,7 +240,7 @@ void ProcPrepSpChar_OnInit(struct ProcPrepSpecialChar *proc)
     } else {
         proc->apProc = APProc_Create(gUnknown_08A1B194, 0x3C, 0x10, 0x9E40, 0, 0xD);
 
-        chIndex = gRAMChapterData.chapterIndex;
+        chIndex = gPlaySt.chapterIndex;
         if ((chIndex - 0x24) < 10)
             proc->unk30 = 2;
         else if ((chIndex - 0x2E) < 10)

@@ -19,7 +19,7 @@ extern struct CONST_DATA gfx_set gConvoBackgroundData[];
 extern struct ProcCmd CONST_DATA gProcScr_E_FACE[];
 extern u16 CONST_DATA gUnknown_085921AC[];
 extern u16 CONST_DATA gUnknown_085A7EE8[];
-void sub_80081A8(void);
+void ClearTalkBubble(void);
 void sub_80067E8(void);
 void sub_8010EE8(int, int, int);
 void sub_807132C(void* ptr, int, int, int);
@@ -45,7 +45,7 @@ void ReputConvoBg_unused(int index)
 
 void ResetDialogueScreen(void) // function: MapLevelUp_EndFace
 {
-    sub_80081A8();  // clear BG1
+    ClearTalkBubble();
     Proc_EndEach(gProcScr_E_FACE);
     ResetFaces();
     sub_80067E8();  // Reset dialogue data array?
@@ -59,8 +59,8 @@ u16 sub_8010E6C(s16 x, s16 y, s16 counter)
      * For now, (x * 0x10) outputs (x << 0x10) >> 0x0C in trouble.
      */
     u16 tmp_counter0 = counter;
-    s16 tmp_x = - gGameState.camera.x + ((x << 0x14)>>0x10);
-    s16 tmp_y = - gGameState.camera.y + ((y << 0x14)>>0x10);
+    s16 tmp_x = - gBmSt.camera.x + ((x << 0x14)>>0x10);
+    s16 tmp_y = - gBmSt.camera.y + ((y << 0x14)>>0x10);
 
     CallARM_PushToSecondaryOAM(
         (tmp_x + 0x200) & 0x1FF,

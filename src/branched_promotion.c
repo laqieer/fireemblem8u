@@ -21,9 +21,11 @@
 #include "hardware.h"
 #include "mu.h"
 #include "proc.h"
+#include "scene.h"
 #include "soundwrapper.h"
 #include "uimenu.h"
 #include "uiutils.h"
+#include "bmsave.h"
 
 u8 PromotionInit_SetNullState(struct PromoProc *proc);
 void PromotionInit_Loop(struct PromoProc *proc);
@@ -162,7 +164,7 @@ u32 sub_80CC6D4(struct PromoProc *proc) {
     struct Unit *unit;
     u8 classNumber;
     u32 somethingAboutPath;
-    switch (gRAMChapterData.chapterModeIndex) {
+    switch (gPlaySt.chapterModeIndex) {
         case 2:
         default:
             somethingAboutPath = 1;
@@ -353,16 +355,16 @@ void sub_80CCA14(struct PromoProc2 *proc) {
 }
 
 void ChangeClassDescription(u32 a) {
-    sub_8006978();
-    sub_8008250();
-    sub_8006A30(2, 0xf, a);
-    sub_8006B10(0);
-    sub_8006AA8(1);
-    sub_8006AA8(2);
-    sub_8006AA8(4);
-    sub_8006AA8(8);
-    sub_8006AA8(0x40);
-    sub_8006AF0(4);
+    SetInitTalkTextFont();
+    ClearTalkText();
+    StartTalkMsg(2, 0xf, a);
+    SetTalkPrintColor(0);
+    SetTalkFlag(TALK_FLAG_INSTANTSHIFT);
+    SetTalkFlag(TALK_FLAG_NOBUBBLE);
+    SetTalkFlag(TALK_FLAG_NOSKIP);
+    SetTalkFlag(TALK_FLAG_NOFAST);
+    SetTalkFlag(TALK_FLAG_SILENT);
+    SetTalkPrintDelay(4);
 }
 
 void LoadClassReelFontPalette(struct PromoProc3 *proc, s32 b) {
@@ -494,26 +496,19 @@ void sub_80CCC2C(struct PromoProc3 *proc) {
     DrawTextInline(0, gUnknown_02022D2E + 0x40, 0, 0, 0x8, string);
 }
 
-struct SomeLocal {
-    u8 whatever[0x64];
-};
-
-u8 LoadGeneralGameMetadata(struct SomeLocal *);
-
-u8 sub_80CCCA4(void) {
-    struct SomeLocal local;
-    u8 unlock = LoadGeneralGameMetadata(&local);
+bool8 sub_80CCCA4(void) {
+    struct GlobalSaveInfo meta;
+    u8 unlock = ReadGlobalSaveInfo(&meta);
     if (!unlock) {
-        InitSaveMetadata();
-        LoadGeneralGameMetadata(&local);
+        InitGlobalSaveInfodata();
+        ReadGlobalSaveInfo(&meta);
     }
 
-    if (local.whatever[0xe] & 0x1c) {
-        if (local.whatever[0xe] & 0xe0) {
-            return 1;
-        }
-    }
-    return 0;
+    if (meta.Eirk_mode_easy || meta.Eirk_mode_norm || meta.Eirk_mode_hard)
+        if (meta.Ephy_mode_easy || meta.Ephy_mode_norm || meta.Ephy_mode_hard)
+            return true;
+
+    return false;
 }
 
 void sub_80CCCE0(u16 *buffer, struct Struct_8A30978 *b, u32 c) {
@@ -643,18 +638,16 @@ void SetupPromotionScreen(struct PromoProc3* proc) {
     }
 }
 
-void sub_800680C(u16, u8, u8);
-
 void sub_80CCF60(struct PromoProc3 *proc) {
     s16 x;
     u16 tmp;
     Font_ResetAllocation();
     Font_InitForUIDefault();
     BG_EnableSyncByMask(0xf);
-    sub_800680C(0x100, 2, 0);
+    InitTalk(0x100, 2, 0);
     x = proc->u38[proc->u41];
     ChangeClassDescription(x);
-    sub_8006AF0(-1);
+    SetTalkPrintDelay(-1);
     gLCDControlBuffer.bg0cnt.priority = 0;
     gLCDControlBuffer.bg1cnt.priority = 2;
     gLCDControlBuffer.bg2cnt.priority = 1;
@@ -1109,7 +1102,7 @@ void sub_80CD6B0(struct PromoProc4 *proc) {
     gLCDControlBuffer.dispcnt.bg2_on = 0;
     gLCDControlBuffer.dispcnt.bg3_on = 1;
     gLCDControlBuffer.dispcnt.obj_on = 1;
-    sub_800680C(0x200, 3, 1);
+    InitTalk(0x200, 3, 1);
     SetSpecialColorEffectsParameters(1, 14, 8, 0);
     SetBlendTargetA(0, 0, 0, 0, 0);
     SetBlendTargetB(0, 0, 0, 1, 0);
@@ -1161,7 +1154,7 @@ void sub_80CD7FC(struct PromoProc4 *proc) {
         i = 0;
         break;
     }
-    sub_8007938(proc->u2e, 0xd4, 0x50, 0x82, 0);
+    StartTalkFace(proc->u2e, 0xd4, 0x50, 0x82, 0);
 
     negative_one = -1;
     sub_808F128(0x16, 0x12, 0x12, 4, locals.a[i], 0x06011800, negative_one, 0);
@@ -1586,7 +1579,7 @@ int PromotionCommand_OnChange(struct MenuProc *a, struct MenuItemProc *b) {
     gparent->u40 = 1;
     gparent->u41 = b->itemNumber;
     ChangeClassDescription(gparent->u38[gparent->u41]);
-    sub_8006AF0(-1);
+    SetTalkPrintDelay(-1);
 }
 
 extern struct ProcCmd gUnknown_08B12A08[];

@@ -20,6 +20,7 @@
 #include "bb.h"
 #include "face.h"
 #include "bm.h"
+#include "unitinfowindow.h"
 
 #include "constants/characters.h"
 #include "constants/items.h"
@@ -36,15 +37,6 @@ struct WarpSelectProc
     /* 4C */ u8 pad4C[0x54 - 0x4C];
     /* 54 */ struct APHandle* ap;
 };
-
-void sub_8034FFC(ProcPtr proc);
-void sub_803501C(struct Unit* unit);
-void sub_8035090(ProcPtr proc);
-void sub_80350A4(struct Unit* unit);
-void sub_80350FC(ProcPtr proc);
-void sub_803511C(struct Unit* unit, int number);
-void NewUnitInfoWindow_WithAllLines(ProcPtr proc);
-void DrawHammerneUnitInfoWindow(struct Unit* unit);
 
 void StartSubtitleHelp(ProcPtr parent, const char* string);
 void EndSubtitleHelp(void);
@@ -251,7 +243,7 @@ s8 CanUnitUseItem(struct Unit* unit, int item)
         return HasSelectTarget(unit, MakeTargetListForLightRune);
 
     case ITEM_STAFF_TORCH:
-        return gRAMChapterData.chapterVisionRange != 0;
+        return gPlaySt.chapterVisionRange != 0;
 
     case ITEM_FILLAS_MIGHT:
     case ITEM_NINISS_GRACE:
@@ -459,7 +451,7 @@ s8 CanUnitUsePureWaterItem(struct Unit* unit)
 
 s8 CanUnitUseTorchItem(struct Unit* unit)
 {
-    if (gRAMChapterData.chapterVisionRange != 0 && unit->torchDuration != 4)
+    if (gPlaySt.chapterVisionRange != 0 && unit->torchDuration != 4)
         return TRUE;
 
     return FALSE;
@@ -715,7 +707,7 @@ void WarpSelect_OnInit(struct WarpSelectProc* proc)
 
     FillWarpRangeMap(gActiveUnit, GetUnit(gActionData.targetIndex));
 
-    gGameState.gameStateBits &= ~GMAP_STATE_BIT1;
+    gBmSt.gameStateBits &= ~GMAP_STATE_BIT1;
 
     DisplayMoveRangeGraphics(1);
 
@@ -734,7 +726,7 @@ void WarpSelect_OnInit(struct WarpSelectProc* proc)
 
 void WarpSelect_OnIdle(struct WarpSelectProc* proc)
 {
-    s8 warpAllowed = ((s8**) gBmMapMovement)[gGameState.playerCursor.y][gGameState.playerCursor.x] != -1;
+    s8 warpAllowed = ((s8**) gBmMapMovement)[gBmSt.playerCursor.y][gBmSt.playerCursor.x] != -1;
 
     HandlePlayerCursorMovement();
 
@@ -744,8 +736,8 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
         {
             Proc_Break(proc);
 
-            gActionData.xOther = gGameState.playerCursor.x;
-            gActionData.yOther = gGameState.playerCursor.y;
+            gActionData.xOther = gBmSt.playerCursor.x;
+            gActionData.yOther = gBmSt.playerCursor.y;
 
             SetStaffUseAction(gActiveUnit);
 
@@ -778,8 +770,8 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
     }
 
     AP_Update(proc->ap,
-        gGameState.playerCursorDisplay.x - gGameState.camera.x,
-        gGameState.playerCursorDisplay.y - gGameState.camera.y);
+        gBmSt.playerCursorDisplay.x - gBmSt.camera.x,
+        gBmSt.playerCursorDisplay.y - gBmSt.camera.y);
 
     proc->prevWarpAllowed = warpAllowed;
 }
@@ -902,12 +894,12 @@ void DoUseRepairStaff(struct Unit* unit)
 int RepairSelectOnChange(ProcPtr proc, struct SelectTarget* target)
 {
     ChangeActiveUnitFacing(target->x, target->y);
-    DrawHammerneUnitInfoWindow(GetUnit(target->uid));
+    RefreshHammerneUnitInfoWindow(GetUnit(target->uid));
 }
 
 void RepairSelectOnInit(ProcPtr proc)
 {
-    NewUnitInfoWindow_WithAllLines(proc);
+    StartUnitInventoryInfoWindow(proc);
 }
 
 int RepairMenuItemOnChange(struct MenuProc* menu, struct MenuItemProc* item)
@@ -997,13 +989,13 @@ void DoUseRestoreStaff(struct Unit* unit, void(*func)(struct Unit*))
 
 int BarrierSelectOnInit(ProcPtr proc)
 {
-    sub_8034FFC(proc);
+    StartUnitHpStatusInfoWindow(proc);
 }
 
 int BarrierSelectOnChange(ProcPtr proc, struct SelectTarget* target)
 {
     ChangeActiveUnitFacing(target->x, target->y);
-    sub_803501C(GetUnit(target->uid));
+    RefreshUnitHpStatusInfoWindow(GetUnit(target->uid));
 }
 
 void DoUseBarrierStaff(struct Unit* unit)
@@ -1019,13 +1011,13 @@ void DoUseBarrierStaff(struct Unit* unit)
 
 int AttackStaffSelectOnInit(ProcPtr proc)
 {
-    sub_8035090(proc);
+    StartUnitResChangeInfoWindow(proc);
 }
 
 int AttackStaffSelectOnChange(ProcPtr proc, struct SelectTarget* target)
 {
     ChangeActiveUnitFacing(target->x, target->y);
-    sub_80350A4(GetUnit(target->uid));
+    RefreshUnitResChangeInfoWindow(GetUnit(target->uid));
 }
 
 void DoUseAttackStaff(struct Unit* unit, void(*func)(struct Unit*))
@@ -1041,14 +1033,14 @@ void DoUseAttackStaff(struct Unit* unit, void(*func)(struct Unit*))
 
 int sub_8029CDC(ProcPtr proc)
 {
-    sub_80350FC(proc);
+    StartUnitStaffOffenseInfoWindow(proc);
 }
 
 int sub_8029CE8(ProcPtr proc, struct SelectTarget* target)
 {
     ChangeActiveUnitFacing(target->x, target->y);
 
-    sub_803511C(
+    RefreshUnitStaffOffenseInfoWindow(
         GetUnit(target->uid),
         GetOffensiveStaffAccuracy(gActiveUnit, GetUnit(target->uid)));
 }
@@ -1076,7 +1068,7 @@ void sub_8029D6C(void)
 
 void TorchSelect_OnInit(struct WarpSelectProc* proc)
 {
-    gGameState.gameStateBits |= GMAP_STATE_BIT0;
+    gBmSt.gameStateBits |= GMAP_STATE_BIT0;
 
     StartSubtitleHelp(proc,
         GetStringFromIndex(0x87C)); // TODO: msgid "Select an area to light up."
@@ -1087,8 +1079,8 @@ void TorchSelect_OnInit(struct WarpSelectProc* proc)
 
 void TorchSelect_OnIdle(struct WarpSelectProc* proc)
 {
-    int xTorch = gGameState.playerCursor.x;
-    int yTorch = gGameState.playerCursor.y;
+    int xTorch = gBmSt.playerCursor.x;
+    int yTorch = gBmSt.playerCursor.y;
 
     s8 canTorch = ((s8**) gBmMapRange)[yTorch][xTorch];
 
@@ -1102,8 +1094,8 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
 
             Proc_Break(proc);
 
-            gActionData.xOther = gGameState.playerCursor.x;
-            gActionData.yOther = gGameState.playerCursor.y;
+            gActionData.xOther = gBmSt.playerCursor.x;
+            gActionData.yOther = gBmSt.playerCursor.y;
 
             SetStaffUseAction(gActiveUnit);
 
@@ -1126,8 +1118,8 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
     }
 
     PutMapCursor(
-        gGameState.playerCursorDisplay.x,
-        gGameState.playerCursorDisplay.y,
+        gBmSt.playerCursorDisplay.x,
+        gBmSt.playerCursorDisplay.y,
         TRUE);
 }
 

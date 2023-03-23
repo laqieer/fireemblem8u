@@ -144,7 +144,7 @@ struct Unit
     /* 19 */ s8 lck;
 
     /* 1A */ s8 conBonus;
-    /* 1B */ u8 rescueOtherUnit;
+    /* 1B */ u8 rescue;
     /* 1C */ u8 ballistaIndex;
     /* 1D */ s8 movBonus;
 
@@ -275,6 +275,14 @@ enum {
 
 enum
 {
+    FACTION_ID_BLUE   = 0,
+    FACTION_ID_GREEN  = 1,
+    FACTION_ID_RED    = 2,
+    FACTION_ID_PURPLE = 3,
+};
+
+enum
+{
     // Character/Class attributes
 
     CA_NONE = 0,
@@ -341,8 +349,12 @@ extern CONST_DATA struct ClassData gClassData[]; // gClassData
 extern CONST_DATA struct CharacterData gCharacterData[]; // gCharacterData
 extern struct UnitDefinition gUnitDef1;
 extern struct UnitDefinition gUnitDef2;
+extern struct UnitDefinition gUnitDefSumDK[];
+extern struct Unit gUnitArrayBlue[62];
+extern struct Unit gUnitArrayRed[50];
+extern struct Unit gUnitArrayGreen[20];
 
-void ClearUnits(void);
+void InitUnits(void);
 void ClearUnit(struct Unit* unit);
 void CopyUnit(struct Unit* from, struct Unit* to);
 struct Unit* GetFreeUnit(int faction);

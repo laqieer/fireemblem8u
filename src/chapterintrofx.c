@@ -18,7 +18,7 @@ void CALLARM_MaybeScreenFadeIn();
 
 // code.s
 void sub_80895B4(int, int);
-int sub_808979C(struct RAMChapterData*);
+int sub_808979C(struct PlaySt*);
 void sub_808966C(int, int);
 void sub_80896FC(u16*, int, int);
 
@@ -38,9 +38,9 @@ extern u16 gUnknown_08B18F34[];
 extern u16 gUnknown_08B19854[];
 extern u16 gUnknown_08B196D8[];
 
-extern u16 gUnknown_02022928[];
+extern u16 pPalette4Buffer[];
 
-extern u16 gUnknown_02022968[];
+extern u16 pPalette6Buffer[];
 
 void ChapterIntro_Bg3Scroll_Loop(void);
 
@@ -646,7 +646,7 @@ void ChapterIntro_DrawChapterTitleMaybe() {
     BG_Fill(gBG0TilemapBuffer, 0x1280);
     sub_80895B4(8, 5);
 
-    var = sub_808979C(&gRAMChapterData);
+    var = sub_808979C(&gPlaySt);
     sub_808966C(0x280, var);
     sub_80896FC(gBG0TilemapBuffer + 0x123, 5, var);
 
@@ -773,9 +773,9 @@ void ChapterIntro_8020A40(struct ChapterIntroFXProc* proc) {
 
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(gUnknown_02022928, 4, 2, -1);
-    MaybeSmoothChangeSomePal(gUnknown_02022928 + 0xA0, 0xE, 2, -1);
-    MaybeSmoothChangeSomePal(gUnknown_02022928 + 0xE0, 0x12, 1, -1);
+    MaybeSmoothChangeSomePal(pPalette4Buffer, 4, 2, -1);
+    MaybeSmoothChangeSomePal(pPalette4Buffer + 0xA0, 0xE, 2, -1);
+    MaybeSmoothChangeSomePal(pPalette4Buffer + 0xE0, 0x12, 1, -1);
 
     return;
 }
@@ -809,7 +809,7 @@ void ChapterIntro_8020A8C(struct ChapterIntroFXProc* proc) {
 void ChapterIntro_8020AF8() {
     SetupBackgrounds(0);
     sub_80156D4();
-    AllocWeatherParticles(gRAMChapterData.chapterWeatherId);
+    AllocWeatherParticles(gPlaySt.chapterWeatherId);
     RefreshUnitSprites();
     ForceSyncUnitSpriteSheet();
     Font_LoadForUI();
@@ -818,7 +818,7 @@ void ChapterIntro_8020AF8() {
 }
 
 void ChapterIntro_8020B20() {
-    gGameState.camera.y = 0xA0 * 4;
+    gBmSt.camera.y = 0xA0 * 4;
 
     return;
 }
@@ -849,20 +849,20 @@ void ChapterIntro_InitMapDisplay() {
 
     DisableMapPaletteAnimations();
 
-    UnpackChapterMapGraphics(gRAMChapterData.chapterIndex);
+    UnpackChapterMapGraphics(gPlaySt.chapterIndex);
 
     SetupMapSpritesPalettes();
     LoadObjUIGfx();
 
-    var = GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialPosX;
+    var = GetROMChapterStruct(gPlaySt.chapterIndex)->initialPosX;
     var = GetCameraCenteredX(var * 16);
     var = (var + 0xF) & 0x1F0;
-    gGameState.camera.x = var;
+    gBmSt.camera.x = var;
 
-    var = GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialPosY;
+    var = GetROMChapterStruct(gPlaySt.chapterIndex)->initialPosY;
     var = GetCameraCenteredY(var * 16);
     var = (var + 0xF) & 0x3F0;
-    gGameState.camera.y = var;
+    gBmSt.camera.y = var;
 
     RefreshEntityBmMaps();
     RenderBmMap();
@@ -873,10 +873,10 @@ void ChapterIntro_InitMapDisplay() {
 void ChapterIntro_BeginFadeToMap(struct ChapterIntroFXProc* proc) {
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(gUnknown_02022968, 6, 10, 1);
-    MaybeSmoothChangeSomePal(gUnknown_02022968 + 0x140, 0x1A, 6, 1);
-    MaybeSmoothChangeSomePal(gUnknown_02022968 + 0xA0, 0x10, 2, 1);
-    MaybeSmoothChangeSomePal(gUnknown_02022968 + 0x110, 0x17, 1, 1);
+    MaybeSmoothChangeSomePal(pPalette6Buffer, 6, 10, 1);
+    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x140, 0x1A, 6, 1);
+    MaybeSmoothChangeSomePal(pPalette6Buffer + 0xA0, 0x10, 2, 1);
+    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x110, 0x17, 1, 1);
 
     CALLARM_MaybeScreenFadeIn();
 
@@ -884,7 +884,7 @@ void ChapterIntro_BeginFadeToMap(struct ChapterIntroFXProc* proc) {
 
     proc->unk_4C = 0x1E;
 
-    if (GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialWeather == 5) {
+    if (GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather == 5) {
         WfxFlamesInitGradientPublic();
     }
 
@@ -894,13 +894,13 @@ void ChapterIntro_BeginFadeToMap(struct ChapterIntroFXProc* proc) {
 void ChapterIntro_LoopFadeToMap(struct ChapterIntroFXProc* proc) {
     if ((GetGameClock() & 1) == 0) {
         CALLARM_MaybeScreenFadeIn();
-        if (GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialWeather == 5) {
+        if (GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather == 5) {
             WfxFlamesInitGradientPublic();
         }
 
-        if ((GetChapterThing() == 2) || GetROMChapterStruct(gRAMChapterData.chapterIndex)->fadeToBlack) {
-            if ((GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF) {
-                Sound_PlaySong80024D4(GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
+        if ((GetChapterThing() == 2) || GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack) {
+            if ((GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF) {
+                Sound_PlaySong80024D4(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
             }
 
             proc->unk_4C = 0;
@@ -930,8 +930,8 @@ void ChapterIntro_LoopFadeToMap(struct ChapterIntroFXProc* proc) {
         proc->unk_4C--;
 
         if ((proc->unk_4C == 0x18) &&
-            ((GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF)) {
-            Sound_PlaySong80024D4(GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
+            ((GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF)) {
+            Sound_PlaySong80024D4(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
         }
 
         if (proc->unk_4C < 0) {
@@ -1028,10 +1028,10 @@ void ChapterIntro_BeginFastFadeToMap(struct ChapterIntroFXProc* proc) {
 
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(gUnknown_02022968, 6, 10, 2);
-    MaybeSmoothChangeSomePal(gUnknown_02022968 + 0x140, 0x1A, 6, 2);
-    MaybeSmoothChangeSomePal(gUnknown_02022968 + 0xA0, 0x10, 2, 2);
-    MaybeSmoothChangeSomePal(gUnknown_02022968 + 0x110, 0x17, 1, 2);
+    MaybeSmoothChangeSomePal(pPalette6Buffer, 6, 10, 2);
+    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x140, 0x1A, 6, 2);
+    MaybeSmoothChangeSomePal(pPalette6Buffer + 0xA0, 0x10, 2, 2);
+    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x110, 0x17, 1, 2);
 
     CALLARM_MaybeScreenFadeIn();
 
@@ -1039,8 +1039,8 @@ void ChapterIntro_BeginFastFadeToMap(struct ChapterIntroFXProc* proc) {
 
     proc->unk_4C = 0xE;
 
-    if ((GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF) {
-        Sound_PlaySong80024D4(GetROMChapterStruct(gRAMChapterData.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
+    if ((GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF) {
+        Sound_PlaySong80024D4(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
     }
 
     return;
@@ -1049,11 +1049,11 @@ void ChapterIntro_BeginFastFadeToMap(struct ChapterIntroFXProc* proc) {
 void ChapterIntro_LoopFastFadeToMap(struct ChapterIntroFXProc* proc) {
     CALLARM_MaybeScreenFadeIn();
 
-    if ((GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialWeather) == 5) {
+    if ((GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather) == 5) {
         WfxFlamesInitGradientPublic();
     }
 
-    if ((GetChapterThing() == 2) || (GetROMChapterStruct(gRAMChapterData.chapterIndex)->fadeToBlack)) {
+    if ((GetChapterThing() == 2) || (GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack)) {
         proc->unk_4C = 0;
 
         gLCDControlBuffer.dispcnt.bg0_on = 1;
@@ -1131,7 +1131,7 @@ void ChapterIntro_80210C8() {
     gLCDControlBuffer.bg3cnt.priority = 3;
 
     if ((GetChapterThing() == 2) ||
-    (GetROMChapterStruct(gRAMChapterData.chapterIndex)->fadeToBlack)) {
+    (GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack)) {
         RefreshBMapGraphics();
         sub_80141B0();
     }
@@ -1143,7 +1143,7 @@ void ChapterIntro_8021188(struct ChapterIntroFXProc* proc) {
     if ((GetGameClock() & 1) == 0) {
         CALLARM_MaybeScreenFadeIn();
 
-        if (GetROMChapterStruct(gRAMChapterData.chapterIndex)->initialWeather == 5) {
+        if (GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather == 5) {
             WfxFlamesInitGradientPublic();
         }
 
