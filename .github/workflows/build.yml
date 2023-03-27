@@ -1,0 +1,30 @@
+name: Build CI
+
+on:
+  push:
+    branches: [ "remove_tools" ]
+  pull_request:
+    branches: [ "remove_tools" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container: laqieer/gba-disasm-decomp-tools:fireemblem8u
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Mock base ROM
+      run: head -c 16M /dev/urandom > baserom.gba
+
+    - name: Build target ROM
+      run: make fireemblem8.gba
+
+    - name: Analyze decomp progress
+      run: scripts/calcrom.sh
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: linker-mapfile
+        path: fireemblem8.map
