@@ -25,7 +25,7 @@ jobs:
       run: make fireemblem8.gba
 
     - name: Analyze decomp progress
-      run: scripts/calcrom.sh
+      run: ./scripts/calcrom.sh
 
     - uses: actions/upload-artifact@v3
       with:
