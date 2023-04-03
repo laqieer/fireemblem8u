@@ -1,0 +1,26 @@
+name: Supplement progress data for historical commits
+
+on: 
+  workflow_dispatch
+    inputs:
+      range:
+        description: 'Range'
+        required: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container: laqieer/gba-disasm-decomp-tools:fireemblem8u
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: apk add python3 perl git && python3 -m pip install ttp
+
+    - name: Mock base ROM
+      run: head -c 16777216 /dev/urandom > baserom.gba
+
+    - name: Supplement progress data
+      run: for commit in `git log --merges --format=%h ${{ inputs.range }}`; do git checkout $commit && git checkout master scripts && make fireemblem8.gba && scripts/calcrom.sh > progress.txt && python scripts/upload-progress.py -b "https://progress.deco.mp" -a ${{secrets.PROGRESS_API_KEY}} -p fireemblem8 -v us -t scripts/progress-template.txt progress.txt; done
