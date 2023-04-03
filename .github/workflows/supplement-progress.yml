@@ -1,7 +1,7 @@
 name: Supplement progress data for historical commits
 
 on: 
-  workflow_dispatch
+  workflow_dispatch:
     inputs:
       range:
         description: 'Range'
