@@ -25,4 +25,5 @@ jobs:
     - name: Supplement progress data
       run: |
         git config --global --add safe.directory /__w/fireemblem8u/fireemblem8u
+        git log --merges --format=%h ${{ inputs.range }}
         for commit in `git log --merges --format=%h ${{ inputs.range }}`; do git checkout $commit && git checkout master scripts && make fireemblem8.gba && scripts/calcrom.sh > progress.txt && echo `python scripts/upload-progress.py -b "https://progress.deco.mp" -a ${{secrets.PROGRESS_API_KEY}} -p fireemblem8 -v us -t scripts/progress-template.txt progress.txt`; done
