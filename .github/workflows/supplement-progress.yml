@@ -1,6 +1,6 @@
 name: Supplement progress data for historical commits
 
-on:
+on: 
   workflow_dispatch:
     inputs:
       range:
@@ -11,24 +11,21 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    environment: supplement-progress
+    container: laqieer/gba-disasm-decomp-tools:fireemblem8u
 
     steps:
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y build-essential binutils-arm-none-eabi libpng-dev && python -m pip install ttp
+      run: apk add python3 py3-pip perl git && python3 -m pip install ttp requests
 
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
 
-    - name: Install agbcc
-      run: git clone https://github.com/pret/agbcc.git && cd agbcc/ && ./build.sh && ./install.sh .. && cd ..
-
-    - name: Build tools
-      run: ./build_tools.sh
-
     - name: Mock base ROM
       run: head -c 16777216 /dev/urandom > baserom.gba
 
     - name: Supplement progress data
-      run: for commit in `git log --merges --format=%h ${{ inputs.range }}`; do git checkout -f $commit && git checkout ${{ github.ref_name }} scripts && make fireemblem8.gba && sh scripts/calcrom.sh > progress.txt && make clean && python scripts/upload-progress.py -b "https://progress.deco.mp" -a ${{secrets.PROGRESS_API_KEY}} -p fireemblem8 -v us -t scripts/progress-template.txt progress.txt; done
+      continue-on-error: true
+      run: |
+        git config --global --add safe.directory /__w/fireemblem8u/fireemblem8u
+        for commit in `git log --merges --format=%h ${{ inputs.range }}`; do git checkout -f $commit && git checkout ${{ github.ref_name }} scripts Makefile && sed -i 's|\*lib|/usr/local/bin/agbcc/lib/lib|g' ldscript.txt && make fireemblem8.gba && sh scripts/calcrom.sh > progress.txt && make clean && python scripts/upload-progress.py -b "https://progress.deco.mp" -a ${{secrets.PROGRESS_API_KEY}} -p fireemblem8 -v us -t scripts/progress-template.txt progress.txt; done
