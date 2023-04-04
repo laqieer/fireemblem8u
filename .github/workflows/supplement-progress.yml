@@ -12,6 +12,7 @@ jobs:
 
     runs-on: ubuntu-latest
     container: laqieer/gba-disasm-decomp-tools:fireemblem8u
+    environment: supplement-progress
 
     steps:
     - name: Install dependencies
