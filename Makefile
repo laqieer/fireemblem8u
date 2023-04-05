@@ -16,7 +16,7 @@ MID2AGB    := mid2agb
 TEXTENCODE := textencode
 JSONPROC   := jsonproc
 
-CC1FLAGS := -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm -g
+CC1FLAGS := -mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm -ffix-debug-line -g
 CPPFLAGS := -iquote include -iquote . -nostdinc -undef
 ASFLAGS  := -mcpu=arm7tdmi -mthumb-interwork -I include
 

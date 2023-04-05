@@ -1,5 +1,9 @@
 # Fire Emblem: The Sacred Stones
 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+
+[FE Decomp Portal](https://laqieer.github.io/fe-decomp-portal/)
+
 This is a disassembly of Fire Emblem: The Sacred Stones (U)[!]
 
 It builds the following ROM:

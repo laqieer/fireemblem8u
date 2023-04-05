@@ -3,7 +3,7 @@
 
 #include "gba/types.h"
 
-#ifndef bool
+#ifndef __STDBOOL_H__
 typedef s8 bool;
 enum { false, true };
 #define false	false
@@ -26,6 +26,7 @@ struct MAExpBarProc;
 struct ProcAtMenu;
 struct PrepUnitList;
 struct TextHandle;
+struct Anim;
 
 // Type definitions for types without any other home :/
 
