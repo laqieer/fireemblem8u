@@ -6,7 +6,7 @@ RUN apk add python3
 
 COPY . .
 
-RUN ./install_iconv.sh
+RUN chmod +x install_iconv.sh && ./install_iconv.sh
 
 RUN make
 
