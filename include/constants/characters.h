@@ -91,12 +91,32 @@ enum {
     CHARACTER_LYON_FINAL   = 0x6C,
     CHARACTER_ORSON        = 0x6D,
 
+    CHARACTER_SOLDIER_83   = 0x83,
+
+    CHARACTER_MONSTER_BA   = 0xBA,
     CHARACTER_FOMORTIIS    = 0xBE,
+
+    CHARACHER_FRELIAN      = 0xC0,
+    CHARACTER_FADO         = 0xC5,
+
+    CHARACTER_HAYDEN       = 0xC7,
+    CHARACTER_MANSEL       = 0xC8,
+    CHARACTER_KLIMT        = 0xC9,
+    CHARACTER_DARA         = 0xCA,
+    CHARACTER_ISMAIRE      = 0xCB,
+    CHARACTER_MESSENGER    = 0xCC,
 
     CHARACTER_CITIZEN      = 0xFC,
     CHARACTER_ARENA_OPPONENT = 0xFD,
     CHARACTER_WALL         = 0xFE,
     CHARACTER_SNAG         = 0xFF,
+};
+
+enum event_autoload_pid_idx {
+    CHARACTER_EVT_LEADER = 0,
+    CHARACTER_EVT_ACTIVE = -1,
+    CHARACTER_EVT_SLOTB = -2,
+    CHARACTER_EVT_SLOT2 = -3,
 };
 
 #endif // GUARD_CONSTANTS_CHARACTERS_H

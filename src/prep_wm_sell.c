@@ -13,7 +13,10 @@
 #include "statscreen.h"
 #include "m4a.h"
 #include "soundwrapper.h"
-
+#include "prepscreen.h"
+#include "bmlib.h"
+#include "helpbox.h"
+#include "sysutil.h"
 #include "constants/faces.h"
 
 struct WmSellProc {
@@ -28,11 +31,11 @@ struct WmSellProc {
 
 struct Unknown02013648 {
     /* 00 */ struct Font font;
-    /* 18 */ struct TextHandle textA;
-    /* 20 */ struct TextHandle textB;
-    /* 28 */ struct TextHandle textArray[5];
+    /* 18 */ struct Text textA;
+    /* 20 */ struct Text textB;
+    /* 28 */ struct Text textArray[5];
     /* 50 */ u8 _pad[0x90-0x50];
-    /* 90 */ struct TextHandle textC;
+    /* 90 */ struct Text textC;
 };
 
 extern struct Unknown02013648 gUnknown_02013648;
@@ -60,7 +63,7 @@ void sub_809FDD4(int index, ProcPtr parent) {
 
     StartParallelWorker(WmSell_DrawSupplyDialogueSpriteText, parent);
 
-    sub_80ADD24(
+    NewSysboxText(
         0x7000,
         13,
         GetStringFromIndexInBuffer(gShopSellTextIndexLookup[index], gpShopSellStringBuffer),
@@ -102,28 +105,28 @@ void WmSell_Init(struct WmSellProc* proc) {
 
 //! FE8U = 0x0809FE68
 void sub_809FE68(void) {
-    InitSomeOtherGraphicsRelatedStruct(&gUnknown_02013648.font, (void*)0x06011000, 11);
-    CopyToPaletteBuffer(Pal_UIFont, 0x360, 0x20);
+    InitSpriteTextFont(&gUnknown_02013648.font, (void*)0x06011000, 11);
+    ApplyPalette(Pal_Text, 0x1B);
 
-    Text_Init3(&gUnknown_02013648.textC);
+    InitSpriteText(&gUnknown_02013648.textC);
 
-    SetFont(&gUnknown_02013648.font);
-    SetFontGlyphSet(0);
+    SetTextFont(&gUnknown_02013648.font);
+    SetTextFontGlyphs(0);
 
-    Text_80046B4(&gUnknown_02013648.textC, 0);
+    SpriteText_DrawBackgroundExt(&gUnknown_02013648.textC, 0);
 
-    Text_InsertString(&gUnknown_02013648.textC, 0, 0, GetStringFromIndex(0x059C)); // TODO msgid "Sell     Quit[.]"
-    Text_InsertString(&gUnknown_02013648.textC, 64, 0, GetStringFromIndex(0x059B)); // TODO msgid "Sell?[.]"
-    Text_InsertString(&gUnknown_02013648.textC, 128, 3, GetStringFromIndex(0x059D)); // TODO msgid "Value[.]"
+    Text_InsertDrawString(&gUnknown_02013648.textC, 0, 0, GetStringFromIndex(0x059C)); // TODO msgid "Sell     Quit[.]"
+    Text_InsertDrawString(&gUnknown_02013648.textC, 64, 0, GetStringFromIndex(0x059B)); // TODO msgid "Sell?[.]"
+    Text_InsertDrawString(&gUnknown_02013648.textC, 128, 3, GetStringFromIndex(0x059D)); // TODO msgid "Value[.]"
 
-    SetFont(0);
+    SetTextFont(0);
 
     return;
 }
 
 //! FE8U = 0x0809FEFC
 void WmSell_DrawSellOptionSpriteText(void) {
-    sub_809A31C(160, 91, 8, 4, 0x8840);
+    PrepItemDrawPopupBox(160, 91, 8, 4, 0x8840);
 
     PutSpriteExt(4, 176, 94, gObject_32x16, 0xB088);
     PutSpriteExt(4, 208, 94, gObject_32x16, 0xB08C);
@@ -148,14 +151,14 @@ void WmSell_DrawItemGoldValue(int item) {
         u16 sellPrice = GetItemSellPrice(item);
 
         if ((sellPrice == 0) || (GetItemAttributes(item) & IA_UNSELLABLE)) {
-            sub_8004B0C(gBG0TilemapBuffer + 0x134 + 5, 1, 0x14);
-            sub_8004B0C(gBG0TilemapBuffer + 0x134 + 6, 1, 0x14);
-            sub_8004B0C(gBG0TilemapBuffer + 0x134 + 7, 1, 0x14);
+            PutSpecialChar(gBG0TilemapBuffer + 0x134 + 5, TEXT_COLOR_SYSTEM_GRAY, TEXT_SPECIAL_DASH);
+            PutSpecialChar(gBG0TilemapBuffer + 0x134 + 6, TEXT_COLOR_SYSTEM_GRAY, TEXT_SPECIAL_DASH);
+            PutSpecialChar(gBG0TilemapBuffer + 0x134 + 7, TEXT_COLOR_SYSTEM_GRAY, TEXT_SPECIAL_DASH);
         } else {
-            sub_8004B88(gBG0TilemapBuffer + 0x134 + 6, 2, sellPrice);
+            PutNumber(gBG0TilemapBuffer + 0x134 + 6, 2, sellPrice);
         }
 
-        sub_8004B0C(gBG0TilemapBuffer + 0x13B, 3, 0x1e);
+        PutSpecialChar(gBG0TilemapBuffer + 0x13B, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_G);
     }
 
     BG_EnableSyncByMask(1);
@@ -167,8 +170,8 @@ void WmSell_DrawItemGoldValue(int item) {
 void WmSell_DrawPartyFunds(void) {
     TileMap_FillRect(gBG0TilemapBuffer + 0xF4, 10, 1, 0);
 
-    sub_8004B88(gBG0TilemapBuffer + 0xF4 + 0x146, 2, GetPartyGoldAmount());
-    sub_8004B0C(gBG0TilemapBuffer + 0xF4 + 0x147, 3, 0x1e);
+    PutNumber(gBG0TilemapBuffer + 0xF4 + 0x146, 2, GetPartyGoldAmount());
+    PutSpecialChar(gBG0TilemapBuffer + 0xF4 + 0x147, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_G);
 
     BG_EnableSyncByMask(1);
 
@@ -177,11 +180,11 @@ void WmSell_DrawPartyFunds(void) {
 
 //! FE8U = 0x080A007C
 void WmSell_PutSupplyFaceAndText(void) {
-    SetFont(0);
+    SetTextFont(0);
 
     TileMap_FillRect(gBG0TilemapBuffer + 0x34, 12, 1, 0);
 
-    DrawTextInline(&gUnknown_02013648.textA, gBG0TilemapBuffer + 0x34 + 0x6d, 0, 2, 0, GetStringFromIndex(0x598)); // TODO msgid "Supply"
+    PutDrawText(&gUnknown_02013648.textA, gBG0TilemapBuffer + 0x34 + 0x6d, 0, 2, 0, GetStringFromIndex(0x598)); // TODO msgid "Supply"
     PutFaceChibi(FID_SUPPLY, gBG0TilemapBuffer + 0x34 - 0x13, 0x270, 2, 1);
 
     BG_EnableSyncByMask(1);
@@ -208,7 +211,7 @@ void WmSell_Setup(struct WmSellProc* proc) {
 
     ResetFaces();
 
-    Font_InitForUIDefault();
+    ResetText();
     ResetIconGraphics_();
     LoadUiFrameGraphics();
     LoadObjUIGfx();
@@ -217,12 +220,12 @@ void WmSell_Setup(struct WmSellProc* proc) {
     BG_SetPosition(1, 0, 0);
     BG_SetPosition(2, 0, 0);
 
-    LoadDialogueBoxGfx((void*)0x06014000, -1);
+    LoadHelpBoxGfx((void*)0x06014000, -1);
     LoadIconPalettes(4);
 
-    EndSlidingWallEffectMaybe();
+    RestartMuralBackground();
 
-    sub_8098C3C(0x5000, 5);
+    PutImg_PrepItemUseUnk(0x5000, 5);
     PutImg_PrepPopupWindow(0x800, 8);
 
     Decompress(gUnknown_08A1BBD0, gGenericBuffer);
@@ -230,10 +233,16 @@ void WmSell_Setup(struct WmSellProc* proc) {
 
     BG_EnableSyncByMask(7);
 
-    StartFace2(0, GetUnitPortraitId(proc->unit), 0x44, 0x48, 0x503);
-    sub_80AC9C0(proc);
-    ResetPrepScreenHandCursor(proc);
-    sub_80AD4A0(0x600, 1);
+    StartFace2(
+        0,
+        GetUnitPortraitId(proc->unit),
+        68,
+        72,
+        FACE_DISP_KIND(FACE_96x80_FLIPPED) | FACE_DISP_HLAYER(FACE_HLAYER_2) | FACE_DISP_BLEND
+    );
+    StartUiCursorHand(proc);
+    ResetSysHandCursor(proc);
+    DisplaySysHandCursorTextShadow(0x600, 1);
 
     gLCDControlBuffer.dispcnt.win0_on = 1;
     gLCDControlBuffer.dispcnt.win1_on = 0;
@@ -259,21 +268,21 @@ void WmSell_Setup(struct WmSellProc* proc) {
     gLCDControlBuffer.wincnt.win0_enableBlend = 1;
     gLCDControlBuffer.wincnt.wout_enableBlend = 1;
 
-    SetSpecialColorEffectsParameters(0, 8, 8, 8);
+    SetBlendConfig(0, 8, 8, 8);
 
-    NewGreenTextColorManager((struct Proc*)proc);
+    StartGreenText((struct Proc*)proc);
 
     StartHelpPromptSprite(120, 140, 2, (struct Proc*)proc);
-    sub_80984A8(165, 128, 10, proc);
-    sub_80984CC(165, 128);
+    StartDrawPrepFundsSprite(165, 128, 10, proc);
+    ShowPrepFundsSpriteAt(165, 128);
 
-    Text_Init(&gUnknown_02013648.textA, 4);
-    Text_Init(&gUnknown_02013648.textB, 2);
+    InitText(&gUnknown_02013648.textA, 4);
+    InitText(&gUnknown_02013648.textB, 2);
 
     sub_809FE68();
 
     for (i = 0; i < 5; i++) {
-        Text_Init(&gUnknown_02013648.textArray[i], 7);
+        InitText(&gUnknown_02013648.textArray[i], 7);
     }
 
     SetPrimaryHBlankHandler(0);
@@ -281,7 +290,7 @@ void WmSell_Setup(struct WmSellProc* proc) {
 
     BG_EnableSyncByMask(4);
 
-    sub_809B74C(gBG0TilemapBuffer + 0x122, &gUnknown_02013648.textArray[0], proc->unit, 0);
+    DrawPrepScreenItems(gBG0TilemapBuffer + 0x122, &gUnknown_02013648.textArray[0], proc->unit, 0);
     WmSell_PutSupplyFaceAndText();
 
     StartParallelWorker(WmSell_DrawValueSpriteText, proc);
@@ -294,43 +303,38 @@ void WmSell_Setup(struct WmSellProc* proc) {
 
 //! FE8U = 0x080A032C
 s8 WmSell_MainLoop_HandleDpadKeys(struct WmSellProc* proc) {
-
     if (gKeyStatusPtr->repeatedKeys & DPAD_UP) {
         int count = GetUnitItemCount(proc->unit);
 
         if (proc->unk_30 != 0) {
             proc->unk_30--;
+            PlaySoundEffect(0x66);
+            return 1;
         } else {
             if (!(gKeyStatusPtr->newKeys & DPAD_UP)) {
                 return 0;
             }
 
             proc->unk_30 = count - 1;
-#ifndef NONMATCHING
-            asm("");
-#endif
+            PlaySoundEffect(0x66);
+            return 1;
         }
-
-        PlaySoundEffect(0x66);
-
-        return 1;
-
     } else if (gKeyStatusPtr->repeatedKeys & DPAD_DOWN) {
         int count = GetUnitItemCount(proc->unit);
 
         if (proc->unk_30 < count - 1) {
             proc->unk_30++;
+            PlaySoundEffect(0x66);
+            return 1;
         } else {
             if (!(gKeyStatusPtr->newKeys & DPAD_DOWN)) {
                 return 0;
             }
 
             proc->unk_30 = 0;
+            PlaySoundEffect(0x66);
+            return 1;
         }
-
-        PlaySoundEffect(0x66);
-
-        return 1;
     }
 
     return 0;
@@ -338,7 +342,7 @@ s8 WmSell_MainLoop_HandleDpadKeys(struct WmSellProc* proc) {
 
 //! FE8U = 0x080A03C4
 void sub_80A03C4(struct WmSellProc* proc) {
-    sub_809B74C(gBG0TilemapBuffer + 0x122, &gUnknown_02013648.textArray[0], proc->unit, 0);
+    DrawPrepScreenItems(gBG0TilemapBuffer + 0x122, &gUnknown_02013648.textArray[0], proc->unit, 0);
 
     WmSell_DrawItemGoldValue(proc->unit->items[proc->unk_30]);
 
@@ -346,7 +350,7 @@ void sub_80A03C4(struct WmSellProc* proc) {
 
     Proc_End(GetParallelWorker(WmSell_DrawSellOptionSpriteText));
 
-    ShowPrepScreenHandCursor(16, proc->unk_30 * 16 + 72, 11, 0x400);
+    ShowSysHandCursor(16, proc->unk_30 * 16 + 72, 11, 0x400);
     sub_809FDD4(0, proc);
 
     return;
@@ -375,8 +379,13 @@ void WmSell_OnLoop_MainKeyHandler(struct WmSellProc* proc) {
 
         if (gKeyStatusPtr->newKeys & A_BUTTON) {
             u16 item = proc->unit->items[proc->unk_30];
-            if ((GetItemSellPrice(item) == 0) || (GetItemAttributes(item) & 0x10)) {
-                sub_8097DA8(16, proc->unk_30 * 16 + 72, 0x850, proc);
+            if ((GetItemSellPrice(item) == 0) || (GetItemAttributes(item) & IA_UNSELLABLE)) {
+                StartPrepErrorHelpbox(
+                    16,
+                    proc->unk_30 * 16 + 72,
+                    0x850, // TODO: msgid "Treasure can't be sold.[.]"
+                    proc
+                );
             } else {
                 Proc_Goto(proc, 2);
                 PlaySoundEffect(0x6a);
@@ -392,7 +401,7 @@ void WmSell_OnLoop_MainKeyHandler(struct WmSellProc* proc) {
     }
 
     if (WmSell_MainLoop_HandleDpadKeys(proc) != 0) {
-        ShowPrepScreenHandCursor(16, proc->unk_30 * 16 + 72, 11, 0x400);
+        ShowSysHandCursor(16, proc->unk_30 * 16 + 72, 11, 0x400);
         WmSell_DrawItemGoldValue(proc->unit->items[proc->unk_30]);
         if (proc->unk_34 == 1) {
             item = proc->unit->items[proc->unk_30];
@@ -411,8 +420,8 @@ void sub_80A0570(struct WmSellProc* proc) {
 
     StartParallelWorker(WmSell_DrawSellOptionSpriteText, proc);
 
-    sub_80AC9D4(0, 16, proc->unk_30 * 16 + 72, 2);
-    ShowPrepScreenHandCursor(proc->unk_31 * 32 + 164, 111, 0, 0x400);
+    SetUiCursorHandConfig(0, 16, proc->unk_30 * 16 + 72, 2);
+    ShowSysHandCursor(proc->unk_31 * 32 + 164, 111, 0, 0x400);
     sub_809FDD4(1, proc);
 
     return;
@@ -434,7 +443,7 @@ void WmSell_ConfirmSellItem(struct WmSellProc* proc) {
 
     count = GetUnitItemCount(proc->unit);
     if (count == 0) {
-        sub_809B74C(gBG0TilemapBuffer + 0x122, &gUnknown_02013648.textArray[0], proc->unit, 0);
+        DrawPrepScreenItems(gBG0TilemapBuffer + 0x122, &gUnknown_02013648.textArray[0], proc->unit, 0);
 
         Proc_Goto(proc, 3);
     } else {
@@ -487,17 +496,17 @@ void WmSell_OnLoop_ConfirmSellKeyHandler(struct WmSellProc* proc) {
 
     PlaySoundEffect(0x67);
 
-    ShowPrepScreenHandCursor(proc->unk_31 * 32 + 164, 111, 0, 0x400);
+    ShowSysHandCursor(proc->unk_31 * 32 + 164, 111, 0, 0x400);
 
     return;
 }
 
 //! FE8U = 0x080A06F0
 void WmSell_OnEnd(void) {
-    EndBG3Slider_();
+    EndMuralBackground_();
     EndFaceById(0);
-    SetPrimaryHBlankHandler(0);
-    sub_8098500();
+    SetPrimaryHBlankHandler(NULL);
+    EndDrawPrepFundsSprite();
 
     return;
 }

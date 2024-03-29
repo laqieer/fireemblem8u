@@ -4,28 +4,33 @@
 #include "bmitem.h"
 #include "chapterdata.h"
 #include "bmunit.h"
+#include "worldmap.h"
 
-EWRAM_DATA u16 gConvoyItemArray[100] = {0};
+#include "bmcontainer.h"
 
-extern unsigned int sub_80BD048();
+EWRAM_DATA u16 gConvoyItemArray[CONVOY_ITEM_COUNT] = {0};
 
-u16* GetConvoyItemArray() {
+u16 * GetConvoyItemArray(void)
+{
     return gConvoyItemArray;
 }
 
-void ClearSupplyItems() {
-    CpuFill16(0, gConvoyItemArray, 0xC8);
-    return;
+void ClearSupplyItems(void)
+{
+    CpuFill16(0, gConvoyItemArray, CONVOY_ITEM_COUNT * sizeof(u16));
 }
 
-void ShrinkConvoyItemList() {
+void ShrinkConvoyItemList(void)
+{
     u16 i;
-    u16* buffer = (void*) gGenericBuffer;
-    u16* bufferIt = buffer;
-    u16* convoy = GetConvoyItemArray();
+    u16 * buffer = (void*) gGenericBuffer;
+    u16 * bufferIt = buffer;
+    u16 * convoy = GetConvoyItemArray();
 
-    for (i = 0; i <= 0x63; ++i) {
-        if (*convoy != 0) {
+    for (i = 0; i < CONVOY_ITEM_COUNT; ++i)
+    {
+        if (*convoy != 0)
+        {
             *bufferIt = *convoy;
             bufferIt++;
         }
@@ -34,98 +39,108 @@ void ShrinkConvoyItemList() {
 
     *bufferIt = 0;
     ClearSupplyItems();
-    CpuCopy16(buffer, GetConvoyItemArray(), i * 2);
+    CpuCopy16(buffer, GetConvoyItemArray(), i * sizeof(u16));
     return;
 }
 
-int GetConvoyItemCount() {
+int GetConvoyItemCount(void)
+{
     int i;
     int count = 0;
-    u16* convoy = gConvoyItemArray;
-    for (i = 0x63; i >= 0; i--) {
-        if (*convoy != 0) {
+    u16 * convoy = gConvoyItemArray;
+    for (i = 0; i < CONVOY_ITEM_COUNT; i++)
+        if (convoy[i] != 0)
             count++;
-        }
-        convoy++;
-    }
+
     return count;
 }
 
-int AddItemToConvoy(int itemNameId) {
+int AddItemToConvoy(int item)
+{
     int i;
-    u16* convoy;
+    u16 * convoy;
     gBmSt.itemUnk2E = 0;
     convoy = gConvoyItemArray;
-    for (i = 0; i <= 0x63; ++i) {
-        if (convoy[i] == 0) {
-            convoy[i] = itemNameId;
+    for (i = 0; i < CONVOY_ITEM_COUNT; ++i)
+    {
+        if (convoy[i] == 0)
+        {
+            convoy[i] = item;
             return i;
         }
     }
-    gBmSt.itemUnk2E = itemNameId;
+    gBmSt.itemUnk2E = item;
     return -1;
 }
 
-void RemoveItemFromConvoy(int index) {
+void RemoveItemFromConvoy(int index)
+{
     gConvoyItemArray[index] = 0;
     ShrinkConvoyItemList();
     return;
 }
 
-int GetConvoyItemSlot(int r0) {
+int GetConvoyItemSlot(int item)
+{
     int i;
-    u16* convoy;
-    r0 = GetItemIndex(r0);
+    u16 * convoy;
+    item = GetItemIndex(item);
     convoy = gConvoyItemArray;
-     for (i = 0; i <= 0x63; ++i) {
-        if (r0 == (convoy[i] & 0xFF)) {
+
+    for (i = 0; i < CONVOY_ITEM_COUNT; ++i)
+        if (item == ITEM_INDEX(convoy[i]))
             return i;
-        }
-    }
 
     return -1;
 }
 
-bool8 HasConvoyAccess() {
+bool8 HasConvoyAccess(void)
+{
     unsigned int chapterId;
-    if (GMAP_STATE_BIT0 & gGMData.state) {
-        chapterId = sub_80BD048();
-        if (chapterId <= 1) {
-            return 0;
-        } else if (chapterId == 0x38) {
-            return 0;
-        } else {
-            return 1;
-        }
+    if (gGMData.state.bits.state_0)
+    {
+        chapterId = GetNextUnclearedChapter();
+        if (chapterId <= 1)
+            return false;
+        else if (chapterId == 0x38)
+            return false;
+        else
+            return true;
     }
 
-    if (gPlaySt.chapterIndex <= 1) {
-        return 0;
-    } else if (gPlaySt.chapterIndex == 0x38) {
-        return 0;
-    } else if (gPlaySt.chapterIndex != 5) {
-        return 1;
-    }
-    return 0;
+    if (gPlaySt.chapterIndex <= 1)
+        return false;
+    else if (gPlaySt.chapterIndex == 0x38)
+        return false;
+    else if (gPlaySt.chapterIndex != 5)
+        return true;
+
+    return false;
 }
 
-bool8 sub_8031660() {
-    const struct ROMChapterData* chapterData = GetROMChapterStruct(gPlaySt.chapterIndex);
-    if (chapterData->merchantPosX == 0xFF) { // ROM Chapter Data @ 0x82
-        return 0;
-    }
-    return 1;
+bool8 sub_8031660(void)
+{
+    const struct ROMChapterData * chapterData =
+        GetROMChapterStruct(gPlaySt.chapterIndex);
+    if (chapterData->merchantPosX == 0xFF)
+        return false;
+
+    return true;
 }
 
-struct Unit* GetSupplyUnit() {
+struct Unit * GetSupplyUnit()
+{
     int i;
-    for (i = 1; i <= 0x3F; ++i) {
-        struct Unit* unit = GetUnit(i);
-        if (UNIT_IS_VALID(unit)) {
-            if (UNIT_CATTRIBUTES(unit) & CA_SUPPLY) {
-                return unit;
-            }
-        }
+
+    for (i = FACTION_BLUE + 1; i < FACTION_GREEN; ++i)
+    {
+        struct Unit * unit = GetUnit(i);
+
+        if (!UNIT_IS_VALID(unit))
+            continue;
+
+        if (UNIT_CATTRIBUTES(unit) & CA_SUPPLY)
+            return unit;
     }
-    return 0;
+    return NULL;
 }

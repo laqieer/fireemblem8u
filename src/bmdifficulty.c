@@ -12,8 +12,18 @@
 #include "bmio.h"
 #include "mu.h"
 #include "bm.h"
-
+#include "bmsave.h"
+#include "popup.h"
+#include "bmlib.h"
+#include "eventinfo.h"
+#include "savemenu.h"
+#include "spline.h"
+#include "sysutil.h"
 #include "bmdifficulty.h"
+
+// TODO: move to some constant header and maybe merge with something if that makes sense
+#define BGPAL_BMDIFFICULTY_UNK_0 0
+#define OBPAL_BMDIFFICULTY_UNK_5 5
 
 /*
 * Difficulty mode stuff and also tower/ruins stuff
@@ -21,12 +31,12 @@
 */
 
 struct Struct020038C8 {
-    struct TextHandle text[4][8];
+    struct Text text[4][8];
     u8 idk[0x40];
 };
 
 extern struct Struct020038C8 gUnknown_020038C8[2];
-extern struct TextHandle gUnknown_02003B48[8];
+extern struct Text gUnknown_02003B48[8];
 
 extern struct Struct030017A0 gDungeonState;
 
@@ -68,18 +78,6 @@ const struct Outer080D7FD0 gUnknown_080D7FD0 = {
     0x11,
 };
 
-
-// popup.s
-void NewPopup_NewAlly(ProcPtr, int);
-
-// code.s
-int PidStatsGetTotalExpGain(void);
-void sub_80AB760(u16*);
-void sub_80AB77C(void);
-
-// spline.s
-void sub_800A950(struct Struct02003BE8*, int, int*);
-
 int GetCurrentPromotedLevelBonus() {
     if (gPlaySt.chapterStateBits & PLAY_FLAG_HARD) {
         return 19;
@@ -118,19 +116,19 @@ void DungeonRecordUi_InitText() {
     for (r5 = 0; r5 < 2; r5++) {
         for (r4 = 0; r4 < 4; r4++) {
             for (r2 = 0; r2 < 8; r2++) {
-                gUnknown_020038C8[r5].text[r4][r2].unk0 |= 0xFFFF;
+                gUnknown_020038C8[r5].text[r4][r2].chr_position |= 0xFFFF;
             }
         }
     }
 
     for (r5 = 0; r5 < 2; r5++) {
         for (r4 = 0; r4 < 8; r4++) {
-            gUnknown_020038C8[r5].text[4][r4].unk0 |= 0xFFFF;
+            gUnknown_020038C8[r5].text[4][r4].chr_position |= 0xFFFF;
         }
     }
 
     for (r5 = 0; r5 < 8; r5++) {
-        gUnknown_02003B48[r5].unk0 |= 0xFFFF;
+        gUnknown_02003B48[r5].chr_position |= 0xFFFF;
     }
 
     return;
@@ -152,25 +150,30 @@ void InitDungeon(u8 type) {
     return;
 }
 
-void UnlockPostgameAllyByEnemyCount() {
+/**
+ * If you destroy 200 enemies in a tower or ruins,
+ * turn on the flag to join Riev and Hayden
+ */
+void UnlockPostgameAllyByEnemyCount(void)
+{
     struct Dungeon* dungeon = &gDungeonState.current;
     UpdateDungeonStats(dungeon);
 
     if (gPlaySt.chapterStateBits & PLAY_FLAG_POSTGAME) {
         if ((gDungeonState.type == 0) && (dungeon->postgameEnemiesDefeated >= 200)) {
-            SetEventId(0x6B); // Riev
+            SetFlag(0x6B); // Riev
         }
 
         if ((gDungeonState.type == 1) && (dungeon->postgameEnemiesDefeated >= 200)) {
-            SetEventId(0x6C); // Hayden
+            SetFlag(0x6C); // Hayden
         }
     }
 
     return;
 }
 
-void UnlockPostgameAllyByClearCount() {
-
+void UnlockPostgameAllyByClearCount(void)
+{
     UnlockPostgameAllyByEnemyCount();
     UpdateDungeonRecordStats();
 
@@ -178,21 +181,21 @@ void UnlockPostgameAllyByClearCount() {
         struct Dungeon* dungeon = &gDungeonState.dungeon[gDungeonState.type];
 
         if ((gDungeonState.type == 0) && (dungeon->postgameClearCount >= 3)) {
-            SetEventId(0x6F); // Selena
+            SetFlag(0x6F); // Selena
         }
 
         if ((gDungeonState.type == 1) && (dungeon->postgameClearCount >= 3)) {
-            SetEventId(0x70); // Lyon
+            SetFlag(0x70); // Lyon
         }
     }
 
     return;
 }
 
-void sub_8037D58() {
+void StartRetreatProcessing(void)
+{
     UnlockPostgameAllyByEnemyCount();
     UpdateDungeonEnemiesDefeated();
-
     return;
 }
 
@@ -224,7 +227,7 @@ s8 PrepScreenProc_AddPostgameUnits(ProcPtr proc) {
     }
 
     for (i = 0; unitDefLut[i].eid != 0; i++) {
-        if (((s8)CheckEventId(unitDefLut[i].eid) == 1) && (TryAddPostgameUnit(proc, unitDefLut[i].uDef) == 1) ) {
+        if ((CheckFlag(unitDefLut[i].eid) == 1) && (TryAddPostgameUnit(proc, unitDefLut[i].uDef) == 1) ) {
             return 1;
         }
     }
@@ -293,7 +296,7 @@ void UpdateDungeonStats(struct Dungeon* dungeon) {
 
     val = dungeon->expEarned;
 
-    val += (PidStatsGetTotalExpGain() - gPlaySt.unk_38_2);
+    val += (PidStatsGetTotalExpGain() - gPlaySt.unk_30.unk_8_2);
 
     if (val > 50000) {
         val = 50000;
@@ -431,8 +434,8 @@ void UpdateDungeonEnemiesDefeated() {
 
 struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_FromMenu[] = {
     PROC_CALL(PushGlobalTimer),
-    PROC_CALL(AddSkipThread2),
-    PROC_CALL(sub_8013D80),
+    PROC_CALL(LockGame),
+    PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_SLEEP(0),
@@ -449,9 +452,9 @@ struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_FromMenu[] = {
     PROC_SLEEP(0),
     PROC_CALL(BMapDispResume),
     PROC_CALL(RefreshBMapGraphics),
-    PROC_CALL(sub_8013DA4),
+    PROC_CALL(StartFastFadeFromBlack),
     PROC_REPEAT(WaitForFade),
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
@@ -465,8 +468,8 @@ extern struct ProcCmd CONST_DATA sProcScr_DungeonRecord_UpdateNewRecordValues[];
 
 struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_AfterDungeonClear[] = {
     PROC_CALL(PushGlobalTimer),
-    PROC_CALL(AddSkipThread2),
-    PROC_CALL(StartFadeInBlackMedium),
+    PROC_CALL(LockGame),
+    PROC_CALL(StartMidFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(MU_EndAll),
@@ -488,14 +491,15 @@ struct ProcCmd CONST_DATA sProcScr_DisplayDungeonRecord_AfterDungeonClear[] = {
     PROC_SLEEP(0),
 
     PROC_CALL(BMapDispResume),
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
     PROC_CALL(PopGlobalTimer),
 
     PROC_END,
 };
 
 // StartDungeonRecordProcAfterDungeonClear?
-void sub_80381F4(ProcPtr proc) {
+void RecordDisplayAfterTowerCleared(ProcPtr proc)
+{
     Proc_StartBlocking(sProcScr_DisplayDungeonRecord_AfterDungeonClear, proc);
     return;
 }
@@ -512,7 +516,7 @@ void PopGlobalTimer() {
 }
 
 void sub_8038230() {
-    Sound_PlaySong80024D4(0x40, 0);
+    StartBgm(0x40, 0);
     return;
 }
 
@@ -551,16 +555,16 @@ void SetupDungeonRecordUi(ProcPtr proc) {
     SetBlendTargetA(0, 0, 1, 0, 0);
     SetBlendTargetB(0, 0, 0, 1, 0);
 
-    sub_8001F48(0);
-    sub_8001F64(0);
+    SetBlendBackdropA(0);
+    SetBlendBackdropB(0);
 
     // Load and display background
 
-    SetSpecialColorEffectsParameters(1, 6, 16, 0);
+    SetBlendConfig(1, 6, 16, 0);
 
     Decompress(gUnknown_08A21658, (void *)BG_VRAM + GetBackgroundTileDataOffset(3));
 
-    CopyToPaletteBuffer(gUnknown_08A25DCC, 0x100, 0x100);
+    ApplyPalettes(gUnknown_08A25DCC, 8, 8);
 
     CallARM_FillTileRect(gBG3TilemapBuffer, gUnknown_08A25ECC, 0x8000);
 
@@ -570,7 +574,7 @@ void SetupDungeonRecordUi(ProcPtr proc) {
 
     Decompress(gUnknown_08A268F8, gGenericBuffer);
 
-    CopyToPaletteBuffer(gUnknown_08A268D8, 0xE0, 0x20);
+    ApplyPalette(gUnknown_08A268D8, 7);
 
     CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer, 0x7260);
 
@@ -580,7 +584,7 @@ void SetupDungeonRecordUi(ProcPtr proc) {
 
     Decompress(gUnknown_089A27B4, gBG1TilemapBuffer);
 
-    CopyToPaletteBuffer(gUnknown_089A28E0, 0x40, 0x40);
+    ApplyPalettes(gUnknown_089A28E0, 2, 2);
 
     for (i = 0; i < 0x280; i++) {
         gBG1TilemapBuffer[i] = gBG1TilemapBuffer[i] + 0x2200;
@@ -594,7 +598,7 @@ void SetupDungeonRecordUi(ProcPtr proc) {
 
     sub_80AB760(gUnknown_0200310C);
 
-    CpuFastSet(gPaletteBuffer, gPaletteBuffer + 0x150, 8);
+    CpuFastSet(PAL_BG(BGPAL_BMDIFFICULTY_UNK_0), PAL_OBJ(OBPAL_BMDIFFICULTY_UNK_5), 8);
 
     return;
 }
@@ -605,7 +609,7 @@ struct DungeonUiTextLutEntry {
     /* 03 */ s8 y;
 };
 
-void DrawDungeonRecordUiLabels(struct TextHandle* th) {
+void DrawDungeonRecordUiLabels(struct Text* th) {
     char* str;
     struct DungeonUiTextLutEntry* iter;
 
@@ -625,10 +629,10 @@ void DrawDungeonRecordUiLabels(struct TextHandle* th) {
     while (iter->msgId != 0) {
         str = GetStringFromIndex(iter->msgId);
 
-        Text_Init(th, strlen(str));
-        Text_SetParameters(th, 0, 0);
-        Text_AppendString(th, str);
-        Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(iter->x, iter->y)]);
+        InitText(th, strlen(str));
+        Text_SetParams(th, 0, 0);
+        Text_DrawString(th, str);
+        PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(iter->x, iter->y)]);
 
         iter++;
     }
@@ -636,7 +640,7 @@ void DrawDungeonRecordUiLabels(struct TextHandle* th) {
     return;
 }
 
-struct TextHandle* DrawNumberText(struct TextHandle* th, u16 number, u8 places, s8 x, s8 y, u8 colorId) {
+struct Text* DrawNumberText(struct Text* th, u16 number, u8 places, s8 x, s8 y, u8 colorId) {
     int i;
     u8 shouldDraw;
     u8 digits[8];
@@ -654,10 +658,10 @@ struct TextHandle* DrawNumberText(struct TextHandle* th, u16 number, u8 places, 
         }
 
         if (shouldDraw || (i == 0)) {
-            Text_Init(th, 1);
-            Text_SetParameters(th, 0, colorId);
-            Text_AppendDecNumber(th, digits[i]);
-            Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(x - i, y)]);
+            InitText(th, 1);
+            Text_SetParams(th, 0, colorId);
+            Text_DrawNumber(th, digits[i]);
+            PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(x - i, y)]);
         }
 
         th++;
@@ -666,7 +670,7 @@ struct TextHandle* DrawNumberText(struct TextHandle* th, u16 number, u8 places, 
     return th;
 }
 
-struct TextHandle* DrawNumberText_WithReset(struct TextHandle* th, u16 number, u8 numTiles, s8 x, s8 y, u8 colorId) {
+struct Text* DrawNumberText_WithReset(struct Text* th, u16 number, u8 numTiles, s8 x, s8 y, u8 colorId) {
     int i;
     u8 shouldDraw;
     u8 digits[8];
@@ -679,8 +683,8 @@ struct TextHandle* DrawNumberText_WithReset(struct TextHandle* th, u16 number, u
     shouldDraw = 0;
 
     for (i = numTiles - 1; i >= 0; i--) {
-        if (th->unk0 != 0xFFFF) {
-            Text_Clear(th);
+        if (th->chr_position != 0xFFFF) {
+            ClearText(th);
         }
 
         if (digits[i] != 0) {
@@ -688,13 +692,13 @@ struct TextHandle* DrawNumberText_WithReset(struct TextHandle* th, u16 number, u
         }
 
         if (shouldDraw || (i == 0)) {
-            if (th->unk0 == 0xFFFF) {
-                Text_Init(th, 1);
+            if (th->chr_position == 0xFFFF) {
+                InitText(th, 1);
             }
 
-            Text_SetParameters(th, 0, colorId);
-            Text_AppendDecNumber(th, digits[i]);
-            Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(x - i, y)]);
+            Text_SetParams(th, 0, colorId);
+            Text_DrawNumber(th, digits[i]);
+            PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(x - i, y)]);
         }
 
         th++;
@@ -703,13 +707,13 @@ struct TextHandle* DrawNumberText_WithReset(struct TextHandle* th, u16 number, u
     return th;
 }
 
-void sub_8038668(struct TextHandle* th, u8 count) {
+void sub_8038668(struct Text* th, u8 count) {
     int i;
 
     for (i = count - 1; i >= 0; i--) {
 
-        if (th->unk0 != 0xFFFF) {
-            Text_Clear(th);
+        if (th->chr_position != 0xFFFF) {
+            ClearText(th);
         }
 
         th++;
@@ -718,14 +722,14 @@ void sub_8038668(struct TextHandle* th, u8 count) {
     return;
 }
 
-struct TextHandle* DrawTimeText(struct TextHandle* th, int time, s8 xBase, s8 yBase, u8 colorId) {
+struct Text* DrawTimeText(struct Text* th, int time, s8 xBase, s8 yBase, u8 colorId) {
     s8 xOffset;
     const char* str;
     u16 hours;
     u16 minutes;
     u16 seconds;
 
-    ComputeDisplayTime(time * 60, &hours, &minutes, &seconds);
+    FormatTime(time * 60, &hours, &minutes, &seconds);
 
     xOffset = xBase + 0xF9;
 
@@ -743,10 +747,10 @@ struct TextHandle* DrawTimeText(struct TextHandle* th, int time, s8 xBase, s8 yB
 
     str = GetStringFromIndex(0x20D); // :[.]
 
-    Text_Init(th, 1);
-    Text_SetParameters(th, 2, colorId);
-    Text_AppendChar(th, str);
-    Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
+    InitText(th, 1);
+    Text_SetParams(th, 2, colorId);
+    Text_DrawCharacter(th, str);
+    PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
 
     th++;
 
@@ -766,10 +770,10 @@ struct TextHandle* DrawTimeText(struct TextHandle* th, int time, s8 xBase, s8 yB
 
     str = GetStringFromIndex(0x20D); // :[.]
 
-    Text_Init(th, 1);
-    Text_SetParameters(th, 2, colorId);
-    Text_AppendChar(th, str);
-    Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
+    InitText(th, 1);
+    Text_SetParams(th, 2, colorId);
+    Text_DrawCharacter(th, str);
+    PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
 
     th++;
 
@@ -789,14 +793,14 @@ struct TextHandle* DrawTimeText(struct TextHandle* th, int time, s8 xBase, s8 yB
     return th;
 }
 
-struct TextHandle* DrawTimeText_WithReset(struct TextHandle* th, int time, s8 xBase, s8 yBase, u8 colorId, s8 drawPunctuation) {
+struct Text* DrawTimeText_WithReset(struct Text* th, int time, s8 xBase, s8 yBase, u8 colorId, s8 drawPunctuation) {
     s8 xOffset;
     const char* str;
     u16 hours;
     u16 minutes;
     u16 seconds;
 
-    ComputeDisplayTime(time * 60, &hours, &minutes, &seconds);
+    FormatTime(time * 60, &hours, &minutes, &seconds);
 
     xOffset = xBase + 0xF9;
 
@@ -814,16 +818,16 @@ struct TextHandle* DrawTimeText_WithReset(struct TextHandle* th, int time, s8 xB
 
     str = GetStringFromIndex(0x20D); // :[.]
 
-    if (th->unk0 != 0xFFFF) {
-        Text_Clear(th);
+    if (th->chr_position != 0xFFFF) {
+        ClearText(th);
     } else {
-        Text_Init(th, 1);
+        InitText(th, 1);
     }
 
     if (drawPunctuation) {
-        Text_SetParameters(th, 2, colorId);
-        Text_AppendChar(th, str);
-        Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
+        Text_SetParams(th, 2, colorId);
+        Text_DrawCharacter(th, str);
+        PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
     }
 
     th++;
@@ -844,16 +848,16 @@ struct TextHandle* DrawTimeText_WithReset(struct TextHandle* th, int time, s8 xB
 
     str = GetStringFromIndex(0x20D); // :[.]
 
-    if (th->unk0 != 0xFFFF) {
-        Text_Clear(th);
+    if (th->chr_position != 0xFFFF) {
+        ClearText(th);
     } else {
-        Text_Init(th, 1);
+        InitText(th, 1);
     }
 
     if (drawPunctuation) {
-        Text_SetParameters(th, 2, colorId);
-        Text_AppendChar(th, str);
-        Text_Draw(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
+        Text_SetParams(th, 2, colorId);
+        Text_DrawCharacter(th, str);
+        PutText(th, &gBG0TilemapBuffer[TILEMAP_INDEX(xOffset, yBase)]);
     }
 
     th++;
@@ -875,13 +879,13 @@ struct TextHandle* DrawTimeText_WithReset(struct TextHandle* th, int time, s8 xB
 }
 
 extern struct Font gUnknown_020038AC;
-extern struct TextHandle gUnknown_02003B70;
+extern struct Text gUnknown_02003B70;
 
 void DrawDungeonRecordUiText(ProcPtr proc) {
     int time;
     struct Dungeon currentDungeon;
     struct Dungeon recordDungeon;
-    struct TextHandle text;
+    struct Text text;
 
     CpuCopy32(&gDungeonState.current, &currentDungeon, sizeof(struct Dungeon));
 
@@ -894,13 +898,13 @@ void DrawDungeonRecordUiText(ProcPtr proc) {
 
     SetGameTime(time);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
-    Font_InitForUI(&gUnknown_020038AC, (void *)(VRAM + 0x20) + GetBackgroundTileDataOffset(0), 1, 0);
-    SetFont(&gUnknown_020038AC);
-    Font_LoadForUI();
+    InitTextFont(&gUnknown_020038AC, (void *)(VRAM + 0x20) + GetBackgroundTileDataOffset(0), 1, 0);
+    SetTextFont(&gUnknown_020038AC);
+    InitSystemTextFont();
 
-    NewGreenTextColorManager(proc);
+    StartGreenText(proc);
 
     DrawDungeonRecordUiLabels(&text);
 
@@ -1056,7 +1060,7 @@ void DungeonRecordUi_KeyListener(ProcPtr proc) {
 void EndDungeonRecordUi() {
     sub_80AB77C();
 
-    EndGreenTextColorManager();
+    EndGreenText();
 
     BG_Fill(gBG0TilemapBuffer, 0);
     BG_Fill(gBG1TilemapBuffer, 0);
@@ -1071,7 +1075,7 @@ void EndDungeonRecordUi() {
     gLCDControlBuffer.dispcnt.bg3_on = 0;
     gLCDControlBuffer.dispcnt.obj_on = 0;
 
-    Font_InitForUIDefault();
+    ResetText();
 
     CpuFastFill(0, gPaletteBuffer, 0x400);
 
@@ -1080,7 +1084,7 @@ void EndDungeonRecordUi() {
     return;
 }
 
-void sub_8038F78(struct TextHandle* th) {
+void sub_8038F78(struct Text* th) {
     int i;
     int bgOffset;
 
@@ -1089,11 +1093,11 @@ void sub_8038F78(struct TextHandle* th) {
     i = 0;
 
     while (i < 8) {
-        if (th->unk0 == 0xFFFF) {
+        if (th->chr_position == 0xFFFF) {
             CpuFastFill(0, (void *)((BG_VRAM + 0x12000) + (0x20 * i)), 32);
             CpuFastFill(0, (void *)((BG_VRAM + 0x12400) + (0x20 * i)), 32);
         } else {
-            int base = (BG_VRAM + (th->unk0 * 0x40));
+            int base = (BG_VRAM + (th->chr_position * 0x40));
             int src = bgOffset + base;
 
             src += 0x20;
@@ -1171,7 +1175,7 @@ void sub_803901C(struct BMDifficultyProc* proc) {
     return;
 }
 
-extern struct TextHandle gUnknown_02003B08;
+extern struct Text gUnknown_02003B08;
 
 void sub_80390D4(struct BMDifficultyProc* proc) {
     int pos[2];

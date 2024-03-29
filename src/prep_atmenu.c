@@ -7,24 +7,28 @@
 #include "bmunit.h"
 #include "statscreen.h"
 #include "soundwrapper.h"
-#include "sallycursor.h"
 #include "bmmap.h"
 #include "uichapterstatus.h"
 #include "bmio.h"
 #include "mu.h"
 #include "bmudisp.h"
 #include "bm.h"
-
+#include "helpbox.h"
+#include "bmlib.h"
 #include "prepscreen.h"
-s8 CheckSomethingSomewhere();
+#include "eventcall.h"
+#include "sysutil.h"
+#include "sio.h"
 
-void PrepAtMenu_OnInit(struct ProcAtMenu *proc)
+s8 CheckInLinkArena();
+
+void PrepAtMenu_OnInit(struct ProcAtMenu * proc)
 {
     PrepSetLatestCharId(0);
     proc->xDiff = 0;
     *((u16*)&proc->yDiff) = 0;    /* ? */
 
-    if (CheckSomethingSomewhere())
+    if (CheckInLinkArena())
         proc->max_counter = 5;
     else
         proc->max_counter = GetChapterAllyUnitCount();
@@ -43,7 +47,7 @@ void ResetPrepMenuDescTexts()
 {
     int i = 0;
     for (i = 0; i < 5; i++)
-        Text_Clear(&gPrepMainMenuTexts[i + 5]);
+        ClearText(&gPrepMainMenuTexts[i + 5]);
 
     TileMap_FillRect(
         TILEMAP_LOCATED(gBG2TilemapBuffer, 0xD, 0x6),
@@ -54,7 +58,7 @@ void ResetPrepMenuDescTexts()
 
 void ParsePrepMenuDescTexts(int msg)
 {
-    struct TextHandle *th = &gPrepMainMenuTexts[5];
+    struct Text *th = &gPrepMainMenuTexts[5];
     const char *str = GetStringFromIndex(msg);
 
     while (1) {
@@ -67,7 +71,7 @@ void ParsePrepMenuDescTexts(int msg)
             continue;
         }
 
-        str = Text_AppendChar(th, str);
+        str = Text_DrawCharacter(th, str);
     }
 }
 
@@ -75,9 +79,9 @@ void DrawPrepMenuDescTexts()
 {
     int i, base_line;
 
-    base_line = CheckSomethingSomewhere() ? 1 : 0;
+    base_line = CheckInLinkArena() ? 1 : 0;
     for (i = 0; i < 5; i++) {
-        Text_Draw(
+        PutText(
             &gPrepMainMenuTexts[i + 5],
             TILEMAP_LOCATED(gBG2TilemapBuffer, 0xD, 2 * i - base_line + 7));
     }
@@ -85,13 +89,13 @@ void DrawPrepMenuDescTexts()
     BG_EnableSyncByMask(0x4);
 }
 
-void PrepMenuDescOnInit(struct ProcPrepMenuDesc *proc)
+void PrepMenuDescOnInit(struct ProcPrepMenuDesc * proc)
 {
     proc->unk4C = 0;
     ResetPrepMenuDescTexts();
 }
 
-void PrepMenuDescOnParse(struct ProcPrepMenuDesc *proc)
+void PrepMenuDescOnParse(struct ProcPrepMenuDesc * proc)
 {
     ParsePrepMenuDescTexts(proc->msg);
 }
@@ -103,7 +107,7 @@ void PrepMenuDescOnDraw()
 
 void sub_8095C00(int msg, ProcPtr parent)
 {
-    struct ProcPrepMenuDesc *proc;
+    struct ProcPrepMenuDesc * proc;
 
     proc = Proc_Find(ProcScr_PrepMenuDescHandler);
     if (proc)
@@ -113,11 +117,11 @@ void sub_8095C00(int msg, ProcPtr parent)
     proc->msg = msg;
 }
 
-void sub_8095C2C(struct ProcAtMenu *proc)
+void sub_8095C2C(struct ProcAtMenu * proc)
 {
-    sub_80AD2D4();
+    EndSysBlackBoxs();
     EndPrepSpecialCharEffect();
-    EndBG3Slider_();
+    EndMuralBackground_();
     proc->cur_cmd = GetActivePrepMenuItemIndex();
     EndPrepScreenMenu();
 }
@@ -133,10 +137,10 @@ void AtMenu_Reinitialize(struct ProcAtMenu* proc)
 {
     int i;
 
-    SetupBackgrounds(gUnknown_08A181E8);
-    Font_InitForUIDefault();
+    SetupBackgrounds(gBgConfig_ItemUseScreen);
+    ResetText();
     LoadUiFrameGraphics();
-    LoadDialogueBoxGfx(NULL, 0xE);
+    LoadHelpBoxGfx(NULL, 0xE);
     SetDispEnable(0, 0, 0, 0, 0);
     LoadObjUIGfx();
     ResetUnitSprites();
@@ -150,16 +154,16 @@ void AtMenu_Reinitialize(struct ProcAtMenu* proc)
     BG_Fill(gBG2TilemapBuffer, 0);
 
     for (i = 0; i < 5; i++)
-        Text_Init(&gPrepMainMenuTexts[i + 5], 0xE);
+        InitText(&gPrepMainMenuTexts[i + 5], 0xE);
     for (i = 0; i < 4; i++)
-        Text_Init(&gPrepMainMenuTexts[i + 1], 0x8);
-    Text_Init(&gPrepMainMenuTexts[0], 0xA);
+        InitText(&gPrepMainMenuTexts[i + 1], 0x8);
+    InitText(&gPrepMainMenuTexts[0], 0xA);
 
     /* "Preparations" */
     Decompress(gUnknown_08A1A4C8, (void*)0x6014800);
     /* "Menu", "Start" button */
     Decompress(gUnknown_08A1D510, (void*)0x6016000);
-    ApplyPalettes(gUnknown_08A1B154, 0x19, 2);
+    ApplyPalettes(Pal_SysBrownBox, 0x19, 2);
     
     sub_8095C50(0x7000, 0x6);
     ApplyPalette(gUnknown_08A1D4C8, 0x14);
@@ -183,10 +187,10 @@ void AtMenu_Reinitialize(struct ProcAtMenu* proc)
     SetDefaultColorEffects();
 
     StartPrepSpecialCharEffect(proc);
-    EndSlidingWallEffectMaybe();
+    RestartMuralBackground();
     ApplyPalettes(gUiFramePaletteB, 0x2, 3);
 
-    if (CheckSomethingSomewhere()) {
+    if (CheckInLinkArena()) {
         Decompress(gUnknown_08A1B698, gGenericBuffer);
         CallARM_FillTileRect(TILEMAP_LOCATED(gBG1TilemapBuffer, 1, 5), gGenericBuffer, 0x1000);
     } else {
@@ -197,14 +201,14 @@ void AtMenu_Reinitialize(struct ProcAtMenu* proc)
     }
 
     Prep_DrawChapterGoal(0x5800, 0xB);
-    sub_80AD1AC(proc);
-    sub_80AD1D0(0x6800);
+    NewSysBlackBoxHandler(proc);
+    SysBlackBoxSetGfx(0x6800);
     proc->unk_35 = GetActivePrepMenuItemIndex();
     ParsePrepMenuDescTexts(sub_8095024());
     DrawPrepMenuDescTexts();
 }
 
-void EndPrepAtMenuIfNoUnitAvailable(struct ProcAtMenu *proc)
+void EndPrepAtMenuIfNoUnitAvailable(struct ProcAtMenu * proc)
 {
     int i;
     u8 counter;
@@ -229,7 +233,7 @@ void EndPrepAtMenuIfNoUnitAvailable(struct ProcAtMenu *proc)
     }
 }
 
-void sub_8095F2C(struct ProcAtMenu *proc)
+void sub_8095F2C(struct ProcAtMenu * proc)
 {
     int val = GetActivePrepMenuItemIndex();
 
@@ -239,11 +243,11 @@ void sub_8095F2C(struct ProcAtMenu *proc)
     }
 }
 
-void sub_8095F54(struct ProcAtMenu *proc)
+void sub_8095F54(struct ProcAtMenu * proc)
 {
     int i, unk2F, tile;
 
-    struct TextHandle *th = &gPrepMainMenuTexts[1];
+    struct Text *th = &gPrepMainMenuTexts[1];
     int height = sub_80950C4(proc->unk_2F);
     DrawUiFrame2(3, 5, 9, 2 * height + 2, 1);
 
@@ -253,11 +257,11 @@ void sub_8095F54(struct ProcAtMenu *proc)
         unk2F = proc->unk_2F >> i;
 
         if (1 & unk2F) {
-            Text_Clear(th);
-            DrawTextInline(
+            ClearText(th);
+            PutDrawText(
                 th,
                 (void*)TILEMAP_LOCATED(gBG0TilemapBuffer, 4, 0) + tile,
-                TEXT_COLOR_NORMAL,
+                TEXT_COLOR_SYSTEM_WHITE,
                 0, 0, GetStringFromIndex(gUnknown_08A196BC[i]));
 
             th++;
@@ -275,14 +279,14 @@ void CleanupPrepMenuScreen(ProcPtr proc)
     BG_EnableSyncByMask(0x3);
 }
 
-void sub_8096004(struct ProcAtMenu *proc)
+void sub_8096004(struct ProcAtMenu * proc)
 {
     ShowPrepScreenMenuFrozenHand();
     sub_8095F54(proc);
-    ShowPrepScreenHandCursor(0x1C, proc->hand_pos * 16 + 0x30, 7, 0x400);
+    ShowSysHandCursor(0x1C, proc->hand_pos * 16 + 0x30, 7, 0x400);
 }
 
-void AtMenu_CtrlLoop(struct ProcAtMenu *proc)
+void AtMenu_CtrlLoop(struct ProcAtMenu * proc)
 {
     const int msg_list[] = {
         0x5B8,
@@ -307,7 +311,7 @@ void AtMenu_CtrlLoop(struct ProcAtMenu *proc)
             PlaySoundEffect(0x6A);
 
             if (2 == sub_8095094(proc->hand_pos, proc->unk_2F))
-                sub_80029E8(0x37, 0x100, 0x100, 0x20, NULL);
+                CallSomeSoundMaybe(0x37, 0x100, 0x100, 0x20, NULL);
 
             proc->state = 4;
             Proc_Goto(proc, 8);
@@ -355,12 +359,12 @@ void AtMenu_CtrlLoop(struct ProcAtMenu *proc)
         if (proc->do_help)
             StartHelpBox(xPos, yPos, msg_list[sub_8095094(proc->hand_pos, proc->unk_2F)]);
 
-        ShowPrepScreenHandCursor(xPos, yPos, 7, 0x400);
+        ShowSysHandCursor(xPos, yPos, 7, 0x400);
         PlaySoundEffect(0x66);
     }
 }
 
-void AtMenuSetUnitStateAndEndFlag(struct ProcAtMenu *proc)
+void AtMenuSetUnitStateAndEndFlag(struct ProcAtMenu * proc)
 {
     int i;
     struct Unit *unit;
@@ -376,26 +380,26 @@ void AtMenuSetUnitStateAndEndFlag(struct ProcAtMenu *proc)
     proc->end_prep = 1;
 }
 
-void AtMenu_ResetScreenEffect(struct ProcAtMenu *proc)
+void AtMenu_ResetScreenEffect(struct ProcAtMenu * proc)
 {
-    EndBG3Slider_();
+    EndMuralBackground_();
     EndPrepSpecialCharEffect();
     SetupBackgrounds(0);
-    SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
+    SetBlendConfig(3, 0, 0, 0x10);
     SetBlendTargetA(1, 1, 1, 1, 1);
-    sub_8001F48(1);
+    SetBlendBackdropA(1);
 
     if (proc->end_prep)
         nullsub_20(proc);
 }
 
-void AtMenu_ResetBmUiEffect(struct ProcAtMenu *proc)
+void AtMenu_ResetBmUiEffect(struct ProcAtMenu * proc)
 {
     ReorderPlayerUnitsBasedOnDeployment();
 
     if (proc->end_prep)
         EndPrepScreen();
-    else if (CheckSomethingSomewhere())
+    else if (CheckInLinkArena())
         sub_8042EA8();
 
     sub_801240C();
@@ -404,7 +408,7 @@ void AtMenu_ResetBmUiEffect(struct ProcAtMenu *proc)
     RefreshUnitSprites();
 }
 
-void AtMenu_StartSubmenu(struct ProcAtMenu *proc)
+void AtMenu_StartSubmenu(struct ProcAtMenu * proc)
 {
     sub_8095C2C(proc);
 
@@ -436,10 +440,10 @@ void AtMenu_StartSubmenu(struct ProcAtMenu *proc)
     Proc_Break(proc);
 }
 
-void AtMenu_OnSubmenuEnd(struct ProcAtMenu *proc)
+void AtMenu_OnSubmenuEnd(struct ProcAtMenu * proc)
 {
     if (3 == proc->state)
-        ISuspectThisToBeMusicRelated_8002730(0x80, 0x100, 0x20, NULL);
+        StartBgmVolumeChange(0x80, 0x100, 0x20, NULL);
 
     switch (proc->state) {
     case 4:
@@ -467,17 +471,17 @@ void sub_8096404()
 
 void AtMenu_LockGame()
 {
-    if (!CheckSomethingSomewhere()) {
-        AddSkipThread2();
+    if (!CheckInLinkArena()) {
+        LockGame();
         BMapDispSuspend();
     }
 }
 
 void AtMenu_UnlockGame()
 {
-    if (!CheckSomethingSomewhere()) {
+    if (!CheckInLinkArena()) {
         BMapDispResume();
-        SubSkipThread2();
+        UnlockGame();
     }
 }
 
@@ -490,7 +494,7 @@ void StartPrepAtMenuWithConfig()
 {
     Proc_Start(ProcScr_AtMenu, PROC_TREE_3);
     RemoveSomeUnitItems();
-    Reset203E87C();
+    ResetSioPidPool();
 }
 
 

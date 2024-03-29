@@ -10,6 +10,7 @@
 #include "bmphase.h"
 #include "bmunit.h"
 #include "bm.h"
+#include "bmlib.h"
 #include "constants/video-global.h"
 
 /*
@@ -35,11 +36,11 @@ void PhaseIntroVMatchMid(void);
 void PhaseIntroVMatchLo(void);
 void PhaseIntroUnk_Init(struct PhaseIntroSubProc *proc);
 void PhaseIntroUnk_Loop(struct PhaseIntroSubProc *proc);
-void PhaseIntroText_Init(struct PhaseIntroSubProc *proc);
+void PhaseIntroInitText(struct PhaseIntroSubProc *proc);
 void PhaseIntroText_PutText(struct PhaseIntroSubProc *proc);
 void PhaseIntroText_InLoop(struct PhaseIntroSubProc *proc);
 void PhaseIntroText_OutLoop(struct PhaseIntroSubProc *proc);
-void PhaseIntroText_Clear(struct PhaseIntroSubProc *proc);
+void PhaseIntroClearText(struct PhaseIntroSubProc *proc);
 void PhaseIntroSquares_Init(struct PhaseIntroSubProc *proc);
 void PhaseIntroSquares_InLoop(struct PhaseIntroSubProc *proc);
 void PhaseIntroSquares_OutLoop(struct PhaseIntroSubProc *proc);
@@ -50,7 +51,7 @@ void PhaseIntro_EndIfNoUnits(ProcPtr proc);
 void PhaseIntro_InitGraphics(ProcPtr proc);
 void PhaseIntro_InitDisp(ProcPtr proc);
 void PhaseIntro_WaitForEnd(ProcPtr proc);
-int CheckSomethingSomewhere();
+int CheckInLinkArena();
 
 
 /* section.data */
@@ -77,14 +78,14 @@ struct ProcCmd CONST_DATA gProcScr_PhaseIntroUnk[] = {
 };
 
 struct ProcCmd CONST_DATA gProcScr_PhaseIntroText[] = {
-    PROC_CALL(PhaseIntroText_Init),
+    PROC_CALL(PhaseIntroInitText),
     PROC_SLEEP(0x06),
     PROC_CALL(PhaseIntroText_PutText),
     PROC_START_CHILD(gProcScr_PhaseIntroUnk),
     PROC_REPEAT(PhaseIntroText_InLoop),
     PROC_SLEEP(0x1E),
     PROC_REPEAT(PhaseIntroText_OutLoop),
-    PROC_CALL(PhaseIntroText_Clear),
+    PROC_CALL(PhaseIntroClearText),
     PROC_END
 };
 
@@ -170,9 +171,9 @@ void PhaseIntroText_PutText(struct PhaseIntroSubProc *proc)
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
-void PhaseIntroText_Init(struct PhaseIntroSubProc *proc)
+void PhaseIntroInitText(struct PhaseIntroSubProc *proc)
 {
-    if (Sound_GetCurrentSong() != GetCurrentMapMusicIndex())
+    if (GetCurrentBgmSong() != GetCurrentMapMusicIndex())
         Sound_FadeOutBGM(4);
 
     PlaySoundEffect(0x73);
@@ -184,7 +185,7 @@ void PhaseIntroText_InLoop(struct PhaseIntroSubProc *proc)
 {
     int lo, hi;
 
-    if (0 != CheckSomethingSomewhere()) {
+    if (0 != CheckInLinkArena()) {
         hi = 0;
         lo = -0x14;
     } else {
@@ -210,7 +211,7 @@ void PhaseIntroText_OutLoop(struct PhaseIntroSubProc *proc)
 {
     int lo, hi;
 
-    if (0 != CheckSomethingSomewhere()) {
+    if (0 != CheckInLinkArena()) {
         hi = -0x14;
         lo = -0x30;
     } else {
@@ -232,7 +233,7 @@ void PhaseIntroText_OutLoop(struct PhaseIntroSubProc *proc)
     }
 }
 
-void PhaseIntroText_Clear(struct PhaseIntroSubProc *proc)
+void PhaseIntroClearText(struct PhaseIntroSubProc *proc)
 {
     BG_Fill(gBG0TilemapBuffer, 0);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
@@ -284,7 +285,7 @@ void PhaseIntroUnk_Loop(struct PhaseIntroSubProc *proc)
         break;
     }
 
-    WriteOAMRotScaleData(
+    SetObjAffine(
         0,
         Div(COS(0) * 0x10, 0x100),
         Div(-SIN(0) * 0x10, val),
@@ -490,7 +491,7 @@ void PhaseIntro_InitDisp(ProcPtr proc)
     gBmSt.altBlendACa = 0;
     gBmSt.altBlendACb = 0x10;
 
-    SetSpecialColorEffectsParameters(1, gBmSt.altBlendBCa, gBmSt.altBlendBCb, 0);
+    SetBlendConfig(1, gBmSt.altBlendBCa, gBmSt.altBlendBCb, 0);
 
     SetBlendTargetA(0, 1, 0, 0, 0);
     SetBlendTargetB(0, 0, 1, 1, 1);
@@ -501,7 +502,7 @@ void PhaseIntro_InitDisp(ProcPtr proc)
 
 void PhaseIntro_WaitForEnd(ProcPtr proc)
 {
-    SetSpecialColorEffectsParameters(1, gBmSt.altBlendBCa, gBmSt.altBlendBCb, 0);
+    SetBlendConfig(1, gBmSt.altBlendBCa, gBmSt.altBlendBCb, 0);
 
     if (Proc_Find(gProcScr_PhaseIntroText) == NULL && Proc_Find(gProcScr_PhaseIntroSquares) == NULL && Proc_Find(gProcScr_PhaseIntroBlendBox) == NULL)
     {

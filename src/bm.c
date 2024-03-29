@@ -10,19 +10,21 @@
 #include "bmudisp.h"
 #include "playerphase.h"
 #include "cp_common.h"
-
+#include "bmmind.h"
 #include "bmtrick.h"
 #include "bmio.h"
 #include "fontgrp.h"
 #include "face.h"
 #include "icon.h"
 #include "uiutils.h"
-
+#include "bmlib.h"
 #include "soundwrapper.h"
 #include "bmmap.h"
 #include "bmphase.h"
 #include "bmusailment.h"
 #include "bmsave.h"
+#include "worldmap.h"
+#include "eventcall.h"
 
 #include "bm.h"
 
@@ -54,6 +56,9 @@ struct UnkMapCursorProc {
     /* 38 */ int duration;
 };
 
+struct PalFadeSt EWRAM_DATA sPalFadeSt[0x20] = { 0 };
+struct BmSt EWRAM_DATA gBmSt = {};
+struct PlaySt EWRAM_DATA gPlaySt = {};
 struct Vec2 EWRAM_DATA sLastCoordMapCursorDrawn = {};
 u32 EWRAM_DATA sLastTimeMapCursorDrawn = 0;
 s8 EWRAM_DATA sCameraAnimTable[0x100] = { 0 };
@@ -62,11 +67,6 @@ s8 EWRAM_DATA sCameraAnimTable[0x100] = { 0 };
 extern struct ProcCmd gProcScr_ResetCursorPosition[];
 extern struct ProcCmd ProcScr_PhaseIntro[];
 extern struct ProcCmd gProcScr_ChapterIntroTitleOnly[];
-
-extern u8 gGfx_MiscUiGraphics[];
-extern u16 gPal_MiscUiGraphics[];
-
-extern u16 gEvent_SkirmishCommonBeginning[];
 
 void BmMain_StartIntroFx(ProcPtr proc);
 int CallBeginningEvents(void);
@@ -153,7 +153,7 @@ PROC_LABEL(4),
     PROC_CALL(RenderBmMap),
     PROC_CALL(StartMapSongBgm),
 
-    PROC_CALL(sub_8013D8C),
+    PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_GOTO(5),
@@ -162,7 +162,7 @@ PROC_LABEL(6),
     PROC_CALL(RenderBmMap),
     PROC_CALL(StartMapSongBgm),
 
-    PROC_CALL(sub_8013D8C),
+    PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_REPEAT(BmMain_ResumePlayerPhase),
@@ -183,7 +183,7 @@ PROC_LABEL(8),
     PROC_CALL(RenderBmMap),
     PROC_CALL(StartMapSongBgm),
 
-    PROC_CALL(sub_8013D8C),
+    PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_GOTO(9),
@@ -192,7 +192,7 @@ PROC_LABEL(7),
     PROC_CALL(RenderBmMap),
     PROC_CALL(StartMapSongBgm),
 
-    PROC_CALL(sub_8013D8C),
+    PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_START_CHILD_BLOCKING(gProcScr_BerserkCpPhase),
@@ -356,15 +356,15 @@ void OnVBlank(void) {
 
     Proc_Run(gProcTreeRootArray[0]);
 
-    FlushPrimaryOAM();
+    SyncLoOam();
 
-    if (gBmSt.mainLoopEndedFlag) {
-        gBmSt.mainLoopEndedFlag = 0;
+    if (gBmSt.sync_hardware) {
+        gBmSt.sync_hardware = 0;
 
         FlushLCDControl();
         FlushBackgrounds();
         FlushTiles();
-        FlushSecondaryOAM();
+        SyncHiOam();
     }
 
     m4aSoundMain();
@@ -381,7 +381,7 @@ void OnGameLoopMain(void) {
 
     Proc_Run(gProcTreeRootArray[1]);
 
-    if (GetThread2SkipStack() == 0) {
+    if (GetGameLock() == 0) {
         Proc_Run(gProcTreeRootArray[2]);
     }
 
@@ -393,7 +393,7 @@ void OnGameLoopMain(void) {
     Proc_Run(gProcTreeRootArray[4]);
     PushSpriteLayerObjects(13);
 
-    gBmSt.mainLoopEndedFlag = 1;
+    gBmSt.sync_hardware = 1;
     gBmSt.prevVCount = REG_VCOUNT;
 
     VBlankIntrWait();
@@ -402,125 +402,117 @@ void OnGameLoopMain(void) {
 }
 
 //! FE8U = 0x08015360
-void AddSkipThread2(void) {
+void LockGame(void) {
     gBmSt.gameLogicSemaphore++;
     return;
 }
 
 //! FE8U = 0x08015370
-void SubSkipThread2(void) {
+void UnlockGame(void) {
     gBmSt.gameLogicSemaphore--;
     return;
 }
 
 //! FE8U = 0x08015380
-u8 GetThread2SkipStack(void) {
+u8 GetGameLock(void) {
     return gBmSt.gameLogicSemaphore;
 }
 
 //! FE8U = 0x0801538C
-void SwitchPhases(void) {
-
+void SwitchPhases(void)
+{
     switch (gPlaySt.faction) {
-        case FACTION_BLUE:
-            gPlaySt.faction = FACTION_RED;
+    case FACTION_BLUE:
+        gPlaySt.faction = FACTION_RED;
 
-            break;
+        break;
 
-        case FACTION_RED:
-            gPlaySt.faction = FACTION_GREEN;
+    case FACTION_RED:
+        gPlaySt.faction = FACTION_GREEN;
 
-            break;
+        break;
 
-        case FACTION_GREEN:
-            gPlaySt.faction = FACTION_BLUE;
+    case FACTION_GREEN:
+        gPlaySt.faction = FACTION_BLUE;
 
-            if (gPlaySt.chapterTurnNumber < 999) {
-                gPlaySt.chapterTurnNumber++;
-            }
+        if (gPlaySt.chapterTurnNumber < 999)
+            gPlaySt.chapterTurnNumber++;
 
-            ProcessTurnSupportExp();
+        ProcessTurnSupportExp();
     }
-
-    return;
 }
 
 //! FE8U = 0x080153D4
-int CallBeginningEvents(void) {
+int CallBeginningEvents(void)
+{
     const struct ChapterEventGroup* pChapterEvents = GetChapterEventDataPointer(gPlaySt.chapterIndex);
 
-    if (GetChapterThing() != 2) {
+    if (GetBattleMapKind() != 2)
         CallEvent(pChapterEvents->beginningSceneEvents, 1);
-    } else {
-        CallEvent(gEvent_SkirmishCommonBeginning, 1);
-    }
+    else
+        CallEvent((u16 *)EventScr_SkirmishCommonBeginning, 1);
 
     return 0;
 }
 
 //! FE8U = 0x08015410
-int BmMain_ChangePhase(void) {
+int BmMain_ChangePhase(void)
+{
 
     ClearActiveFactionGrayedStates();
     RefreshUnitSprites();
     SwitchPhases();
 
-    if (sub_8083EB8() == 1) {
+    if (RunPhaseSwitchEvents() == 1)
         return 0;
-    }
 
     return 1;
 }
 
 //! FE8U = 0x08015434
-s8 sub_8015434(void) {
-    if (sub_80832D4() == 1) {
+bool sub_8015434(void)
+{
+    if (sub_80832D4() == 1)
+    {
         sub_80832D0();
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 //! FE8U = 0x08015450
-void BmMain_StartPhase(ProcPtr proc) {
-
+void BmMain_StartPhase(ProcPtr proc)
+{
     switch (gPlaySt.faction) {
-        case FACTION_BLUE:
-            Proc_StartBlocking(gProcScr_PlayerPhase, proc);
+    case FACTION_BLUE:
+        Proc_StartBlocking(gProcScr_PlayerPhase, proc);
+        break;
 
-            break;
+    case FACTION_RED:
+        Proc_StartBlocking(gProcScr_CpPhase, proc);
+        break;
 
-        case FACTION_RED:
-            Proc_StartBlocking(gProcScr_CpPhase, proc);
-
-            break;
-
-        case FACTION_GREEN:
-            Proc_StartBlocking(gProcScr_CpPhase, proc);
-
-            break;
+    case FACTION_GREEN:
+        Proc_StartBlocking(gProcScr_CpPhase, proc);
+        break;
     }
 
     Proc_Break(proc);
-
-    return;
 }
 
 //! FE8U = 0x080154A4
-void BmMain_ResumePlayerPhase(ProcPtr proc) {
+void BmMain_ResumePlayerPhase(ProcPtr proc)
+{
     Proc_Goto(Proc_StartBlocking(gProcScr_PlayerPhase, proc), 7);
     Proc_Break(proc);
-
-    return;
 }
 
 //! FE8U = 0x080154C8
-int BmMain_UpdateTraps(ProcPtr proc) {
-
-    if (gPlaySt.faction != FACTION_GREEN) {
+int BmMain_UpdateTraps(ProcPtr proc)
+{
+    if (gPlaySt.faction != FACTION_GREEN)
         return 1;
-    }
 
     Proc_StartBlocking(gProcScr_UpdateTraps, proc);
     DecayTraps();
@@ -529,52 +521,48 @@ int BmMain_UpdateTraps(ProcPtr proc) {
 }
 
 //! FE8U = 0x080154F4
-void BmMain_SuspendBeforePhase(void) {
-
+void BmMain_SuspendBeforePhase(void)
+{
     gActionData.suspendPointType = SUSPEND_POINT_PHASECHANGE;
     WriteSuspendSave(SAVE_ID_SUSPEND);
-
-    return;
 }
 
 //! FE8U = 0x0801550C
-void BmMain_StartIntroFx(ProcPtr proc) {
-    if (gPlaySt.chapterIndex == 0x38) {
+void BmMain_StartIntroFx(ProcPtr proc)
+{
+    if (gPlaySt.chapterIndex == 0x38)
         return;
-    }
 
-    if (gPlaySt.chapterIndex == 0x06 && CheckEventId(0x88)) {
+    if (gPlaySt.chapterIndex == 0x06 && CheckFlag(0x88))
         return;
-    }
 
     Proc_StartBlocking(gProcScr_ChapterIntro, proc);
-
-    return;
 }
 
 //! FE8U = 0x08015544
-void UndeployEveryone(void) {
+void UndeployEveryone(void)
+{
     int i;
 
-    UnsetEventId(0x84);
+    ClearFlag(0x84);
 
-    if ((gPlaySt.unk4A_1) == 0) {
-        for (i = 1; i < FACTION_GREEN; i++) {
-            struct Unit* unit = GetUnit(i);
+    if ((gPlaySt.unk4A_1) == 0)
+    {
+        for (i = 1; i < FACTION_GREEN; i++)
+        {
+            struct Unit * unit = GetUnit(i);
 
-            if (!UNIT_IS_VALID(unit)) {
+            if (!UNIT_IS_VALID(unit))
                 continue;
-            }
 
             unit->state &= ~(US_NOT_DEPLOYED);
         }
     }
-
-    return;
 }
 
 //! FE8U = 0x08015588
-void GotoChapterWithoutSave(int chapterId) {
+void GotoChapterWithoutSave(u16 chapterId)
+{
     gPlaySt.chapterIndex = chapterId;
 
     Proc_Goto(Proc_Find(gProc_BMapMain), 2);
@@ -589,7 +577,7 @@ void GotoChapterWithoutSave(int chapterId) {
 void sub_80155C4(void) {
     u8 flag;
 
-    if (CheckEventId(3)) {
+    if (CheckFlag(3)) {
         RegisterChapterTimeAndTurnCount(&gPlaySt);
     }
 
@@ -628,23 +616,23 @@ void InitBmBgLayers(void) {
 //! FE8U = 0x08015680
 void LoadObjUIGfx(void) {
     Decompress(gGfx_MiscUiGraphics, gGenericBuffer);
-    CopyTileGfxForObj(gGenericBuffer, (void*)0x06010000, 0x12, 4);
+    Copy2dChr(gGenericBuffer, (void*)0x06010000, 0x12, 4);
 
-    CopyToPaletteBuffer(gPal_MiscUiGraphics, 0x200, 0x40);
+    ApplyPalettes(gPal_MiscUiGraphics, 0x10, 2);
 
     return;
 }
 
 //! FE8U = 0x080156BC
 void sub_80156BC(void) {
-    CopyToPaletteBuffer(gPal_MiscUiGraphics, 0x200, 0x40);
+    ApplyPalettes(gPal_MiscUiGraphics, 0x10, 2);
     return;
 }
 
 //! FE8U = 0x080156D4
 void sub_80156D4(void) {
 
-    Font_InitForUIDefault();
+    ResetText();
     LoadLegacyUiFrameGraphics();
     ResetFaces();
     ResetIconGraphics_();
@@ -657,7 +645,7 @@ void sub_80156D4(void) {
 //! FE8U = 0x080156F4
 void ReadGameSaveCoreGfx(void) {
 
-    Font_InitForUIDefault();
+    ResetText();
     LoadUiFrameGraphics();
     ResetFaces();
     ResetIconGraphics_();
@@ -936,7 +924,8 @@ void PutMapCursor(int x, int y, int kind) {
 }
 
 //! FE8U = 0x08015B88
-void sub_8015B88(int x, int y) {
+void DisplayBmTextShadow(int x, int y)
+{
     int frame = (GetGameClock() / 2) % 16;
     u32 oam2 = 2;
 
@@ -1207,7 +1196,7 @@ void sub_8015F90(int x, int y, int duration) {
 }
 
 static inline int CheckAltBgm(u8 base, u8 alt) {
-    if (!CheckEventId(4)) {
+    if (!CheckFlag(4)) {
         return base;
     } else {
         return alt;
@@ -1223,7 +1212,7 @@ int GetCurrentMapMusicIndex(void) {
     u8 redBgmIdx = CheckAltBgm(MAP_BGM_RED, MAP_BGM_RED_ALT);
     u8 greenBgmIdx;
 
-    if (!CheckEventId(4)) {
+    if (!CheckFlag(4)) {
         greenBgmIdx = MAP_BGM_GREEN;
         greenBgmIdx++; greenBgmIdx--;
     } else {
@@ -1239,13 +1228,13 @@ int GetCurrentMapMusicIndex(void) {
 
         case FACTION_BLUE:
 
-            if (CheckEventId(4)) {
+            if (CheckFlag(4)) {
                 return GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[blueBgmIdx];
             }
 
-            if ((GetChapterThing() == 2) || GetROMChapterStruct(gPlaySt.chapterIndex)->victorySongEnemyThreshold != 0) {
+            if ((GetBattleMapKind() == 2) || GetROMChapterStruct(gPlaySt.chapterIndex)->victorySongEnemyThreshold != 0) {
                 aliveUnits = CountUnitsInState(0x80, 0x0001000C);
-                thing = GetChapterThing();
+                thing = GetBattleMapKind();
 
                 if ((thing != 2 && aliveUnits <= (GetROMChapterStruct(gPlaySt.chapterIndex)->victorySongEnemyThreshold))
                     || (thing == 2 && aliveUnits <= 1))
@@ -1258,7 +1247,7 @@ int GetCurrentMapMusicIndex(void) {
 
 //! FE8U = 0x080160D0
 void StartMapSongBgm(void) {
-    Sound_PlaySong80024D4(GetCurrentMapMusicIndex(), 0);
+    StartBgm(GetCurrentMapMusicIndex(), 0);
     return;
 }
 

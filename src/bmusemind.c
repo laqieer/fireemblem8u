@@ -12,7 +12,7 @@
 #include "mu.h"
 #include "rng.h"
 #include "uiselecttarget.h"
-#include "sallycursor.h"
+#include "prepscreen.h"
 #include "m4a.h"
 #include "soundwrapper.h"
 #include "bmtrick.h"
@@ -20,19 +20,14 @@
 #include "bmtarget.h"
 #include "popup.h"
 #include "bmudisp.h"
-
+#include "classchg.h"
+#include "eventinfo.h"
+#include "bmmind.h"
 #include "bmusemind.h"
-
-extern struct UnitDefinition gUnknown_03001788;
-
-extern s8 CONST_DATA gUnknown_080D7C44[];
-
-static int sub_802EF70(ProcPtr);
-static int sub_802EF80(void);
 
 s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
-static struct ProcCmd CONST_DATA sProcScr_ExecWarpStaff[] = {
+ struct ProcCmd CONST_DATA ProcScr_ExecWarpStaff[] = {
     PROC_SLEEP(0),
     PROC_CALL_2(sub_802EF70),
     PROC_CALL(sub_802EF80),
@@ -40,18 +35,14 @@ static struct ProcCmd CONST_DATA sProcScr_ExecWarpStaff[] = {
     PROC_END,
 };
 
-static void AfterItemUse_SetTargetStatus(void);
-
-static struct ProcCmd CONST_DATA sProcScr_SetTargetStatus[] = {
+ struct ProcCmd CONST_DATA ProcScr_SetTargetStatus[] = {
     PROC_SLEEP(1),
     PROC_CALL(AfterItemUse_SetTargetStatus),
 
     PROC_END,
 };
 
-static void sub_8030050(void);
-
-static struct ProcCmd CONST_DATA sProcScr_ExecNightmareStaff[] = {
+ struct ProcCmd CONST_DATA ProcScr_ExecNightmareStaff[] = {
     PROC_SLEEP(1),
     PROC_CALL(sub_8030050),
 
@@ -64,13 +55,6 @@ void StartLightRuneAnim2(ProcPtr, int, int);
 
 // minefx.s
 void StartMineAnim(ProcPtr, int, int);
-
-// ev_triggercheck.s
-void sub_80831C8(s8, s8);
-void sub_808320C(s8, s8);
-
-// code.s
-void sub_80CCA14(ProcPtr);
 
 void ExecStandardHeal(ProcPtr proc) {
     int amount;
@@ -178,7 +162,7 @@ void GetRescueStaffeePosition(struct Unit* unit, struct Unit* target, int* xOut,
 
     foundDist = 9999;
 
-    GenerateExtendedMovementMap(unit->xPos, unit->yPos, gUnknown_0880BB96);
+    GenerateExtendedMovementMap(unit->xPos, unit->yPos, TerrainTable_MovCost_FlyNormal);
 
     gBmMapUnit[unit->yPos][unit->xPos] = -1;
 
@@ -278,7 +262,7 @@ void ExecWarpStaff(ProcPtr proc) {
     BattleApplyItemEffect(proc);
     BeginBattleAnimations();
 
-    Proc_StartBlocking(sProcScr_ExecWarpStaff, proc);
+    Proc_StartBlocking(ProcScr_ExecWarpStaff, proc);
 
     return;
 }
@@ -552,8 +536,7 @@ void ExecAntitoxinItem(ProcPtr proc) {
     return;
 }
 
-// ExecKeyItem
-void sub_802F510() {
+void ExecKeyItem() {
     int x, y;
 
     UnitUpdateUsedItem(
@@ -564,12 +547,12 @@ void sub_802F510() {
     x = GetUnit(gActionData.subjectIndex)->xPos;
     y = GetUnit(gActionData.subjectIndex)->yPos;
 
-    sub_808320C(x - 1, y);
-    sub_808320C(x + 1, y);
-    sub_808320C(x, y - 1);
-    sub_808320C(x, y + 1);
+    StartAvailableDoorTileEvent(x - 1, y);
+    StartAvailableDoorTileEvent(x + 1, y);
+    StartAvailableDoorTileEvent(x, y - 1);
+    StartAvailableDoorTileEvent(x, y + 1);
 
-    sub_80831C8(x, y);
+    StartAvailableChestTileEvent(x, y);
 
     PlaySoundEffect(0xB1);
 
@@ -609,12 +592,12 @@ void sub_802F598(struct Unit* unit, int itemIdx, s8 unk) {
     gBattleHitArray[0].info = BATTLE_HIT_INFO_END;
     gBattleHitArray[0].hpChange = 0;
 
-    gBattleStats.config = BATTLE_CONFIG_BIT4;
+    gBattleStats.config = BATTLE_CONFIG_PROMOTION;
 
     return;
 }
 
-void sub_802F664(struct Unit* unit, u8 classId, int itemIdx, s8 unk) {
+void ExecUnitPromotion(struct Unit* unit, u8 classId, int itemIdx, s8 unk) {
 
     if (itemIdx != -1) {
         gBattleActor.weaponBefore = gBattleTarget.weaponBefore = unit->items[itemIdx];
@@ -645,13 +628,13 @@ void sub_802F664(struct Unit* unit, u8 classId, int itemIdx, s8 unk) {
     gBattleHitArray[0].info = BATTLE_HIT_INFO_END;
     gBattleHitArray[0].hpChange = 0;
 
-    gBattleStats.config = BATTLE_CONFIG_BIT4;
+    gBattleStats.config = BATTLE_CONFIG_PROMOTION;
 
     return;
 }
 
 void sub_802F73C() {
-    sub_802F664(GetUnit(gActionData.subjectIndex), 1, gActionData.itemSlotIndex, 1);
+    ExecUnitPromotion(GetUnit(gActionData.subjectIndex), 1, gActionData.itemSlotIndex, 1);
     BeginBattleAnimations();
 
     return;
@@ -676,7 +659,7 @@ void sub_802F760(struct Unit* unit, int item) {
     gBattleHitArray[0].info = BATTLE_HIT_INFO_END;
     gBattleHitArray[0].hpChange = 0;
 
-    gBattleStats.config = BATTLE_CONFIG_BIT4;
+    gBattleStats.config = BATTLE_CONFIG_PROMOTION;
 
     BeginBattleAnimations();
 
@@ -764,24 +747,33 @@ void ExecStatBoostItem(ProcPtr proc) {
     return;
 }
 
-int sub_802F978(struct Unit* unit, int itemIdx) {
-    int unk_r1 = 0;
-    int unk_r2;
+const s8 JunaItemEffLevelLut[] = {
+    15, 25, 30, 20, 10
+};
+
+int ApplyJunaFruitItem(struct Unit* unit, int slot) {
+    int rn1 = 0;
+    int rn2;
     u32 levelCount = 0;
 
     while (levelCount <= 4) {
-        unk_r1 += gUnknown_080D7C44[levelCount];
+        rn1 += JunaItemEffLevelLut[levelCount];
         levelCount++;
     }
 
-    unk_r2 = NextRN_N(unk_r1);
+    rn2 = NextRN_N(rn1);
 
     levelCount = 0;
-    unk_r1 = gUnknown_080D7C44[levelCount];
-    if (unk_r1 <= unk_r2) {
+    rn1 = JunaItemEffLevelLut[levelCount];
+    if (rn1 <= rn2) {
 		while (++levelCount < 5) {
-			unk_r1 += gUnknown_080D7C44[levelCount];
-			if (unk_r1 > unk_r2)
+			rn1 += JunaItemEffLevelLut[levelCount];
+
+            /**
+             * Got a random number in [1, 5]...
+             * What a stupid method!
+             */
+			if (rn1 > rn2)
 				break;
 		}
     }
@@ -790,7 +782,7 @@ int sub_802F978(struct Unit* unit, int itemIdx) {
     unit->level -= levelCount;
     unit->exp = 0;
 
-    UnitUpdateUsedItem(unit, itemIdx);
+    UnitUpdateUsedItem(unit, slot);
 
     return levelCount;
 }
@@ -802,7 +794,7 @@ void ExecJunaFruitItem(ProcPtr proc) {
 
     gBattleTarget.statusOut = -1;
 
-    levelCount = sub_802F978(unit, gActionData.itemSlotIndex);
+    levelCount = ApplyJunaFruitItem(unit, gActionData.itemSlotIndex);
 
     PlaySoundEffect(0x5A);
 
@@ -1001,7 +993,7 @@ void ActionStaffDoorChestUseItem(ProcPtr proc) {
         case ITEM_DOORKEY:
         case ITEM_LOCKPICK:
         case ITEM_CHESTKEY_BUNDLE:
-            sub_802F510();
+            ExecKeyItem();
             break;
         case ITEM_HEROCREST:
         case ITEM_KNIGHTCREST:
@@ -1020,7 +1012,7 @@ void ActionStaffDoorChestUseItem(ProcPtr proc) {
 
             gBattleTarget.statusOut = -1;
 
-            sub_80CCA14(proc);
+            StartBmPromotion(proc);
             break;
         case ITEM_BOOSTER_HP:
         case ITEM_BOOSTER_POW:
@@ -1057,12 +1049,12 @@ void ActionStaffDoorChestUseItem(ProcPtr proc) {
     }
 
     if (itemId == ITEM_NIGHTMARE) {
-        Proc_StartBlocking(sProcScr_ExecNightmareStaff, proc);
+        Proc_StartBlocking(ProcScr_ExecNightmareStaff, proc);
         return;
     }
 
     if (gBattleTarget.statusOut >= 0) {
-        Proc_StartBlocking(sProcScr_SetTargetStatus, proc);
+        Proc_StartBlocking(ProcScr_SetTargetStatus, proc);
     }
 
     return;
@@ -1075,16 +1067,16 @@ void ActionPick(ProcPtr proc) {
     xPos = gActionData.xOther;
     yPos = gActionData.yOther;
 
-    sub_808320C(xPos, yPos);
+    StartAvailableDoorTileEvent(xPos, yPos);
 
-    sub_80831C8(xPos, yPos);
+    StartAvailableChestTileEvent(xPos, yPos);
 
     PlaySoundEffect(0xB1);
 
     gBattleTarget.statusOut = -1;
 
     if (gBattleTarget.statusOut >= 0) {
-        Proc_StartBlocking(sProcScr_SetTargetStatus, proc);
+        Proc_StartBlocking(ProcScr_SetTargetStatus, proc);
     }
 
     return;

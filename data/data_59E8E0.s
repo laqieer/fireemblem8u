@@ -8,12 +8,12 @@ gGfx_MiscUiGraphics:  @ 0x0859E8E0
 gPal_MiscUiGraphics:  @ 0x0859ED70
 	.incbin "baserom.gba", 0x59ED70, 0x40
 
-	.global gUnknown_0859EDB0
-gUnknown_0859EDB0:  @ 0x0859EDB0
+	.global gImg_UiCursorHandTop
+gImg_UiCursorHandTop:  @ 0x0859EDB0
 	.incbin "baserom.gba", 0x59EDB0, 0x3C
 
-	.global gUnknown_0859EDEC
-gUnknown_0859EDEC:  @ 0x0859EDEC
+	.global gImg_UiCursorHandBottom
+gImg_UiCursorHandBottom:  @ 0x0859EDEC
 	.incbin "baserom.gba", 0x59EDEC, 0x34
 
 	.global gPal_MapSprite
@@ -44,36 +44,36 @@ gPal_NotMapSprite:  @ 0x0859EEC0
 gPal_MapSpriteSepia:  @ 0x0859EEE0
 	.incbin "baserom.gba", 0x59EEE0, 0x20
 
-	.global Pal_UIFont
-Pal_UIFont:  @ 0x0859EF00
+	.global Pal_Text
+Pal_Text:  @ 0x0859EF00
 	.incbin "baserom.gba", 0x59EF00, 0x20
 
 	.global gUnknown_0859EF20
 gUnknown_0859EF20:  @ 0x0859EF20
 	.incbin "baserom.gba", 0x59EF20, 0x20
 
-	.global gUnknown_0859EF40
-gUnknown_0859EF40:  @ 0x0859EF40
+	.global Pal_HelpBox
+Pal_HelpBox:  @ 0x0859EF40
 	.incbin "baserom.gba", 0x59EF40, 0x20
 
-	.global gUnknown_0859EF60
-gUnknown_0859EF60:  @ 0x0859EF60
+	.global gPal_HelpTextBox
+gPal_HelpTextBox:  @ 0x0859EF60
 	.incbin "baserom.gba", 0x59EF60, 0x20
 
-	.global gUnknown_0859EF80
-gUnknown_0859EF80:  @ 0x0859EF80
+	.global gPal_YellowTextBox
+gPal_YellowTextBox:  @ 0x0859EF80
 	.incbin "baserom.gba", 0x59EF80, 0x40
 
-	.global gUnknown_0859EFC0
-gUnknown_0859EFC0:  @ 0x0859EFC0
+	.global Pal_GreenTextColors
+Pal_GreenTextColors:  @ 0x0859EFC0
 	.incbin "baserom.gba", 0x59EFC0, 0x20
 
-	.global gUnknown_0859EFE0
-gUnknown_0859EFE0:  @ 0x0859EFE0
+	.global Pal_Text_Inverted
+Pal_Text_Inverted:  @ 0x0859EFE0
 	.incbin "baserom.gba", 0x59EFE0, 0x20
 
-	.global gUnknown_0859F000
-gUnknown_0859F000:  @ 0x0859F000
+	.global Pal_TalkBubble_Inverted
+Pal_TalkBubble_Inverted:  @ 0x0859F000
 	.incbin "baserom.gba", 0x59F000, 0x20
 
 	.global Img_PhaseChangeUnk
@@ -284,6 +284,6 @@ SpritAnim_MineFx:  @ 0x085A7E34
 Pal_MineFx:  @ 0x085A7EC8
 	.incbin "baserom.gba", 0x5A7EC8, 0x20
 
-	.global gUnknown_085A7EE8
-gUnknown_085A7EE8:  @ 0x085A7EE8
+	.global Pal_EventCursorShinning
+Pal_EventCursorShinning:  @ 0x085A7EE8
 	.incbin "baserom.gba", 0x5A7EE8, 0x20

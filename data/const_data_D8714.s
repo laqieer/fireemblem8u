@@ -1,36 +1,8 @@
     .section .rodata
 
-	.global gUnknown_080D8714
-gUnknown_080D8714:  @ 0x080D8714
-	.incbin "baserom.gba", 0xD8714, 0x2C
-
-	.global gUnknown_080D8740
-gUnknown_080D8740:  @ 0x080D8740
-	.incbin "baserom.gba", 0xD8740, 0x155E
-
-	.global gUnknown_080D9C9E
-gUnknown_080D9C9E:  @ 0x080D9C9E
-	.incbin "baserom.gba", 0xD9C9E, 0x96
-
-	.global gUnknown_080D9D34
-gUnknown_080D9D34:  @ 0x080D9D34
-	.incbin "baserom.gba", 0xD9D34, 0x19
-
-	.global gUnknown_080D9D4D
-gUnknown_080D9D4D:  @ 0x080D9D4D
-	.incbin "baserom.gba", 0xD9D4D, 0x9
-
-	.global gUnknown_080D9D56
-gUnknown_080D9D56:  @ 0x080D9D56
-	.incbin "baserom.gba", 0xD9D56, 0x8
-
-	.global gUnknown_080D9D5E
-gUnknown_080D9D5E:  @ 0x080D9D5E
-	.incbin "baserom.gba", 0xD9D5E, 0x3
-
-	.global gUnknown_080D9D61
-gUnknown_080D9D61:  @ 0x080D9D61
-	.incbin "baserom.gba", 0xD9D61, 0x83
+	.global post_gUnknown_080D9D61
+post_gUnknown_080D9D61:
+	.incbin "baserom.gba", 0xD9D70, 0xD9DE4 - 0xD9D70
 
 	.global gUnknown_080D9DE4
 gUnknown_080D9DE4:  @ 0x080D9DE4
@@ -83,10 +55,10 @@ gUnknown_080D9EF0:  @ 0x080D9EF0
 	.global gUnknown_080D9EFC
 gUnknown_080D9EFC:  @ 0x080D9EFC
 @ Replacing .incbin "baserom.gba", 0xD9EFC, 0x1C
-    .4byte gUnknown_085A9BA0
-    .4byte gUnknown_085A979C
-    .4byte gUnknown_085A9888
-    .4byte gUnknown_085A9D38
+    .4byte ProcScr_SIOTERM
+    .4byte ProcScr_SIOPRA
+    .4byte ProcScr_SIOBAT
+    .4byte ProcScr_SIORESULT
     .4byte gUnknown_085A9DF8
     .4byte 0x4d4f4953
     .4byte 0x554e45
@@ -139,8 +111,8 @@ gUnknown_080D9FB7:  @ 0x080D9FB7
 gUnknown_080D9FD6:  @ 0x080D9FD6
 	.incbin "baserom.gba", 0xD9FD6, 0xE
 
-	.global gUnknown_080D9FE4
-gUnknown_080D9FE4:  @ 0x080D9FE4
+	.global SioDefaultBgConfig
+SioDefaultBgConfig:  @ 0x080D9FE4
 	.incbin "baserom.gba", 0xD9FE4, 0xB8
 
 	.global gUnknown_080DA09C

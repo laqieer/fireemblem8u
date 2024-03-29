@@ -10,6 +10,7 @@
 #include "bmmap.h"
 #include "bmidoten.h"
 #include "bmtrick.h"
+#include "bmlib.h"
 
 static void BmMapInit(void* buffer, u8*** outHandle, int width, int height);
 
@@ -44,6 +45,7 @@ EWRAM_DATA static u8 sBmMapOtherPool[MAP_POOL_SIZE] = {};
 EWRAM_DATA static u16 sTilesetConfig[0x1000 + 0x200] = {};
 
 EWRAM_DATA static u16 sBmBaseTilesPool[MAP_POOL_SIZE] = {};
+EWRAM_DATA u8 gWorkingMovementScript[0x40] = {};
 
 static u8** sInitializingMap;
 
@@ -77,7 +79,7 @@ void InitChapterMap(int chapterId) {
         sub_8019624();
 }
 
-void InitChapterPreviewMap(int chapterId) {
+void InitMapForMinimap(int chapterId) {
     UnpackChapterMap(gBmMapBuffer, chapterId);
 
     BmMapInit(sBmMapUnitPool,    &gBmMapUnit,    gBmMapSize.x, gBmMapSize.y);
@@ -255,15 +257,15 @@ void UnpackChapterMapGraphics(int chapterId) {
             (void*)(BG_VRAM + 0x20 * 0x600)); // TODO: tile id constant?
 
     // Apply tileset palette
-    CopyToPaletteBuffer(
+    ApplyPalettes(
         gChapterDataAssetTable[GetROMChapterStruct(chapterId)->map.paletteId],
-        0x20 * 6, 0x20 * 10); // TODO: palette id constant?
+        6, 10); // TODO: palette id constant?
 }
 
 void UnpackChapterMapPalette(void) {
-    CopyToPaletteBuffer(
+    ApplyPalettes(
         gChapterDataAssetTable[GetROMChapterStruct(gPlaySt.chapterIndex)->map.paletteId],
-        0x20 * 6, 0x20 * 10); // TODO: palette id constant?
+        6, 10); // TODO: palette id constant?
 }
 
 void InitBaseTilesBmMap(void) {
@@ -660,11 +662,11 @@ char* GetTerrainName(int terrainId) {
 }
 
 int GetTerrainHealAmount(int terrainId) {
-    return gUnknown_0880C744[terrainId];
+    return Unk_TerrainTable_0880C744[terrainId];
 }
 
 s8 GetTerrainHealsStatus(int terrainId) {
-    return gUnknown_0880C785[terrainId];
+    return Unk_TerrainTable_0880C785[terrainId];
 }
 
 void sub_801A278(void) {
@@ -680,7 +682,7 @@ void sub_801A278(void) {
     }
 
     // TODO: macro?
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
     EnablePaletteSync();
 }
 

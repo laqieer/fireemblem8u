@@ -3,6 +3,10 @@
 #include "hardware.h"
 #include "m4a.h"
 #include "soundwrapper.h"
+#include "efxbattle.h"
+#include "bmlib.h"
+#include "spline.h"
+#include "sysutil.h"
 
 /*
 The opening monologue that introduces the Sacred Stones / associated lore.
@@ -108,7 +112,7 @@ void sub_80C488C(int bg) {
 
     BG_EnableSyncByMask(1 << bg);
 
-    CpuFastFill(0x08A708A7, gPaletteBuffer + (0xE * 0x10), 0x20);
+    CpuFastFill(0x08A708A7, PAL_BG(0xE), 0x20);
 
     EnablePaletteSync();
 
@@ -174,19 +178,19 @@ void OpSubtitle_Init(struct OpSubtitleProc* proc) {
     gLCDControlBuffer.dispcnt.win1_on = 0;
     gLCDControlBuffer.dispcnt.objWin_on = 0;
 
-    SetSpecialColorEffectsParameters(1, 0, 0x10, 0);
+    SetBlendConfig(1, 0, 0x10, 0);
 
     SetBlendTargetA(0, 0, 1, 0, 0);
     SetBlendTargetB(1, 1, 0, 0, 1);
 
     Decompress(gUnknown_08B17B64, (void*)(GetBackgroundTileDataOffset(2) + 0x6000000));
-    CopyToPaletteBuffer(gUnknown_08B18ED4, 0, 0x60);
+    ApplyPalettes(gUnknown_08B18ED4, 0, 3);
 
     BG_Fill(gBG2TilemapBuffer, 0);
 
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-    Sound_PlaySong80024D4(3, 0);
+    StartBgm(3, 0);
 
     proc->index = 0;
     proc->timer_2a = 60;
@@ -234,13 +238,13 @@ void Subtitle_LightFlareFx_Loop(struct OpSubtitleProc* proc) {
     c = Interpolate(0, 0, 214, proc->unk_4c, 60);
     d = Interpolate(0, 16, 128, proc->unk_4c, 60);
 
-    sub_80ADDFC(2, proc->unk_4e, 0, 0, (s16)(a * 5 + 0x80), (s16)(a * 5 + 0x80));
+    sub_80ADDFC(2, proc->unk_4e, 0, 0, a * 5 + 0x80, a * 5 + 0x80);
     sub_80ADE90(2, 0x100, 0x100);
-    sub_80ADEE0(2, (s16)c, (s16)d, 80, 72);
+    sub_80ADEE0(2, c, d, 80, 72);
 
     proc->unk_4e -= 64;
 
-    SetSpecialColorEffectsParameters(1, b, 0x10, 0);
+    SetBlendConfig(1, b, 0x10, 0);
 
     proc->unk_4c++;
 
@@ -369,12 +373,12 @@ void sub_80C4DA0(struct OpSubtitleProc* proc) {
 
         sub_80C4BB4(
             gPal_OpSubtitle,
-            gPaletteBuffer + (3 * 0x10),
+            PAL_BG(3),
             16,
             coeff
         );
     } else {
-        CopyToPaletteBuffer(gPal_OpSubtitle, 0x60, 0x20);
+        ApplyPalette(gPal_OpSubtitle, 3);
 
         Proc_Break(proc);
 
@@ -399,12 +403,12 @@ void sub_80C4E18(struct OpSubtitleProc* proc) {
 
         sub_80C4BB4(
             gPal_OpSubtitle,
-            gPaletteBuffer + (3 * 0x10),
+            PAL_BG(3),
             16,
             coeff
         );
     } else {
-        CpuFastFill(0, gPaletteBuffer + (3 * 0x10), 0x20);
+        CpuFastFill(0, PAL_BG(3), 0x20);
 
         proc->timer_2c = 0;
 
@@ -441,12 +445,12 @@ void sub_80C4EC4(struct OpSubtitleProc* proc) {
 
         sub_80C4BB4(
             gPal_OpSubtitle,
-            gPaletteBuffer + (3 * 0x10),
+            PAL_BG(3),
             16,
             coeff
         );
     } else {
-        CpuFastFill(0, gPaletteBuffer + (3 * 0x10), 0x20);
+        CpuFastFill(0, PAL_BG(3), 0x20);
 
         proc->timer_2c = 0;
 
@@ -479,9 +483,9 @@ void sub_80C4F60(struct OpSubtitleProc* proc) {
         int coeff = sub_800B7E0(proc->timer_2c, 80, 0);
         s16 var = DivArm(0x1000, coeff << 4);
 
-        SetSpecialColorEffectsParameters(1, 0x10 - var, var, 0);
+        SetBlendConfig(1, 0x10 - var, var, 0);
     } else {
-        SetSpecialColorEffectsParameters(1, 0, 0x10, 0);
+        SetBlendConfig(1, 0, 0x10, 0);
 
         if (proc->index < 5) {
             Proc_Break(proc);
@@ -511,9 +515,9 @@ void sub_80C501C(struct OpSubtitleProc* proc) {
         int coeff = sub_800B7E0(proc->timer_2c, 80, 0);
         s16 var = DivArm(0x1000, (0x1000 - coeff) << 4);
 
-        SetSpecialColorEffectsParameters(1, 0x10 - var, var, 0);
+        SetBlendConfig(1, 0x10 - var, var, 0);
     } else {
-        SetSpecialColorEffectsParameters(1, 0x10, 0, 0);
+        SetBlendConfig(1, 0x10, 0, 0);
 
         proc->timer_2c = 0;
         proc->index++;
@@ -535,7 +539,7 @@ void sub_80C501C(struct OpSubtitleProc* proc) {
 void sub_80C50A0(struct OpSubtitleProc* proc) {
     sub_80C488C(1);
 
-    CpuFastFill(0, gPaletteBuffer + (0xF * 0x10), 0x20);
+    CpuFastFill(0, PAL_BG(0xF), 0x20);
 
     sub_80C48F0(1);
 
@@ -571,12 +575,12 @@ void sub_80C5104(struct OpSubtitleProc* proc) {
 
         sub_80C4BB4(
             gUnknown_08B1756C,
-            gPaletteBuffer + (0xF * 0x10),
+            PAL_BG(0xF),
             16,
             coeff
         );
     } else {
-        CopyToPaletteBuffer(gUnknown_08B1756C, 0x1e0, 0x20);
+        ApplyPalette(gUnknown_08B1756C, 0xF);
 
         Proc_Break(proc);
 
@@ -595,7 +599,7 @@ void sub_80C5104(struct OpSubtitleProc* proc) {
 void sub_80C51A8(void) {
     sub_80C4D54(2);
 
-    CopyToPaletteBuffer(gPal_OpSubtitle, 0x60, 0x20);
+    ApplyPalette(gPal_OpSubtitle, 3);
     EnablePaletteSync();
 
     return;
@@ -652,13 +656,13 @@ void sub_80C5218(struct OpSubtitleProc* proc) {
     gLCDControlBuffer.bg2cnt.priority = 3;
     gLCDControlBuffer.bg3cnt.priority = 0;
 
-    SetSpecialColorEffectsParameters(1, 0, 0x10, 0);
+    SetBlendConfig(1, 0, 0x10, 0);
 
     SetBlendTargetA(0, 0, 0, 1, 0);
     SetBlendTargetB(1, 1, 0, 0, 0);
 
-    sub_8001F48(0);
-    sub_8001F64(0);
+    SetBlendBackdropA(0);
+    SetBlendBackdropB(0);
 
     BG_SetPosition(0, 0, 0);
     BG_SetPosition(1, -3, -3);
@@ -705,7 +709,7 @@ void sub_80C5328(void) {
 //! FE8U = 0x080C5370
 void sub_80C5370(struct OpSubtitleProc* proc) {
     proc->timer_2c = 0;
-    CpuFastCopy(gPaletteBuffer, gUnknown_0201CDD4, 0x200);
+    CpuFastCopy(gPaletteBuffer, gUnk_OpSubtitle_0201CDD4, 0x200);
 
     return;
 }
@@ -719,7 +723,7 @@ void sub_80C538C(struct OpSubtitleProc* proc) {
         int coeff = 0x1000 - sub_800B7E0(proc->timer_2c, 60, 0);
 
         sub_80C4BB4(
-            gUnknown_0201CDD4,
+            gUnk_OpSubtitle_0201CDD4,
             gPaletteBuffer,
             0x200,
             coeff
@@ -826,7 +830,7 @@ PROC_LABEL(5),
 
     PROC_CALL(sub_80C5400),
 
-    PROC_CALL(sub_8013D74),
+    PROC_CALL(StartSlowFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_SLEEP(30),
 
@@ -836,7 +840,7 @@ PROC_LABEL(6), // ended due to Start Button press
     PROC_END_EACH(gProcScr_OpSubtitle_LightFlareFx),
     PROC_END_EACH(gProcScr_08AA2184),
 
-    PROC_CALL(sub_8013D80),
+    PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_SLEEP(10),

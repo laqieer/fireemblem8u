@@ -9,39 +9,6 @@ static void AnimInsert(struct Anim* anim);
 static void AnimDisplayPrivate(struct Anim* anim);
 static void Anim_8005334(struct Anim* anim, u32 instruction);
 
-#define ANINS_IS_NOT_FORCESPRITE(instruction) ((instruction) & 0x80000000)
-#define ANINS_IS_PTRINS(instruction) ((instruction) & 0x40000000)
-
-#define ANINS_FORCESPRITE_GET_ADDRESS(instruction) ((void*) ((instruction) &~ 0xF0000003))
-#define ANINS_FORCESPRITE_GET_DELAY(instruction) ((((instruction) >> 26) & 0x1C) + ((instruction) & 3))
-
-#define ANINS_PTRINS_GET_TYPE(instruction) (0x3 & ((instruction) >> 28))
-#define ANINS_PTRINS_GET_ADDRESS(instruction) ((void*) ((instruction) &~ 0xF0000000))
-
-#define ANINS_GET_TYPE(instruction) (0x3F & ((instruction) >> 24))
-
-#define ANINS_WAIT_GET_DELAY(instruction) ((instruction) & 0xFFFF)
-
-#define ANINS_MOVE_GET_XOFF(instruction) (((int) ((instruction) << 24)) >> 24)
-#define ANINS_MOVE_GET_YOFF(instruction) (((int) ((instruction) << 16)) >> 24)
-#define ANINS_MOVE_GET_DELAY(instruction) (((instruction) >> 16) & 0xFF)
-
-#define ANINS_COMMAND_GET_ID(instruction) (0xFF & (instruction))
-
-#define ANINS_FRAME_GET_DELAY(instruction) ((instruction) & 0xFFFF)
-#define ANINS_FRAME_GET_UNK(instruction) ((instruction) >> 16) & 0xFF
-
-enum
-{
-    ANIM_INS_TYPE_STOP    = 0,
-    ANIM_INS_TYPE_END     = 1,
-    ANIM_INS_TYPE_LOOP    = 2,
-    ANIM_INS_TYPE_MOVE    = 3,
-    ANIM_INS_TYPE_WAIT    = 4,
-    ANIM_INS_TYPE_COMMAND = 5,
-    ANIM_INS_TYPE_FRAME   = 6,
-};
-
 typedef void (*AnimCallback_t) (struct Anim* anim);
 
 EWRAM_DATA static struct Anim sAnimPool[ANIM_MAX_COUNT] = {};
@@ -126,7 +93,7 @@ struct Anim* AnimCreate_unused(const void* frameData)
 
     anim->commandQueueSize = 0;
 
-    anim->pUnk2C = NULL;
+    anim->pImgSheetBuf = NULL;
     anim->pSpriteDataPool = NULL;
     anim->pUnk40 = NULL;
     anim->pUnk44 = NULL;
@@ -161,7 +128,7 @@ struct Anim* AnimCreate(const void* frameData, u16 displayPriority)
 
     anim->commandQueueSize = 0;
 
-    anim->pUnk2C = NULL;
+    anim->pImgSheetBuf = NULL;
     anim->pSpriteDataPool = NULL;
     anim->pUnk40 = NULL;
     anim->pUnk44 = NULL;
@@ -254,7 +221,7 @@ int AnimInterpret(struct Anim* anim)
                 anim->pScrCurrent--;
                 anim->timer = 1;
 
-                anim->state2 = (anim->state2 & 0xFFF) | 0x4000;
+                anim->state2 = (anim->state2 & 0xFFF) | ANIM_BIT2_STOP;
 
                 break;
 
@@ -285,7 +252,7 @@ int AnimInterpret(struct Anim* anim)
                 break;
 
             case ANIM_INS_TYPE_COMMAND:
-                anim->state2 = (anim->state2 & 0xFFF) | 0x1000;
+                anim->state2 = (anim->state2 & 0xFFF) | ANIM_BIT2_COMMAND;
 
                 anim->commandQueue[anim->commandQueueSize] = ANINS_COMMAND_GET_ID(instruction);
                 anim->commandQueueSize++;
@@ -322,7 +289,7 @@ int AnimInterpret(struct Anim* anim)
                 anim->pSpriteData = (const void*) (*anim->pScrCurrent++);
                 anim->pSpriteData += (unsigned) anim->pSpriteDataPool;
 
-                anim->state2 = (anim->state2 & 0xFFF) | 0x2000;
+                anim->state2 = (anim->state2 & 0xFFF) | ANIM_BIT2_FRAME;
 
                 break;
 
@@ -381,7 +348,7 @@ void AnimInsert(struct Anim* anim)
 
 void AnimDisplayPrivate(struct Anim* anim)
 {
-    unsigned baseAffineId = gUnknown_0300312C;
+    unsigned baseAffineId = gOamAffinePutId;
 
     const struct AnimSpriteData* oamData = anim->pSpriteData;
     const struct AnimSpriteData* it;
@@ -394,23 +361,23 @@ void AnimDisplayPrivate(struct Anim* anim)
 
     if ((oamData->header &~ 0xFFFF) == 0xFFFF0000)
     {
-        for (i = oamData->header & 0xFFFF; i != 0; gUnknown_0300312C++, --i, oamData++)
+        for (i = oamData->header & 0xFFFF; i != 0; gOamAffinePutId++, --i, oamData++)
         {
-            gUnknown_03004158[3] = oamData->as.affine.pa;
-            gUnknown_03004158 += 4;
+            gOamAffinePutIt[3] = oamData->as.affine.pa;
+            gOamAffinePutIt += 4;
 
-            gUnknown_03004158[3] = oamData->as.affine.pb;
-            gUnknown_03004158 += 4;
+            gOamAffinePutIt[3] = oamData->as.affine.pb;
+            gOamAffinePutIt += 4;
 
-            gUnknown_03004158[3] = oamData->as.affine.pc;
-            gUnknown_03004158 += 4;
+            gOamAffinePutIt[3] = oamData->as.affine.pc;
+            gOamAffinePutIt += 4;
 
-            gUnknown_03004158[3] = oamData->as.affine.pd;
-            gUnknown_03004158 += 4;
+            gOamAffinePutIt[3] = oamData->as.affine.pd;
+            gOamAffinePutIt += 4;
         }
     }
 
-    for (it = oamData; it->header != 1 && gUnknown_03003744 < (u32*) (gUnknown_03003140) + 0x100; ++it)
+    for (it = oamData; it->header != 1 && (void *)gOamHiPutIt < (void *)((u32*) (gOam) + 0x100); ++it)
     {
         x = it->as.object.x + anim->xPosition;
         y = it->as.object.y + anim->yPosition;
@@ -436,8 +403,8 @@ void AnimDisplayPrivate(struct Anim* anim)
         i = i + anim->oamBase;
 
         // ugh
-        *gUnknown_03003744++ = (it->header + i) | (x << 16) | (y);
-        *(u16*)(gUnknown_03003744++) = (it->as.object.oam2 & 0xF3FF) + anim->oam2Base;
+        *gOamHiPutIt++ = (it->header + i) | (x << 16) | (y);
+        *(u16*)(gOamHiPutIt++) = (it->as.object.oam2 & 0xF3FF) + anim->oam2Base;
     }
 }
 

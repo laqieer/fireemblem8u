@@ -42,27 +42,13 @@ struct BMDifficultyProc {
     /* 3C */ int unk_3c;
 };
 
-struct Struct0859E7D4 {
-    int x;
-    int y;
-};
-
-struct Struct02003BE8 {
-    /* 00 */ u16 unk_00;
-    /* 02 */ u16 unk_02;
-    /* 04 */ u16* unk_04;
-    /* 08 */ struct Struct0859E7D4* unk_08;
-    /* 0C */ int* unk_0C;
-    /* 10 */ int* unk_10;
-};
-
 int GetCurrentPromotedLevelBonus(void);
 s8 CanUnitSeize(struct Unit* unit);
 // ??? DungeonRecordUi_InitText(???);
 void InitDungeon(u8 type);
-// ??? UnlockPostgameAllyByEnemyCount(???);
-// ??? UnlockPostgameAllyByClearCount(???);
-// ??? sub_8037D58(???);
+void UnlockPostgameAllyByEnemyCount(void);
+void UnlockPostgameAllyByClearCount(void);
+void StartRetreatProcessing(void);
 s8 PrepScreenProc_AddPostgameUnits(ProcPtr proc);
 s8 TryAddPostgameUnit(ProcPtr, const struct UnitDefinition*);
 void SaveDungeonState(struct Dungeon* savedDungeon);
@@ -74,7 +60,7 @@ void UpdateDungeonStats(struct Dungeon*);
 void UpdateDungeonRecordStats(void);
 void UpdateDungeonEnemiesDefeated(void);
 void StartDungeonRecordProcFromMenu(ProcPtr proc);
-// ??? sub_80381F4(???);
+void RecordDisplayAfterTowerCleared(ProcPtr proc);
 void PushGlobalTimer(void);
 void PopGlobalTimer(void);
 void sub_8038230(void);

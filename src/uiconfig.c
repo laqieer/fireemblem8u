@@ -12,8 +12,12 @@
 #include "statscreen.h"
 #include "bmudisp.h"
 #include "bm.h"
-
+#include "prepscreen.h"
+#include "bmlib.h"
+#include "worldmap.h"
+#include "unitlistscreen.h"
 #include "uiconfig.h"
+#include "sysutil.h"
 
 struct Selector {
     /* 00 */ u16 helpTextId;
@@ -39,13 +43,13 @@ struct ConfigScreen {
     /* 34 */ s16 unk_34;
     /* 36 */ u8 unk_36;
     /* 37 */ s8 unk_37; // some flags / state var
-    /* 38 */ struct TextHandle unk_38[6]; // size: 0x30
+    /* 38 */ struct Text unk_38[6]; // size: 0x30
 
-    /* 68 */ struct TextHandle unk_68;
-    /* 70 */ struct TextHandle unk_70[6];
+    /* 68 */ struct Text unk_68;
+    /* 70 */ struct Text unk_70[6];
 
-    /* A0 */ struct TextHandle unk_a0;
-    /* A8 */ struct TextHandle unk_a8;
+    /* A0 */ struct Text unk_a0;
+    /* A8 */ struct Text unk_a8;
 };
 
 struct ConfigProc {
@@ -378,11 +382,11 @@ void DrawGameOptionIcon(int a, int b) {
 void DrawGameOptionHelpText(void) {
     const char* str;
 
-    Text_Clear(&gConfigUiState->unk_a8);
+    ClearText(&gConfigUiState->unk_a8);
 
     str = GetStringFromIndex(gGameOptions[gGameOptionsUiOrder[gConfigUiState->unk_2a]].selectors[GetSelectedOptionValue()].helpTextId);
 
-    DrawTextInline(&gConfigUiState->unk_a8, gBG0TilemapBuffer + 0x244, 0, 0, 22, str);
+    PutDrawText(&gConfigUiState->unk_a8, gBG0TilemapBuffer + 0x244, 0, 0, 22, str);
 
     return;
 }
@@ -391,11 +395,11 @@ void DrawGameOptionHelpText(void) {
 void DrawGameOptionText(int selectedIdx, int textIdx, int y) {
     const char* str;
 
-    Text_Clear(&gConfigUiState->unk_38[textIdx]);
+    ClearText(&gConfigUiState->unk_38[textIdx]);
 
     str = GetStringFromIndex(gGameOptions[gGameOptionsUiOrder[selectedIdx]].msgId);
 
-    DrawTextInline(&gConfigUiState->unk_38[textIdx], gBG1TilemapBuffer + 4 + y * 0x20, 0, 0, 9, str);
+    PutDrawText(&gConfigUiState->unk_38[textIdx], gBG1TilemapBuffer + 4 + y * 0x20, 0, 0, 9, str);
 
     return;
 }
@@ -408,7 +412,7 @@ void DrawOptionValueTexts(int selectedIdx, int textIdx, int y) {
 
     int x = gGameOptions[optionIdx].selectors[0].xPos / 8;
 
-    Text_Clear(&gConfigUiState->unk_70[textIdx]);
+    ClearText(&gConfigUiState->unk_70[textIdx]);
 
     for (i = 0; i < 4; i++) {
 
@@ -416,7 +420,7 @@ void DrawOptionValueTexts(int selectedIdx, int textIdx, int y) {
             break;
         }
 
-        Text_InsertString(
+        Text_InsertDrawString(
             &gConfigUiState->unk_70[textIdx],
             gGameOptions[optionIdx].selectors[i].xPos - 0x70,
             (i == GetGameOption(optionIdx)) ? 2 : 1,
@@ -425,7 +429,7 @@ void DrawOptionValueTexts(int selectedIdx, int textIdx, int y) {
 
     }
 
-    Text_Draw(&gConfigUiState->unk_70[textIdx], gBG1TilemapBuffer + (y * 0x20 + (x)));
+    PutText(&gConfigUiState->unk_70[textIdx], gBG1TilemapBuffer + (y * 0x20 + (x)));
 
     return;
 }
@@ -460,7 +464,7 @@ void DrawConfigUiSprites(void) {
         }
     }
 
-    sub_80976CC(10, gConfigUiState->unk_2e, (u16)gConfigUiState->unk_34, 6);
+    UpdateMenuScrollBarConfig(10, gConfigUiState->unk_2e, (u16)gConfigUiState->unk_34, 6);
 
     return;
 }
@@ -492,7 +496,7 @@ void Config_Init(struct ConfigProc* proc) {
     gConfigUiState->unk_37 &= ~1;
     gConfigUiState->unk_37 &= ~2;
 
-    Font_InitForUIDefault();
+    ResetText();
 
     sub_80156BC();
 
@@ -530,7 +534,7 @@ void Config_Init(struct ConfigProc* proc) {
     gLCDControlBuffer.wincnt.wout_enableBg3 = 1;
     gLCDControlBuffer.wincnt.wout_enableObj = 1;
 
-    SetSpecialColorEffectsParameters(1, 14, 4, 0);
+    SetBlendConfig(1, 14, 4, 0);
 
     SetBlendTargetA(0, 0, 1, 0, 0);
     SetBlendTargetB(0, 0, 0, 1, 0);
@@ -540,8 +544,8 @@ void Config_Init(struct ConfigProc* proc) {
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_Fill(gBG3TilemapBuffer, 0);
 
-    CopyToPaletteBuffer(gUnknown_08A07A98, 0x80, 0x20);
-    CopyToPaletteBuffer(gUnknown_08A07A98, 0x240, 0x20);
+    ApplyPalette(gUnknown_08A07A98, 4);
+    ApplyPalette(gUnknown_08A07A98, 0x12);
 
     Decompress(gUnknown_08A0733C, (void*)0x06011800);
     Decompress(gUnknown_08A0754C, (void*)0x06004000);
@@ -549,16 +553,16 @@ void Config_Init(struct ConfigProc* proc) {
     Decompress(gUnknown_08A079B4, gGenericBuffer + 0x80);
     CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer + 0x80, 0x1000);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
-    Text_Init(&gConfigUiState->unk_a8, 22);
+    InitText(&gConfigUiState->unk_a8, 22);
 
     DrawGameOptionHelpText();
 
-    PrepStartSideBarScroll(proc, 224, 47, 0x7200, 1);
+    StartMenuScrollBarExt(proc, 224, 47, 0x7200, 1);
 
-    Text_Init(&gConfigUiState->unk_68, 9);
-    Text_Init(&gConfigUiState->unk_a0, 14);
+    InitText(&gConfigUiState->unk_68, 9);
+    InitText(&gConfigUiState->unk_a0, 14);
 
 
     for (; i < 6; i++) {
@@ -566,14 +570,14 @@ void Config_Init(struct ConfigProc* proc) {
 
         DrawGameOptionIcon(i, 5);
 
-        Text_Init(&gConfigUiState->unk_38[i], 9);
-        Text_Init(&gConfigUiState->unk_70[i], 14);
+        InitText(&gConfigUiState->unk_38[i], 9);
+        InitText(&gConfigUiState->unk_70[i], 14);
 
         DrawGameOptionText(i, i, y);
         DrawOptionValueTexts(i, i, y);
     }
 
-    sub_8086CE8(proc, 0, 18, 2, 0);
+    StartMuralBackgroundExt(proc, 0, 18, 2, 0);
 
     Proc_Start(gProcScr_DrawConfigUiSprites, proc);
 
@@ -605,7 +609,7 @@ s8 MusicOptionChangeHandler(ProcPtr proc) {
     }
 
     if ((gConfigUiState->unk_37 & 1) != 0) {
-        Sound_PlaySong80024D4(0x34, 0);
+        StartBgm(0x34, 0);
         return 0;
     }
 
@@ -669,7 +673,7 @@ u8 GetGameOption(u8 index) {
 
     switch (index) {
         case GAME_OPTION_ANIMATION:
-            switch (gPlaySt.cfgAnimationType) {
+            switch (gPlaySt.config.animationType) {
                 case 0:
                     return 0;
                 case 3:
@@ -683,77 +687,77 @@ u8 GetGameOption(u8 index) {
             // fallthrough
 
         case GAME_OPTION_TERRAIN:
-            value = gPlaySt.cfgDisableTerrainDisplay;
+            value = gPlaySt.config.disableTerrainDisplay;
 
             break;
 
         case GAME_OPTION_UNIT:
-            value = gPlaySt.cfgUnitDisplayType;
+            value = gPlaySt.config.unitDisplayType;
 
             break;
 
         case GAME_OPTION_AUTOCURSOR:
-            value = gPlaySt.cfgAutoCursor;
+            value = gPlaySt.config.autoCursor;
 
             break;
 
         case GAME_OPTION_TEXT_SPEED:
-            value = gPlaySt.cfgTextSpeed;
+            value = gPlaySt.config.textSpeed;
 
             break;
 
         case GAME_OPTION_GAME_SPEED:
-            value = gPlaySt.cfgGameSpeed;
+            value = gPlaySt.config.gameSpeed;
 
             break;
 
         case GAME_OPTION_MUSIC:
-            value = gPlaySt.cfgDisableBgm;
+            value = gPlaySt.config.disableBgm;
 
             break;
 
         case GAME_OPTION_SOUND_EFFECTS:
-            value = gPlaySt.cfgDisableSoundEffects;
+            value = gPlaySt.config.disableSoundEffects;
 
             break;
 
         case GAME_OPTION_WINDOW_COLOR:
-            value = gPlaySt.cfgWindowColor;
+            value = gPlaySt.config.windowColor;
 
             break;
 
         case GAME_OPTION_COMBAT:
-            value = gPlaySt.cfgBattleForecastType;
+            value = gPlaySt.config.battleForecastType;
 
             break;
 
         case GAME_OPTION_SUBTITLE_HELP:
-            value = gPlaySt.cfgNoSubtitleHelp;
+            value = gPlaySt.config.noSubtitleHelp;
 
             break;
 
         case GAME_OPTION_AUTOEND_TURNS:
-            value = gPlaySt.cfgDisableAutoEndTurns;
+            value = gPlaySt.config.disableAutoEndTurns;
 
             break;
 
         case GAME_OPTION_UNIT_COLOR:
-            value = gPlaySt.cfgUnitColor;
+            value = gPlaySt.config.unitColor;
 
             break;
 
         case GAME_OPTION_OBJECTIVE:
-            value = gPlaySt.cfgDisableGoalDisplay;
+            value = gPlaySt.config.disableGoalDisplay;
 
             break;
 
         case GAME_OPTION_CONTROLLER:
-            value = gPlaySt.cfgController;
+            value = gPlaySt.config.controller;
 
             break;
 
         case GAME_OPTION_RANK_DISPLAY:
-            value = gPlaySt.cfgRankDisplay;
+            value = gPlaySt.config.rankDisplay;
 
             break;
 
@@ -769,96 +773,96 @@ void SetGameOption(u8 index, u8 newValue) {
         case GAME_OPTION_ANIMATION:
             switch (newValue) {
                 case 0:
-                    gPlaySt.cfgAnimationType = 0;
+                    gPlaySt.config.animationType = 0;
                     return;
 
                 case 1:
-                    gPlaySt.cfgAnimationType = 3;
+                    gPlaySt.config.animationType = 3;
                     return;
 
                 case 2:
-                    gPlaySt.cfgAnimationType = 1;
+                    gPlaySt.config.animationType = 1;
                     return;
 
                 case 3:
-                    gPlaySt.cfgAnimationType = 2;
+                    gPlaySt.config.animationType = 2;
                     return;
             }
 
             // fallthrough
 
         case GAME_OPTION_TERRAIN:
-            gPlaySt.cfgDisableTerrainDisplay = newValue;
+            gPlaySt.config.disableTerrainDisplay = newValue;
 
             break;
 
         case GAME_OPTION_UNIT:
-            gPlaySt.cfgUnitDisplayType = newValue;
+            gPlaySt.config.unitDisplayType = newValue;
 
             break;
 
         case GAME_OPTION_AUTOCURSOR:
-            gPlaySt.cfgAutoCursor = newValue;
+            gPlaySt.config.autoCursor = newValue;
 
             break;
 
         case GAME_OPTION_TEXT_SPEED:
-            gPlaySt.cfgTextSpeed = newValue;
+            gPlaySt.config.textSpeed = newValue;
 
             break;
 
         case GAME_OPTION_GAME_SPEED:
-            gPlaySt.cfgGameSpeed = newValue;
+            gPlaySt.config.gameSpeed = newValue;
 
             break;
 
         case GAME_OPTION_MUSIC:
-            gPlaySt.cfgDisableBgm = newValue;
+            gPlaySt.config.disableBgm = newValue;
 
             break;
 
         case GAME_OPTION_SOUND_EFFECTS:
-            gPlaySt.cfgDisableSoundEffects = newValue;
+            gPlaySt.config.disableSoundEffects = newValue;
 
             break;
 
         case GAME_OPTION_WINDOW_COLOR:
-            gPlaySt.cfgWindowColor = newValue;
+            gPlaySt.config.windowColor = newValue;
 
             break;
 
         case GAME_OPTION_COMBAT:
-            gPlaySt.cfgBattleForecastType = newValue;
+            gPlaySt.config.battleForecastType = newValue;
 
             break;
 
         case GAME_OPTION_SUBTITLE_HELP:
-            gPlaySt.cfgNoSubtitleHelp = newValue;
+            gPlaySt.config.noSubtitleHelp = newValue;
 
             break;
 
         case GAME_OPTION_AUTOEND_TURNS:
-            gPlaySt.cfgDisableAutoEndTurns = newValue;
+            gPlaySt.config.disableAutoEndTurns = newValue;
 
             break;
 
         case GAME_OPTION_UNIT_COLOR:
-            gPlaySt.cfgUnitColor = newValue;
+            gPlaySt.config.unitColor = newValue;
 
             break;
 
         case GAME_OPTION_OBJECTIVE:
-            gPlaySt.cfgDisableGoalDisplay = newValue;
+            gPlaySt.config.disableGoalDisplay = newValue;
 
             break;
 
         case GAME_OPTION_CONTROLLER:
-            gPlaySt.cfgController = newValue;
+            gPlaySt.config.controller = newValue;
 
             break;
 
         case GAME_OPTION_RANK_DISPLAY:
-            gPlaySt.cfgRankDisplay = newValue;
+            gPlaySt.config.rankDisplay = newValue;
 
             break;
 
@@ -1031,15 +1035,15 @@ void Config_Loop_KeyHandler(struct ConfigProc* proc) {
 
 //! FE8U: 0x080B2464
 s8 sub_80B2464(struct ConfigProc* proc) {
-    Delete6CMenuScroll();
+    EndMenuScrollBar();
 
-    EndBG3Slider();
+    EndMuralBackground();
 
     Proc_EndEach(gProcScr_DrawConfigUiSprites);
     Proc_EndEach(gProcScr_RedrawConfigHelpText);
 
     if (proc->unk_36 != 0) {
-        sub_8092134(proc);
+        StartUnitListScreenForSoloAnim(proc);
         Proc_Goto(proc, 0);
 
         return 0;
@@ -1071,7 +1075,7 @@ void sub_80B24C0(void) {
 struct ProcCmd CONST_DATA gProcScr_Config1[] = {
     PROC_NAME("E_config"),
 
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
     PROC_CALL_ARG(NewFadeOut, 16),
     PROC_WHILE(FadeOutExists),
     PROC_CALL(BMapDispSuspend),
@@ -1085,7 +1089,7 @@ PROC_LABEL(0),
     PROC_WHILE(FadeInExists),
 
     PROC_REPEAT(Config_Loop_KeyHandler),
-    PROC_CALL(sub_8013D80),
+    PROC_CALL(StartFastFadeToBlack),
 
     PROC_REPEAT(WaitForFade),
 
@@ -1094,11 +1098,11 @@ PROC_LABEL(0),
 
     PROC_CALL(BMapDispResume),
     PROC_CALL(RefreshBMapGraphics),
-    PROC_CALL(sub_8013DA4),
+    PROC_CALL(StartFastFadeFromBlack),
 
     PROC_REPEAT(WaitForFade),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
@@ -1106,7 +1110,7 @@ PROC_LABEL(0),
 struct ProcCmd CONST_DATA gProcScr_Config2[] = {
     PROC_NAME("E_config"),
 
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
 
 PROC_LABEL(0),
     PROC_SLEEP(0),
@@ -1119,13 +1123,13 @@ PROC_LABEL(0),
 
     PROC_REPEAT(Config_Loop_KeyHandler),
 
-    PROC_CALL(sub_8013D80),
+    PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_CALL(EndHelpBox),
     PROC_CALL_2(sub_80B2464),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
@@ -1133,7 +1137,7 @@ PROC_LABEL(0),
 struct ProcCmd CONST_DATA gProcScr_Config3[] = {
     PROC_NAME("E_config"),
 
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
     PROC_CALL(BMapDispSuspend),
 
 PROC_LABEL(0),
@@ -1142,12 +1146,12 @@ PROC_LABEL(0),
     PROC_CALL(Config_Init),
     PROC_CALL(sub_80B24C0),
 
-    PROC_CALL(sub_8013DA4),
+    PROC_CALL(StartFastFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_REPEAT(Config_Loop_KeyHandler),
 
-    PROC_CALL(sub_8013D80),
+    PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_CALL(EndHelpBox),
@@ -1156,7 +1160,7 @@ PROC_LABEL(0),
     PROC_CALL(BMapDispResume),
     PROC_CALL(RefreshBMapGraphics),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };

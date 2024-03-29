@@ -7,7 +7,7 @@
 #include "soundwrapper.h"
 #include "bmudisp.h"
 #include "bmfx.h"
-
+#include "bmlib.h"
 
 /**
  * The effect that plays when putting down a light rune
@@ -122,16 +122,16 @@ void ProcLightRuneAnim_Init(struct ProcBmFx *proc)
 
     Decompress(Img_LightRune, BG_CHR_ADDR(BGCHR_BMFX_IMG));
     ApplyPalette(Pal_LightRune, BGPAL_LIGHTRUNE_IMG);
-    Decompress(Tsa_LightRune, gBmFrameTmap0);
+    Decompress(Tsa_LightRune, gUiTmScratchA);
 
     for (i = 0; i < 0x360; i++)
-        gBmFrameTmap0[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_LIGHTRUNE_IMG);
+        gUiTmScratchA[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_LIGHTRUNE_IMG);
 
     BG_Fill(gBG0TilemapBuffer, TILEREF(BGCHR_BMFX_IMG, 0));
     BG_EnableSyncByMask(BG0_SYNC_BIT);
     PlaySoundEffect(0x2D8);
 
-    SetSpecialColorEffectsParameters(0x1, 0x10, 0x10, 0x0);
+    SetBlendConfig(0x1, 0x10, 0x10, 0x0);
     SetBlendTargetA(1, 0, 0, 0, 0);
     SetBlendTargetB(0, 1, 1, 1, 1);
 
@@ -157,7 +157,7 @@ void ProcLightRuneAnim_Loop(struct ProcBmFx *proc)
     if (0x18 == x && 0x09 == y)
         RefreshUnitSprites();
 
-    TileMap_CopyRect(TILEMAP_LOCATED(gBmFrameTmap0, x, y), gBG0TilemapBuffer, 8, 9);
+    TileMap_CopyRect(TILEMAP_LOCATED(gUiTmScratchA, x, y), gBG0TilemapBuffer, 8, 9);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
     
 }
@@ -185,16 +185,16 @@ void ProcLightRuneAnim2_Init(struct ProcBmFx *proc)
 
     Decompress(Img_LightRune, BG_CHR_ADDR(BGCHR_BMFX_IMG));
     ApplyPalette(Pal_LightRune, BGPAL_LIGHTRUNE_IMG);
-    Decompress(Tsa_LightRune, gBmFrameTmap0);
+    Decompress(Tsa_LightRune, gUiTmScratchA);
 
     for (i = 0; i < 0x360; i++)
-        gBmFrameTmap0[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_LIGHTRUNE_IMG);
+        gUiTmScratchA[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_LIGHTRUNE_IMG);
 
     BG_Fill(gBG0TilemapBuffer, TILEREF(BGCHR_BMFX_IMG, 0));
     BG_EnableSyncByMask(BG0_SYNC_BIT);
     PlaySoundEffect(0x2D8);
 
-    SetSpecialColorEffectsParameters(0x1, 0x10, 0x10, 0x0);
+    SetBlendConfig(0x1, 0x10, 0x10, 0x0);
     SetBlendTargetA(1, 0, 0, 0, 0);
     SetBlendTargetB(0, 1, 1, 1, 1);
 
@@ -220,7 +220,7 @@ void ProcLightRuneAnim2_Loop(struct ProcBmFx *proc)
     if (0x18 == x && 0x09 == y)
         RefreshUnitSprites();
 
-    TileMap_CopyRect(TILEMAP_LOCATED(gBmFrameTmap0, x, y), gBG0TilemapBuffer, 8, 9);
+    TileMap_CopyRect(TILEMAP_LOCATED(gUiTmScratchA, x, y), gBG0TilemapBuffer, 8, 9);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
     
 }
@@ -248,16 +248,16 @@ void ProcLightRuneAnim3_Init(struct ProcBmFx *proc)
 
     Decompress(Img_LightRune, BG_CHR_ADDR(BGCHR_BMFX_IMG));
     ApplyPalette(Pal_LightRune, BGPAL_LIGHTRUNE_IMG);
-    Decompress(Tsa_LightRune, gBmFrameTmap0);
+    Decompress(Tsa_LightRune, gUiTmScratchA);
 
     for (i = 0; i < 0x360; i++)
-        gBmFrameTmap0[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_LIGHTRUNE_IMG);
+        gUiTmScratchA[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_LIGHTRUNE_IMG);
 
     BG_Fill(gBG0TilemapBuffer, TILEREF(BGCHR_BMFX_IMG, 0));
     BG_EnableSyncByMask(BG0_SYNC_BIT);
     PlaySoundEffect(0x2D8);
 
-    SetSpecialColorEffectsParameters(0x1, 0x10, 0x10, 0x0);
+    SetBlendConfig(0x1, 0x10, 0x10, 0x0);
     SetBlendTargetA(1, 0, 0, 0, 0);
     SetBlendTargetB(0, 1, 1, 1, 1);
 
@@ -283,7 +283,7 @@ void ProcLightRuneAnim3_Loop(struct ProcBmFx *proc)
     if (0x18 == x && 0x09 == y)
         RefreshUnitSprites();
 
-    TileMap_CopyRect(TILEMAP_LOCATED(gBmFrameTmap0, x, y), gBG0TilemapBuffer, 8, 9);
+    TileMap_CopyRect(TILEMAP_LOCATED(gUiTmScratchA, x, y), gBG0TilemapBuffer, 8, 9);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
     
 }

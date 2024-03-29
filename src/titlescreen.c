@@ -5,25 +5,10 @@
 #include "m4a.h"
 #include "soundwrapper.h"
 #include "gamecontrol.h"
+#include "bmlib.h"
 #include "bm.h"
-
-struct TitleScreenProc {
-    /* 00 */ PROC_HEADER;
-
-    /* 29 */ s8 unk_29; // maybe a flag for whether we are coming from the intro sequence?
-    /* 2A */ u16 timer;
-    /* 2C */ int unk_2c;
-    /* 30 */ int unk_30;
-
-    /* 34 */ u8 _pad[0x4C-0x34];
-
-    /* 4C */ s16 unk_4c;
-    /* 4E */ s16 unk_4e; // unused/pad?
-    /* 50 */ s16 unk_50; // unused/pad?
-    /* 52 */ u16 unk_52;
-};
-
-extern struct BgAffineDstData gUnknown_030030C8;
+#include "opanim.h"
+#include "sysutil.h"
 
 u16 CONST_DATA gSprite_Title_FireEmblemLogo[] = {
     5,
@@ -91,8 +76,6 @@ void DrawTitleSprites_Loop(struct TitleScreenProc* proc) {
     }
 
     proc->unk_4c++;
-
-    return;
 }
 
 struct ProcCmd CONST_DATA gProcScr_DrawTitleSprites[] = {
@@ -117,7 +100,7 @@ void sub_80C5548(int arg) {
 
     src.alpha = 0;
 
-    BgAffineSet(&src, &gUnknown_030030C8, 1);
+    BgAffineSet(&src, gOpAnimBgAffineDstData, 1);
 
     return;
 }
@@ -132,7 +115,7 @@ void SkipTitleFx_Loop_KeyListener(struct Proc* proc) {
 }
 
 struct ProcCmd CONST_DATA gProcScr_SkipTitleFxKeyListener[] = {
-    PROC_SLEEP(0),
+    PROC_YIELD,
     PROC_REPEAT(SkipTitleFx_Loop_KeyListener),
 
     PROC_END,
@@ -196,89 +179,78 @@ void Title_Init(struct TitleScreenProc* proc) {
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_Fill(gBG3TilemapBuffer, 0);
 
-    sub_8001F48(0);
-    sub_8001F64(0);
+    SetBlendBackdropA(0);
+    SetBlendBackdropB(0);
 
     SetDefaultColorEffects();
 
     BG_EnableSyncByMask(0xf);
 
     proc->timer = 0;
-    proc->unk_2c = 0;
+    proc->timer_idle = 0;
 
     return;
 }
 
 //! FE8U = 0x080C56F4
-void Title_SetupMainGraphics(struct TitleScreenProc* proc) {
+void Title_SetupMainGraphics(struct TitleScreenProc * proc)
+{
     int i;
 
     switch (proc->timer) {
-        case 0:
-            Decompress(gGfx_TitleMainBackground_1, (void*)0x6000000);
+    case 0:
+        Decompress(gGfx_TitleMainBackground_1, (void*)0x6000000);
 
-            break;
+        break;
 
-        case 1:
-            Decompress(gGfx_TitleMainBackground_2, (void*)0x06003000);
-            Decompress(gTsa_TitleMainBackground, gBG1TilemapBuffer);
-            CopyToPaletteBuffer(gPal_TitleMainBackground, 0x1c0, 0x20);
+    case 1:
+        Decompress(gGfx_TitleMainBackground_2, (void*)0x06003000);
+        Decompress(gTsa_TitleMainBackground, gBG1TilemapBuffer);
+        ApplyPalette(gPal_TitleMainBackground, 0xE);
 
-            for (i = 0; i < 0x280; i++) {
-                gBG1TilemapBuffer[i] += 0xE000;
-            }
+        for (i = 0; i < 0x280; i++)
+            gBG1TilemapBuffer[i] += 0xE000;
 
-            if (proc->unk_29 != 0) {
-                gPaletteBuffer[0] = 0x7FFF;
-            } else {
-                gPaletteBuffer[0] = 0;
-            }
+        if (proc->mode != 0)
+            gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0x7FFF; // White
+        else
+            gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
 
-            break;
+        break;
 
-        case 2:
-            Decompress(gGfx_TitleDragonForeground, (void*)0x06005000);
-            Decompress(gTsa_TitleDragonForeground, gBG0TilemapBuffer);
-            CopyToPaletteBuffer(gPal_TitleDragonForeground, 0x1e0, 0x20);
+    case 2:
+        Decompress(gGfx_TitleDragonForeground, (void*)0x06005000);
+        Decompress(gTsa_TitleDragonForeground, gBG0TilemapBuffer);
+        ApplyPalette(gPal_TitleDragonForeground, 0xF);
 
-            for (i = 0; i < 0x280; i++) {
-                gBG0TilemapBuffer[i] += 0xF280;
-            }
+        for (i = 0; i < 0x280; i++)
+            gBG0TilemapBuffer[i] += 0xF280;
 
-            BG_EnableSyncByMask(1);
+        BG_EnableSyncByMask(1);
+        break;
 
-            break;
+    case 3:
+        Decompress(gGfx_FireEmblemLogo, (void*)0x06010000);
+        break;
 
-        case 3:
-            Decompress(gGfx_FireEmblemLogo, (void*)0x06010000);
-
-            break;
-
-        case 4:
-            Decompress(gGfx_SubtitlePressStart, (void*)0x06013000);
-            CopyToPaletteBuffer(gPal_PressStart, 0x200, 0x80);
-
-            proc->timer = 0;
-
-            Proc_Break(proc);
-
-            return;
+    case 4:
+        Decompress(gGfx_SubtitlePressStart, (void*)0x06013000);
+        ApplyPalettes(gPal_PressStart, 0x10, 4);
+        proc->timer = 0;
+        Proc_Break(proc);
+        return;
     }
 
     proc->timer++;
-
-    return;
 }
 
 //! FE8U = 0x080C5848
-void sub_80C5848(struct TitleScreenProc* proc) {
-    if (proc->unk_29 != 0) {
+void TitleScreenTryJumpIntroAnim(struct TitleScreenProc * proc)
+{
+    if (proc->mode != 0)
         Proc_Goto(proc, 0);
-    } else {
+    else
         Proc_Start(gProcScr_DrawTitleSprites, proc);
-    }
-
-    return;
 }
 
 //! FE8U = 0x080C5870
@@ -291,7 +263,7 @@ void sub_80C5870(void) {
     gLCDControlBuffer.dispcnt.bg3_on = 0;
     gLCDControlBuffer.dispcnt.obj_on = 1;
 
-    SetSpecialColorEffectsParameters(1, 8, 8, 0);
+    SetBlendConfig(1, 8, 8, 0);
 
     SetBlendTargetA(0, 0, 0, 0, 0);
     SetBlendTargetB(1, 1, 0, 0, 0);
@@ -310,15 +282,15 @@ void Title_SetupSpecialEffectGraphics(struct TitleScreenProc* proc) {
 
             Decompress(gGfx_08AAFD14, (void*)0x06008000);
             Decompress(gTsa_08AAFF10, (void*)0x0600B000);
-            CopyToPaletteBuffer(gPal_08AB0114, 0, 0x20);
-            gPaletteBuffer[0] = 0x7FFF;
+            ApplyPalette(gPal_08AB0114, 0);
+            gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0x7FFF; // White
 
             goto _080C5A14;
 
         case 1:
             Decompress(gGfx_08AADC08, (void*)0x0600C000);
             Decompress(gTsa_08AAE61C, gBG0TilemapBuffer);
-            CopyToPaletteBuffer(gPal_08AAE8CC, 0x20, 0x20);
+            ApplyPalette(gPal_08AAE8CC, 1);
 
             for (i = 0; i < 0x280; i++) {
                 gBG0TilemapBuffer[i] += 0x1000;
@@ -331,7 +303,7 @@ void Title_SetupSpecialEffectGraphics(struct TitleScreenProc* proc) {
         case 2:
             Decompress(gGfx_08AAE8EC, (void*)0x0600D000);
             Decompress(gTsa_08AAF928, gBG0TilemapBuffer);
-            CopyToPaletteBuffer(gPal_08AAFCF4, 0x40, 0x20);
+            ApplyPalette(gPal_08AAFCF4, 2);
 
             for (i = 0; i < 0x280; i++) {
                 gBG0TilemapBuffer[i] += 0x2080;
@@ -341,9 +313,9 @@ void Title_SetupSpecialEffectGraphics(struct TitleScreenProc* proc) {
 
         case 3:
             Decompress(gGfx_TitleLargeGlowingOrb, (void*)0x06014400);
-            CopyToPaletteBuffer(gPal_TitleLargeGlowingOrb, 0x280, 0x60);
+            ApplyPalettes(gPal_TitleLargeGlowingOrb, 0x14, 3);
             Decompress(gGfx_TitleSmallLightBubbles, (void*)0x06015400);
-            CopyToPaletteBuffer(gPal_TitleSmallLightBubbles, 0x2e0, 0x20);
+            ApplyPalette(gPal_TitleSmallLightBubbles, 0x17);
 
             goto _080C5A14;
 
@@ -368,7 +340,7 @@ void sub_80C5A44(struct TitleScreenProc* proc) {
 
     SetBackgroundScreenSize(2, 2);
 
-    sub_80C6BF0(8, 0);
+    BgAffineSetOpAnim(8, 0);
 
     gLCDControlBuffer.bg2cnt.areaOverflowMode = 0;
 
@@ -383,11 +355,11 @@ void sub_80C5A44(struct TitleScreenProc* proc) {
     gLCDControlBuffer.bg2cnt.priority = 0;
     gLCDControlBuffer.bg3cnt.priority = 3;
 
-    SetSpecialColorEffectsParameters(2, 8, 8, 0x10);
+    SetBlendConfig(2, 8, 8, 0x10);
 
     SetBlendTargetA(1, 1, 1, 1, 1);
 
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
     EnablePaletteSync();
 
     proc->timer = 0;
@@ -406,7 +378,7 @@ void Title_Loop_DrawRotatingBlueLights(struct TitleScreenProc* proc) {
         res = Interpolate(0, 256, 448, proc->timer - 45, 45);
     }
 
-    sub_80C6BF0(
+    BgAffineSetOpAnim(
         res,
         Interpolate(0, 0, 64, proc->timer, 90)
     );
@@ -448,7 +420,7 @@ void sub_80C5BD4(void) {
 
     gLCDControlBuffer.dispcnt.mode = 0;
 
-    SetSpecialColorEffectsParameters(1, 0x10, 0x10, 0x10);
+    SetBlendConfig(1, 0x10, 0x10, 0x10);
 
     SetBlendTargetA(0, 0, 0, 0, 1);
     SetBlendTargetB(0, 1, 0, 0, 0);
@@ -459,7 +431,7 @@ void sub_80C5BD4(void) {
     gLCDControlBuffer.dispcnt.bg3_on = 0;
     gLCDControlBuffer.dispcnt.obj_on = 1;
 
-    CpuFastFill(0, &gPaletteBuffer[0xe * 0x10], 0x20);
+    CpuFastFill(0, PAL_BG(0xE), 0x20);
 
     EnablePaletteSync();
 
@@ -469,16 +441,16 @@ void sub_80C5BD4(void) {
 //! FE8U = 0x080C5C64
 void Title_Loop_DrawRedBlueOrbs(struct TitleScreenProc* proc) {
 
-    CopyToPaletteBuffer(gPal_TitleMainBackground, 0x1c0, 0x20);
+    ApplyPalette(gPal_TitleMainBackground, 0xE);
 
     sub_80C69B0(
-        &gPaletteBuffer[0xe * 0x10],
+        PAL_BG(0xE),
         0,
         Interpolate(0, 16, 0, proc->timer, 48)
     );
 
     if (proc->timer == 20) {
-        Sound_PlaySong80024E4(2, 0, 0);
+        StartBgmExt(2, 0, 0);
     }
 
     if (proc->timer < 20) {
@@ -526,7 +498,7 @@ void Title_PrepareMainScreenWithExtendedBgm(void) {
     gLCDControlBuffer.dispcnt.bg3_on = 0;
     gLCDControlBuffer.dispcnt.obj_on = 1;
 
-    SetSpecialColorEffectsParameters(1, 0, 0x10, 0);
+    SetBlendConfig(1, 0, 0x10, 0);
 
     SetBlendTargetA(1, 0, 0, 0, 0);
     SetBlendTargetB(0, 1, 0, 0, 0);
@@ -558,11 +530,11 @@ void Title_Loop_FlashFxExpand(struct TitleScreenProc* proc) {
         BG_EnableSyncByMask(1);
     }
 
-    CopyToPaletteBuffer(gPal_08AAFCF4, 0x40, 0x20);
-    sub_80C69B0(&gPaletteBuffer[2 * 0x10], 0x7FFF, res);
+    ApplyPalette(gPal_08AAFCF4, 2);
+    sub_80C69B0(PAL_BG(2), 0x7FFF, res);
 
-    CopyToPaletteBuffer(gPal_TitleMainBackground, 0x1c0, 0x20);
-    sub_80C69B0(&gPaletteBuffer[0xe * 0x10], 0x7FFF, res);
+    ApplyPalette(gPal_TitleMainBackground, 0xE);
+    sub_80C69B0(PAL_BG(0xE), 0x7FFF, res);
 
     if (proc->timer == 12) {
         proc->timer = 0;
@@ -581,7 +553,7 @@ void Title_LoadDemonKingOnBg2(void) {
     Decompress(gGfx_TitleDemonKing, (void*)0x06008000);
     Decompress(gTsa_TitleDemonKing, gBG2TilemapBuffer);
 
-    CopyToPaletteBuffer(gPal_TitleDemonKing, 0x60, 0x20);
+    ApplyPalette(gPal_TitleDemonKing, 3);
 
     for (i = 0; i < 0x280; i++) {
         gBG2TilemapBuffer[i] += 0x3000;
@@ -632,11 +604,11 @@ void Title_PrepareMainLogoZoom(void) {
     Decompress(gGfx_08AB0134, (void*)0x06008000);
     Decompress(gTsa_08AB0A20, gBG2TilemapBuffer);
 
-    CopyToPaletteBuffer(gPal_08AB0B24, 0, 0x20);
+    ApplyPalette(gPal_08AB0B24, 0);
 
     BG_EnableSyncByMask(4);
 
-    CpuFastFill(0x7FFF7FFF, &gPaletteBuffer[0xe * 0x10], 0x40);
+    CpuFastFill(0x7FFF7FFF, PAL_BG(0xe), 0x40);
 
     SetBackgroundTileDataOffset(0, 0);
     SetBackgroundMapDataOffset(0, 0x6800);
@@ -685,7 +657,7 @@ void nullsub_23(int a, int b) {
 //! FE8U = 0x080C6104
 void sub_80C6104(struct TitleScreenProc* proc) {
 
-    SetSpecialColorEffectsParameters(1, 0x10, 0x10, 0);
+    SetBlendConfig(1, 0x10, 0x10, 0);
 
     SetBlendTargetA(0, 0, 0, 0, 0);
     SetBlendTargetB(1, 1, 0, 0, 0);
@@ -835,11 +807,11 @@ void Title_Loop_LightExplosionFx(struct TitleScreenProc* proc) {
 
     res = Interpolate(0, 16, 0, proc->timer, 24);
 
-    CopyToPaletteBuffer(gPal_TitleMainBackground, 0x1c0, 0x20);
-    sub_80C69B0(&gPaletteBuffer[0xe * 0x10], 0x7FFF, res);
+    ApplyPalette(gPal_TitleMainBackground, 0xE);
+    sub_80C69B0(PAL_BG(0xe), 0x7FFF, res);
 
-    CopyToPaletteBuffer(gPal_TitleDragonForeground, 0x1e0, 0x20);
-    sub_80C69B0(&gPaletteBuffer[0xf * 0x10], 0x7FFF, res);
+    ApplyPalette(gPal_TitleDragonForeground, 0xF);
+    sub_80C69B0(PAL_BG(0xf), 0x7FFF, res);
 
     res = Interpolate(0, 0, 63, proc->timer, 24);
     nullsub_23(res, proc->unk_30);
@@ -874,7 +846,7 @@ void sub_80C62DC(struct TitleScreenProc* proc) {
 
     Proc_Start(gProcScr_DrawTitleSprites, proc);
 
-    SetSpecialColorEffectsParameters(1, 8, 8, 0);
+    SetBlendConfig(1, 8, 8, 0);
 
     SetBlendTargetA(0, 0, 0, 0, 0);
     SetBlendTargetB(1, 1, 0, 0, 0);
@@ -883,24 +855,25 @@ void sub_80C62DC(struct TitleScreenProc* proc) {
 }
 
 //! FE8U = 0x080C6354
-void Title_Loop_MainScreenKeyListener(struct TitleScreenProc* proc) {
-    proc->unk_2c++;
+void Title_IDLE(struct TitleScreenProc * proc)
+{
+    proc->timer_idle++;
     proc->timer = (++proc->timer & 0x3f);
 
-    if (gKeyStatusPtr->newKeys & (A_BUTTON | START_BUTTON)) {
+    if (gKeyStatusPtr->newKeys & (A_BUTTON | START_BUTTON))
+    {
         PlaySoundEffect(0x6D);
-
-        SetNextGameActionId(GAME_ACTION_0);
-
+        SetNextGameActionId(GAME_ACTION_EVENT_RETURN);
         Proc_Break(proc);
-    } else {
-        if (proc->unk_2c == 815) {
-            SetNextGameActionId(GAME_ACTION_1);
+    }
+    else
+    {
+        if (proc->timer_idle == 815)
+        {
+            SetNextGameActionId(GAME_ACTION_CLASS_REEL);
             Proc_Break(proc);
         }
     }
-
-    return;
 }
 
 //! FE8U = 0x080C63C4
@@ -917,11 +890,11 @@ void Title_RestartProc(struct TitleScreenProc* proc) {
 
     Title_EndSkipFxListener();
 
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
 
     EnablePaletteSync();
 
-    proc->unk_29 = 0;
+    proc->mode = 0;
 
     gLCDControlBuffer.dispcnt.bg0_on = 0;
     gLCDControlBuffer.dispcnt.bg1_on = 0;
@@ -929,48 +902,41 @@ void Title_RestartProc(struct TitleScreenProc* proc) {
     gLCDControlBuffer.dispcnt.bg3_on = 0;
     gLCDControlBuffer.dispcnt.obj_on = 0;
 
-    Sound_PlaySong80024E4(0x43, 0, 0);
+    StartBgmExt(0x43, 0, 0);
 
     return;
 }
 
 struct ProcCmd CONST_DATA gProcScr_TitleScreen[] = {
 PROC_LABEL(4),
-    PROC_SLEEP(0),
+    PROC_YIELD,
 
     PROC_CALL(Title_Init),
 
     PROC_REPEAT(Title_SetupMainGraphics),
 
-    PROC_CALL(sub_80C5848),
+    PROC_CALL(TitleScreenTryJumpIntroAnim),
 
     PROC_CALL(sub_80C5870),
-    PROC_CALL(sub_8013FC4),
+    PROC_CALL(FadeInBlackSpeed20),
 
-    PROC_SLEEP(0),
-
+    PROC_YIELD,
     PROC_GOTO(1),
 
 PROC_LABEL(0),
-    PROC_SLEEP(0),
+    /* Intro anim */
+    PROC_YIELD,
 
     PROC_CALL(Title_StartSkipFxListener),
-
     PROC_REPEAT(Title_SetupSpecialEffectGraphics),
-
     PROC_CALL(sub_80C5A44),
-
     PROC_REPEAT(Title_Loop_DrawRotatingBlueLights),
-
     PROC_CALL(sub_80C5BD4),
-
     PROC_REPEAT(Title_Loop_DrawRedBlueOrbs),
-
     PROC_CALL(Title_PrepareMainScreenWithExtendedBgm),
-
     PROC_REPEAT(Title_Loop_RevealGreenDragonFlashFx),
     PROC_REPEAT(Title_Loop_FlashFxExpand),
-    PROC_SLEEP(0),
+    PROC_YIELD,
 
     PROC_CALL(Title_LoadDemonKingOnBg2),
     PROC_SLEEP(8),
@@ -994,26 +960,22 @@ PROC_LABEL(0),
     // fallthrough
 
 PROC_LABEL(1),
-    PROC_REPEAT(Title_Loop_MainScreenKeyListener),
+    /* IDLE */
+    PROC_REPEAT(Title_IDLE),
 
     // fallthrough
 
 PROC_LABEL(2),
     PROC_CALL(sub_8013F40),
-
-    PROC_SLEEP(0),
-
+    PROC_YIELD,
     PROC_CALL(Title_EndAllProcChildren),
-
     PROC_GOTO(5),
 
 PROC_LABEL(3),
     PROC_CALL(Title_RestartProc),
-
     PROC_GOTO(4),
 
 PROC_LABEL(5),
-
     PROC_END,
 
 };
@@ -1023,11 +985,9 @@ void StartTitleScreen_WithMusic(ProcPtr parent) {
     struct TitleScreenProc* proc;
 
     proc = Proc_StartBlocking(gProcScr_TitleScreen, parent);
-    proc->unk_29 = 0;
+    proc->mode = 0;
 
-    Sound_PlaySong80024E4(0x43, 0, 0);
-
-    return;
+    StartBgmExt(0x43, 0, 0);
 }
 
 //! FE8U = 0x080C6444
@@ -1035,9 +995,7 @@ void StartTitleScreen_FlagFalse(ProcPtr parent) {
     struct TitleScreenProc* proc;
 
     proc = Proc_StartBlocking(gProcScr_TitleScreen, parent);
-    proc->unk_29 = 0;
-
-    return;
+    proc->mode = 0;
 }
 
 //! FE8U = 0x080C645C
@@ -1045,7 +1003,5 @@ void StartTitleScreen_FlagTrue(ProcPtr parent) {
     struct TitleScreenProc* proc;
 
     proc = Proc_StartBlocking(gProcScr_TitleScreen, parent);
-    proc->unk_29 = 1;
-
-    return;
+    proc->mode = 1;
 }

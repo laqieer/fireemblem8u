@@ -3,13 +3,11 @@
 #include "hardware.h"
 #include "chap_title.h"
 #include "chapterdata.h"
+#include "bmlib.h"
+#include "helpbox.h"
+#include "worldmap.h"
 
-extern ChapTitle chap_title_data[];
-
-struct {
-    u16 unk_00;
-    u16 unk_02;
-} gUnknown_0203E78C;
+EWRAM_DATA struct ChapterTitleFxSt gChapterTitleFxSt = { 0 };
 
 void sub_80895B4(int config, int palId) {
     u16* pal;
@@ -40,7 +38,7 @@ void sub_80895B4(int config, int palId) {
         pal = pal + 0x10;
     }
 
-    CopyToPaletteBuffer(pal, palId * 0x20, 0x20);
+    ApplyPalette(pal, palId);
 
     return;
 }
@@ -51,21 +49,21 @@ void sub_8089624(int chr, u32 titleId) {
         titleId = 0x54;
     }
 
-    gUnknown_0203E78C.unk_02 = chr & 0x3FF;
+    gChapterTitleFxSt.unk_02 = chr & 0x3FF;
 
     Decompress(chap_title_data[titleId].save, (void*)((chr * 0x20) + 0x6000000));
 
     return;
 }
 
-void sub_808966C(int chr, u32 titleId) {
+void sub_808966C(int chr, int titleId) {
     sub_8089624(chr, titleId);
     return;
 }
 
 void sub_8089678(int chr) {
 
-    gUnknown_0203E78C.unk_00 = chr & 0x3FF;
+    gChapterTitleFxSt.unk_00 = chr & 0x3FF;
 
     Decompress(gGfx_08A09E4C, (void*)((chr * 0x20) + 0x6000000));
 
@@ -76,7 +74,7 @@ extern u8 gUnknown_08A0A4E8[];
 
 void sub_80896A8(int chr) {
 
-    gUnknown_0203E78C.unk_00 = chr & 0x3FF;
+    gChapterTitleFxSt.unk_00 = chr & 0x3FF;
 
     Decompress(gUnknown_08A0A4E8, (void*)((chr * 0x20) + 0x6000000));
 
@@ -86,7 +84,7 @@ void sub_80896A8(int chr) {
 void sub_80896D8(u16* tm, int pal) {
     int i;
 
-    int tile = TILEREF(gUnknown_0203E78C.unk_02, pal);
+    int tile = TILEREF(gChapterTitleFxSt.unk_02, pal);
 
     for (i = 0; i < 0x40; i++) {
         *tm++ = tile++;
@@ -98,7 +96,7 @@ void sub_80896D8(u16* tm, int pal) {
 void sub_80896FC(u16* tm, int pal, int c) {
     int i;
 
-    int tile = TILEREF(gUnknown_0203E78C.unk_02, pal);
+    int tile = TILEREF(gChapterTitleFxSt.unk_02, pal);
 
     for (i = 0; i < 0x40; i++) {
         *tm++ = tile++;
@@ -107,10 +105,11 @@ void sub_80896FC(u16* tm, int pal, int c) {
     return;
 }
 
-void sub_8089720(u16* tm, int pal) {
+void sub_8089720(u16 * tm, int pal)
+{
     int i;
 
-    int tile = TILEREF(gUnknown_0203E78C.unk_00, pal);
+    int tile = TILEREF(gChapterTitleFxSt.unk_00, pal);
 
     for (i = 0; i < 0x80; i++) {
         *tm++ = tile++;
@@ -121,7 +120,7 @@ void sub_8089720(u16* tm, int pal) {
 
 void sub_8089744(u16* tm, int pal) {
 
-    CallARM_FillTileRect(tm, gTsa_08A0A9F8, (u16)TILEREF(gUnknown_0203E78C.unk_00, pal));
+    CallARM_FillTileRect(tm, gTsa_08A0A9F8, (u16)TILEREF(gChapterTitleFxSt.unk_00, pal));
 
     return;
 }
@@ -153,7 +152,7 @@ int sub_808979C(struct PlaySt* chapterData) {
 
     unk = sub_80BCFDC(chapterData->chapterIndex);
 
-    if ((chapterData->chapterStateBits & PLAY_FLAG_POSTGAME) || sub_80BD014(&gGMData) != unk) {
+    if ((chapterData->chapterStateBits & PLAY_FLAG_POSTGAME) || GetNextUnclearedNode(&gGMData) != unk) {
 
         for (i = 0; i < gWMMonsterSpawnsSize; i++) {
 

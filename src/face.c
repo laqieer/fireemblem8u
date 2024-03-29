@@ -6,79 +6,15 @@
 #include "hardware.h"
 #include "rng.h"
 #include "bm.h"
-
+#include "bmlib.h"
+#include "prepscreen.h"
 #include "constants/faces.h"
 
 #include "face.h"
 
-struct FaceBlinkProc {
-    /* 00 */ PROC_HEADER;
+struct FaceVramEntry EWRAM_DATA sFaceConfig[4] = { 0 };
 
-    /* 2C */ struct FaceProc* pFaceProc;
-
-    /* 30 */ s16 blinkControl;
-    /* 32 */ s16 unk_32;
-    /* 34 */ s16 unk_34;
-
-    /* 38 */ int unk_38;
-    /* 3C */ u16* unk_3c;
-
-    /* 40 */ u16 tileId;
-    /* 42 */ u16 palId;
-    /* 44 */ u16 faceId;
-};
-
-struct DeleteFaceProc {
-    /* 00 */ PROC_HEADER;
-
-    /* 29 */ u8 pad[0x54-0x29];
-
-    /* 54 */ struct FaceProc* target;
-};
-
-struct UnkFaceProc {
-    /* 00 */ PROC_HEADER;
-
-    /* 2C */ struct FaceProc* pFaceProc;
-    /* 30 */ const struct FaceData* pFaceInfo;
-    /* 34 */ int faceId;
-};
-
-// generic minimug images
-extern u8 CONST_DATA gUnknown_08599D34[];
-extern u8 CONST_DATA gUnknown_08599B34[];
-extern u8 CONST_DATA gUnknown_08599734[];
-extern u8 CONST_DATA gUnknown_08599934[];
-
-// generic minimug palettes
-extern u16 CONST_DATA gUnknown_08599F34[];
-extern u16 CONST_DATA gUnknown_08599F54[];
-extern u16 CONST_DATA gUnknown_08599F74[];
-
-// funcs
-void Face_OnInit(struct FaceProc*);
-void Face_OnIdle(struct FaceProc*);
-void FaceChibiSpr_OnIdle(struct FaceProc*);
-void sub_8005D64(struct FaceBlinkProc*);
-void sub_8005D70(struct FaceBlinkProc*);
-void sub_8005D98(struct FaceBlinkProc*);
-void EndFacePtr(struct DeleteFaceProc*);
-void sub_8005FD4(struct FaceBlinkProc*);
-void sub_8005FE0(struct FaceBlinkProc*);
-void sub_800623C(struct FaceBlinkProc*);
-void sub_8006280(struct FaceBlinkProc*);
-void sub_80062B8(struct FaceBlinkProc*);
-void sub_8006324(struct FaceBlinkProc*);
-void sub_800632C(struct FaceBlinkProc*);
-void sub_8006370(struct FaceBlinkProc*);
-void sub_8006378(struct FaceBlinkProc*);
-void sub_80063BC(struct FaceBlinkProc*);
-void sub_80063C4(struct FaceBlinkProc*);
-void sub_800662C(struct UnkFaceProc*);
-void sub_8006650(struct UnkFaceProc*);
-void sub_80066A8(struct UnkFaceProc*);
-
-struct FaceVramEntry CONST_DATA sDefaultFaceConfig[FACE_SLOT_COUNT] =
+struct FaceVramEntry CONST_DATA gDefaultFaceConfig[FACE_SLOT_COUNT] =
 {
     [0] =
     {
@@ -253,14 +189,14 @@ struct ProcCmd CONST_DATA gProcScr_FaceChibiSpr[] =
     PROC_END,
 };
 
-u16 CONST_DATA gUnknown_085911E8[] =
+u16 CONST_DATA Sprite_085911E8[] =
 {
     2,
     OAM0_SHAPE_32x16,              OAM1_SIZE_32x16, OAM2_CHR(0),
     OAM0_SHAPE_32x16 + OAM0_Y(16), OAM1_SIZE_32x16, OAM2_CHR(4),
 };
 
-u16 CONST_DATA gUnknown_085911F6[] =
+u16 CONST_DATA Sprite_085911F6[] =
 {
     2,
     OAM0_SHAPE_32x16,              OAM1_SIZE_32x16 + OAM1_HFLIP, OAM2_CHR(0),
@@ -341,24 +277,6 @@ struct ProcCmd CONST_DATA gProcScr_08591304[] =
     PROC_END,
 };
 
-extern const struct FaceData portrait_data[];
-
-extern struct FaceVramEntry sFaceConfig[];
-extern struct FaceProc* gFaces[];
-
-extern u8 gUnknown_085A0838[]; // tsa
-extern u8 gUnknown_085A08F0[]; // tsa
-
-// forward decl.
-void SetupFaceGfxData(struct FaceVramEntry*);
-int GetFaceDisplayBits(struct FaceProc*);
-int SetFaceDisplayBits(struct FaceProc*, int);
-void FaceRefreshSprite(struct FaceProc*);
-u8* sub_8005F6C(int);
-void sub_8005F9C(int, int);
-int FaceBlinkProc_GenBlinkInterval(struct FaceBlinkProc*);
-
-
 //! FE8U = 0x08005514
 const struct FaceData* GetPortraitData(int fid) {
     return portrait_data + fid - 1;
@@ -382,7 +300,7 @@ void SetupFaceGfxData(struct FaceVramEntry* config) {
     int i;
 
     if (config == 0) {
-        config = sDefaultFaceConfig;
+        config = gDefaultFaceConfig;
     }
 
     for (i = 0; i < FACE_SLOT_COUNT; i++) {
@@ -398,7 +316,7 @@ int FindFreeFaceSlot(void) {
     int i;
 
     for (i = 0; i < FACE_SLOT_COUNT; i++) {
-        if (gFaces[i] == 0) {
+        if (gFaces[i] == NULL) {
             return i;
         }
     }
@@ -408,9 +326,7 @@ int FindFreeFaceSlot(void) {
 
 //! FE8U = 0x08005594
 void Face_OnInit(struct FaceProc* proc) {
-
     Decompress(proc->pFaceInfo->img, (void *)(sFaceConfig[proc->faceSlot].tileOffset + 0x06010000));
-
     return;
 }
 
@@ -418,17 +334,17 @@ void Face_OnInit(struct FaceProc* proc) {
 void Face_OnIdle(struct FaceProc* proc) {
     int oam0;
 
-    if (GetFaceDisplayBits(proc) & 0x4000) {
+    if (GetFaceDisplayBits(proc) & FACE_DISP_BIT_14) {
         return;
     }
 
-    if (GetFaceDisplayBits(proc) & 0x400) {
-        oam0 = 0x400;
+    if (GetFaceDisplayBits(proc) & FACE_DISP_BLEND) {
+        oam0 = OAM0_BLEND;
     } else {
         oam0 = 0;
     }
 
-    oam0 += proc->yPos & 0xFF;
+    oam0 += OAM0_Y(proc->yPos);
 
     PutSpriteExt(
         proc->spriteLayer,
@@ -459,7 +375,7 @@ struct FaceProc* StartFace(int slot, int fid, int x, int y, int disp) {
     const struct FaceData* info;
 
     if (gFaces[slot] != NULL) {
-        return 0;
+        return NULL;
     }
 
     proc = Proc_Start(gProcScr_E_FACE, PROC_TREE_5);
@@ -468,11 +384,11 @@ struct FaceProc* StartFace(int slot, int fid, int x, int y, int disp) {
 
     info = GetPortraitData(fid);
 
-    if (disp & 0x2000) {
-        CpuFastFill(0, (gPaletteBuffer + 0x10 * 0x10) + sFaceConfig[slot].paletteId * 0x10, 0x20);
+    if (disp & FACE_DISP_BIT_13) {
+        CpuFastFill(0, PAL_OBJ(0) + PAL_OFFSET(sFaceConfig[slot].paletteId), 0x20);
         EnablePaletteSync();
     } else {
-        CopyToPaletteBuffer(info->pal, (sFaceConfig[slot].paletteId + 0x10) * 0x20, 0x20);
+        ApplyPalette(info->pal, sFaceConfig[slot].paletteId + 0x10);
     }
 
     proc->pFaceInfo = info;
@@ -485,9 +401,9 @@ struct FaceProc* StartFace(int slot, int fid, int x, int y, int disp) {
     proc->xPos = x;
     proc->yPos = y;
 
-    if (disp & 0x1000) {
-        proc->unk_44 = 0;
-        proc->pBlinkProc = 0;
+    if (disp & FACE_DISP_BIT_12) {
+        proc->unk_44 = NULL;
+        proc->pBlinkProc = NULL;
     } else {
         proc->unk_44 = Proc_Start(gProcScr_0859124C, proc);
         proc->pBlinkProc = Proc_Start(gProcScr_FaceBlink, proc);
@@ -582,25 +498,25 @@ void FaceRefreshSprite(struct FaceProc* proc) {
             break;
     }
 
-    switch (proc->displayBits & 0x3C0) {
-        case 0x040:
-            oam2Layer = 0;
+    switch (proc->displayBits & FACE_DISP_HLAYER_MASK) {
+        case FACE_DISP_HLAYER(FACE_HLAYER_0):
+            oam2Layer = OAM2_LAYER(0);
             break;
 
-        case 0x080:
-            oam2Layer = 0x400;
+        case FACE_DISP_HLAYER(FACE_HLAYER_1):
+            oam2Layer = OAM2_LAYER(1);
             break;
 
-        case 0x200:
-            oam2Layer = 0xC00;
+        case FACE_DISP_HLAYER(FACE_HLAYER_3):
+            oam2Layer = OAM2_LAYER(3);
             break;
 
         default:
-            oam2Layer = 0x800;
+            oam2Layer = OAM2_LAYER(2);
             break;
     }
 
-    proc->oam2 = (sFaceConfig[proc->faceSlot].tileOffset >> 5) + ((sFaceConfig[proc->faceSlot].paletteId & 0xF) * 0x1000) + oam2Layer;
+    proc->oam2 = (sFaceConfig[proc->faceSlot].tileOffset / CHR_SIZE) + ((sFaceConfig[proc->faceSlot].paletteId & 0xF) * 0x1000) + oam2Layer;
 
     return;
 }
@@ -648,13 +564,13 @@ void PutFaceTm(u16* tm, u8* data, int tileref, s8 isFlipped) {
 //! FE8U = 0x08005924
 void UnpackFaceChibiGraphics(int fid, int chr, int pal) {
     if (fid >= FID_FACTION_CHIBI) {
-        RegisterTileGraphics(sub_8005F6C(fid), (void *)(((chr * 0x20 + VRAM) & 0x1FFFF) + VRAM), 0x200);
+        RegisterDataMove(sub_8005F6C(fid), (void *)(((chr * CHR_SIZE + VRAM) & 0x1FFFF) + VRAM), 0x200);
         sub_8005F9C(fid, pal);
     } else {
         const struct FaceData* info = GetPortraitData(fid);
 
-        Decompress(info->imgChibi, (void *)(chr * 0x20 + VRAM));
-        CopyToPaletteBuffer(info->pal, pal * 0x20, 0x20);
+        Decompress(info->imgChibi, (void *)(chr * CHR_SIZE + VRAM));
+        ApplyPalette(info->pal, pal);
     }
     return;
 }
@@ -676,10 +592,10 @@ void UnpackFaceChibiSprGraphics(int fid, int chr, int pal) {
     chr += 0x800;
 
     if (fid >= FID_FACTION_CHIBI) {
-        RegisterTileGraphics(sub_8005F6C(fid) + 0x00, (void *)(((chr + 0x00) * 0x20 & 0x1FFFF) + VRAM), 0x80);
-        RegisterTileGraphics(sub_8005F6C(fid) + 0x80, (void *)(((chr + 0x20) * 0x20 & 0x1FFFF) + VRAM), 0x80);
-        RegisterTileGraphics(sub_8005F6C(fid) + 0x100, (void *)(((chr + 0x04) * 0x20 & 0x1FFFF) + VRAM), 0x80);
-        RegisterTileGraphics(sub_8005F6C(fid) + 0x180, (void *)(((chr + 0x24) * 0x20 & 0x1FFFF) + VRAM), 0x80);
+        RegisterDataMove(sub_8005F6C(fid) + 0x00, (void *)(((chr + 0x00) * 0x20 & 0x1FFFF) + VRAM), 0x80);
+        RegisterDataMove(sub_8005F6C(fid) + 0x80, (void *)(((chr + 0x20) * 0x20 & 0x1FFFF) + VRAM), 0x80);
+        RegisterDataMove(sub_8005F6C(fid) + 0x100, (void *)(((chr + 0x04) * 0x20 & 0x1FFFF) + VRAM), 0x80);
+        RegisterDataMove(sub_8005F6C(fid) + 0x180, (void *)(((chr + 0x24) * 0x20 & 0x1FFFF) + VRAM), 0x80);
 
         sub_8005F9C(fid, pal + 0x10);
     } else {
@@ -692,7 +608,7 @@ void UnpackFaceChibiSprGraphics(int fid, int chr, int pal) {
         CpuFastCopy(buffer + 0x100, (void *)((chr + 0x04) * 0x20 + VRAM), 0x80);
         CpuFastCopy(buffer + 0x180, (void *)((chr + 0x24) * 0x20 + VRAM), 0x80);
 
-        CopyToPaletteBuffer(info->pal, (pal + 0x10) * 0x20, 0x20);
+        ApplyPalette(info->pal, pal + 0x10);
     }
 
     return;
@@ -725,9 +641,9 @@ void StartFaceChibiSpr(int x, int y, int fid, int chr, int pal, s8 isFlipped, Pr
     proc->oam2 = chr + ((pal & 0xF) * 0x1000);
 
     if (isFlipped) {
-       proc->sprite = gUnknown_085911F6;
+       proc->sprite = Sprite_085911F6;
     } else {
-       proc->sprite = gUnknown_085911E8;
+       proc->sprite = Sprite_085911E8;
     }
 
     return;
@@ -806,13 +722,13 @@ void PutFace80x72_Core(u16* tm, int fid, int chr, int pal) {
 
     info = GetPortraitData(fid);
 
-    CopyToPaletteBuffer(info->pal, pal * 0x20, 0x20);
+    ApplyPalette(info->pal, pal);
 
     if (info->img != 0) {
         int i;
 
         Decompress(info->img, (void *)(chr * 0x20 + VRAM));
-        CopyToPaletteBuffer(info->pal, pal * 0x20, 0x20);
+        ApplyPalette(info->pal, pal);
 
         if (ShouldFaceBeRaised(fid) != 0) {
             PutFace80x72_Raised(tm, (pal << 12) + (0x3FF & chr), info);
@@ -826,8 +742,8 @@ void PutFace80x72_Core(u16* tm, int fid, int chr, int pal) {
         }
 
     } else {
-        Decompress(info->imgCard, (void*)(chr * 0x20 + VRAM));
-        sub_8013104(tm, (pal << 12) + (0x3FF & chr), 10, 9);
+        Decompress(info->imgCard, (void*)(chr * CHR_SIZE + VRAM));
+        PutAppliedBitmap(tm, (pal << 12) + (0x3FF & chr), 10, 9);
     }
 
     return;
@@ -836,7 +752,7 @@ void PutFace80x72_Core(u16* tm, int fid, int chr, int pal) {
 //! FE8U = 0x08005D64
 void sub_8005D64(struct FaceBlinkProc* proc) {
     proc->pFaceProc = NULL;
-    proc->unk_38 = 0x78;
+    proc->unk_38 = 120;
     proc->unk_32 = 0;
 
     return;
@@ -926,14 +842,11 @@ void sub_8005D98(struct FaceBlinkProc* proc) {
 }
 
 //! FE8U = 0x08005E98
-void PutFace80x72(struct Proc* proc, u16* bgOut, int fid, int tileId, int palId) {
-
+void PutFace80x72(ProcPtr proc, u16 * bgOut, int fid, int tileId, int palId)
+{
     Proc_EndEach(gProcScr_08591204);
-
     PutFace80x72_Core(bgOut, fid, tileId, palId);
-
     GetPortraitData(fid);
-
     return;
 }
 
@@ -956,8 +869,8 @@ void EndFaceIn8Frames(struct FaceProc* target) {
 void StartFaceFadeIn(struct FaceProc* proc) {
     const struct FaceData* info = GetPortraitData(proc->faceId);
 
-    sub_8013A84(sFaceConfig[proc->faceSlot].paletteId + 0x10);
-    sub_8013928(info->pal, sFaceConfig[proc->faceSlot].paletteId + 0x10, 12, proc);
+    SetBlackPal(sFaceConfig[proc->faceSlot].paletteId + 0x10);
+    StartPalFade(info->pal, sFaceConfig[proc->faceSlot].paletteId + 0x10, 12, proc);
 
     return;
 }
@@ -968,7 +881,7 @@ void StartFaceFadeOut(struct FaceProc* proc) {
     // unused
     const struct FaceData* info = GetPortraitData(proc->faceId);
 
-    sub_80138F0(sFaceConfig[proc->faceSlot].paletteId + 0x10, 12, proc);
+    StartPalFadeToBlack(sFaceConfig[proc->faceSlot].paletteId + 0x10, 12, proc);
 
     EndFaceIn8Frames(proc);
 
@@ -1012,7 +925,7 @@ void sub_8005F9C(int fid, int pal) {
 
     fid = fid - FID_FACTION_CHIBI;
 
-    CopyToPaletteBuffer(gUnknown_080D77DC[fid], pal * 0x20, 0x20);
+    ApplyPalette(gUnknown_080D77DC[fid], pal);
 
     return;
 }
@@ -1027,16 +940,14 @@ void sub_8005FD4(struct FaceBlinkProc* proc) {
 
 //! FE8U = 0x08005FE0
 void sub_8005FE0(struct FaceBlinkProc* proc) {
-
     int oam1;
     int oam0;
 
-    if (!(GetFaceDisplayBits(proc->pFaceProc) & 0x30)) {
-
-        int offsetA = (GetFaceDisplayBits(proc->pFaceProc) & 8) ? 0 : 24;
+    if (!(GetFaceDisplayBits(proc->pFaceProc) & (FACE_DISP_TALK_1 | FACE_DISP_TALK_2))) {
+        int offsetA = (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_SMILE) ? 0 : 24;
         offsetA += 16;
 
-        RegisterObjectTileGraphics(
+        Register2dChrMove(
             proc->pFaceProc->pFaceInfo->imgMouth + offsetA * 0x20,
             (void*)(((proc->pFaceProc->oam2 + 28) & 0x3FF) * 0x20 + 0x06010000),
             4,
@@ -1047,7 +958,7 @@ void sub_8005FE0(struct FaceBlinkProc* proc) {
         proc->unk_32--;
 
         if (proc->unk_32 < 0) {
-            int offsetB = (GetFaceDisplayBits(proc->pFaceProc) & 8) ? 0 : 24;
+            int offsetB = (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_SMILE) ? 0 : 24;
 
             proc->unk_32 = ((AdvanceGetLCGRNValue() >> 16) & 7) + 1;
             proc->blinkControl = (proc->blinkControl + 1) & 3;
@@ -1068,7 +979,7 @@ void sub_8005FE0(struct FaceBlinkProc* proc) {
                     break;
             }
 
-            RegisterObjectTileGraphics(
+            Register2dChrMove(
                 proc->pFaceProc->pFaceInfo->imgMouth + offsetB * 0x20,
                 (void*)(((proc->pFaceProc->oam2 + 28) & 0x3FF) * 0x20 + 0x06010000),
                 4,
@@ -1080,16 +991,16 @@ void sub_8005FE0(struct FaceBlinkProc* proc) {
 
     oam1 = 4 - proc->pFaceProc->pFaceInfo->xMouth;
 
-    oam1 = (GetFaceDisplayBits(proc->pFaceProc) & 1) ? oam1 : -oam1;
+    oam1 = (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_FLIPPED) ? oam1 : -oam1;
 
-    oam1 = ((oam1 * 8 + proc->pFaceProc->xPos) - 16) & 0x1FF;
+    oam1 = OAM1_X((oam1 * 8 + proc->pFaceProc->xPos) - 16);
 
-    if (GetFaceDisplayBits(proc->pFaceProc) & 1) {
-        oam1 = oam1 + 0x1000;
+    if (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_FLIPPED) {
+        oam1 = oam1 + OAM1_HFLIP;
     }
 
-    if (GetFaceDisplayBits(proc->pFaceProc) & 0x400) {
-        oam0 = 0x400;
+    if (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_BLEND) {
+        oam0 = OAM0_BLEND;
     } else {
         oam0 = 0;
     }
@@ -1139,7 +1050,7 @@ void sub_8006134(struct FaceBlinkProc* proc, int unk) {
 
     oam1 = 4 - proc->pFaceProc->pFaceInfo->xEyes;
 
-    oam1 = (GetFaceDisplayBits(proc->pFaceProc) & 1) ? oam1 : -oam1;
+    oam1 = (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_FLIPPED) ? oam1 : -oam1;
 
     oam1 = ((oam1 * 8 + proc->pFaceProc->xPos) - 16) & 0x1FF;
 
@@ -1147,8 +1058,8 @@ void sub_8006134(struct FaceBlinkProc* proc, int unk) {
         oam1 = oam1 + 0x1000;
     }
 
-    if (GetFaceDisplayBits(proc->pFaceProc) & 0x400) {
-        oam0 = 0x400;
+    if (GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_BLEND) {
+        oam0 = OAM0_BLEND;
     } else {
         oam0 = 0;
     }
@@ -1156,7 +1067,7 @@ void sub_8006134(struct FaceBlinkProc* proc, int unk) {
     oam0 += (proc->pFaceProc->yPos + (proc->pFaceProc->pFaceInfo->yEyes * 8)) & 0xff;
 
     if (flag) {
-        if (!(GetFaceDisplayBits(proc->pFaceProc) & 1)) {
+        if (!(GetFaceDisplayBits(proc->pFaceProc) & FACE_DISP_FLIPPED)) {
             oam1 = oam1 + 16;
         }
 
@@ -1191,7 +1102,7 @@ void sub_800623C(struct FaceBlinkProc* proc) {
 
     if (proc->blinkControl == 6) {
         proc->blinkControl = 5;
-        proc->unk_38 = 0x7FFFFFFF;
+        proc->unk_38 = INT32_MAX;
         proc->unk_32 = 2;
         proc->unk_34 = 6;
 
@@ -1373,23 +1284,23 @@ void SetFaceBlinkControlById(int slot, int blinkControl) {
 
 //! FE8U = 0x08006470
 int FaceBlinkProc_GenBlinkInterval(struct FaceBlinkProc* proc) {
-    int var = AdvanceGetLCGRNValue() >> 0x10;
+    int var = AdvanceGetLCGRNValue() >> 16;
 
     switch (proc->blinkControl) {
         case 3:
-            return (var >> 7) + (0x96 << 1);
+            return (var >> 7) + 300;
 
         case 1:
-            return (var >> 7) + 0x1E;
+            return (var >> 7) + 30;
 
         case 2:
-            return (var >> 9) + 0x1E;
+            return (var >> 9) + 30;
 
         case 4:
             return 1;
 
         case 5:
-            return 0x7FFFFFFF;
+            return INT32_MAX;
     }
 }
 
@@ -1411,8 +1322,8 @@ struct FaceProc* StartFace2(int slot, int fid, int x, int y, int disp) {
     const struct FaceData* info;
     s16 oam2Layer;
 
-    if (gFaces[slot] != 0) {
-        return 0;
+    if (gFaces[slot] != NULL) {
+        return NULL;
     }
 
     proc = Proc_Start(gProcScr_E_FACE_ExtraFrame, PROC_TREE_5);
@@ -1421,11 +1332,11 @@ struct FaceProc* StartFace2(int slot, int fid, int x, int y, int disp) {
 
     info = GetPortraitData(fid);
 
-    if (disp & 0x2000) {
-        CpuFastFill(0, (gPaletteBuffer + 0x10 * 0x10) + sFaceConfig[slot].paletteId * 0x10, 0x20);
+    if (disp & FACE_DISP_BIT_13) {
+        CpuFastFill(0, PAL_OBJ(0) + PAL_OFFSET(sFaceConfig[slot].paletteId), 0x20);
         EnablePaletteSync();
     } else {
-        CopyToPaletteBuffer(info->pal, ((sFaceConfig[slot].paletteId) + 0x10) * 0x20, 0x20);
+        ApplyPalette(info->pal, sFaceConfig[slot].paletteId + 0x10);
     }
 
     proc->pFaceInfo = info;
@@ -1438,32 +1349,32 @@ struct FaceProc* StartFace2(int slot, int fid, int x, int y, int disp) {
     proc->xPos = x;
     proc->yPos = y;
 
-    proc->unk_44 = 0;
-    proc->pBlinkProc = 0;
+    proc->unk_44 = NULL;
+    proc->pBlinkProc = NULL;
 
     proc->displayBits = disp;
 
     FaceRefreshSprite(proc);
 
-    switch (disp & 0x3C0) {
-        case 0x040:
-            oam2Layer = 0;
+    switch (disp & FACE_DISP_HLAYER_MASK) {
+        case FACE_DISP_HLAYER(FACE_HLAYER_0):
+            oam2Layer = OAM2_LAYER(0);
             break;
 
-        case 0x080:
-            oam2Layer = 0x400;
+        case FACE_DISP_HLAYER(FACE_HLAYER_1):
+            oam2Layer = OAM2_LAYER(1);
             break;
 
-        case 0x200:
-            oam2Layer = 0xC00;
+        case FACE_DISP_HLAYER(FACE_HLAYER_3):
+            oam2Layer = OAM2_LAYER(3);
             break;
 
         default:
-            oam2Layer = 0x800;
+            oam2Layer = OAM2_LAYER(2);
             break;
     }
 
-    proc->oam2 = (sFaceConfig[slot].tileOffset >> 5) + ((sFaceConfig[slot].paletteId & 0xF) * 0x1000) + oam2Layer;
+    proc->oam2 = (sFaceConfig[slot].tileOffset / CHR_SIZE) + ((sFaceConfig[slot].paletteId & 0xF) * 0x1000) + oam2Layer;
 
     return proc;
 }
@@ -1480,12 +1391,12 @@ void sub_8006618(int slot, int x, int y) {
 //! FE8U = 0x0800662C
 void sub_800662C(struct UnkFaceProc* proc) {
 
-    if (proc->pFaceProc->pBlinkProc != 0) {
-        sub_8097D54(proc->pFaceProc->pBlinkProc);
+    if (proc->pFaceProc->pBlinkProc) {
+        TryLockProc(proc->pFaceProc->pBlinkProc);
     }
 
-    if (proc->pFaceProc->unk_44 != 0) {
-        sub_8097D54(proc->pFaceProc->unk_44);
+    if (proc->pFaceProc->unk_44) {
+        TryLockProc(proc->pFaceProc->unk_44);
     }
 
     return;
@@ -1499,7 +1410,7 @@ void sub_8006650(struct UnkFaceProc* proc) {
 
     Decompress(proc->pFaceInfo->img, (void*)(sFaceConfig[proc->pFaceProc->faceSlot].tileOffset + 0x06010000));
 
-    CopyToPaletteBuffer(proc->pFaceInfo->pal, (sFaceConfig[proc->pFaceProc->faceSlot].paletteId + 0x10) * 0x20, 0x20);
+    ApplyPalette(proc->pFaceInfo->pal, sFaceConfig[proc->pFaceProc->faceSlot].paletteId + 0x10);
 
     faceProc = proc->pFaceProc;
     faceProc->pFaceInfo = proc->pFaceInfo;
@@ -1510,16 +1421,16 @@ void sub_8006650(struct UnkFaceProc* proc) {
 
 //! FE8U = 0x080066A8
 void sub_80066A8(struct UnkFaceProc* proc) {
-    if (proc->pFaceProc->pBlinkProc != 0) {
+    if (proc->pFaceProc->pBlinkProc) {
         proc->pFaceProc->pBlinkProc->blinkControl = proc->pFaceInfo->blinkKind;
 
         Proc_Goto(proc->pFaceProc->pBlinkProc, 0);
 
-        sub_8097D68(proc->pFaceProc->pBlinkProc);
+        TryUnlockProc(proc->pFaceProc->pBlinkProc);
     }
 
-    if (proc->pFaceProc->unk_44 != 0) {
-        sub_8097D68(proc->pFaceProc->unk_44);
+    if (proc->pFaceProc->unk_44) {
+        TryUnlockProc(proc->pFaceProc->unk_44);
     }
 
     return;
@@ -1543,32 +1454,60 @@ void sub_80066FC(int offset, int fid) {
 
 //! FE8U = 0x0800671C
 void sub_800671C(int pal, int fid) {
-    CopyToPaletteBuffer(GetPortraitData(fid)->pal, pal * 0x20, 0x20);
+    ApplyPalette(GetPortraitData(fid)->pal, pal);
     return;
 }
-
 
 // ????
 u16 const gUnknown_080D77FC[] =
 {
-    -1, -1,
-    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-    -1, -1, -1, -1,
-    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-    -1, -1, -1, -1,
-    0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-    -1, -1, -1, -1,
-    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
-    -1, -1, -1, -1,
-    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-    -1, -1, -1, -1,
-    0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
-    -1, -1,
-
-    0x14, 0x15, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
-    0x4E, 0x4F, 0x16, 0x17, 0x34, 0x35, 0x68, 0x69,
-    0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x36, 0x37,
-    0x54, 0x55, 0x10, 0x11, 0x12, 0x13, 0x50, 0x51,
-    0x52, 0x53, 0x56, 0x57, 0x74, 0x75, 0x30, 0x31,
-    0x32, 0x33, 0x70, 0x71, 0x72, 0x73, 0x76, 0x77,
+      -1,   -1, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,   -1,   -1,
+      -1,   -1, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,   -1,   -1,
+      -1,   -1, 0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,   -1,   -1,
+      -1,   -1, 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,   -1,   -1,
+      -1,   -1, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,   -1,   -1,
+      -1,   -1, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,   -1,   -1,
+    0x14, 0x15, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x16, 0x17,
+    0x34, 0x35, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x36, 0x37,
+    0x54, 0x55, 0x10, 0x11, 0x12, 0x13, 0x50, 0x51, 0x52, 0x53, 0x56, 0x57,
+    0x74, 0x75, 0x30, 0x31, 0x32, 0x33, 0x70, 0x71, 0x72, 0x73, 0x76, 0x77,
 };
+
+//! FE8U = 0x08006738
+void sub_8006738(u16* a, u16 b, s8 c) {
+    int i;
+    int j;
+    const u16* src = gUnknown_080D77FC;
+    u16* dst = a;
+
+    if (c == 0) {
+        for (i = 0; i < 10; i++) {
+            const u16* nextSrc = src + 12;
+
+            for (j = 0; j < 12; j++) {
+                if (src[j] == 0xFFFF) {
+                    dst[j] = 0;
+                } else {
+                    dst[j] = src[j] + b;
+                }
+
+            }
+
+            src = nextSrc;
+            dst += 0x20;
+        }
+    } else {
+        for (i = 0; i < 10; i++) {
+            for (j = 0; j < 12; j++) {
+                if (src[11 - j] == 0xFFFF) {
+                    dst[j] = 0;
+                } else {
+                    dst[j] = src[11 - j] + b + 0x400;
+                }
+            }
+
+            src += 12;
+            dst += 0x20;
+        }
+    }
+}

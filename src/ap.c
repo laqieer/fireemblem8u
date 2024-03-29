@@ -2,6 +2,7 @@
 #include "ap.h"
 #include "ctc.h"
 #include "proc.h"
+#include "bmlib.h"
 #include "hardware.h"
 
 #define AP_MAX_COUNT 0x14 // 20
@@ -21,7 +22,7 @@ struct APProc
 static void APProc_OnUpdate(struct APProc* proc);
 static void APProc_OnEnd(struct APProc* proc);
 
-static struct ProcCmd CONST_DATA sProcScr_ApProc[] =
+ struct ProcCmd CONST_DATA ProcScr_ApProc[] =
 {
     PROC_SET_END_CB(APProc_OnEnd),
     PROC_REPEAT(APProc_OnUpdate),
@@ -183,7 +184,7 @@ void AP_QueueObjRotScale(struct APHandle* handle) {
     it    = handle->pCurrentRotScale + 1;         // rotscale data start
 
     for (i = 0; i < count; it += 3, i++) {
-        WriteOAMRotScaleData(
+        SetObjAffine(
             handle->rotScaleIndex + i,  // oam rotscale index
 
             Div(+COS(it[0])*16, it[1]), // pa
@@ -238,7 +239,7 @@ void AP_QueueObjGraphics(struct APHandle* handle) {
     #define OBJ_SIZE_TABLE_INDEX(aIt) ((((aIt[0] & 0xC000)>>12)+((aIt[1] & 0xC000)>>14))*2)
 
     while ((i--) > 0) {
-        RegisterObjectTileGraphics(
+        Register2dChrMove(
             handle->pGraphics + (*itGfxData & 0x3FF) * 0x20,              // source location
             OBJ_VRAM0 + ((handle->tileBase & 0x3FF) * 0x20) + tileOffset, // target location
             sOamTileSizeLut[OBJ_SIZE_TABLE_INDEX(itObjData)+0],        // x size (tiles)
@@ -346,7 +347,7 @@ ProcPtr APProc_Create(const void* apDefinition, int xPos, int yPos, int tileBase
     handle->tileBase = tileBase;
 
     // Making Proc
-    proc = Proc_Start(sProcScr_ApProc, PROC_TREE_3);
+    proc = Proc_Start(ProcScr_ApProc, PROC_TREE_3);
 
     // Setting up proc
     proc->pHandle = handle;
@@ -385,9 +386,9 @@ void APProc_Delete(struct APProc* proc) {
 
 void APProc_DeleteAll(void) {
     // delet all
-    Proc_EndEach(sProcScr_ApProc);
+    Proc_EndEach(ProcScr_ApProc);
 }
 
-int APProc_Exists(void) {
-    return Proc_Find(sProcScr_ApProc) ? TRUE : FALSE;
+bool APProc_Exists(void) {
+    return Proc_Find(ProcScr_ApProc) ? TRUE : FALSE;
 }

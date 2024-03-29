@@ -7,6 +7,7 @@
 #include "rng.h"
 #include "ctc.h"
 #include "bmfx.h"
+#include "bmlib.h"
 
 /**
  * Some effect proc emitting little white stars. Seems unused
@@ -197,7 +198,7 @@ void StarsBlinking(struct ProcEmitStars *proc)
 {
     int blend = 0x10 - proc->stars < 0 ? 0 : 0x10 - proc->stars;
 
-    SetSpecialColorEffectsParameters(2, 0, 0, blend);
+    SetBlendConfig(2, 0, 0, blend);
     SetBlendTargetA(1, 1, 1, 1, 1);
     SetBlendTargetB(1, 1, 1, 1, 1);
 
@@ -208,7 +209,7 @@ void StartEmitStarsAnim(ProcPtr parent, int xloc, int yloc, int xdiff, int ydiff
 {
     struct ProcEmitStars *proc;
 
-    RegisterTileGraphics(
+    RegisterDataMove(
         Img_EmitedStar,
         OBJ_CHR_ADDR(OBJCHR_EMITSTARTS),
         0x20

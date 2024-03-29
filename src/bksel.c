@@ -14,81 +14,35 @@
 #include "bmmap.h"
 #include "statscreen.h"
 #include "bm.h"
-
+#include "bmlib.h"
+#include "eventinfo.h"
 #include "bksel.h"
+#include "helpbox.h"
 
-extern u16 gBmFrameTmap0[];
-
-extern u16 gUnknown_0200300C[8][16];
-extern struct TextHandle gaBattleForecastTextStructs[6];
-
-extern u16 gTSA_BattleForecastStandard[];
-extern u16 gTSA_BattleForecastExtended[];
-
-extern u16 gBattleForecast_x2x4Gfx[];
-extern u16 gBattleForecast_x2x4Pal[];
-
-extern struct HelpBoxInfo gHelpInfo_MbpHp;
-extern struct HelpBoxInfo gHelpInfo_CbpHp;
-
-struct BattleForecastProc {
-    /* 00 */ PROC_HEADER;
-
-    /* 2C */ int unk_2C;
-    /* 30 */ s8 x;
-    /* 31 */ s8 y;
-    /* 32 */ u8 frameKind;
-    /* 33 */ s8 ready;
-    /* 34 */ s8 needContentUpdate;
-    /* 35 */ s8 side; // -1 is left, +1 is right
-    /* 36 */ s8 unk_36;
-    /* 38 */ struct TextHandle unitNameTextA;
-    /* 40 */ struct TextHandle unitNameTextB;
-    /* 48 */ struct TextHandle itemNameText;
-    /* 50 */ s8 hitCountA;
-    /* 51 */ s8 hitCountB;
-    /* 52 */ s8 isEffectiveA;
-    /* 53 */ s8 isEffectiveB;
-};
-
-struct UnknownBkSelProc {
-    /* 00 */ PROC_HEADER;
-
-    /* 29 */ u8 _pad_29[0x4C-0x29];
-
-    /* 4C */ u16 unk_4C;
-};
-
-
-// ev_triggercheck.s
-s8 sub_8084560(void);
-void sub_808457C(void);
-
-
-int GetBattleForecastPanelSide() {
+int GetBattleForecastPanelSide(void)
+{
     int x;
 
     x = (gBattleTarget.unit.xPos * 16) - gBmSt.camera.x;
 
-    if (x < 0x70) {
+    if (x < 0x70)
         return 1;
-    }
 
-    if (x > 0x70) {
+    if (x > 0x70)
         return -1;
-    }
 
     return 0;
 }
 
-void InitBattleForecastIconPaletteBuffer() {
+void InitBattleForecastIconPaletteBuffer(void)
+{
     int i;
     int j;
 
     LoadIconPalette(0, 3);
 
     for (i = 1; i < 16; ++i) {
-        int color = gPaletteBuffer[3 * 0x10 + i];
+        int color = gPaletteBuffer[PAL_COLOR_OFFSET(3, i)];
 
         int red = RED_VALUE(color);
 
@@ -98,7 +52,7 @@ void InitBattleForecastIconPaletteBuffer() {
 
         for (j = 0; j < 8; ++j) {
 
-            gUnknown_0200300C[j][i] = ((blue << 10) + (green << 5)) + red;
+            gBkselPals[j][i] = ((blue << 10) + (green << 5)) + red;
 
             red += 3;
             if (red > 31) {
@@ -116,12 +70,10 @@ void InitBattleForecastIconPaletteBuffer() {
             }
         }
     }
-
-    return;
 }
 
-void InitBattleForecastLabels() {
-
+void InitBattleForecastLabels(void)
+{
     static const int sBattleForecastLabelStringIndexes[] = {
         0x503, // Mt
         0x4F4, // Hit[.]
@@ -136,42 +88,39 @@ void InitBattleForecastLabels() {
     for (i = 0; i < 6; ++i) {
         int textIndex;
 
-        Text_Init(gaBattleForecastTextStructs + i, 4);
+        InitText(gaBattleForecastTextStructs + i, 4);
 
         textIndex = sBattleForecastLabelStringIndexes[i];
 
-        Text_InsertString(
+        Text_InsertDrawString(
             gaBattleForecastTextStructs + i,
             GetStringTextCenteredPos(0x20, GetStringFromIndex(textIndex)),
             3,
             GetStringFromIndex(textIndex)
         );
     }
-
-    return;
 }
 
-void PutBattleForecastUnitName(u16* dest, struct TextHandle* text, struct Unit* unit) {
+void PutBattleForecastUnitName(u16 * dest, struct Text * text, struct Unit * unit)
+{
     char* str = GetStringFromIndex(unit->pCharacterData->nameTextId);
     int position = GetStringTextCenteredPos(48, str);
 
-    Text_Clear(text);
-    DrawTextInline(text, dest, 0, position, 0, str);
-
-    return;
+    ClearText(text);
+    PutDrawText(text, dest, 0, position, 0, str);
 }
 
-void PutBattleForecastItemName(u16* dest, struct TextHandle* text, int itemIdx) {
+void PutBattleForecastItemName(u16* dest, struct Text * text, int itemIdx)
+{
     char* str = GetItemName(itemIdx);
     int position = GetStringTextCenteredPos(56, str);
 
-    Text_Clear(text);
-    DrawTextInline(text, dest, 0, position, 0, str);
-
-    return;
+    ClearText(text);
+    PutDrawText(text, dest, 0, position, 0, str);
 }
 
-void BattleForecastHitCountUpdate(struct BattleUnit* battleUnit, u8* hitsCounter, int* usesCounter) {
+void BattleForecastHitCountUpdate(struct BattleUnit * battleUnit, u8 * hitsCounter, int * usesCounter)
+{
 
     if (*usesCounter > 0) {
         *hitsCounter = *hitsCounter + 1;
@@ -182,13 +131,12 @@ void BattleForecastHitCountUpdate(struct BattleUnit* battleUnit, u8* hitsCounter
             *usesCounter = *usesCounter - 1;
         }
     }
-
-    return;
 }
 
-void InitBattleForecastBattleStats(struct BattleForecastProc* proc) {
-    struct BattleUnit* buFirst;
-    struct BattleUnit* buSecond;
+void InitBattleForecastBattleStats(struct BattleForecastProc * proc)
+{
+    struct BattleUnit * buFirst;
+    struct BattleUnit * buSecond;
 
     int usesA = GetItemUses(gBattleActor.weaponBefore);
     int usesB = GetItemUses(gBattleTarget.weaponBefore);
@@ -239,23 +187,22 @@ void InitBattleForecastBattleStats(struct BattleForecastProc* proc) {
             proc->isEffectiveB = 1;
         }
     }
-
-    return;
 }
 
-void DrawBattleForecastContentsStandard(struct BattleForecastProc* proc) {
+void DrawBattleForecastContentsStandard(struct BattleForecastProc * proc)
+{
     int damage;
     int critRate;
 
-    CallARM_FillTileRect(gUnknown_0200422C, gTSA_BattleForecastStandard, 0x1000);
+    CallARM_FillTileRect(gUiTmScratchB, gTSA_BattleForecastStandard, 0x1000);
 
-    TileMap_FillRect(gBmFrameTmap0, 10, 15, 0);
+    TileMap_FillRect(gUiTmScratchA, 10, 15, 0);
 
-    PutBattleForecastUnitName(gBmFrameTmap0 + 0x23, &proc->unitNameTextA, &gBattleActor.unit);
+    PutBattleForecastUnitName(gUiTmScratchA + 0x23, &proc->unitNameTextA, &gBattleActor.unit);
 
-    PutBattleForecastUnitName(gBmFrameTmap0 + 0x161, &proc->unitNameTextA, &gBattleTarget.unit);
+    PutBattleForecastUnitName(gUiTmScratchA + 0x161, &proc->unitNameTextA, &gBattleTarget.unit);
 
-    PutBattleForecastItemName(gBmFrameTmap0 + 0x1A1, &proc->itemNameText, gBattleTarget.weaponBefore);
+    PutBattleForecastItemName(gUiTmScratchA + 0x1A1, &proc->itemNameText, gBattleTarget.weaponBefore);
 
     if ((gBattleTarget.weapon == 0) && (gBattleTarget.weaponBroke == 0)) {
         damage = -1;
@@ -271,14 +218,14 @@ void DrawBattleForecastContentsStandard(struct BattleForecastProc* proc) {
     }
 
     if (gBattleTarget.hpInitial > 99) {
-        sub_8004BB4(gBmFrameTmap0 + 0x62, 2, 0xFF);
+        PutNumberTwoChr(gUiTmScratchA + 0x62, 2, 0xFF);
     } else {
-        sub_8004BB4(gBmFrameTmap0 + 0x62, 2, gBattleTarget.hpInitial);
+        PutNumberTwoChr(gUiTmScratchA + 0x62, 2, gBattleTarget.hpInitial);
     }
 
-    sub_8004BB4(gBmFrameTmap0 + 0xA2, 2, damage);
-    sub_8004BB4(gBmFrameTmap0 + 0xA2 + 0x40, 2, gBattleTarget.battleEffectiveHitRate);
-    sub_8004BB4(gBmFrameTmap0 + 0xA2 + 0x80, 2, gBattleTarget.battleEffectiveCritRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2, 2, damage);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2 + 0x40, 2, gBattleTarget.battleEffectiveHitRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2 + 0x80, 2, gBattleTarget.battleEffectiveCritRate);
 
     damage = gBattleActor.battleAttack - gBattleTarget.battleDefense;
 
@@ -301,38 +248,36 @@ void DrawBattleForecastContentsStandard(struct BattleForecastProc* proc) {
     }
 
     if (gBattleActor.hpInitial > 99) {
-        sub_8004BB4(gBmFrameTmap0 + 0xA8 - 0x40, 2, 0xFF);
+        PutNumberTwoChr(gUiTmScratchA + 0xA8 - 0x40, 2, 0xFF);
     } else {
-        sub_8004BB4(gBmFrameTmap0 + 0xA8 - 0x40, 2, gBattleActor.hpInitial);
+        PutNumberTwoChr(gUiTmScratchA + 0xA8 - 0x40, 2, gBattleActor.hpInitial);
     }
 
-    sub_8004BB4(gBmFrameTmap0 + 0xA8, 2, damage);
-    sub_8004BB4(gBmFrameTmap0 + 0xA8 + 0x40, 2, gBattleActor.battleEffectiveHitRate);
-    sub_8004BB4(gBmFrameTmap0 + 0xA8 + 0x80, 2, critRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8, 2, damage);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8 + 0x40, 2, gBattleActor.battleEffectiveHitRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8 + 0x80, 2, critRate);
 
-    sub_8004D5C(gBmFrameTmap0 + 0xA8 - 0x44, 3, 0x22, 0x23);
+    PutTwoSpecialChar(gUiTmScratchA + 0xA8 - 0x44, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_HP_A, TEXT_SPECIAL_HP_B);
 
-    Text_Draw(gaBattleForecastTextStructs, gBmFrameTmap0  + 0xA8 - 5);
-    Text_Draw(gaBattleForecastTextStructs + 1, gBmFrameTmap0  + 0xA8 + 0x3B);
-    Text_Draw(gaBattleForecastTextStructs + 2, gBmFrameTmap0  + 0xA8 + 0x7B);
+    PutText(gaBattleForecastTextStructs, gUiTmScratchA  + 0xA8 - 5);
+    PutText(gaBattleForecastTextStructs + 1, gUiTmScratchA  + 0xA8 + 0x3B);
+    PutText(gaBattleForecastTextStructs + 2, gUiTmScratchA  + 0xA8 + 0x7B);
 
-    DrawIcon(gBmFrameTmap0 + 0xA8 + 0xBF, GetItemIconId(gBattleTarget.weaponBefore), 0x4000);
+    DrawIcon(gUiTmScratchA + 0xA8 + 0xBF, GetItemIconId(gBattleTarget.weaponBefore), 0x4000);
 
-    DrawIcon(gBmFrameTmap0 + 0xA8 - 0x87, GetItemIconId(gBattleActor.weaponBefore), 0x3000);
-
-    return;
+    DrawIcon(gUiTmScratchA + 0xA8 - 0x87, GetItemIconId(gBattleActor.weaponBefore), 0x3000);
 }
 
-void DrawBattleForecastContentsExtended(struct BattleForecastProc* proc) {
+void DrawBattleForecastContentsExtended(struct BattleForecastProc * proc)
+{
+    CallARM_FillTileRect(gUiTmScratchB, gTSA_BattleForecastExtended, 0x1000);
 
-    CallARM_FillTileRect(gUnknown_0200422C, gTSA_BattleForecastExtended, 0x1000);
+    TileMap_FillRect(gUiTmScratchA, 10, 19, 0);
 
-    TileMap_FillRect(gBmFrameTmap0, 10, 19, 0);
+    PutBattleForecastUnitName(gUiTmScratchA + 0x23, &proc->unitNameTextA, &gBattleActor.unit);
+    PutBattleForecastUnitName(gUiTmScratchA + 0x1E1, &proc->unitNameTextA, &gBattleTarget.unit);
 
-    PutBattleForecastUnitName(gBmFrameTmap0 + 0x23, &proc->unitNameTextA, &gBattleActor.unit);
-    PutBattleForecastUnitName(gBmFrameTmap0 + 0x1E1, &proc->unitNameTextA, &gBattleTarget.unit);
-
-    PutBattleForecastItemName(gBmFrameTmap0 + 0x221, &proc->itemNameText, gBattleTarget.weaponBefore);
+    PutBattleForecastItemName(gUiTmScratchA + 0x221, &proc->itemNameText, gBattleTarget.weaponBefore);
 
     if ((gBattleTarget.weapon == 0) && (!gBattleTarget.weaponBroke)) {
         gBattleTarget.battleAttack = 0xFF;
@@ -341,46 +286,44 @@ void DrawBattleForecastContentsExtended(struct BattleForecastProc* proc) {
     }
 
     if (gBattleTarget.hpInitial > 99) {
-        sub_8004BB4(gBmFrameTmap0 + 0x62, 2, 0xFF);
+        PutNumberTwoChr(gUiTmScratchA + 0x62, 2, 0xFF);
     } else {
-        sub_8004BB4(gBmFrameTmap0 + 0x62, 2, gBattleTarget.hpInitial);
+        PutNumberTwoChr(gUiTmScratchA + 0x62, 2, gBattleTarget.hpInitial);
     }
 
-    sub_8004BB4(gBmFrameTmap0 + 0xA2, 2, gBattleTarget.battleAttack);
-    sub_8004BB4(gBmFrameTmap0 + 0xA2 + 0x40, 2, gBattleTarget.battleDefense);
-    sub_8004BB4(gBmFrameTmap0 + 0xA2 + 0x80, 2, gBattleTarget.battleEffectiveHitRate);
-    sub_8004BB4(gBmFrameTmap0 + 0xA2 + 0xC0, 2, gBattleTarget.battleEffectiveCritRate);
-    sub_8004BB4(gBmFrameTmap0 + 0xA2 + 0x100, 2, gBattleTarget.battleSpeed);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2, 2, gBattleTarget.battleAttack);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2 + 0x40, 2, gBattleTarget.battleDefense);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2 + 0x80, 2, gBattleTarget.battleEffectiveHitRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2 + 0xC0, 2, gBattleTarget.battleEffectiveCritRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA2 + 0x100, 2, gBattleTarget.battleSpeed);
 
     if (gBattleActor.hpInitial > 99) {
-        sub_8004BB4(gBmFrameTmap0 + 0xA2 - 0x3A, 2, 0xFF);
+        PutNumberTwoChr(gUiTmScratchA + 0xA2 - 0x3A, 2, 0xFF);
     } else {
-        sub_8004BB4(gBmFrameTmap0 + 0xA2 - 0x3A, 2, gBattleActor.hpInitial);
+        PutNumberTwoChr(gUiTmScratchA + 0xA2 - 0x3A, 2, gBattleActor.hpInitial);
     }
 
-    sub_8004BB4(gBmFrameTmap0 + 0xA8, 2, gBattleActor.battleAttack);
-    sub_8004BB4(gBmFrameTmap0 + 0xA8 + 0x40, 2, gBattleActor.battleDefense);
-    sub_8004BB4(gBmFrameTmap0 + 0xA8 + 0x80, 2, gBattleActor.battleEffectiveHitRate);
-    sub_8004BB4(gBmFrameTmap0 + 0xA8 + 0xC0, 2, gBattleActor.battleEffectiveCritRate);
-    sub_8004BB4(gBmFrameTmap0 + 0xA8 + 0x100, 2, gBattleActor.battleSpeed);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8, 2, gBattleActor.battleAttack);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8 + 0x40, 2, gBattleActor.battleDefense);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8 + 0x80, 2, gBattleActor.battleEffectiveHitRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8 + 0xC0, 2, gBattleActor.battleEffectiveCritRate);
+    PutNumberTwoChr(gUiTmScratchA + 0xA8 + 0x100, 2, gBattleActor.battleSpeed);
 
-    sub_8004D5C(gBmFrameTmap0 + 0xA8 - 0x44, 3, 0x22, 0x23);
+    PutTwoSpecialChar(gUiTmScratchA + 0xA8 - 0x44, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_HP_A, TEXT_SPECIAL_HP_B);
 
-    Text_Draw(gaBattleForecastTextStructs + 3, gBmFrameTmap0 + 0xA8 - 5);
-    Text_Draw(gaBattleForecastTextStructs + 4, gBmFrameTmap0 + 0xA8 + 0x3B);
-    Text_Draw(gaBattleForecastTextStructs + 1, gBmFrameTmap0 + 0xA8 + 0x7B);
-    Text_Draw(gaBattleForecastTextStructs + 2, gBmFrameTmap0 + 0xA8 + 0xBB);
-    Text_Draw(gaBattleForecastTextStructs + 5, gBmFrameTmap0 + 0xA8 + 0xFB);
+    PutText(gaBattleForecastTextStructs + 3, gUiTmScratchA + 0xA8 - 5);
+    PutText(gaBattleForecastTextStructs + 4, gUiTmScratchA + 0xA8 + 0x3B);
+    PutText(gaBattleForecastTextStructs + 1, gUiTmScratchA + 0xA8 + 0x7B);
+    PutText(gaBattleForecastTextStructs + 2, gUiTmScratchA + 0xA8 + 0xBB);
+    PutText(gaBattleForecastTextStructs + 5, gUiTmScratchA + 0xA8 + 0xFB);
 
-    DrawIcon(gBmFrameTmap0 + 0xA8 + 0x13F, GetItemIconId(gBattleTarget.weaponBefore), 0x4000);
+    DrawIcon(gUiTmScratchA + 0xA8 + 0x13F, GetItemIconId(gBattleTarget.weaponBefore), 0x4000);
 
-    DrawIcon(gBmFrameTmap0 + 0xA8 - 0x87, GetItemIconId(gBattleActor.weaponBefore), 0x3000);
-
-    return;
+    DrawIcon(gUiTmScratchA + 0xA8 - 0x87, GetItemIconId(gBattleActor.weaponBefore), 0x3000);
 }
 
-void DrawBattleForecastContents(struct BattleForecastProc* proc) {
-
+void DrawBattleForecastContents(struct BattleForecastProc * proc)
+{
     proc->unk_2C = 0;
     proc->needContentUpdate = 0;
 
@@ -395,11 +338,10 @@ void DrawBattleForecastContents(struct BattleForecastProc* proc) {
             DrawBattleForecastContentsExtended(proc);
             break;
     }
-
-    return;
 }
 
-const u16* GetFactionBattleForecastFramePalette(int faction) {
+const u16 * GetFactionBattleForecastFramePalette(int faction)
+{
 
     switch (faction) {
         case FACTION_BLUE:
@@ -416,26 +358,25 @@ const u16* GetFactionBattleForecastFramePalette(int faction) {
     }
 }
 
-void InitBattleForecastFramePalettes() {
+void InitBattleForecastFramePalettes(void)
+{
 
-    CopyToPaletteBuffer(GetFactionBattleForecastFramePalette(UNIT_FACTION(&gBattleActor.unit)), 0x20, 0x20);
+    ApplyPalette(GetFactionBattleForecastFramePalette(UNIT_FACTION(&gBattleActor.unit)), 1);
 
     if (gBattleTarget.unit.index != 0) {
-        CopyToPaletteBuffer(GetFactionBattleForecastFramePalette(UNIT_FACTION(&gBattleTarget.unit)), 0x40, 0x20);
+        ApplyPalette(GetFactionBattleForecastFramePalette(UNIT_FACTION(&gBattleTarget.unit)), 2);
     } else {
-        CopyToPaletteBuffer(GetFactionBattleForecastFramePalette(FACTION_PURPLE), 0x40, 0x20);
+        ApplyPalette(GetFactionBattleForecastFramePalette(FACTION_PURPLE), 2);
     }
-
-    return;
 }
 
-void BattleForecast_Init(struct BattleForecastProc* proc) {
-
+void BattleForecast_Init(struct BattleForecastProc * proc)
+{
     Decompress(gBattleForecast_x2x4Gfx, gGenericBuffer);
-    CopyTileGfxForObj(gGenericBuffer, (void*)0x06015D00, 4, 2);
-    CopyToPaletteBuffer(gBattleForecast_x2x4Pal, 0x240, 0x20);
+    Copy2dChr(gGenericBuffer, (void*)0x06015D00, 4, 2);
+    ApplyPalette(gBattleForecast_x2x4Pal, 0x12);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     ResetIconGraphics_();
 
@@ -443,40 +384,37 @@ void BattleForecast_Init(struct BattleForecastProc* proc) {
 
     InitBattleForecastLabels();
 
-    Text_Allocate(&proc->unitNameTextA, 6);
-    Text_Allocate(&proc->unitNameTextB, 6);
-    Text_Allocate(&proc->itemNameText, 7);
+    InitTextDb(&proc->unitNameTextA, 6);
+    InitTextDb(&proc->unitNameTextB, 6);
+    InitTextDb(&proc->itemNameText, 7);
 
     BG_SetPosition(1, 0, -1);
 
     proc->ready = 1;
-
-    return;
 }
 
-void BattleForecast_OnEnd() {
+void BattleForecast_OnEnd(void)
+{
     UnpackUiFrameBuffered(-1);
-    return;
 }
 
-void PutBattleForecastTilemaps(struct BattleForecastProc* proc) {
-
+void PutBattleForecastTilemaps(struct BattleForecastProc * proc)
+{
     int height = proc->frameKind == 1 ? 16 : 20;
 
     if (proc->side < 0) {
-        TileMap_CopyRect(gBmFrameTmap0, gBG0TilemapBuffer, 10, height);
-        TileMap_CopyRect(gUnknown_0200422C, gBG1TilemapBuffer, 10, height);
+        TileMap_CopyRect(gUiTmScratchA, gBG0TilemapBuffer, 10, height);
+        TileMap_CopyRect(gUiTmScratchB, gBG1TilemapBuffer, 10, height);
     } else {
-        TileMap_CopyRect(gBmFrameTmap0, gBG0TilemapBuffer + 20, 10, height);
-        TileMap_CopyRect(gUnknown_0200422C, gBG1TilemapBuffer + 20, 10, height);
+        TileMap_CopyRect(gUiTmScratchA, gBG0TilemapBuffer + 20, 10, height);
+        TileMap_CopyRect(gUiTmScratchB, gBG1TilemapBuffer + 20, 10, height);
     }
 
     BG_EnableSyncByMask(3);
-
-    return;
 }
 
-void PutBattleForecastWeaponTriangleArrows(struct BattleForecastProc* proc) {
+void PutBattleForecastWeaponTriangleArrows(struct BattleForecastProc * proc)
+{
     int wtArrowA = 0;
     int wtArrowB = 0;
 
@@ -503,12 +441,10 @@ void PutBattleForecastWeaponTriangleArrows(struct BattleForecastProc* proc) {
     if (wtArrowA != 0) {
         UpdateStatArrowSprites((proc->x + 2) * 8 + 3, (proc->y + 1) * 8, wtArrowA == 2 ? 1 : 0);
     }
-
-    return;
 }
 
-void PutBattleForecastMultipliers(struct BattleForecastProc* proc) {
-
+void PutBattleForecastMultipliers(struct BattleForecastProc * proc)
+{
     int angle = (proc->unk_2C * 4) & 0xFF;
 
     int x = SIN(angle ) * 4 >> 12;
@@ -524,12 +460,10 @@ void PutBattleForecastMultipliers(struct BattleForecastProc* proc) {
     if (proc->hitCountB > 1) {
         PutSprite(4, x + 24, y + 40, gObject_16x16, proc->hitCountB + 0x22E6);
     }
-
-    return;
 }
 
-void UpdateBattleForecastEffectivenessPalettes(struct BattleForecastProc* proc) {
-
+void UpdateBattleForecastEffectivenessPalettes(struct BattleForecastProc * proc)
+{
     static u8 palAnimLut[] = {
         0, 1, 1, 2, 3, 4, 5, 5,
         4, 4, 4, 3, 3, 3, 2, 2,
@@ -545,7 +479,7 @@ void UpdateBattleForecastEffectivenessPalettes(struct BattleForecastProc* proc) 
         palAnim = 0;
     }
 
-    CopyToPaletteBuffer(gUnknown_0200300C[palAnim], 0x60, 0x20);
+    ApplyPalette(gBkselPals[palAnim], 3);
 
     if (proc->isEffectiveB != 0) {
         palAnim = palAnimLut[proc->unk_2C & 0x1F];
@@ -553,13 +487,11 @@ void UpdateBattleForecastEffectivenessPalettes(struct BattleForecastProc* proc) 
         palAnim = 0;
     }
 
-    CopyToPaletteBuffer(gUnknown_0200300C[palAnim], 0x80, 0x20);
-
-    return;
+    ApplyPalette(gBkselPals[palAnim], 4);
 }
 
-void BattleForecast_LoopDisplay(struct BattleForecastProc* proc) {
-
+void BattleForecast_LoopDisplay(struct BattleForecastProc * proc)
+{
     proc->unk_2C++;
 
     if (proc->needContentUpdate) {
@@ -581,15 +513,14 @@ void BattleForecast_LoopDisplay(struct BattleForecastProc* proc) {
         PutBattleForecastMultipliers(proc);
         UpdateBattleForecastEffectivenessPalettes(proc);
     }
-
-    return;
 }
 
-void BattleForecast_OnNewBattle(struct BattleForecastProc* proc) {
+void BattleForecast_OnNewBattle(struct BattleForecastProc * proc)
+{
     DrawBattleForecastContents(proc);
 
     proc->side = GetBattleForecastPanelSide();
-    proc->unk_36 = 0;
+    proc->slide_offset = 0;
 
     if (proc->side < 0) {
         proc->x = 0;
@@ -600,11 +531,10 @@ void BattleForecast_OnNewBattle(struct BattleForecastProc* proc) {
     proc->y = 0;
 
     InitBattleForecastFramePalettes();
-
-    return;
 }
 
-void BattleForecast_LoopSlideIn(struct BattleForecastProc* proc) {
+void BattleForecast_LoopSlideIn(struct BattleForecastProc * proc)
+{
     static s8 offsetLut[] = { 6, 8, 9, 10 };
     int offset;
 
@@ -615,27 +545,26 @@ void BattleForecast_LoopSlideIn(struct BattleForecastProc* proc) {
 
     BG_EnableSyncByMask(3);
 
-    offset = offsetLut[proc->unk_36];
+    offset = offsetLut[proc->slide_offset];
 
     if (proc->side < 0) {
-        TileMap_CopyRect(gBmFrameTmap0 + (10 - offset), gBG0TilemapBuffer, offset, height);
-        TileMap_CopyRect(gUnknown_0200422C + (10 - offset), gBG1TilemapBuffer, offset, height);
+        TileMap_CopyRect(gUiTmScratchA + (10 - offset), gBG0TilemapBuffer, offset, height);
+        TileMap_CopyRect(gUiTmScratchB + (10 - offset), gBG1TilemapBuffer, offset, height);
     } else {
-        TileMap_CopyRect(gBmFrameTmap0, gBG0TilemapBuffer + (30 - offset), offset, height);
-        TileMap_CopyRect(gUnknown_0200422C, gBG1TilemapBuffer + (30 - offset), offset, height);
+        TileMap_CopyRect(gUiTmScratchA, gBG0TilemapBuffer + (30 - offset), offset, height);
+        TileMap_CopyRect(gUiTmScratchB, gBG1TilemapBuffer + (30 - offset), offset, height);
     }
 
-    proc->unk_36++;
+    proc->slide_offset++;
 
-    if ((u8)proc->unk_36 == 4) {
-        proc->unk_36 = 0;
+    if ((u8)proc->slide_offset == 4) {
+        proc->slide_offset = 0;
         Proc_Break(proc);
     }
-
-    return;
 }
 
-void BattleForecast_LoopSlideOut(struct BattleForecastProc* proc) {
+void BattleForecast_LoopSlideOut(struct BattleForecastProc * proc)
+{
     static s8 offsetLut[] = { 9, 8, 6, 0 };
     int offset;
 
@@ -646,38 +575,35 @@ void BattleForecast_LoopSlideOut(struct BattleForecastProc* proc) {
 
     BG_EnableSyncByMask(3);
 
-    offset = offsetLut[proc->unk_36];
+    offset = offsetLut[proc->slide_offset];
 
     if (proc->side < 0) {
-        TileMap_CopyRect(gBmFrameTmap0 + (10 - offset), gBG0TilemapBuffer, offset, height);
-        TileMap_CopyRect(gUnknown_0200422C + (10 - offset), gBG1TilemapBuffer, offset, height);
+        TileMap_CopyRect(gUiTmScratchA + (10 - offset), gBG0TilemapBuffer, offset, height);
+        TileMap_CopyRect(gUiTmScratchB + (10 - offset), gBG1TilemapBuffer, offset, height);
     } else {
-        TileMap_CopyRect(gBmFrameTmap0, gBG0TilemapBuffer + (30 - offset), offset, height);
-        TileMap_CopyRect(gUnknown_0200422C, gBG1TilemapBuffer + (30 - offset), offset, height);
+        TileMap_CopyRect(gUiTmScratchA, gBG0TilemapBuffer + (30 - offset), offset, height);
+        TileMap_CopyRect(gUiTmScratchB, gBG1TilemapBuffer + (30 - offset), offset, height);
     }
 
-    proc->unk_36++;
+    proc->slide_offset++;
 
-    if ((u8)proc->unk_36 == 4) {
-        proc->unk_36 = 0;
+    if ((u8)proc->slide_offset == 4) {
+        proc->slide_offset = 0;
         Proc_Break(proc);
     }
-
-    return;
 }
 
-s8 MapEventEngineExists_() {
+bool MapEventEngineExists_(void)
+{
     return EventEngineExists();
 }
 
-void sub_80372E4() {
-
-    if (sub_8084560() == 1) {
+void TriggerBattleForcastToturialEvent(void)
+{
+    if (CheckBattleForecastTutorialEvent() == 1) {
         SetKeyStatus_IgnoreMask(GetKeyStatus_IgnoreMask() & ~(A_BUTTON));
-        sub_808457C();
+        StartBattleForecastTutorialEvent();
     }
-
-    return;
 }
 
 struct ProcCmd CONST_DATA gProcScr_BKSEL[] = {
@@ -696,7 +622,7 @@ PROC_LABEL(0),
 
     PROC_REPEAT(BattleForecast_LoopSlideIn),
 
-    PROC_CALL(sub_80372E4),
+    PROC_CALL(TriggerBattleForcastToturialEvent),
 
     PROC_REPEAT(BattleForecast_LoopDisplay),
     PROC_REPEAT(BattleForecast_LoopSlideOut),
@@ -713,19 +639,19 @@ void NewBattleForecast() {
 
     struct BattleForecastProc* proc;
 
-    if (gPlaySt.cfgBattleForecastType == 2) {
-        Font_ResetAllocation();
+    if (gPlaySt.config.battleForecastType == 2) {
+        ResetTextFont();
         return;
     }
 
     proc = Proc_Start(gProcScr_BKSEL, PROC_TREE_3);
     proc->ready = 0;
 
-    if (sub_8084560() == 1) {
+    if (CheckBattleForecastTutorialEvent() == 1) {
         SetKeyStatus_IgnoreMask(GetKeyStatus_IgnoreMask() | A_BUTTON);
     }
 
-    switch (gPlaySt.cfgBattleForecastType) {
+    switch (gPlaySt.config.battleForecastType) {
         case 0:
             proc->frameKind = 1;
             break;
@@ -736,105 +662,90 @@ void NewBattleForecast() {
     }
 
     BmMapFill(gBmMapMovement, -1);
-
-    return;
 }
 
-void UpdateBattleForecastContents() {
-    struct BattleForecastProc* proc = Proc_Find(gProcScr_BKSEL);
+void UpdateBattleForecastContents(void)
+{
+    struct BattleForecastProc * proc = Proc_Find(gProcScr_BKSEL);
 
-    if (proc == 0) {
+    if (proc == 0)
         return;
-    }
 
-    if (proc->ready != 0) {
+    if (proc->ready != 0)
         proc->needContentUpdate = 1;
-    }
-
-    return;
 }
 
-void CloseBattleForecast() {
-    struct BattleForecastProc* proc = Proc_Find(gProcScr_BKSEL);
+void CloseBattleForecast()
+{
+    struct BattleForecastProc * proc = Proc_Find(gProcScr_BKSEL);
 
-    if (proc == 0) {
+    if (proc == 0)
         return;
-    }
 
     if (proc->ready == 0) {
         ClearBg0Bg1();
         Proc_End(proc);
         return;
     }
-
     Proc_Goto(proc, 1);
-
-    return;
 }
 
-int StartBattleForecastHelpBox(ProcPtr parent) {
+u8 StartBattleForecastHelpBox(ProcPtr parent, struct SelectTarget * target)
+{
     int x;
 
     struct BattleForecastProc* proc = Proc_Find(gProcScr_BKSEL);
-    if (proc == 0) {
+    if (proc == 0)
         return 0;
-    }
 
-    if (proc->needContentUpdate != 0) {
+    if (proc->needContentUpdate != 0)
         return 0;
-    }
 
-    if (proc->side < 0) {
+    if (proc->side < 0)
         x = 0;
-    } else {
+    else
         x = 20;
-    }
 
-    LoadDialogueBoxGfx(0, -1);
+    LoadHelpBoxGfx(0, -1);
 
     switch (proc->frameKind) {
-        case 1:
-            StartMovingHelpBoxExt(&gHelpInfo_MbpHp, parent, x, 0);
-            break;
+    case 1:
+        StartMovingHelpBoxExt(&gHelpInfo_MbpHp, parent, x, 0);
+        break;
 
-        case 2:
-            StartMovingHelpBoxExt(&gHelpInfo_CbpHp, parent, x, 0);
-            break;
+    case 2:
+        StartMovingHelpBoxExt(&gHelpInfo_CbpHp, parent, x, 0);
+        break;
     }
-
     return 0;
 }
 
 
-u16 sub_803746C(int wt, s8 isEffective) {
-
+u16 GetBkselHelpBoxMsg(int wt, s8 isEffective)
+{
     static u16 lut[] = {
         0x56B, 0x56D, 0x56F, 0x56C, 0x56E, 0x570,
     };
 
     int idx = isEffective != 0 ? 3 : 0;
 
-    if (wt < 0) {
+    if (wt < 0)
         idx += 2;
-    }
 
-    if (wt > 0) {
+    if (wt > 0)
         idx += 1;
-    }
 
     return lut[idx];
 }
 
-void sub_8037494(struct UnknownBkSelProc* proc) {
-    struct BattleForecastProc* proc2 = Proc_Find(gProcScr_BKSEL);
-    proc->unk_4C = sub_803746C(gBattleActor.wTriangleHitBonus, proc2->isEffectiveA);
-
-    return;
+void HbPopulate_BkselWTriEffA(struct HelpBoxProc * proc)
+{
+    struct BattleForecastProc * proc2 = Proc_Find(gProcScr_BKSEL);
+    proc->mid = GetBkselHelpBoxMsg(gBattleActor.wTriangleHitBonus, proc2->isEffectiveA);
 }
 
-void sub_80374C4(struct UnknownBkSelProc* proc) {
-    struct BattleForecastProc* proc2 = Proc_Find(gProcScr_BKSEL);
-    proc->unk_4C = sub_803746C(gBattleTarget.wTriangleHitBonus, proc2->isEffectiveB);
-
-    return;
+void HbPopulate_BkselWTriEffB(struct HelpBoxProc * proc)
+{
+    struct BattleForecastProc * proc2 = Proc_Find(gProcScr_BKSEL);
+    proc->mid = GetBkselHelpBoxMsg(gBattleTarget.wTriangleHitBonus, proc2->isEffectiveB);
 }

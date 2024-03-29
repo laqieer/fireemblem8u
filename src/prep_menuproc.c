@@ -15,8 +15,13 @@
 #include "uiutils.h"
 #include "bmudisp.h"
 #include "bm.h"
+#include "worldmap.h"
+#include "cgtext.h"
 #include "prepscreen.h"
-s8 CheckSomethingSomewhere();
+#include "classchg.h"
+#include "sysutil.h"
+
+s8 CheckInLinkArena();
 
 s8 HasConvoyAccess_()
 {
@@ -25,7 +30,7 @@ s8 HasConvoyAccess_()
 
 void TraineePromo_ResetScreenEffect()
 {
-    sub_808F270();
+    EndCgText();
     ResetDialogueScreen();
     APProc_DeleteAll();
 
@@ -33,11 +38,11 @@ void TraineePromo_ResetScreenEffect()
     gLCDControlBuffer.bg1cnt.priority = 1;
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 3;
-    SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
+    SetBlendConfig(3, 0, 0, 0x10);
     SetBlendTargetA(1, 1, 1, 1, 1);
 }
 
-void DoPromoteAnimForChar100(struct Proc08A184B4 *proc)
+void DoPromoteAnimForChar100(struct Proc08A184B4 * proc)
 {
     struct Unit *unit;
 
@@ -48,11 +53,11 @@ void DoPromoteAnimForChar100(struct Proc08A184B4 *proc)
         return;
     }
 
-    proc->game_lock = GetThread2SkipStack();
+    proc->game_lock = GetGameLock();
     SetWinEnable(0, 0, 0);
     
     sub_802F598(unit, -1, 0);
-    gBattleStats.config = BATTLE_CONFIG_BIT4 | BATTLE_CONFIG_PROMOTION;
+    gBattleStats.config = BATTLE_CONFIG_PROMOTION | BATTLE_CONFIG_PROMOTION_PREP;
     gBattleActor.weaponBefore = 0;
     gBattleTarget.weaponBefore = 0;
     BeginBattleAnimations();
@@ -60,7 +65,7 @@ void DoPromoteAnimForChar100(struct Proc08A184B4 *proc)
 
 void IsGameLockLevelReserved(struct Proc08A184B4 *proc)
 {
-    if (proc->game_lock == GetThread2SkipStack())
+    if (proc->game_lock == GetGameLock())
         Proc_Break(proc);
 }
 
@@ -70,14 +75,14 @@ void NullExpForChar100AndResetScreen()
     if (unit)
         unit->exp = -1;
 
-    SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
+    SetBlendConfig(3, 0, 0, 0x10);
     SetDispEnable(0, 0, 0, 0, 0);
-    sub_80029E8(0x34, 0x100, 0x100, 0x20, NULL);
+    CallSomeSoundMaybe(0x34, 0x100, 0x100, 0x20, NULL);
 }
 
-void sub_80965F0(struct Proc08A184B4 *proc)
+void PrepPromoteDebugMaybe(struct Proc08A184B4 *proc)
 {
-    sub_808F270();
+    EndCgText();
     ResetDialogueScreen();
     APProc_DeleteAll();
 
@@ -86,15 +91,15 @@ void sub_80965F0(struct Proc08A184B4 *proc)
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 3;
 
-    SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
+    SetBlendConfig(3, 0, 0, 0x10);
     SetBlendTargetA(1, 1, 1, 1, 1);
     EndAllProcChildren(proc);
-    Proc_StartBlocking(gUnknown_08A184B4, proc);
+    Proc_StartBlocking(ProcScr_PrepPromoteDebug, proc);
 }
 
 void sub_8096668()
 {
-    sub_80029E8(0, 0x100, 0, 0x20, NULL);
+    CallSomeSoundMaybe(0, 0x100, 0, 0x20, NULL);
 }
 
 void NewPrepScreenTraineePromotionManager()
@@ -184,7 +189,7 @@ void sub_8096958(struct ProcPrepSpecialChar *proc)
     int xOam1 = 0xA0;
     int yOam0 = 8;
 
-    if (0 == CheckSomethingSomewhere()) {
+    if (0 == CheckInLinkArena()) {
         switch (proc->unk30) {
         case 1:
             PutObj8A18582_WithConfigs(xOam1, yOam0, proc->unk2F, 0x6380);
@@ -235,7 +240,7 @@ void ProcPrepSpChar_OnInit(struct ProcPrepSpecialChar *proc)
 
     ForceSyncUnitSpriteSheet();
 
-    if (CheckSomethingSomewhere()) {
+    if (CheckInLinkArena()) {
         proc->apProc = APProc_Create(gUnknown_08A1B194, 0x3C, 0x10, 0x9E40, 1, 0xD);
     } else {
         proc->apProc = APProc_Create(gUnknown_08A1B194, 0x3C, 0x10, 0x9E40, 0, 0xD);
@@ -336,14 +341,14 @@ void sub_8096C34(int a1, int a2)
     }
     r8 = _r8;
 
-    DrawDecNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x0), 2, r7);
-    DrawDecNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x2), 2, r5);
-    DrawDecNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x4), 2, r6);
-    DrawDecNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x6), 2, r8);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x0), 2, r7);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x2), 2, r5);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x4), 2, r6);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x6), 2, r8);
     BG_EnableSyncByMask(1);
 }
 
-void PrepMenu_OnInit(struct ProcPrepMenu *proc)
+void PrepMenu_OnInit(struct ProcPrepMenu * proc)
 {
     int i;
     for (i = 0; i < 8; i++)
@@ -352,8 +357,8 @@ void PrepMenu_OnInit(struct ProcPrepMenu *proc)
     proc->cur_index = 0;
     proc->max_index = 0;
 
-    ResetPrepScreenHandCursor(proc);
-    sub_80AD4A0(0x600, 1);
+    ResetSysHandCursor(proc);
+    DisplaySysHandCursorTextShadow(0x600, 1);
 
     proc->on_PressB = 0;
     proc->on_PressStart = 0;
@@ -368,7 +373,7 @@ void PrepMenu_CtrlLoop(struct ProcPrepMenu *proc)
     int xPos = (proc->xPos + 1) * 8 + 4;
     int yPos = (proc->yPos + 1) * 8 + proc->cur_index * 16;
 
-    ShowPrepScreenHandCursor(xPos, yPos, 0x6, 0x400);
+    ShowSysHandCursor(xPos, yPos, 0x6, 0x400);
 
     cmd = proc->cmds[proc->cur_index];
 
@@ -461,7 +466,7 @@ void PrepMenu_ShowFrozenHand(struct ProcPrepMenu *proc)
 
 void PrepMenu_ShowActiveHand(struct ProcPrepMenu *proc)
 {
-    ShowPrepScreenHandCursor((proc->xPos + 1) * 8 + 4,
+    ShowSysHandCursor((proc->xPos + 1) * 8 + 4,
                              (proc->yPos + 1) * 8 + proc->cur_index * 16,
                              6, 0x400);
 }
@@ -496,7 +501,7 @@ void SetPrepScreenMenuOnStartPress(const void* func)
         proc->on_PressStart = func;
 }
 
-void SetPrepScreenMenuOnEnd(const void* func)
+void SetPrepScreenMenuOnEnd(const void * func)
 {
     struct ProcPrepMenu *proc;
     proc = Proc_Find(ProcScr_PrepMenu);
@@ -533,7 +538,7 @@ void SetPrepScreenMenuItem(int index, const void* func, int color, int msg, int 
     	proc->cmds[i]->color = color;
     	proc->cmds[i]->msg = msg;
     	proc->cmds[i]->msg_rtext = msg_rtext;
-        Text_Init(&proc->cmds[i]->text, 7);
+        InitText(&proc->cmds[i]->text, 7);
         proc->max_index++;
     }
 }
@@ -594,9 +599,9 @@ void DrawPrepScreenMenuFrameAt(int x, int y)
         if (proc->max_index > 1) {
             for (i = 0; i < proc->max_index; i++) {
                 cmd = proc->cmds[i];
-                Text_Clear(&cmd->text);
+                ClearText(&cmd->text);
     
-                DrawTextInline(
+                PutDrawText(
     				&cmd->text,
     				TILEMAP_LOCATED(gBG0TilemapBuffer, x + 2, y + 2 * i + 1),
     				1 & cmd->color,
@@ -623,9 +628,9 @@ void SetPrepScreenMenuPosition(int x, int y)
         if (proc->max_index > 1) {
             for (i = 0; i < proc->max_index; i++) {
                 cmd = proc->cmds[i];
-                Text_Clear(&cmd->text);
+                ClearText(&cmd->text);
     
-                DrawTextInline(
+                PutDrawText(
     				&cmd->text,
     				TILEMAP_LOCATED(gBG0TilemapBuffer, x + 2, y + 2 * i + 1),
     				1 & cmd->color,
@@ -638,7 +643,7 @@ void SetPrepScreenMenuPosition(int x, int y)
     }
 }
 
-int GetPrepMenuItemAmt()
+int GetPrepMenuItemAmt(void)
 {
     struct ProcPrepMenu *proc;
     proc = Proc_Find(ProcScr_PrepMenu);
@@ -717,7 +722,7 @@ void EnablePrepScreenMenu()
 
 
 /* section.data */
-CONST_DATA struct ProcCmd gUnknown_08A184B4[] = {
+CONST_DATA struct ProcCmd ProcScr_PrepPromoteDebug[] = {
     PROC_WHILE(MusicProc4Exists),
     PROC_CALL(DoPromoteAnimForChar100),
     PROC_REPEAT(IsGameLockLevelReserved),
@@ -730,7 +735,7 @@ CONST_DATA struct ProcCmd gUnknown_08A184B4[] = {
 
 CONST_DATA struct ProcCmd ProcScr_PrepTraineePromo[] = {
     PROC_CALL(AtMenu_LockGame),
-    PROC_CALL(StartBranchedPromoScreen),
+    PROC_CALL(StartTraineePromoScreen),
     PROC_YIELD,
 
 PROC_LABEL(0xC8),

@@ -7,6 +7,8 @@
 #include "bmunit.h"
 #include "bmbattle.h"
 #include "bmfx.h"
+#include "bmmind.h"
+#include "bmlib.h"
 
 /**
  * Some sparkle effect that's apparenly calling on dance
@@ -72,15 +74,15 @@ void ProcDanceAnim_Init(struct ProcBmFx *proc)
 
     Decompress(Img_DanceringFx, BG_CHR_ADDR(BGCHR_BMFX_IMG));
     ApplyPalette(Pal_DanceringFx, BGPAL_DANCERING_IMG);
-    Decompress(Tsa_DanceringFx, gBmFrameTmap0);
+    Decompress(Tsa_DanceringFx, gUiTmScratchA);
 
     for (i = 0; i < 0x240; i++)
-        gBmFrameTmap0[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_DANCERING_IMG);
+        gUiTmScratchA[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_DANCERING_IMG);
 
     BG_Fill(gBG0TilemapBuffer, TILEREF(BGCHR_BMFX_IMG, 0));
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 
-    SetSpecialColorEffectsParameters(0x1, 0x10, 0x10, 0x0);
+    SetBlendConfig(0x1, 0x10, 0x10, 0x0);
     SetBlendTargetA(1, 0, 0, 0, 0);
     SetBlendTargetB(0, 1, 1, 1, 1);
     proc->counter = 0;
@@ -102,7 +104,7 @@ void ProcDanceAnim_Loop(struct ProcBmFx *proc)
         return;
     }
 
-    TileMap_CopyRect(TILEMAP_LOCATED(gBmFrameTmap0, x, y), gBG0TilemapBuffer, 6, 6);
+    TileMap_CopyRect(TILEMAP_LOCATED(gUiTmScratchA, x, y), gBG0TilemapBuffer, 6, 6);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
@@ -113,7 +115,7 @@ void ProcDanceAnim_ResetTimer(struct ProcBmFx *proc)
 
 void ProcDanceAnim_Loop_Blend(struct ProcBmFx *proc)
 {
-    SetSpecialColorEffectsParameters(1, proc->counter, 0x10, 0);
+    SetBlendConfig(1, proc->counter, 0x10, 0);
 
     proc->counter--;
 

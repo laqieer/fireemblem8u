@@ -4,6 +4,7 @@
 #include "bmbattle.h"
 #include "bmitem.h"
 #include "hardware.h"
+#include "worldmap.h"
 #include "bmsave.h"
 #include "sram-layout.h"
 
@@ -11,7 +12,7 @@ EWRAM_DATA struct UnitUsageStats *gPidStatsSaveLoc = NULL;
 EWRAM_DATA struct UnitUsageStats gPidStatsData[BWL_ARRAY_NUM] = {0};
 EWRAM_DATA struct ChapterStats gChapterStats[WIN_ARRAY_NUM] = {0};
 
-void ClearPidChStatsSaveData(void *sram_dest)
+void ClearPidChStatsSaveData(struct GameSaveBlock *sram_dest)
 {
     int i, j;
 
@@ -20,13 +21,13 @@ void ClearPidChStatsSaveData(void *sram_dest)
 
     for (i = 0; i < BWL_ARRAY_NUM; i++) {
         gPidStatsData[i].favval = 0x2000;
-        WriteAndVerifySramFast(gPidStatsData, sram_dest + GAMESAVE_OFFSET_PIDSTATS + i * sizeof(struct UnitUsageStats), sizeof(struct UnitUsageStats));
+        WriteAndVerifySramFast(gPidStatsData, &sram_dest->pidStats[i], sizeof(struct UnitUsageStats));
     }
 
     for (i = 0; i < WIN_ARRAY_NUM; i++)
-        WriteAndVerifySramFast(gChapterStats, sram_dest + GAMESAVE_OFFSET_CHAPTERSTATS + i * sizeof(struct ChapterStats), sizeof(struct ChapterStats));
+        WriteAndVerifySramFast(gChapterStats, &sram_dest->chapterStats[i], sizeof(struct ChapterStats));
 
-    gPidStatsSaveLoc = sram_dest + 0x084C;
+    gPidStatsSaveLoc = sram_dest->pidStats;
 }
 
 void ClearPidStats_ret()
@@ -39,11 +40,11 @@ void ClearPidStats_ret()
 void ClearPidStats()
 {
     CpuFill16(0, gPidStatsData, sizeof(gPidStatsData));
-    gPlaySt.unk_38_2 = 0;
-    gPlaySt.unk_34_14 = 0;
-    gPlaySt.unk_38_1 = 0;
-    gPlaySt.unk_34_00 = 0;
-    gPlaySt.total_gold = GetPartyTotalGoldValue();
+    gPlaySt.unk_30.unk_8_2 = 0;
+    gPlaySt.unk_30.unk_4_14 = 0;
+    gPlaySt.unk_30.unk_8_1 = 0;
+    gPlaySt.unk_30.unk_4_00 = 0;
+    gPlaySt.unk_30.total_gold = GetPartyTotalGoldValue();
 }
 
 void ReadPidStats(void *sram_src)
@@ -124,8 +125,8 @@ void RegisterChapterTimeAndTurnCount(struct PlaySt* play_st)
         time = 50 * 60 * 20;
 
     turn = play_st->chapterTurnNumber;
-    if (turn > 0x1F4)
-        turn = 0x1F4;
+    if (turn > 500)
+        turn = 500;
 
     chstat->chapter_index = play_st->chapterIndex;
     chstat->chapter_turn = turn;
@@ -250,7 +251,7 @@ void PidStatsAddWinAmt(u8 pid)
     if (NULL == bwl)
         return;
 
-    if (bwl->winAmt < 0x3E8)
+    if (bwl->winAmt < 1000)
         bwl->winAmt++;
 
     PidStatsAddFavval(pid, 0x10);
@@ -260,6 +261,8 @@ void PidStatsRecordLoseData(u8 pid)
 {
     struct SaveBlockInfo buf;
     int chunk_index;
+    struct SuspendSaveBlock *ssb;
+    struct GameSaveBlock *gsb;
     
     if (IsSramWorking()) {
 
@@ -279,7 +282,7 @@ void PidStatsRecordLoseData(u8 pid)
         if (BM_FLAG_5 & gBmSt.gameStateBits)
             return;
     
-        if (PLAY_FLAG_7 & gPlaySt.chapterStateBits)
+        if (PLAY_FLAG_EXTRA_MAP & gPlaySt.chapterStateBits)
             return;
     
         if (bwl->lossAmt >= 200)
@@ -290,13 +293,15 @@ void PidStatsRecordLoseData(u8 pid)
         PidStatsAddFavval(pid, -0x80);
     
         chunk_index = GetLastSuspendSaveId() + SAVE_ID_SUSPEND;
-    
-        WriteAndVerifySramFast(bwl, GetSaveWriteAddr(chunk_index) + 0x19E4 + pid * sizeof(struct UnitUsageStats), 1);
+
+        ssb = GetSaveWriteAddr(chunk_index);
+        WriteAndVerifySramFast(bwl, &ssb->pidStats[pid - 1], 1);
     
         ReadSaveBlockInfo(&buf, chunk_index);
         WriteSaveBlockInfo(&buf, chunk_index);
     
-        WriteAndVerifySramFast(bwl, GetSaveWriteAddr(gPlaySt.gameSaveSlot) + 0x083C + pid * sizeof(struct UnitUsageStats), 3);
+        gsb = GetSaveWriteAddr(gPlaySt.gameSaveSlot);
+        WriteAndVerifySramFast(bwl, &gsb->pidStats[pid - 1], 3);
     
         ReadSaveBlockInfo(&buf, gPlaySt.gameSaveSlot);
         WriteSaveBlockInfo(&buf, gPlaySt.gameSaveSlot);
@@ -310,11 +315,11 @@ void PidStatsRecordDefeatInfo(u8 pid, u8 killerPid, int deathCause)
     if (NULL == bwl)
         return;
 
-    type = GetChapterThing();
+    type = GetBattleMapKind();
     switch (type) {
     case 2:
         bwl->deathSkirm = true;
-        bwl->deathLoc = gGMData.unk10[0].location;
+        bwl->deathLoc = gGMData.units[0].location;
         break;
 
 
@@ -605,7 +610,7 @@ void SavePlayThroughData(void)
     /* Maybe flag definition should be modified? */
     difficult = !!(gPlaySt.chapterStateBits & PLAY_FLAG_HARD);
 
-    isTutorial = gPlaySt.cfgController;
+    isTutorial = gPlaySt.config.controller;
 
     if (!ReadGlobalSaveInfo(&info)) {
         InitGlobalSaveInfodata();
@@ -643,7 +648,7 @@ void SavePlayThroughData(void)
     WriteGlobalSaveInfo(&info);
 }
 
-int CheckGameEndFlag()
+s8 CheckGameEndFlag()
 {
     struct GlobalSaveInfo info;
 

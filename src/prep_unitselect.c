@@ -10,16 +10,18 @@
 #include "icon.h"
 #include "uiutils.h"
 #include "bm.h"
+#include "helpbox.h"
 #include "face.h"
 #include "bmitem.h"
 #include "soundwrapper.h"
 #include "statscreen.h"
 #include "constants/video-global.h"
-
+#include "bmlib.h"
+#include "sysutil.h"
+#include "unitlistscreen.h"
 #include "prepscreen.h"
 
-s8 CheckSomethingSomewhere();
-extern struct TextHandle gPrepUnitTexts[];
+s8 CheckInLinkArena();
 
 void PrepUnit_DrawUnitListNames(struct ProcPrepUnit *proc, int line)
 {
@@ -28,7 +30,7 @@ void PrepUnit_DrawUnitListNames(struct ProcPrepUnit *proc, int line)
     struct Unit * unit;
 
     /**
-     * It use 14 TextHandles to store 6 line of 12 Units;
+     * It use 14 Texts to store 6 line of 12 Units;
      */
 
     i = 0;
@@ -43,17 +45,17 @@ void PrepUnit_DrawUnitListNames(struct ProcPrepUnit *proc, int line)
 
         unit = GetUnitFromPrepList(itext);
 
-        color = TEXT_COLOR_NORMAL;
-        if (!CheckSomethingSomewhere() && IsCharacterForceDeployed(unit->pCharacterData->number))
-            color = TEXT_COLOR_GREEN;
+        color = TEXT_COLOR_SYSTEM_WHITE;
+        if (!CheckInLinkArena() && IsCharacterForceDeployed(unit->pCharacterData->number))
+            color = TEXT_COLOR_SYSTEM_GREEN;
         else if (unit->state & US_NOT_DEPLOYED)
-            color = TEXT_COLOR_GRAY;
+            color = TEXT_COLOR_SYSTEM_GRAY;
 
         ilist = _line * 2 + i;
 
-        Text_Clear(&gPrepUnitTexts[ilist]);
+        ClearText(&gPrepUnitTexts[ilist]);
 
-        DrawTextInline(
+        PutDrawText(
             &gPrepUnitTexts[ilist],
             TILEMAP_LOCATED( gBG2TilemapBuffer, 0x10 + i * 7, val % 0x20),
             color,
@@ -101,7 +103,7 @@ void PrepUnit_DrawSMSAndObjs(struct ProcPrepUnit *proc)
 
     /* "Start" button */
     if (0 == ((proc->button_blank >> 2) & 1) && proc->cur_counter) {
-        if (CheckSomethingSomewhere())
+        if (CheckInLinkArena())
             PutSpriteExt(4, 0x80, 0x82,obj_08A18E62, 0x40);
         else
             PutSpriteExt(4, 0x80, 0x82,obj_08A18E4E, 0x40);
@@ -117,19 +119,19 @@ void PrepUnit_InitTexts()
 {
     int i;
 
-    Font_InitForUIDefault();
+    ResetText();
 
     /* 0x00 ~ 0x0D (size = 14): unit name */
     for (i = 0; i < 14; i++)
-        Text_Init(&gPrepUnitTexts[i], 5);
+        InitText(&gPrepUnitTexts[i], 5);
     
     /* 0x0E ~ 0x12 (size = 5):  item name */
     for (i = 0; i < 5; i++)
-        Text_Init(&gPrepUnitTexts[i + 0xE], 7);
+        InitText(&gPrepUnitTexts[i + 0xE], 7);
     
-    Text_Init(&gPrepUnitTexts[0x13], 7);
-    Text_Init(&gPrepUnitTexts[0x14], 10);
-    Text_Init(&gPrepUnitTexts[0x15], 12);
+    InitText(&gPrepUnitTexts[0x13], 7);
+    InitText(&gPrepUnitTexts[0x14], 10);
+    InitText(&gPrepUnitTexts[0x15], 12);
 }
 
 void PrepUnit_InitGfx()
@@ -154,7 +156,7 @@ void PrepUnit_InitGfx()
 void PrepUnit_InitSMS(struct ProcPrepUnit *proc)
 {
     SetupMapSpritesPalettes();
-    CpuFastFill(0, gUnknown_02022C08, 0x20);
+    CpuFastFill(0, PAL_OBJ(0x0B), 0x20);
     MakePrepUnitList();
     PrepAutoCapDeployUnits(proc->proc_parent);
     PrepUpdateSMS();
@@ -164,21 +166,21 @@ void PrepUnit_DrawLeftUnitName(struct Unit *unit)
 {
     TileMap_FillRect(TILEMAP_LOCATED(gBG0TilemapBuffer, 5, 3), 6, 1, 0);
     PutFaceChibi(GetUnitPortraitId(unit), TILEMAP_LOCATED(gBG0TilemapBuffer, 1, 1), 0x270, 2, 0);
-    Text_Clear(&gPrepUnitTexts[0x13]);
-    DrawTextInline(
+    ClearText(&gPrepUnitTexts[0x13]);
+    PutDrawText(
         &gPrepUnitTexts[0x13],
         TILEMAP_LOCATED(gBG0TilemapBuffer, 5, 1),
-        TEXT_COLOR_NORMAL,
+        TEXT_COLOR_SYSTEM_WHITE,
         GetStringTextCenteredPos(0x38, GetStringFromIndex(unit->pCharacterData->nameTextId)),
         0,
         GetStringFromIndex(unit->pCharacterData->nameTextId)
     );
 
-    sub_8004D5C(TILEMAP_LOCATED(gBG0TilemapBuffer, 5, 3), 3, 0x24, 0x25);
-    sub_8004B0C(TILEMAP_LOCATED(gBG0TilemapBuffer, 9, 3), 3, 0x1D);
+    PutTwoSpecialChar(TILEMAP_LOCATED(gBG0TilemapBuffer, 5, 3), TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_LV_A, TEXT_SPECIAL_LV_B);
+    PutSpecialChar(TILEMAP_LOCATED(gBG0TilemapBuffer, 9, 3), TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_E);
 
-    DrawDecNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 8, 3), 2, unit->level);
-    DrawDecNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 11, 3), 2, unit->exp);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 8, 3), 2, unit->level);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 11, 3), 2, unit->exp);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
@@ -204,22 +206,22 @@ void PrepUnit_DrawUnitItems(struct Unit *unit)
             TILEREF(0, BGPAL_ICONS)
         );
 
-        Text_Clear(&gPrepUnitTexts[i + 0xE]);
+        ClearText(&gPrepUnitTexts[i + 0xE]);
 
-        DrawTextInline(
+        PutDrawText(
             &gPrepUnitTexts[i + 0xE],
             TILEMAP_LOCATED( gBG0TilemapBuffer, 3, 5 + 2 * i),
             IsItemDisplayUsable(unit, item)
-                ? TEXT_COLOR_NORMAL
-                : TEXT_COLOR_GRAY,
+                ? TEXT_COLOR_SYSTEM_WHITE
+                : TEXT_COLOR_SYSTEM_GRAY,
             0, 0, GetItemName(item)
         );
 
-        DrawDecNumber(
+        PutNumberOrBlank(
             TILEMAP_LOCATED(gBG0TilemapBuffer, 11, 5 + 2 * i),
             IsItemDisplayUsable(unit, item)
-                ? TEXT_COLOR_BLUE
-                : TEXT_COLOR_GRAY,
+                ? TEXT_COLOR_SYSTEM_BLUE
+                : TEXT_COLOR_SYSTEM_GRAY,
             GetItemUses(item)
         );
 
@@ -231,48 +233,48 @@ void PrepUnit_DrawUnitItems(struct Unit *unit)
 void PrepUnit_DrawPickLeftBar(struct ProcPrepUnit *proc, s8 val)
 {
     if (0 == val) {
-        Text_Clear(&gPrepUnitTexts[0x15]);
-        DrawTextInline(
+        ClearText(&gPrepUnitTexts[0x15]);
+        PutDrawText(
             &gPrepUnitTexts[0x15],
             TILEMAP_LOCATED(gBG0TilemapBuffer, 0xD, 0x1),
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             6, 0,
             GetStringFromIndex(0x5A1)   /* Pick */
         );
 
-        DrawTextInline(
+        PutDrawText(
             &gPrepUnitTexts[0x15],
             TILEMAP_LOCATED(gBG0TilemapBuffer, 0xD, 0x1),
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             0x29, 0,
             GetStringFromIndex(0x5A2)   /* Units Left */
         );
     }
 
     TileMap_FillRect(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x10, 0x1), 1, 1, 0);
-    DrawDecNumber(
+    PutNumberOrBlank(
         TILEMAP_LOCATED(gBG0TilemapBuffer, 0x11, 1),
         proc->cur_counter == proc->max_counter
-            ? TEXT_COLOR_GRAY
-            : TEXT_COLOR_BLUE,
+            ? TEXT_COLOR_SYSTEM_GRAY
+            : TEXT_COLOR_SYSTEM_BLUE,
         proc->max_counter - proc->cur_counter
     );
 
     TileMap_FillRect(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x18, 0x1), 4, 1, 0);
-    DrawDecNumber(
+    PutNumberOrBlank(
         TILEMAP_LOCATED(gBG0TilemapBuffer, 0x19, 1),
         proc->cur_counter == proc->max_counter
-            ? TEXT_COLOR_GREEN
-            : TEXT_COLOR_BLUE,
+            ? TEXT_COLOR_SYSTEM_GREEN
+            : TEXT_COLOR_SYSTEM_BLUE,
         proc->cur_counter
     );
 
-    sub_8004B0C(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1A, 1), 0, 0x16);
-    DrawDecNumber(
+    PutSpecialChar(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1A, 1), TEXT_COLOR_SYSTEM_WHITE, TEXT_SPECIAL_SLASH);
+    PutNumberOrBlank(
         TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1C, 1),
         proc->cur_counter == proc->max_counter
-            ? TEXT_COLOR_GREEN
-            : TEXT_COLOR_BLUE,
+            ? TEXT_COLOR_SYSTEM_GREEN
+            : TEXT_COLOR_SYSTEM_BLUE,
         proc->max_counter
     );
 
@@ -284,7 +286,7 @@ s8 PrepCheckCanSelectUnit(struct ProcPrepUnit *proc, struct Unit *unit)
     if (proc->max_counter > proc->cur_counter) {
         proc->cur_counter++;
         unit->state &= ~(US_UNSELECTABLE | US_NOT_DEPLOYED);
-        Reset203E87C_WithVal(unit->pCharacterData->number);
+        RegisterSioPid(unit->pCharacterData->number);
         PlaySoundEffect(0x6A);
         PrepUnit_DrawUnitListNames(proc, proc->list_num_cur / 2);
         return 1;
@@ -299,7 +301,7 @@ s8 PrepCheckCanUnselectUnit(struct ProcPrepUnit *proc, struct Unit *unit)
     if (!IsCharacterForceDeployed(unit->pCharacterData->number)) {
         proc->cur_counter--;
         unit->state |= US_UNSELECTABLE | US_NOT_DEPLOYED;
-        Modify203E87C(unit->pCharacterData->number);
+        RemoveSioPid(unit->pCharacterData->number);
         PlaySoundEffect(0x6B);
         PrepUnit_DrawUnitListNames(proc, proc->list_num_cur / 2);
         return 1;
@@ -315,7 +317,7 @@ s8 PrepUnit_HandlePressA(struct ProcPrepUnit *proc)
 
     if (unit->state & US_BIT25) {
         u32 ilist = proc->list_num_cur;
-        sub_8097DA8(
+        StartPrepErrorHelpbox(
             (ilist & 1) * 56 + 0x70,
             (ilist / 2) * 16 - proc->yDiff_cur + 0x18,
             0xC52,    /* This unit cannot take part[NL]in this chapter. */
@@ -325,9 +327,9 @@ s8 PrepUnit_HandlePressA(struct ProcPrepUnit *proc)
     }
 
     if (unit->state & US_NOT_DEPLOYED) {
-        if (CheckSomethingSomewhere() && !sub_8097E74(unit)) {
+        if (CheckInLinkArena() && !CanUnitBeDeployedLinkArena(unit)) {
             u32 ilist = proc->list_num_cur;
-            sub_8097DA8(
+            StartPrepErrorHelpbox(
                 (ilist & 1) * 56 + 0x70,
                 (ilist / 2) * 16 - proc->yDiff_cur + 0x18,
                 0x88A,    /* This unit cannot be deployed.[.] */
@@ -336,12 +338,12 @@ s8 PrepUnit_HandlePressA(struct ProcPrepUnit *proc)
             return 0;
         }
 
-        if (CheckSomethingSomewhere() && !sub_8097E38(unit)) {
+        if (CheckInLinkArena() && !sub_8097E38(unit)) {
             u32 ilist = proc->list_num_cur;
-            sub_8097DA8(
+            StartPrepErrorHelpbox(
                 (ilist & 1) * 56 + 0x70,
                 (ilist / 2) * 16 - proc->yDiff_cur + 0x18,
-                0x889,    /* his unit has no usable[.][NL]weapons, so it cannot join.[.] */
+                0x889,    /* This unit has no usable[.][NL]weapons, so it cannot join.[.] */
                 proc
             );
             return 0;
@@ -411,7 +413,7 @@ void sub_809AE10(struct ProcPrepUnit *proc)
     if ((dif + 5) < amt)
         msk |= 2;
 
-    sub_80ACD60(msk);
+    SetUiSpinningArrowConfig(msk);
 }
 
 void ProcPrepUnit_OnInit(struct ProcPrepUnit *proc)
@@ -429,7 +431,7 @@ void ProcPrepUnit_OnInit(struct ProcPrepUnit *proc)
 void ProcPrepUnit_InitScreen(struct ProcPrepUnit *proc)
 {
     int i;
-    SetupBackgrounds(gUnknown_08A181E8);
+    SetupBackgrounds(gBgConfig_ItemUseScreen);
     SetDispEnable(0, 0, 0, 0, 0);
     sub_809ADC8(proc);
     BG_Fill(gBG0TilemapBuffer, 0);
@@ -454,15 +456,15 @@ void ProcPrepUnit_InitScreen(struct ProcPrepUnit *proc)
 
     PrepUnit_InitSMS(proc);
     StartParallelWorker(PrepUnit_DrawSMSAndObjs, proc);
-    ResetPrepScreenHandCursor(proc);
-    sub_80AD4A0(0x600, 0x1);
-    ShowPrepScreenHandCursor(
+    ResetSysHandCursor(proc);
+    DisplaySysHandCursorTextShadow(0x600, 0x1);
+    ShowSysHandCursor(
         (proc->list_num_cur % 2) * 56 + 0x70,
         (proc->list_num_cur / 2) * 16 + 0x18 - proc->yDiff_cur,
         0x7, 0x800);
 
-    PrepStartSideBarScroll(proc, 0xE0, 0x20, 0x200, 2);
-    sub_80976CC(0xA, proc->yDiff_cur, (PrepGetUnitAmount() - 1) / 2 + 1, 6);
+    StartMenuScrollBarExt(proc, 0xE0, 0x20, 0x200, 2);
+    UpdateMenuScrollBarConfig(0xA, proc->yDiff_cur, (PrepGetUnitAmount() - 1) / 2 + 1, 6);
     StartHelpPromptSprite(0x20, 0x8F, 9, proc);
     PrepUnit_DrawUnitItems(GetUnitFromPrepList(proc->list_num_cur));
     PrepUnit_DrawLeftUnitName(GetUnitFromPrepList(proc->list_num_cur));
@@ -471,20 +473,20 @@ void ProcPrepUnit_InitScreen(struct ProcPrepUnit *proc)
         PrepUnit_DrawUnitListNames(proc, proc->yDiff_cur / 0x10 + i);
 
     PrepUnit_DrawPickLeftBar(proc, 0);
-    NewGreenTextColorManager(proc);
-    LoadDialogueBoxGfx(BG_SCREEN_ADDR(0x29), 5);
-    EndSlidingWallEffectMaybe();
+    StartGreenText(proc);
+    LoadHelpBoxGfx(BG_SCREEN_ADDR(0x29), 5);
+    RestartMuralBackground();
 }
 
 void sub_809B014()
 {
-    Delete6CMenuScroll();
+    EndMenuScrollBar();
     EndAllParallelWorkers();
-	sub_80AD2D4();
-	EndPrepScreenHandCursor();
+	EndSysBlackBoxs();
+	EndSysHandCursor();
 	EndHelpPromptSprite();
-	sub_80ACDDC();
-	EndBG3Slider_();
+	EndUiSpinningArrows();
+	EndMuralBackground_();
 }
 
 void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
@@ -558,7 +560,7 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
             return;
 
         PrepUnit_DrawUnitItems(GetUnitFromPrepList(proc->list_num_cur));
-        StartParallelFiniteLoop(PrepUnit_DrawLeftUnitNameCur, 1, (u32)proc);
+        StartParallelFiniteLoop(PrepUnit_DrawLeftUnitNameCur, 1, proc);
         PlaySoundEffect(0x65);
     
         if (ShouldPrepUnitMenuScroll(proc)) {
@@ -567,10 +569,10 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
             if (proc->list_num_cur > proc->list_num_pre)
                 PrepUnit_DrawUnitListNames(proc, proc->yDiff_cur / 16 + 6);
 
-            SetPrepScreenHandXPos((1 & proc->list_num_cur) * 56 + 0x70);
+            SetSysHandCursorXPos((1 & proc->list_num_cur) * 56 + 0x70);
         } else {
             proc->list_num_pre = proc->list_num_cur;
-            ShowPrepScreenHandCursor(
+            ShowSysHandCursor(
                 (1 & proc->list_num_pre) * 56 + 0x70,
                 (proc->list_num_pre >> 1) * 16 + 0x18 - proc->yDiff_cur,
                 0x7, 0x800
@@ -595,7 +597,7 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
     }
 
     BG_SetPosition(BG_2, 0, proc->yDiff_cur - 0x18);
-    sub_80976CC(0xA, proc->yDiff_cur, (PrepGetUnitAmount() - 1) / 2 + 1, 6);
+    UpdateMenuScrollBarConfig(0xA, proc->yDiff_cur, (PrepGetUnitAmount() - 1) / 2 + 1, 6);
 }
 
 void sub_809B2DC(struct ProcPrepUnit *proc)
@@ -634,12 +636,12 @@ void nullsub_21()
 void sub_809B370(struct ProcPrepUnit *proc)
 {
     nullsub_21();
-    ShowPrepScreenHandCursor(0xD0, 0x68, 0, 0x800);
+    ShowSysHandCursor(0xD0, 0x68, 0, 0x800);
 }
 
 void sub_809B388(struct ProcPrepUnit *proc)
 {
-    ShowPrepScreenHandCursor(
+    ShowSysHandCursor(
         (proc->list_num_cur % 2) * 56 + 0x70,
         (proc->list_num_cur / 2) * 16 + 0x18 - proc->yDiff_cur,
         0x7, 0x800);
@@ -661,9 +663,8 @@ void ProcPrepUnit_OnEnd(struct ProcPrepUnit *proc)
     ((struct ProcAtMenu *)(proc->proc_parent))->yDiff = proc->yDiff_cur;
     ((struct ProcAtMenu *)(proc->proc_parent))->cur_counter = proc->cur_counter;
 
-    PrepSetLatestCharId(
-        GetUnitFromPrepList(proc->list_num_cur)->pCharacterData->number);
-    EndBG3Slider_();
+    PrepSetLatestCharId(GetUnitFromPrepList(proc->list_num_cur)->pCharacterData->number);
+    EndMuralBackground_();
 }
 
 void ProcPrepUnit_OnGameStart(struct ProcPrepUnit *proc)
@@ -678,7 +679,7 @@ void sub_809B458(struct ProcPrepUnit *proc)
     PrepSetLatestCharId(
         GetUnitFromPrepList(proc->list_num_cur)->pCharacterData->number);
 
-    sub_80920DC(proc);
+    StartUnitListScreenPrepMenu(proc);
 }
 
 void sub_809B478(struct ProcPrepUnit *proc)
@@ -726,28 +727,32 @@ void sub_809B520(struct ProcPrepUnit *proc)
 }
 
 CONST_DATA u16 obj_08A18E34[] = {
-    0x4,
-    0x4000, 0x8000, 0x9000, 0x4000,
-    0x8020, 0x9004, 0x0000, 0x4040,
-    0x9008, 0x8000, 0x0050, 0x900A
+    4,
+    0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x000 / 0x20),
+    0x4000, 0x8020, OAM2_PAL(9) + OAM2_CHR(0x080 / 0x20),
+    0x0000, 0x4040, OAM2_PAL(9) + OAM2_CHR(0x100 / 0x20),
+    0x8000, 0x0050, OAM2_PAL(9) + OAM2_CHR(0x140 / 0x20)
 };
 
 CONST_DATA u16 obj_08A18E4E[] = {
-    0x0003, 0x4000, 0x8000, 0x900B,
-    0x4000, 0x8020, 0x900F, 0x8000,
-    0x0040, 0x9013
+    3,
+    0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x160 / 0x20),
+    0x4000, 0x8020, OAM2_PAL(9) + OAM2_CHR(0x1E0 / 0x20),
+    0x8000, 0x0040, OAM2_PAL(9) + OAM2_CHR(0x260 / 0x20)
 };
 
 CONST_DATA u16 obj_08A18E62[] = {
-    0x0003, 0x4000, 0x8000, 0x900B,
-    0x4000, 0x8020, 0x9014, 0x8000,
-    0x0040, 0x9018
+    3,
+    0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x160 / 0x20),
+    0x4000, 0x8020, OAM2_PAL(9) + OAM2_CHR(0x280 / 0x20),
+    0x8000, 0x0040, OAM2_PAL(9) + OAM2_CHR(0x300 / 0x20)
 };
 
 CONST_DATA u16 obj_08A18E76[] = {
-    0x0003, 0x4000, 0x8000, 0x9019,
-    0x0000, 0x4020, 0x901D, 0x8000,
-    0x0030, 0x901F
+    3,
+    0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x320 / 0x20),
+    0x0000, 0x4020, OAM2_PAL(9) + OAM2_CHR(0x3A0 / 0x20),
+    0x8000, 0x0030, OAM2_PAL(9) + OAM2_CHR(0x3E0 / 0x20)
 };
 
 CONST_DATA struct ProcCmd ProcScr_PrepUnitScreen[] = {

@@ -34,22 +34,22 @@ void ProcMAExpBar_OnDraw(struct MAExpBarProc* proc)
     // TODO: ApplyTileImages macros?
     // TODO: BM_BGCHR_...?
 
-    RegisterTileGraphics(
-        gUnknown_08802D44,
+    RegisterDataMove(
+        Img_EkrExpBar,
         (void*)(VRAM) + GetBackgroundTileDataOffset(0) + 512 * 0x20,
         13 * 0x20);
 
-    RegisterTileGraphics(
-        gUnknown_088030C4,
+    RegisterDataMove(
+        Img_EkrExpBarChange,
         (void*)(VRAM) + GetBackgroundTileDataOffset(0) + 525 * 0x20,
         24 * 0x20);
 
-    RegisterTileGraphics(
-        gUnknown_088033C4,
+    RegisterDataMove(
+        Img_BarNumfx,
         (void*)(VRAM) + GetBackgroundTileDataOffset(0) + 549 * 0x20,
         11 * 0x20);
 
-    ApplyPalette(gUnknown_08803590, BM_BGPAL_BANIM_UNK5);
+    ApplyPalette(Pal_ExpBar, BM_BGPAL_BANIM_UNK5);
 
     CallARM_FillTileRect(
         TILEMAP_LOCATED(gBG0TilemapBuffer, 6, 8),
@@ -112,7 +112,7 @@ void ProcMAExpBar_FrameAdvance(struct MAExpBarProc* proc)
 void ProcMAExpBar_LevelUpIfPossible(struct MAExpBarProc* proc)
 {
     if (proc->expTo >= 100)
-        DoMapAnimLevelUp(proc->actorId, (struct Proc*) proc);
+        StartManimLevelUp(proc->actorId, (struct Proc*) proc);
 }
 
 CONST_DATA u16 gUnknown_089A36C0[] = {

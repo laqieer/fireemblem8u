@@ -1,18 +1,21 @@
 #include "global.h"
 
-extern s8 gUnknown_0300000C;
+extern s8 gKeyComboResetEN;
 extern u32 gGameClock;
 
-void sub_8000D00() {
-  gUnknown_0300000C = 1;
+void EnableKeyComboResetEN()
+{
+  gKeyComboResetEN = 1;
 };
 
-void sub_8000D0C() {
-  gUnknown_0300000C = 0;
+void DisableKeyComboResetEN()
+{
+  gKeyComboResetEN = 0;
 };
 
-int sub_8000D18() {
-  return gUnknown_0300000C;
+int CheckCanKeyComboReset()
+{
+  return gKeyComboResetEN;
 };
 
 u32 GetGameClock() {
@@ -28,7 +31,7 @@ void IncrementGameClock() {
   if (gGameClock > 215999999) gGameClock = 213840000;
 };
 
-u8 ComputeDisplayTime(u32 frameTotal, u16* hours, u16* minutes, u16* seconds) {
+u8 FormatTime(u32 frameTotal, u16* hours, u16* minutes, u16* seconds) {
   int framesPerMinute;
   int framesPerHour;
   

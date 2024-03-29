@@ -15,8 +15,11 @@
 #include "event.h"
 #include "bm.h"
 #include "bmio.h"
+#include "bmmind.h"
 #include "bmsave.h"
+#include "bmlib.h"
 #include "scene.h"
+#include "mapanim.h"
 
 extern struct ProcCmd gProcScr_ArenaUiMain[];
 extern struct ProcCmd gProcScr_ArenaUiResults[];
@@ -107,14 +110,14 @@ void ArenaUi_Init(ProcPtr proc) {
     gLCDControlBuffer.wincnt.win1_enableBlend = 1;
     gLCDControlBuffer.wincnt.wout_enableBlend = 0;
 
-    SetSpecialColorEffectsParameters(3, 0, 0, 8);
+    SetBlendConfig(3, 0, 0, 8);
 
     SetBlendTargetA(0, 0, 0, 1, 0);
     SetBlendTargetB(0, 0, 0, 0, 0);
 
     Decompress(gGfx_ArenaBuildingFront, (void*)(GetBackgroundTileDataOffset(3) + 0x6000000));
     CallARM_FillTileRect(gBG3TilemapBuffer, gTsa_ArenaBuildingFront, 0xc000);
-    CopyToPaletteBuffer(gPal_ArenaBuildingFront, 0x180, 0x80);
+    ApplyPalettes(gPal_ArenaBuildingFront, 0xC, 4);
 
     BG_EnableSyncByMask(8);
 
@@ -168,13 +171,11 @@ void ArenaUi_CheckConfirmation(ProcPtr proc) {
     return;
 }
 
-extern u16 gUnknown_02022E5E[];
-
 //! FE8U = 0x080B5A38
 void ArenaUi_ConfirmWager(ProcPtr proc) {
     SetPartyGoldAmount(GetPartyGoldAmount() - ArenaGetMatchupGoldValue());
     PlaySoundEffect(0xb9);
-    DisplayGoldBoxText(gUnknown_02022E5E);
+    DisplayGoldBoxText(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1B, 0x6));
     DrawArenaOpponentDetailsText(proc);
 
     return;
@@ -226,7 +227,7 @@ void ArenaUi_StartArenaBattle(ProcPtr proc) {
 
 //! FE8U = 0x080B5B00
 void sub_80B5B00(ProcPtr proc) {
-    sub_8014944(proc);
+    StartPartialGameLock(proc);
     return;
 }
 
@@ -279,9 +280,9 @@ void ArenaUi_ShowGoldBoxOnVictoryOrDraw(ProcPtr proc) {
     switch (ArenaGetResult()) {
         case 1:
         case 3:
-            DisplayGoldBoxText(gUnknown_02022E5E);
+            DisplayGoldBoxText(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1B, 0x6));
             PlaySoundEffect(0xb9);
-            NewBlockingTimer(proc, 60);
+            StartTemporaryLock(proc, 60);
 
             break;
 
@@ -317,20 +318,18 @@ void StartArenaDialogue(int msgId, ProcPtr proc) {
     return;
 }
 
-extern u16 gUnknown_02022F38[];
-
 //! FE8U = 0x080B5C48
 void DrawArenaOpponentDetailsText(ProcPtr proc) {
 
     DrawUiFrame2(7, 9, 0x10, 6, 0);
-    SetFont(0);
-    Font_LoadForUI();
+    SetTextFont(0);
+    InitSystemTextFont();
 
-    MADrawTextMaybe(gUnknown_02022F38, 0, GetStringFromIndex(gMid_Lv));
-    sub_8004B88(gUnknown_02022F38 + 4, 2, gArenaState.opponentUnit->level);
-    MADrawTextMaybe(gUnknown_02022F38 + 0x40, 0, GetStringFromIndex(gArenaState.opponentUnit->pCharacterData->nameTextId));
-    MADrawTextMaybe(gUnknown_02022F38 + 7, 0, GetStringFromIndex(gArenaState.opponentUnit->pClassData->nameTextId));
-    MADrawTextMaybe(gUnknown_02022F38 + 0x47, 0, GetItemName(gArenaState.opponentWeapon));
+    PutString(TILEMAP_LOCATED(gBG0TilemapBuffer, 8, 10), 0, GetStringFromIndex(gMid_Lv));
+    PutNumber(TILEMAP_LOCATED(gBG0TilemapBuffer, 12, 10), 2, gArenaState.opponentUnit->level);
+    PutString(TILEMAP_LOCATED(gBG0TilemapBuffer, 8, 12), 0, GetStringFromIndex(gArenaState.opponentUnit->pCharacterData->nameTextId));
+    PutString(TILEMAP_LOCATED(gBG0TilemapBuffer, 15, 10), 0, GetStringFromIndex(gArenaState.opponentUnit->pClassData->nameTextId));
+    PutString(TILEMAP_LOCATED(gBG0TilemapBuffer, 15, 12), 0, GetItemName(gArenaState.opponentWeapon));
 
     return;
 }
@@ -339,15 +338,15 @@ void DrawArenaOpponentDetailsText(ProcPtr proc) {
 void Arena_PlayResultSong(ProcPtr proc) {
     switch (ArenaGetResult()) {
         case 1:
-            if (!gPlaySt.cfgDisableBgm) {
-                Sound_PlaySong8002448(0x3a, 0);
+            if (!gPlaySt.config.disableBgm) {
+                StartBgmCore(0x3a, 0);
             }
 
             break;
 
         default:
-            if (!gPlaySt.cfgDisableBgm) {
-                Sound_PlaySong8002448(0x38, 0);
+            if (!gPlaySt.config.disableBgm) {
+                StartBgmCore(0x38, 0);
             }
 
             Proc_End(proc);
@@ -360,7 +359,7 @@ void Arena_PlayResultSong(ProcPtr proc) {
 
 //! FE8U = 0x080B5D2C
 void Arena_PlayArenaSong(void) {
-    Sound_PlaySong80024E4(0x38, 0, 0);
+    StartBgmExt(0x38, 0, 0);
     return;
 }
 
@@ -381,26 +380,26 @@ s8 sub_80B5D48(void) {
 }
 
 //! FE8U = 0x080B5D5C
-void sub_80B5D5C(void) {
+void WriteSuspandPlaterIdle(void) {
     gActionData.suspendPointType = SUSPEND_POINT_PLAYERIDLE;
     WriteSuspendSave(SAVE_ID_SUSPEND);
     return;
 }
 
 struct ProcCmd CONST_DATA gProcScr_ArenaUiMain[] = {
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
 
     PROC_SLEEP(1),
-    PROC_CALL_ARG(sub_8014BD0, 65535),
-    PROC_CALL(StartFadeInBlackMedium),
+    PROC_CALL_ARG(_FadeBgmOut, 65535),
+    PROC_CALL(StartMidFadeToBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_CALL(BMapDispSuspend),
 
-    PROC_CALL_ARG(sub_8014BC0, 56),
+    PROC_CALL_ARG(_StartBgm, 56),
 
     PROC_CALL(ArenaUi_Init),
-    PROC_CALL(sub_8013FC4),
+    PROC_CALL(FadeInBlackSpeed20),
     PROC_SLEEP(1),
 
     PROC_CALL(ArenaUi_WelcomeDialogue),
@@ -422,14 +421,14 @@ struct ProcCmd CONST_DATA gProcScr_ArenaUiMain[] = {
     PROC_SLEEP(1),
 
 PROC_LABEL(0),
-    PROC_CALL_ARG(sub_8014BD0, 2),
+    PROC_CALL_ARG(_FadeBgmOut, 2),
     PROC_CALL(sub_8013F40),
     PROC_SLEEP(1),
 
     PROC_CALL(ArenaUi_StartArenaBattle),
     PROC_SLEEP(1),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
     PROC_CALL(BMapDispResume),
 
     PROC_JUMP(gProcScr_ArenaUiResults),
@@ -448,10 +447,10 @@ PROC_LABEL(2),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(StartMapSongBgm),
 
-    PROC_CALL(sub_8013D8C),
+    PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
@@ -460,7 +459,7 @@ struct ProcCmd CONST_DATA gProcScr_ArenaUiResults[] = {
 PROC_LABEL(1),
     PROC_CALL(sub_80B5B00),
 
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
     PROC_CALL(BMapDispSuspend),
     PROC_SLEEP(0),
 
@@ -468,7 +467,7 @@ PROC_LABEL(1),
 
     PROC_CALL(ArenaUi_Init),
 
-    PROC_CALL(sub_8013FC4),
+    PROC_CALL(FadeInBlackSpeed20),
     PROC_SLEEP(0),
 
     PROC_CALL(ArenaUi_ResultsDialogue),
@@ -483,7 +482,7 @@ PROC_LABEL(2),
     PROC_END_EACH(gProcScr_ArenaUiResultBgm),
     PROC_SLEEP(0),
 
-    PROC_CALL_ARG(sub_8014BD0, 2),
+    PROC_CALL_ARG(_FadeBgmOut, 2),
     PROC_CALL(sub_8013F40),
     PROC_SLEEP(0),
 
@@ -497,10 +496,10 @@ PROC_LABEL(2),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(StartMapSongBgm),
 
-    PROC_CALL(sub_8013D8C),
+    PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };

@@ -1,138 +1,5 @@
     .section .data
 
-	.global gUnknown_08A01D88
-gUnknown_08A01D88:  @ 0x08A01D88
-	.incbin "baserom.gba", 0xA01D88, 0x26
-
-	.global gUnknown_08A01DAE
-gUnknown_08A01DAE:  @ 0x08A01DAE
-	.incbin "baserom.gba", 0xA01DAE, 0xE
-
-	.global gUnknown_08A01DBC
-gUnknown_08A01DBC:  @ 0x08A01DBC
-        @ PROC_SET_END_CB
-        .short 0x4, 0x0
-        .word sub_808F0C4
-        @ PROC_YIELD
-        .short 0xe, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808EBD4
-        @ PROC_LABEL
-        .short 0xb, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808EF64
-        @ PROC_LABEL
-        .short 0xb, 0x2
-        .word 0x0
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_808EF6C
-        @ PROC_LABEL
-        .short 0xb, 0x3
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808F0EC
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_808F04C
-        @ PROC_LABEL
-        .short 0xb, 0x4
-        .word 0x0
-        @ PROC_BLOCK
-        .short 0x10, 0x0
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x0
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808EFA8
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_808F008
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808F084
-        @ PROC_YIELD
-        .short 0xe, 0x0
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x5
-        .word 0x0
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_08A01E54
-gUnknown_08A01E54:  @ 0x08A01E54
-	.incbin "baserom.gba", 0xA01E54, 0x8
-
-	.global gUnknown_08A01E5C
-gUnknown_08A01E5C:  @ 0x08A01E5C
-	.incbin "baserom.gba", 0xA01E5C, 0x8
-
-	.global gUnknown_08A01E64
-gUnknown_08A01E64:  @ 0x08A01E64
-        @ PROC_YIELD
-        .short 0xe, 0x0
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x0
-        .word 0x0
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_808F8B4
-        @ PROC_LABEL
-        .short 0xb, 0x1
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808FF10
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_808FF18
-        @ PROC_GOTO
-        .short 0xc, 0x0
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x2
-        .word 0x0
-        @ PROC_CALL
-        .short 0x2, 0x0
-        .word sub_808FF9C
-        @ PROC_GOTO
-        .short 0xc, 0x0
-        .word 0x0
-        @ PROC_LABEL
-        .short 0xb, 0x63
-        .word 0x0
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
-	.global gUnknown_08A01EC4
-gUnknown_08A01EC4:  @ 0x08A01EC4
-        @ PROC_SLEEP
-        .short 0xe, 0x8
-        .word 0x0
-        @ PROC_REPEAT
-        .short 0x3, 0x0
-        .word sub_8090014
-        @ PROC_SLEEP
-        .short 0xe, 0x5
-        .word 0x0
-        @ PROC_END
-        .short 0x0, 0x0
-        .word 0x0
-
-
 	.global gUnknown_08A01EE4
 gUnknown_08A01EE4:  @ 0x08A01EE4
 	.incbin "baserom.gba", 0xA01EE4, 0x20
@@ -169,48 +36,48 @@ gUnknown_08A02274:  @ 0x08A02274
 gUnknown_08A027FC:  @ 0x08A027FC
 	.incbin "baserom.gba", 0xA027FC, 0x60
 
-	.global gUnknown_08A0285C
-gUnknown_08A0285C:  @ 0x08A0285C
+	.global gGfx_HelpTextBox
+gGfx_HelpTextBox:  @ 0x08A0285C
 	.incbin "baserom.gba", 0xA0285C, 0x28
 
-	.global gUnknown_08A02884
-gUnknown_08A02884:  @ 0x08A02884
+	.global gGfx_HelpTextBox2
+gGfx_HelpTextBox2:  @ 0x08A02884
 	.incbin "baserom.gba", 0xA02884, 0x28
 
-	.global gUnknown_08A028AC
-gUnknown_08A028AC:  @ 0x08A028AC
+	.global gGfx_HelpTextBox3
+gGfx_HelpTextBox3:  @ 0x08A028AC
 	.incbin "baserom.gba", 0xA028AC, 0x68
 
-	.global gUnknown_08A02914
-gUnknown_08A02914:  @ 0x08A02914
+	.global gGfx_HelpTextBox4
+gGfx_HelpTextBox4:  @ 0x08A02914
 	.incbin "baserom.gba", 0xA02914, 0x6C
 
-	.global gUnknown_08A02980
-gUnknown_08A02980:  @ 0x08A02980
+	.global gGfx_HelpTextBox5
+gGfx_HelpTextBox5:  @ 0x08A02980
 	.incbin "baserom.gba", 0xA02980, 0x28
 
-	.global gUnknown_08A029A8
-gUnknown_08A029A8:  @ 0x08A029A8
+	.global gGfx_YellowTextBox
+gGfx_YellowTextBox:  @ 0x08A029A8
 	.incbin "baserom.gba", 0xA029A8, 0x74
 
-	.global gUnknown_08A02A1C
-gUnknown_08A02A1C:  @ 0x08A02A1C
+	.global gGfx_YellowTextBox2
+gGfx_YellowTextBox2:  @ 0x08A02A1C
 	.incbin "baserom.gba", 0xA02A1C, 0x78
 
-	.global gUnknown_08A02A94
-gUnknown_08A02A94:  @ 0x08A02A94
+	.global gGfx_YellowTextBox3
+gGfx_YellowTextBox3:  @ 0x08A02A94
 	.incbin "baserom.gba", 0xA02A94, 0xA8
 
-	.global gUnknown_08A02B3C
-gUnknown_08A02B3C:  @ 0x08A02B3C
+	.global gGfx_YellowTextBox4
+gGfx_YellowTextBox4:  @ 0x08A02B3C
 	.incbin "baserom.gba", 0xA02B3C, 0x70
 
-	.global gUnknown_08A02BAC
-gUnknown_08A02BAC:  @ 0x08A02BAC
+	.global gGfx_YellowTextBox5
+gGfx_YellowTextBox5:  @ 0x08A02BAC
 	.incbin "baserom.gba", 0xA02BAC, 0x88
 
-	.global gUnknown_08A02C34
-gUnknown_08A02C34:  @ 0x08A02C34
+	.global Img_LimitViewSquares
+Img_LimitViewSquares:  @ 0x08A02C34
 	.incbin "baserom.gba", 0xA02C34, 0x280
 
 	.global gUnknown_08A02EB4

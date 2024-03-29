@@ -9,6 +9,7 @@
 #include "soundwrapper.h"
 #include "constants/video-global.h"
 #include "uiutils.h"
+#include "bmlib.h"
 
 /**
  * Background effect for the game over screen
@@ -141,7 +142,7 @@ void GameOverScreen_Init(struct ProcGameOverScreen *proc)
 
     BMapDispSuspend();
 
-    Sound_PlaySong80024D4(0x3E, 0);
+    StartBgm(0x3E, 0);
 
     gLCDControlBuffer.bg0cnt.priority = 0;
     gLCDControlBuffer.bg1cnt.priority = 1;
@@ -171,7 +172,7 @@ void GameOverScreen_Init(struct ProcGameOverScreen *proc)
 
     SetPrimaryHBlankHandler(GameOverScreenHBlank);
 
-    SetSpecialColorEffectsParameters(1, 14, 14, 0);
+    SetBlendConfig(1, 14, 14, 0);
 
     SetBlendTargetA(0, 0, 1, 0, 0);
     SetBlendTargetB(0, 0, 0, 1, 0);
@@ -183,7 +184,7 @@ void GameOverScreen_Init(struct ProcGameOverScreen *proc)
     proc->counter1 = 21;
 
     for (i = 0; i < 10; ++i)
-        CALLARM_MaybeScreenFadeIn();
+        CALLARM_ColorFadeTick();
 
     EnablePaletteSync();
 }
@@ -192,7 +193,7 @@ void GameOverScreen_LoopFadeIn(struct ProcGameOverScreen *proc)
 {
     if ((GetGameClock() % 8) == 0)
     {
-        CALLARM_MaybeScreenFadeIn();
+        CALLARM_ColorFadeTick();
         EnablePaletteSync();
 
         proc->counter1--;
@@ -228,7 +229,7 @@ void GameOverScreen_BeginFadeOut(struct ProcGameOverScreen *proc)
 
 void GameOverScreen_LoopFadeOut(struct ProcGameOverScreen *proc)
 {
-    CALLARM_MaybeScreenFadeIn();
+    CALLARM_ColorFadeTick();
     EnablePaletteSync();
 
     proc->counter1++;
@@ -244,7 +245,7 @@ void GameOverScreen_End(struct ProcGameOverScreen *proc)
 
     SetDispEnable(0, 0, 0, 0, 0);
 
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
     EnablePaletteSync();
 }
 

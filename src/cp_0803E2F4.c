@@ -257,11 +257,11 @@ s8 AiTryHealSelf(void) {
                 struct Vec2 position;
 
                 if (AiFindSafestReachableLocation(gActiveUnit, &position) == 1) {
-                    AiSetDecision(position.x, position.y, 6, 0, i, 0, 0);
+                    AiSetDecision(position.x, position.y, AI_ACTION_USEITEM, 0, i, 0, 0);
                     return 1;
                 }
             } else {
-                AiSetDecision(gActiveUnit->xPos, gActiveUnit->yPos, 6, 0, i, 0, 0);
+                AiSetDecision(gActiveUnit->xPos, gActiveUnit->yPos, AI_ACTION_USEITEM, 0, i, 0, 0);
                 return 1;
             }
         }
@@ -281,7 +281,7 @@ s8 AiTryMoveTowardsEscape(void) {
 
         if (((s8**)(gBmMapMovement))[escapePoint->y][escapePoint->x] <= UNIT_MOV(gActiveUnit)) {
             AiTryMoveTowards(escapePoint->x, escapePoint->y, 0, -1, 1);
-            AiSetDecision(gAiDecision.xMove, gAiDecision.yMove, 2, escapePoint->x, escapePoint->y, escapePoint->facing, 0);
+            AiSetDecision(gAiDecision.xMove, gAiDecision.yMove, AI_ACTION_ESCAPE, escapePoint->x, escapePoint->y, escapePoint->facing, 0);
 
             return 1;
         } else {
@@ -456,22 +456,13 @@ void sub_803EA58(int x, int y, u16* param_3, u16* param_4, u16* param_5) {
 
         for (iVar7 = gBmMapSize.y - 1; iVar7 >= 0; iVar7--) {
             for (iVar10 = gBmMapSize.x - 1; iVar10 >= 0; iVar10--) {
-                int var;
-#ifndef NONMATCHING
-                int a __attribute__((unused)) = iVar7 * 4;
-                gBmMapMovement = gBmMapMovement;
-                asm(""::"r"(&gBmMapOther));
-#endif
-                var = 0xFF;
-                if (gBmMapMovement[iVar7][iVar10] > 0x78) {
+                if (gBmMapMovement[iVar7][iVar10] > MAP_MOVEMENT_MAX)
                     continue;
-                }
-                iVar8 = gBmMapOther[iVar7][iVar10] + iVar6;
-                if (iVar8 > 0xFF) {
-                    while (0) ;
-                    iVar8 = var;
-                }
-                gBmMapOther[iVar7][iVar10] = iVar8;
+
+                if (gBmMapOther[iVar7][iVar10] + iVar6 <= 0xFF)
+                    gBmMapOther[iVar7][iVar10] = gBmMapOther[iVar7][iVar10] + iVar6;
+                else
+                    gBmMapOther[iVar7][iVar10] = 0xFF;
             }
         }
     }
@@ -641,7 +632,7 @@ s8 AiTryDoDanceAdjacent(int x, int y) {
     }
 
     if (level != 0) {
-        AiSetDecision(x, y, 7, target, 0, 0, 0);
+        AiSetDecision(x, y, AI_ACTION_REFRESH, target, 0, 0, 0);
         return 1;
     }
 
@@ -699,7 +690,7 @@ s8 sub_803EEB0(int x, int y) {
             unit = GetUnit(gBmMapUnit[iy][ix]);
 
             if (AiGetInRangeCombatPositionScoreComponent(x, y, unit)) {
-                AiSetDecision(x, y, 1, unit->index, GetUnitEquippedWeaponSlot(gActiveUnit), 0, 0);
+                AiSetDecision(x, y, AI_ACTION_COMBAT, unit->index, GetUnitEquippedWeaponSlot(gActiveUnit), 0, 0);
                 return 1;
             }
         }
@@ -1205,7 +1196,8 @@ s8 sub_803F7DC(const void* input) {
 }
 
 //! FE8U = 0x0803F82C
-s8 sub_803F82C(const void* input) {
+s8 AiBallistaRideExit(const void * input)
+{
     int ix;
     int iy;
 
@@ -1217,7 +1209,7 @@ s8 sub_803F82C(const void* input) {
 
     if (gActiveUnit->state & US_IN_BALLISTA) {
         if (GetRiddenBallistaAt(gActiveUnit->xPos, gActiveUnit->yPos) == 0) {
-            AiSetDecision(gActiveUnit->xPos, gActiveUnit->yPos, 10, 0, 0, 0, 0);
+            AiSetDecision(gActiveUnit->xPos, gActiveUnit->yPos, AI_ACTION_EXITBALLISTA, 0, 0, 0, 0);
         }
 
         return 1;
@@ -1257,7 +1249,7 @@ s8 sub_803F82C(const void* input) {
 
     if (gAiDecision.actionPerformed == 1) {
         if ((gAiDecision.xMove == x) && (gAiDecision.yMove == y)) {
-            AiUpdateDecision(9, 0, 0, 0, 0);
+            AiUpdateDecision(AI_ACTION_RIDEBALLISTA, 0, 0, 0, 0);
         }
     } else {
         if (unk != 0) {

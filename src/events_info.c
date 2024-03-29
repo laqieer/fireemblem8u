@@ -1,0 +1,13 @@
+#include "global.h"
+#include "event.h"
+#include "eventinfo.h"
+#include "eventscript.h"
+#include "EAstdlib.h"
+#include "chapterdata.h"
+#include "constants/event-flags.h"
+#include "bmunit.h"
+#include "bmtrap.h"
+
+#include "events/prologue-eventinfo.h"
+#include "events/ch1-eventinfo.h"
+#include "events/ch2-eventinfo.h"

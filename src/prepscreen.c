@@ -10,9 +10,157 @@
 #include "chapterdata.h"
 #include "constants/items.h"
 #include "bmudisp.h"
+#include "worldmap.h"
+#include "helpbox.h"
+#include "bmlib.h"
 
 #include "prepscreen.h"
-s8 CheckSomethingSomewhere();
+
+s8 CheckInLinkArena();
+
+EWRAM_DATA struct SioPidPool gSioPidPool = { 0 };
+
+// clang-format off
+
+u16 CONST_DATA gBgConfig_ItemUseScreen[] =
+{
+    0x0000, 0xE000, 0x0000,
+    0x0000, 0xE800, 0x0000,
+    0x0000, 0xF000, 0x0000,
+    0x8000, 0xF800, 0x0000,
+};
+
+int CONST_DATA gUnknown_08A18200[][3] =
+{
+    { 0x57A, 0x57A, 0x75D, },
+    { 0x57B, 0x57C, 0x75E, },
+    { 0x57D, 0x581,     0, },
+    {     0,     0, 0x75F, },
+    { 0x57D, 0x57F,     0, },
+    {     0,     0,     0, },
+    {     0,     0,     0, },
+    { 0x580, 0x580,     0, },
+    { 0x582, 0x582,     0, },
+};
+
+// clang-format on
+
+//! FE8U = 0x08094FF4
+u8 CanPrepScreenSave(void)
+{
+    u32 chapterIndex = gPlaySt.chapterIndex;
+
+    if ((!gGMData.state.bits.state_0) && (chapterIndex - 0x24 < 0x14))
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+//! FE8U = 0x08095024
+int sub_8095024(void)
+{
+    int index = GetActivePrepMenuItemIndex();
+
+    if (CheckInLinkArena())
+    {
+        return gUnknown_08A18200[index][2];
+    }
+
+    if (index == 4)
+    {
+        if (!sub_80A095C(2))
+        {
+            return gUnknown_08A18200[4][0];
+        }
+    }
+    else if (index == 2)
+    {
+        if (!CanPrepScreenSave())
+        {
+            return gUnknown_08A18200[2][0];
+        }
+    }
+
+    return gUnknown_08A18200[index][1];
+}
+
+//! FE8U = 0x08095094
+int sub_8095094(int target, int val)
+{
+    int i;
+
+    int count = 0;
+
+    for (i = 0; i < 4; i++)
+    {
+        if (((val >> i) & 1) != 0)
+        {
+            if (target == count)
+            {
+                return i;
+            }
+
+            count++;
+        }
+    }
+
+    return -1;
+}
+
+//! FE8U = 0x080950C4
+int sub_80950C4(int val)
+{
+    int i;
+    int count = 0;
+
+    for (i = 0; i < 4; i++)
+    {
+        if (((val >> i) & 1) != 0)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+//! FE8U = 0x080950E8
+void sub_80950E8(int vram, int palId)
+{
+    u16 * palettes[4] =
+    {
+        Pal_08A1D850,
+        Pal_08A1D870,
+        Pal_08A1D890,
+        Pal_08A1D8B0,
+    };
+
+    Decompress(Img_PrepWindow, (void *)(vram + 0x6000000));
+    ApplyPalette(palettes[gPlaySt.config.windowColor], palId);
+
+    return;
+}
+
+//! FE8U = 0x08095138
+void sub_8095138(u16 * tm, int b, u32 c, int d)
+{
+    int i;
+
+    CallARM_FillTileRect(tm, Tsa_08A1A41C, (u16)TILEREF((c / 2 & 0xffff) / 0x10, 1));
+
+    for (i = 0; i < b; i++)
+    {
+        CallARM_FillTileRect(
+            (i * 0x40) + tm + 0x20, Tsa_08A1A434, (u16)TILEREF((c / 2 & 0xffff) / 0x10, 1));
+    }
+
+    CallARM_FillTileRect(
+        i * 0x40 + tm + 0x20, Tsa_08A1A474, (u16)(d * 0x1000 + ((c / 2) & 0xffff) / 0x10));
+
+    return;
+}
 
 void PrepScreenMenu_OnPickUnits(struct ProcAtMenu* proc) {
     proc->state = 1;
@@ -26,7 +174,7 @@ void PrepScreenMenu_OnItems(struct ProcAtMenu* proc) {
 
 void PrepScreenMenu_OnSupport(struct ProcAtMenu* proc) {
     proc->state = 4;
-    sub_80029E8(0x37, 0x100, 0x100, 0x20, 0);
+    CallSomeSoundMaybe(0x37, 0x100, 0x100, 0x20, 0);
     Proc_Goto(proc, 0xA);
 }
 
@@ -60,32 +208,20 @@ void sub_8095284(ProcPtr proc)
     Proc_Goto(proc, 0x5);
 }
 
-#if NONMATCHING
-    if(0 == CheckSomethingSomewhere()) {
-        if(0 == CanPrepScreenCheckMap())
-            return 0;
-
-        PrepSpecialChar_BlinkButtonB();
-    }
-
-    Proc_Goto(proc, 0x5);
-    return 1;
-#else
 int PrepScreenMenu_OnBPress(struct ProcAtMenu* proc) {
 
-    if (0 != CheckSomethingSomewhere())
-        goto goto_jump;
-    
-    if (0 != CanPrepScreenCheckMap()) {
-        PrepSpecialChar_BlinkButtonB();
-    goto_jump:
+    if (false != CheckInLinkArena()) {
         Proc_Goto(proc, 0x5);
-            return 1;
+        return true;
     }
+    
+    if (false == CanPrepScreenCheckMap())
+        return false;
 
-    return 0;
+    PrepSpecialChar_BlinkButtonB();
+    Proc_Goto(proc, 0x5);
+    return true;
 }
-#endif
 
 void PrepScreenMenu_OnCheckMap(struct ProcAtMenu* proc) {
     Proc_Goto(proc, 0x5);
@@ -94,39 +230,39 @@ void PrepScreenMenu_OnCheckMap(struct ProcAtMenu* proc) {
 void sub_80952CC() {}
 void __malloc_unlock_1() {}
 
-void Reset203E87C()
+void ResetSioPidPool()
 {
     int i;
     for (i = 0; i < 5; i++)
-        gUnknown_0203E87C.unk00[i] = 0;
+        gSioPidPool.pids[i] = 0;
 }
 
-void Reset203E87C_WithVal(u8 val)
+void RegisterSioPid(u8 pid)
 {
     int i;
     for (i = 0; i < 5; i++)
-        if (0 == gUnknown_0203E87C.unk00[i]) {
-            gUnknown_0203E87C.unk00[i] = val;
+        if (0 == gSioPidPool.pids[i]) {
+            gSioPidPool.pids[i] = pid;
             return;
         }
 }
 
-void Modify203E87C(u8 val)
+void RemoveSioPid(u8 pid)
 {
     int i, j;
     for (i = 0; i < 5; i++) {
-        if (gUnknown_0203E87C.unk00[i] != val)
+        if (gSioPidPool.pids[i] != pid)
             continue;
 
         j = i;
         if (i <= 3) {
             while (j <= 3) {
-                gUnknown_0203E87C.unk00[j] = gUnknown_0203E87C.unk00[j + 1];
+                gSioPidPool.pids[j] = gSioPidPool.pids[j + 1];
                 j++;
             }
         }
 
-        gUnknown_0203E87C.unk00[4] = 0;
+        gSioPidPool.pids[4] = 0;
         break;
     }
 }
@@ -153,26 +289,26 @@ void PrepSetUnitAmount(int val)
 
 int PrepGetLatestCharId()
 {
-    if (0 == (1 & gGMData.state))
+    if (0 == (gGMData.state.bits.state_0))
         return gPrepUnitList.latest_pid;
     else
-        return sub_80C4088();
+        return GetGMapBaseMenuPid();
 }
 
 void PrepSetLatestCharId(int val)
 {
-    if (1 & gGMData.state)
-        sub_80C409C(val);
+    if (gGMData.state.bits.state_0)
+        SetGMapBaseMenuPid(val);
     else
         gPrepUnitList.latest_pid = val;
 }
 
 s8 IsCharacterForceDeployed(int char_id)
 {
-    if (0 != CheckSomethingSomewhere())
+    if (0 != CheckInLinkArena())
         return 0;
 
-    if (0 != GetChapterThing())
+    if (0 != GetBattleMapKind())
         return 0;
 
     return IsCharacterForceDeployed_(char_id);
@@ -220,7 +356,7 @@ void AtMenu_AddPrepScreenSupportMenuItem(struct ProcAtMenu *proc)
     int color = 0;
 
     proc->unk_2F = 0;
-    if (0 != (PLAY_FLAG_7 & gPlaySt.chapterStateBits))
+    if (0 != (PLAY_FLAG_EXTRA_MAP & gPlaySt.chapterStateBits))
         return;
 
     for (i = 0; i < 4; i++) {
@@ -249,17 +385,17 @@ void InitPrepScreenMainMenu(struct ProcAtMenu* proc)
     int color;
 
     StartPrepScreenMenu(proc);
-    if (!CheckSomethingSomewhere()) {
+    if (!CheckInLinkArena()) {
         SetPrepScreenMenuItem(
             PREP_MAINMENU_UNIT,
             PrepScreenMenu_OnPickUnits,
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             0x574, 0);
 
         SetPrepScreenMenuItem(
             PREP_MAINMENU_ITEM,
             PrepScreenMenu_OnItems,
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             0x576, 0);
 
         AtMenu_AddPrepScreenSupportMenuItem(proc);
@@ -268,19 +404,19 @@ void InitPrepScreenMainMenu(struct ProcAtMenu* proc)
             SetPrepScreenMenuItem(
                 PREP_MAINMENU_CHECKMAP,
                 PrepScreenMenu_OnCheckMap,
-                TEXT_COLOR_NORMAL,
+                TEXT_COLOR_SYSTEM_WHITE,
                 0x578, 0);
         } else {
             SetPrepScreenMenuItem(
                 PREP_MAINMENU_CHECKMAP,
                 PrepScreenMenu_OnCheckMap,
-                TEXT_COLOR_GRAY,
+                TEXT_COLOR_SYSTEM_GRAY,
                 0x578, 0);
         }
 
-        color = TEXT_COLOR_NORMAL;
+        color = TEXT_COLOR_SYSTEM_WHITE;
         if (!CanPrepScreenSave())
-            color = TEXT_COLOR_GRAY;
+            color = TEXT_COLOR_SYSTEM_GRAY;
         
         SetPrepScreenMenuItem(
             PREP_MAINMENU_SAVE,
@@ -292,19 +428,19 @@ void InitPrepScreenMainMenu(struct ProcAtMenu* proc)
         SetPrepScreenMenuItem(
             PREP_MAINMENU_UNIT,
             PrepScreenMenu_OnPickUnits,
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             0x574, 0);
 
         SetPrepScreenMenuItem(
             PREP_MAINMENU_ITEM,
             PrepScreenMenu_OnItems,
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             0x576, 0);
 
         SetPrepScreenMenuItem(
             PREP_MAINMENU_UNK3,
             sub_8095284,
-            TEXT_COLOR_NORMAL,
+            TEXT_COLOR_SYSTEM_WHITE,
             0x75C, 0);
     }
 
@@ -314,7 +450,7 @@ void InitPrepScreenMainMenu(struct ProcAtMenu* proc)
     TileMap_FillRect(gBG0TilemapBuffer, 0xC, 0x13, 0);
     TileMap_FillRect(gBG1TilemapBuffer, 0xC, 0x13, 0);
 
-    if (CheckSomethingSomewhere())
+    if (CheckInLinkArena())
         SetPrepScreenMenuPosition(1, 5);
     else
         SetPrepScreenMenuPosition(1, 6);
@@ -561,15 +697,15 @@ void PrepAutoCapDeployUnits(struct ProcAtMenu* proc)
         proc->max_counter = proc->unit_count;
 }
 
-void EndSlidingWallEffectMaybe()
+void RestartMuralBackground()
 {
     Proc_EndEach(ProcScr_SlidingWallBg);
-    sub_8086BB8(0, 0, 0xA);
+    StartMuralBackground(0, 0, 0xA);
 }
 
-void EndBG3Slider_()
+void EndMuralBackground_()
 {
-    EndBG3Slider();
+    EndMuralBackground();
 }
 
 void Prep_DrawChapterGoal(int VRAM_offset, int pal)
@@ -577,26 +713,26 @@ void Prep_DrawChapterGoal(int VRAM_offset, int pal)
     int msg;
     const char *str;
     struct Font font;
-    struct TextHandle th;
+    struct Text th;
 
-    InitSomeOtherGraphicsRelatedStruct(&font, OBJ_VRAM0 + VRAM_offset, pal);
-    ApplyPalette(Pal_UIFont, 0x10 + pal);
-    Text_Init3(&th);
-    SetFont(&font);
-    SetFontGlyphSet(0);
-    Text_80046B4(&th, 0);
+    InitSpriteTextFont(&font, OBJ_VRAM0 + VRAM_offset, pal);
+    ApplyPalette(Pal_Text, 0x10 + pal);
+    InitSpriteText(&th);
+    SetTextFont(&font);
+    SetTextFontGlyphs(0);
+    SpriteText_DrawBackgroundExt(&th, 0);
 
-    if (2 != GetChapterThing())
+    if (2 != GetBattleMapKind())
         msg = GetROMChapterStruct(gPlaySt.chapterIndex)->goalWindowTextId;
     else
         msg = 0x19E;
 
     str = GetStringFromIndex(msg);
 
-    Text_InsertString(
+    Text_InsertDrawString(
         &th,
         GetStringTextCenteredPos(0x60, str),
         0, str);
 
-    SetFont(0);
+    SetTextFont(0);
 }

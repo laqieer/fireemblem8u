@@ -3,6 +3,8 @@
 #include "fontgrp.h"
 #include "hardware.h"
 #include "ctc.h"
+#include "bmlib.h"
+#include "savemenu.h"
 
 struct Proc8A21568 {
     /* 00 */ PROC_HEADER;
@@ -14,9 +16,6 @@ struct Proc8A21568 {
 extern u16 gUnknown_08A2C11C[]; // pal
 extern u8 gUnknown_08A29A88[]; // gfx
 extern u8 gUnknown_08A2B1E4[]; // gfx
-
-extern u16 gUnknown_08A2051C[]; // sprite
-extern u16* gUnknown_08A2099C[]; // sprite array
 
 //! FE8U = 0x080B0458
 void sub_80B0458(void) {
@@ -62,14 +61,14 @@ void sub_80B04BC(struct Proc8A21568* proc) {
 
 //! FE8U = 0x080B04F8
 void sub_80B04F8(void) {
-    CopyToPaletteBuffer(gUnknown_08B1754C, 0, 0x40);
-    CopyToPaletteBuffer(gUnknown_08A295B4, 0x40, 0x20);
+    ApplyPalettes(gUnknown_08B1754C, 0, 2);
+    ApplyPalette(gUnknown_08A295B4, 2);
     Decompress(Img_CommGameBgScreen, (void*)0x06001000);
     CallARM_FillTileRect(gBG0TilemapBuffer, gUnknown_08A295D4, 0x80);
 
     BG_EnableSyncByMask(1);
 
-    CopyToPaletteBuffer(gUnknown_08A2C11C, 0x220, 0x100);
+    ApplyPalettes(gUnknown_08A2C11C, 0x11, 8);
     Decompress(gUnknown_08A29A88, (void*)0x06010800);
     Decompress(gUnknown_08A2B1E4, (void*)0x06014000);
 
@@ -95,8 +94,8 @@ void nullsub_66(void) {
 //! FE8U = 0x080B05C4
 void sub_80B05C4(struct Proc8A21568* proc) {
     if (proc->unk_58 >= 0) {
-        PutSpriteExt(4, 56, 8, gUnknown_08A2051C, 0x2000);
-        PutSpriteExt(4, 64, 16, gUnknown_08A2099C[proc->unk_58], 0x3000);
+        PutSpriteExt(4, 56, 8, Sprite_08A2051C, 0x2000);
+        PutSpriteExt(4, 64, 16, SpriteArray_08A2099C[proc->unk_58], 0x3000);
     }
     return;
 }

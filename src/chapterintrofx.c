@@ -12,37 +12,9 @@
 #include "bmfx.h"
 #include "bmudisp.h"
 #include "bm.h"
-
-// arm_call.s
-void CALLARM_MaybeScreenFadeIn();
-
-// code.s
-void sub_80895B4(int, int);
-int sub_808979C(struct PlaySt*);
-void sub_808966C(int, int);
-void sub_80896FC(u16*, int, int);
-
-void sub_80ADDFC(int, int, int, int, int, int);
-void sub_80ADE90(int, s16, s16);
-void sub_80ADEE0(int, int, int, int, int);
-
-
-extern u8 Img_CommGameBgScreen[];
-
-extern u8 gUnknown_08B17B64[];
-extern u8 gUnknown_08B18D68[];
-extern u8 gUnknown_08B19874[];
-extern u8 gUnknown_08B19DEC[];
-
-extern u16 gUnknown_08B18F34[];
-extern u16 gUnknown_08B19854[];
-extern u16 gUnknown_08B196D8[];
-
-extern u16 pPalette4Buffer[];
-
-extern u16 pPalette6Buffer[];
-
-void ChapterIntro_Bg3Scroll_Loop(void);
+#include "bmlib.h"
+#include "sysutil.h"
+#include "worldmap.h"
 
 struct ProcCmd CONST_DATA sProcScr_ChapterIntro_Bg3Scroll[] = {
     PROC_REPEAT(ChapterIntro_Bg3Scroll_Loop),
@@ -50,18 +22,12 @@ struct ProcCmd CONST_DATA sProcScr_ChapterIntro_Bg3Scroll[] = {
     PROC_END,
 };
 
-void ChapterIntro_KeyListen_Init(struct ChapterIntroFXProc* proc);
-void ChapterIntro_KeyListen_Loop(struct ChapterIntroFXProc* proc);
-
 struct ProcCmd CONST_DATA sProcScr_ChapterIntro_KeyListen[] = {
     PROC_CALL(ChapterIntro_KeyListen_Init),
     PROC_REPEAT(ChapterIntro_KeyListen_Loop),
 
     PROC_END,
 };
-
-void ChapterIntro_801FFD0(struct ChapterIntroFXProc* proc);
-void ChapterIntro_801FFD8_Loop(struct ChapterIntroFXProc* proc);
 
 struct ProcCmd CONST_DATA sProcScr_ChapterIntro_0859B108[] = {
     PROC_CALL(ChapterIntro_801FFD0),
@@ -89,9 +55,6 @@ static u16 CONST_DATA gUnknown_0859B144[] = {
     0x0400, 0x0000,
 };
 
-void ChapterIntro_80207C8(void);
-extern struct ProcCmd sProcScr_ChapterIntro_0859B198[];
-
 struct ProcCmd CONST_DATA sProcScr_ChapterIntro_0859B160[] = {
     PROC_SLEEP(0x1E),
     PROC_START_CHILD(sProcScr_ChapterIntro_0859B198),
@@ -100,9 +63,6 @@ struct ProcCmd CONST_DATA sProcScr_ChapterIntro_0859B160[] = {
     PROC_END,
 };
 
-void ChapterIntro_LightBurst_Init(struct ChapterIntroFXProc* proc);
-void ChapterIntro_LightBurst_Loop(struct ChapterIntroFXProc* proc);
-
 struct ProcCmd CONST_DATA sProcScr_ChapterIntro_LightBurst[] = {
     PROC_CALL(ChapterIntro_LightBurst_Init),
     PROC_REPEAT(ChapterIntro_LightBurst_Loop),
@@ -110,40 +70,12 @@ struct ProcCmd CONST_DATA sProcScr_ChapterIntro_LightBurst[] = {
     PROC_END,
 };
 
-void ChapterIntro_BeginCloseTextMaybe(struct ChapterIntroFXProc* proc);
-void ChapterIntro_LoopCloseTextMaybe(struct ChapterIntroFXProc* proc);
-
 struct ProcCmd CONST_DATA sProcScr_ChapterIntro_0859B198[] = {
     PROC_CALL(ChapterIntro_BeginCloseTextMaybe),
     PROC_REPEAT(ChapterIntro_LoopCloseTextMaybe),
 
     PROC_END,
 };
-
-void ChapterIntro_Init(struct ChapterIntroFXProc* proc);
-void ChapterIntro_SetSkipTarget(s16 arg, struct ChapterIntroFXProc* proc);
-void ChapterIntro_Init_PlaySound316(struct ChapterIntroFXProc* proc);
-void ChapterIntro_DrawingLights(struct ChapterIntroFXProc* proc);
-void ChapterIntro_InitBLDCNT(void);
-void ChapterIntro_DrawChapterTitleMaybe(void);
-void ChapterIntro_80204AC(struct ChapterIntroFXProc* proc);
-void ChapterIntro_UnknownFX8020578(struct ChapterIntroFXProc* proc);
-void ChapterIntro_SetBG_802009C(void);
-void ChapterIntro_8020944(struct ChapterIntroFXProc* proc);
-void ChapterIntro_80209D8(struct ChapterIntroFXProc* proc);
-void ChapterIntro_SetTimerMaybe(s16 arg, struct ChapterIntroFXProc* proc);
-void ChapterIntro_TickTimerMaybe(struct ChapterIntroFXProc* proc);
-void ChapterIntro_8020A40(struct ChapterIntroFXProc* proc);
-void ChapterIntro_8020A8C(struct ChapterIntroFXProc* proc);
-void ChapterIntro_8020B20(void);
-void ChapterIntro_InitMapDisplay(void);
-void ChapterIntro_BeginFadeToMap(struct ChapterIntroFXProc* proc);
-void ChapterIntro_LoopFadeToMap(struct ChapterIntroFXProc* proc);
-void ChapterIntro_BeginFadeOut(struct ChapterIntroFXProc* proc);
-void ChapterIntro_LoopFadeOut(struct ChapterIntroFXProc* proc);
-void ChapterIntro_BeginFastFadeToMap(struct ChapterIntroFXProc* proc);
-void ChapterIntro_LoopFastFadeToMap(struct ChapterIntroFXProc* proc);
-void ChapterIntro_80210C8(void);
 
 struct ProcCmd CONST_DATA gProcScr_ChapterIntro[] = {
     PROC_CALL(BMapDispSuspend),
@@ -220,8 +152,7 @@ PROC_LABEL(0x63),
     PROC_END,
 };
 
-void ChapterIntro_8020AF8(void);
-void ChapterIntro_8021188(struct ChapterIntroFXProc* proc);
+
 
 struct ProcCmd CONST_DATA sProcScr_0859B318[] = {
     PROC_CALL(ChapterIntro_8020AF8),
@@ -359,7 +290,7 @@ int ChapterIntro_8020010(ProcPtr proc, void* unk_2, int unk_3) {
         unk_2 = (void*)BG_VRAM;
     }
 
-    CopyToPaletteBuffer(gUnknown_08B1754C, unk_3 * 32, 0x40);
+    ApplyPalettes(gUnknown_08B1754C, unk_3, 2);
     Decompress(Img_CommGameBgScreen, unk_2);
 
     ref1 = TILEREF(0, unk_3 & 0xF);
@@ -450,13 +381,13 @@ void ChapterIntro_Init(struct ChapterIntroFXProc* proc) {
     gLCDControlBuffer.win0_right = 0;
     gLCDControlBuffer.win0_bottom = 0;
 
-    SetSpecialColorEffectsParameters(0, 0, 0, 0);
+    SetBlendConfig(0, 0, 0, 0);
 
     MaybeResetSomePal();
 
     sub_80017B4(0, 2, 0x40, -1);
 
-    CALLARM_MaybeScreenFadeIn();
+    CALLARM_ColorFadeTick();
 
     EnablePaletteSync();
 
@@ -464,12 +395,12 @@ void ChapterIntro_Init(struct ChapterIntroFXProc* proc) {
     gLCDControlBuffer.bg2cnt.areaOverflowMode = 1;
 
     Decompress(gUnknown_08B17B64, BG_CHAR_ADDR(2));
-    CopyToPaletteBuffer(gUnknown_08B18ED4, 0, 0x60);
+    ApplyPalettes(gUnknown_08B18ED4, 0, 3);
 
     sub_800154C(gBG2TilemapBuffer, gUnknown_08B18D68, 0, 5);
 
     Decompress(gUnknown_08B19874, OBJ_VRAM1);
-    CopyToPaletteBuffer(gUnknown_08B19DEC, 0x240, 0x20);
+    ApplyPalette(gUnknown_08B19DEC, 0x12);
 
     ChapterIntro_8020010(proc, 0, 0xE);
 
@@ -500,7 +431,7 @@ void ChapterIntro_DrawingLights(struct ChapterIntroFXProc* proc) {
     if (proc->unk_64 < 0x65) {
         int uVar8 = Interpolate(4, 0x140, 0x40, proc->unk_64, 100);
 
-        WriteOAMRotScaleData(
+        SetObjAffine(
             0,
             Div(+COS(0) * 16, uVar8),
             Div(-SIN(0) * 16, uVar8),
@@ -586,7 +517,7 @@ void ChapterIntro_UnknownFX8020578(struct ChapterIntroFXProc* proc) {
     if (proc->unk_64 < 0x47) {
         var = Interpolate(4, 0x140, 0x10, proc->unk_64, 0x46);
 
-        WriteOAMRotScaleData(
+        SetObjAffine(
             1,
             Div(+COS(0) * 16, var),
             Div(-SIN(0) * 16, var),
@@ -602,7 +533,7 @@ void ChapterIntro_UnknownFX8020578(struct ChapterIntroFXProc* proc) {
     if (proc->unk_66 < 0x47) {
         var = Interpolate(4, 0x140, 0x10, proc->unk_66, 0x46);
 
-        WriteOAMRotScaleData(
+        SetObjAffine(
             2,
             Div(+COS(0) * 16, var),
             Div(-SIN(0) * 16, var),
@@ -618,7 +549,7 @@ void ChapterIntro_UnknownFX8020578(struct ChapterIntroFXProc* proc) {
     if (proc->unk_68 < 0x47) {
         var = Interpolate(4, 0x140, 0x10, proc->unk_68, 0x46);
 
-        WriteOAMRotScaleData(
+        SetObjAffine(
             3,
             Div(+COS(0) * 16, var),
             Div(-SIN(0) * 16, var),
@@ -672,10 +603,10 @@ void ChapterIntro_LightBurst_Init(struct ChapterIntroFXProc* proc) {
 
 void ChapterIntro_LightBurst_Loop(struct ChapterIntroFXProc* proc) {
     if (proc->unk_66 == 0) {
-        SetSpecialColorEffectsParameters(1, 0x10, proc->unk_4E, 0);
+        SetBlendConfig(1, 0x10, proc->unk_4E, 0);
         proc->unk_4E++;
     } else {
-        SetSpecialColorEffectsParameters(1, ((u16)proc->unk_4E << 0x10) >> 0x11 & 0xFF, 0x10, 0);
+        SetBlendConfig(1, ((u16)proc->unk_4E << 0x10) >> 0x11 & 0xFF, 0x10, 0);
         proc->unk_4E--;
     }
 
@@ -696,7 +627,7 @@ void ChapterIntro_LightBurst_Loop(struct ChapterIntroFXProc* proc) {
         }
 
         proc->unk_4E = 0x20;
-        SetSpecialColorEffectsParameters(1, 0x10, 0x10, 0);
+        SetBlendConfig(1, 0x10, 0x10, 0);
         proc->unk_66++;
 
         return;
@@ -706,7 +637,7 @@ void ChapterIntro_LightBurst_Loop(struct ChapterIntroFXProc* proc) {
         return;
     }
 
-    SetSpecialColorEffectsParameters(1, 0, 0x10, 0);
+    SetBlendConfig(1, 0, 0x10, 0);
     Proc_EndEach(sProcScr_ChapterIntro_LightBurst);
     Proc_Break(proc);
 
@@ -739,7 +670,7 @@ void ChapterIntro_8020944(struct ChapterIntroFXProc* proc) {
     SetBlendTargetB(0, 1, 0, 0, 0);
 
     Decompress(gUnknown_08B18F34, BG_CHAR_ADDR(2));
-    CopyToPaletteBuffer(gUnknown_08B19854, 0x80, 0x20);
+    ApplyPalette(gUnknown_08B19854, 4);
 
     Decompress(gUnknown_08B196D8, gGenericBuffer);
     CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer, 0x4000);
@@ -750,7 +681,7 @@ void ChapterIntro_8020944(struct ChapterIntroFXProc* proc) {
 }
 
 void ChapterIntro_80209D8(struct ChapterIntroFXProc* proc) {
-    SetSpecialColorEffectsParameters(1, proc->unk_4C, 0x10, 0);
+    SetBlendConfig(1, proc->unk_4C, 0x10, 0);
 
     if ((proc->unk_50 == 3) || ((GetGameClock() & 3) == 0)) {
         if (proc->unk_52 != 0) {
@@ -760,7 +691,7 @@ void ChapterIntro_80209D8(struct ChapterIntroFXProc* proc) {
         }
 
         if (proc->unk_4C > 5) {
-            SetSpecialColorEffectsParameters(1, 6, 0x10, 0);
+            SetBlendConfig(1, 6, 0x10, 0);
             Proc_Break(proc);
         }
     }
@@ -773,9 +704,9 @@ void ChapterIntro_8020A40(struct ChapterIntroFXProc* proc) {
 
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(pPalette4Buffer, 4, 2, -1);
-    MaybeSmoothChangeSomePal(pPalette4Buffer + 0xA0, 0xE, 2, -1);
-    MaybeSmoothChangeSomePal(pPalette4Buffer + 0xE0, 0x12, 1, -1);
+    MaybeSmoothChangeSomePal(PAL_BG(4), 4, 2, -1);
+    MaybeSmoothChangeSomePal(PAL_BG(0xE), 0xE, 2, -1);
+    MaybeSmoothChangeSomePal(PAL_OBJ(2), 0x12, 1, -1);
 
     return;
 }
@@ -784,7 +715,7 @@ void ChapterIntro_8020A8C(struct ChapterIntroFXProc* proc) {
     int clock = GetGameClock() & 3;
 
     if ((clock) == 0) {
-        CALLARM_MaybeScreenFadeIn();
+        CALLARM_ColorFadeTick();
         EnablePaletteSync();
 
         proc->unk_4C--;
@@ -797,7 +728,7 @@ void ChapterIntro_8020A8C(struct ChapterIntroFXProc* proc) {
             gLCDControlBuffer.dispcnt.obj_on = 1;
 
             SetBackgroundTileDataOffset(2, 0);
-            gPaletteBuffer[0] = clock;
+            gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
             EnablePaletteSync();
             Proc_Break(proc);
         }
@@ -812,7 +743,7 @@ void ChapterIntro_8020AF8() {
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
     RefreshUnitSprites();
     ForceSyncUnitSpriteSheet();
-    Font_LoadForUI();
+    InitSystemTextFont();
 
     return;
 }
@@ -832,12 +763,12 @@ void ChapterIntro_InitMapDisplay() {
     gLCDControlBuffer.dispcnt.bg3_on = 1;
     gLCDControlBuffer.dispcnt.obj_on = 1;
 
-    SetSpecialColorEffectsParameters(1, 0x10, 0, 0);
+    SetBlendConfig(1, 0x10, 0, 0);
 
     SetBlendTargetA(0, 1, 0, 0, 0);
     SetBlendTargetB(0, 0, 0, 1, 1);
 
-    sub_8001F64(1);
+    SetBlendBackdropB(1);
 
     CpuFastFill(0, (void *)BG_VRAM, 32);
 
@@ -873,12 +804,12 @@ void ChapterIntro_InitMapDisplay() {
 void ChapterIntro_BeginFadeToMap(struct ChapterIntroFXProc* proc) {
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(pPalette6Buffer, 6, 10, 1);
-    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x140, 0x1A, 6, 1);
-    MaybeSmoothChangeSomePal(pPalette6Buffer + 0xA0, 0x10, 2, 1);
-    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x110, 0x17, 1, 1);
+    MaybeSmoothChangeSomePal(PAL_BG(6), 6, 10, 1);
+    MaybeSmoothChangeSomePal(PAL_OBJ(0xA), 0x1A, 6, 1);
+    MaybeSmoothChangeSomePal(PAL_OBJ(0), 0x10, 2, 1);
+    MaybeSmoothChangeSomePal(PAL_OBJ(7), 0x17, 1, 1);
 
-    CALLARM_MaybeScreenFadeIn();
+    CALLARM_ColorFadeTick();
 
     EnablePaletteSync();
 
@@ -893,14 +824,14 @@ void ChapterIntro_BeginFadeToMap(struct ChapterIntroFXProc* proc) {
 
 void ChapterIntro_LoopFadeToMap(struct ChapterIntroFXProc* proc) {
     if ((GetGameClock() & 1) == 0) {
-        CALLARM_MaybeScreenFadeIn();
+        CALLARM_ColorFadeTick();
         if (GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather == 5) {
             WfxFlamesInitGradientPublic();
         }
 
-        if ((GetChapterThing() == 2) || GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack) {
+        if ((GetBattleMapKind() == 2) || GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack) {
             if ((GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF) {
-                Sound_PlaySong80024D4(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
+                StartBgm(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
             }
 
             proc->unk_4C = 0;
@@ -919,7 +850,7 @@ void ChapterIntro_LoopFadeToMap(struct ChapterIntroFXProc* proc) {
                 tmp = proc->unk_4C + 0xE;
             }
 
-            SetSpecialColorEffectsParameters(
+            SetBlendConfig(
                 1,
                 ((tmp >> 3) + 0xC) & 0xFF,
                 (4 - (tmp >> 3)) & 0xFF,
@@ -931,7 +862,7 @@ void ChapterIntro_LoopFadeToMap(struct ChapterIntroFXProc* proc) {
 
         if ((proc->unk_4C == 0x18) &&
             ((GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF)) {
-            Sound_PlaySong80024D4(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
+            StartBgm(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
         }
 
         if (proc->unk_4C < 0) {
@@ -979,10 +910,10 @@ void ChapterIntro_BeginFadeOut(struct ChapterIntroFXProc* proc) {
 
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(gPaletteBuffer, 0, 3, -2);
-    MaybeSmoothChangeSomePal(gPaletteBuffer + 0x40, 4, 2, -2);
-    MaybeSmoothChangeSomePal(gPaletteBuffer + 0xE0, 0xE, 2, -2);
-    MaybeSmoothChangeSomePal(gPaletteBuffer + 0x120, 0x12, 1, -2);
+    MaybeSmoothChangeSomePal(PAL_BG(0), 0, 3, -2);
+    MaybeSmoothChangeSomePal(PAL_BG(4), 4, 2, -2);
+    MaybeSmoothChangeSomePal(PAL_BG(0xE), 0xE, 2, -2);
+    MaybeSmoothChangeSomePal(PAL_OBJ(2), 0x12, 1, -2);
 
     proc->unk_4C = 0xF;
 
@@ -992,7 +923,7 @@ void ChapterIntro_BeginFadeOut(struct ChapterIntroFXProc* proc) {
 }
 
 void ChapterIntro_LoopFadeOut(struct ChapterIntroFXProc* proc) {
-    CALLARM_MaybeScreenFadeIn();
+    CALLARM_ColorFadeTick();
     EnablePaletteSync();
 
     proc->unk_4C--;
@@ -1028,32 +959,32 @@ void ChapterIntro_BeginFastFadeToMap(struct ChapterIntroFXProc* proc) {
 
     MaybeResetSomePal();
 
-    MaybeSmoothChangeSomePal(pPalette6Buffer, 6, 10, 2);
-    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x140, 0x1A, 6, 2);
-    MaybeSmoothChangeSomePal(pPalette6Buffer + 0xA0, 0x10, 2, 2);
-    MaybeSmoothChangeSomePal(pPalette6Buffer + 0x110, 0x17, 1, 2);
+    MaybeSmoothChangeSomePal(PAL_BG(6), 6, 10, 2);
+    MaybeSmoothChangeSomePal(PAL_OBJ(0xA), 0x1A, 6, 2);
+    MaybeSmoothChangeSomePal(PAL_OBJ(0), 0x10, 2, 2);
+    MaybeSmoothChangeSomePal(PAL_OBJ(7), 0x17, 1, 2);
 
-    CALLARM_MaybeScreenFadeIn();
+    CALLARM_ColorFadeTick();
 
     EnablePaletteSync();
 
     proc->unk_4C = 0xE;
 
     if ((GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE]) != 0xFFFF) {
-        Sound_PlaySong80024D4(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
+        StartBgm(GetROMChapterStruct(gPlaySt.chapterIndex)->mapBgmIds[MAP_BGM_PROLOGUE], 0);
     }
 
     return;
 }
 
 void ChapterIntro_LoopFastFadeToMap(struct ChapterIntroFXProc* proc) {
-    CALLARM_MaybeScreenFadeIn();
+    CALLARM_ColorFadeTick();
 
     if ((GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather) == 5) {
         WfxFlamesInitGradientPublic();
     }
 
-    if ((GetChapterThing() == 2) || (GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack)) {
+    if ((GetBattleMapKind() == 2) || (GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack)) {
         proc->unk_4C = 0;
 
         gLCDControlBuffer.dispcnt.bg0_on = 1;
@@ -1130,7 +1061,7 @@ void ChapterIntro_80210C8() {
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 3;
 
-    if ((GetChapterThing() == 2) ||
+    if ((GetBattleMapKind() == 2) ||
     (GetROMChapterStruct(gPlaySt.chapterIndex)->fadeToBlack)) {
         RefreshBMapGraphics();
         sub_80141B0();
@@ -1141,7 +1072,7 @@ void ChapterIntro_80210C8() {
 
 void ChapterIntro_8021188(struct ChapterIntroFXProc* proc) {
     if ((GetGameClock() & 1) == 0) {
-        CALLARM_MaybeScreenFadeIn();
+        CALLARM_ColorFadeTick();
 
         if (GetROMChapterStruct(gPlaySt.chapterIndex)->initialWeather == 5) {
             WfxFlamesInitGradientPublic();

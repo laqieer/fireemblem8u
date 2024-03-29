@@ -68,7 +68,7 @@ char* GetItemNameWithArticle(int item, s8 capitalize) {
             article = NULL;
 
         result = GetItemName(item);
-        PrependArticleToString(result, article, capitalize);
+        InsertPrefix(result, article, capitalize);
 
         return result;
     }
@@ -88,7 +88,7 @@ inline char* GetItemName(int item) {
     char* result;
 
     result = GetStringFromIndex(GetItemData(ITEM_INDEX(item))->nameTextId);
-    result = FilterSomeTextFromStandardBuffer();
+    result = StrInsertTact();
 
     return result;
 }
@@ -405,59 +405,59 @@ s8 CanUnitUseStaffNow(struct Unit* unit, int item) {
 
 // TODO: special character codes
 
-void DrawItemMenuLine(struct TextHandle* text, int item, s8 isUsable, u16* mapOut) {
-    Text_SetParameters(text, 0, (isUsable ? TEXT_COLOR_NORMAL : TEXT_COLOR_GRAY));
-    Text_AppendString(text, GetItemName(item));
+void DrawItemMenuLine(struct Text* text, int item, s8 isUsable, u16* mapOut) {
+    Text_SetParams(text, 0, (isUsable ? TEXT_COLOR_SYSTEM_WHITE : TEXT_COLOR_SYSTEM_GRAY));
+    Text_DrawString(text, GetItemName(item));
 
-    Text_Draw(text, mapOut + 2);
+    PutText(text, mapOut + 2);
 
-    DrawDecNumber(mapOut + 11, isUsable ? TEXT_COLOR_BLUE : TEXT_COLOR_GRAY, GetItemUses(item));
-
-    DrawIcon(mapOut, GetItemIconId(item), 0x4000);
-}
-
-void DrawItemMenuLineLong(struct TextHandle* text, int item, s8 isUsable, u16* mapOut) {
-    Text_SetParameters(text, 0, (isUsable ? TEXT_COLOR_NORMAL : TEXT_COLOR_GRAY));
-    Text_AppendString(text, GetItemName(item));
-
-    Text_Draw(text, mapOut + 2);
-
-    DrawDecNumber(mapOut + 10, isUsable ? TEXT_COLOR_BLUE : TEXT_COLOR_GRAY, GetItemUses(item));
-    DrawDecNumber(mapOut + 13, isUsable ? TEXT_COLOR_BLUE : TEXT_COLOR_GRAY, GetItemMaxUses(item));
-    sub_8004B0C(mapOut + 11, isUsable ? TEXT_COLOR_NORMAL : TEXT_COLOR_GRAY, 0x16); // draw special character?
+    PutNumberOrBlank(mapOut + 11, isUsable ? TEXT_COLOR_SYSTEM_BLUE : TEXT_COLOR_SYSTEM_GRAY, GetItemUses(item));
 
     DrawIcon(mapOut, GetItemIconId(item), 0x4000);
 }
 
-void DrawItemMenuLineNoColor(struct TextHandle* text, int item, u16* mapOut) {
-    Text_SetXCursor(text, 0);
-    Text_AppendString(text, GetItemName(item));
+void DrawItemMenuLineLong(struct Text* text, int item, s8 isUsable, u16* mapOut) {
+    Text_SetParams(text, 0, (isUsable ? TEXT_COLOR_SYSTEM_WHITE : TEXT_COLOR_SYSTEM_GRAY));
+    Text_DrawString(text, GetItemName(item));
 
-    Text_Draw(text, mapOut + 2);
+    PutText(text, mapOut + 2);
 
-    DrawDecNumber(mapOut + 11, Text_GetColorId(text), GetItemUses(item));
+    PutNumberOrBlank(mapOut + 10, isUsable ? TEXT_COLOR_SYSTEM_BLUE : TEXT_COLOR_SYSTEM_GRAY, GetItemUses(item));
+    PutNumberOrBlank(mapOut + 13, isUsable ? TEXT_COLOR_SYSTEM_BLUE : TEXT_COLOR_SYSTEM_GRAY, GetItemMaxUses(item));
+    PutSpecialChar(mapOut + 11, isUsable ? TEXT_COLOR_SYSTEM_WHITE : TEXT_COLOR_SYSTEM_GRAY, TEXT_SPECIAL_SLASH);
 
     DrawIcon(mapOut, GetItemIconId(item), 0x4000);
 }
 
-void DrawItemStatScreenLine(struct TextHandle* text, int item, int nameColor, u16* mapOut) {
+void DrawItemMenuLineNoColor(struct Text* text, int item, u16* mapOut) {
+    Text_SetCursor(text, 0);
+    Text_DrawString(text, GetItemName(item));
+
+    PutText(text, mapOut + 2);
+
+    PutNumberOrBlank(mapOut + 11, Text_GetColor(text), GetItemUses(item));
+
+    DrawIcon(mapOut, GetItemIconId(item), 0x4000);
+}
+
+void DrawItemStatScreenLine(struct Text* text, int item, int nameColor, u16* mapOut) {
     int color;
 
-    Text_Clear(text);
+    ClearText(text);
 
     color = nameColor;
-    Text_SetColorId(text, color);
+    Text_SetColor(text, color);
 
-    Text_AppendString(text, GetItemName(item));
+    Text_DrawString(text, GetItemName(item));
 
-    color = (nameColor == TEXT_COLOR_GRAY) ? TEXT_COLOR_GRAY : TEXT_COLOR_NORMAL;
-    sub_8004B0C(mapOut + 12, color, 0x16);
+    color = (nameColor == TEXT_COLOR_SYSTEM_GRAY) ? TEXT_COLOR_SYSTEM_GRAY : TEXT_COLOR_SYSTEM_WHITE;
+    PutSpecialChar(mapOut + 12, color, TEXT_SPECIAL_SLASH);
 
-    color = (nameColor != TEXT_COLOR_GRAY) ? TEXT_COLOR_BLUE : TEXT_COLOR_GRAY;
-    DrawDecNumber(mapOut + 11, color, GetItemUses(item));
-    DrawDecNumber(mapOut + 14, color, GetItemMaxUses(item));
+    color = (nameColor != TEXT_COLOR_SYSTEM_GRAY) ? TEXT_COLOR_SYSTEM_BLUE : TEXT_COLOR_SYSTEM_GRAY;
+    PutNumberOrBlank(mapOut + 11, color, GetItemUses(item));
+    PutNumberOrBlank(mapOut + 14, color, GetItemMaxUses(item));
 
-    Text_Draw(text, mapOut + 2);
+    PutText(text, mapOut + 2);
 
     DrawIcon(mapOut, GetItemIconId(item), 0x4000);
 }
@@ -474,7 +474,7 @@ u16 GetItemAfterUse(int item) {
     return item; // return used item
 }
 
-u32 GetUnitEquippedWeapon(struct Unit* unit) {
+u16 GetUnitEquippedWeapon(struct Unit* unit) {
     int i;
 
     for (i = 0; i < UNIT_ITEM_COUNT; ++i)
@@ -534,8 +534,8 @@ s8 IsItemEffectiveAgainst(u16 item, struct Unit* unit) {
             u32 attributes;
             int i;
 
-            if (GetItemEffectiveness(item) != gUnknown_088ADF2A)
-                if (GetItemEffectiveness(item) != gUnknown_088ADEF1)
+            if (GetItemEffectiveness(item) != ItemEffectiveness_088ADF2A)
+                if (GetItemEffectiveness(item) != ItemEffectiveness_088ADEF1)
                     return TRUE;
 
             attributes = 0;
@@ -563,7 +563,7 @@ s8 IsUnitEffectiveAgainst(struct Unit* actor, struct Unit* target) {
 
     case 0x2B:
     case 0x2C:
-        effList = gUnknown_088ADF39;
+        effList = ItemEffectiveness_Monsters;
         break;
 
     } // switch (actorClass)
@@ -673,13 +673,18 @@ int GetDisplayRankStringFromExp(int wexp) {
     return rankTextIdLookup[GetWeaponLevelFromExp(wexp)];
 }
 
-char* GetWeaponTypeDisplayString(int wpnType) {
+char * GetWeaponTypeDisplayString(int wpnType) {
     int wtypeTextIdLookup[] = {
         // TODO: TEXT ID CONSTANTS
         0x505, 0x506, 0x507, 0x508, // Sword, Lance, Axe, Box
         0x509, 0x50A, 0x50B, 0x50C, // Staff, Anima, Light, Dark
         0x50D, 0x50E, 0x50F,        // Item, Bllsta, Dragon
     };
+
+#if BUGFIX
+    if (wpnType > ITYPE_DRAGN)
+        return NULL;
+#endif
 
     return GetStringFromIndex(wtypeTextIdLookup[wpnType]);
 }
@@ -965,20 +970,20 @@ int GetUnitStaffReachBits(struct Unit* unit) {
     } // switch (range)
 }
 
-int GetConvoyItemCostSum(void) {
+int GetConvoyItemCostSum(void)
+{
     int i, result = 0;
-
-    const u16* convoy = GetConvoyItemArray();
-
-    for (i = 0; (i < CONVOY_ITEM_COUNT) && (*convoy); ++i) {
+    const u16 * convoy = GetConvoyItemArray();
+    for (i = 0; (i < CONVOY_ITEM_COUNT) && (*convoy); ++i)
+    {
         result += GetItemCost(*convoy);
         convoy++;
     }
-
     return result;
 }
 
-int GetUnitItemCostSum(void) {
+int GetUnitItemCostSum(void)
+{
     int i, j, item, result = 0;
 
     for (i = 1; i < 0x40; ++i) {

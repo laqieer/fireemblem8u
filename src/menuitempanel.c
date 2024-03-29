@@ -9,21 +9,10 @@
 #include "hardware.h"
 #include "uiutils.h"
 #include "bm.h"
+#include "menuitempanel.h"
 #include "functions.h"
 
-struct MenuItemPanelProc{
-	PROC_HEADER;
-	
-	/* 2C */ struct Unit *unit;
-	/* 30 */ u8 x;
-	/* 31 */ u8 y;
-	/* 32 */ u8 IconPalIndex;
-	/* 33 */ s8 ItemSlotIndex;
-	/* 34 */ struct TextHandle text[6];
-	/* 64 */ u8 draw_arrow;
-};
-
-void MenuItemPanelProcIdle(struct MenuItemPanelProc *proc);
+void MenuItemPanelProcIdle(struct MenuItemPanelProc * proc);
 
 struct ProcCmd CONST_DATA gProcCmd_MenuItemPanel[] = {
 	PROC_15,
@@ -31,7 +20,8 @@ struct ProcCmd CONST_DATA gProcCmd_MenuItemPanel[] = {
 	PROC_END,
 };
 
-void MenuItemPanelProcIdle(struct MenuItemPanelProc *proc) {
+void MenuItemPanelProcIdle(struct MenuItemPanelProc * proc)
+{
 	if (0 == proc->draw_arrow)
 		return;
 
@@ -64,10 +54,10 @@ void MenuItemPanelProcIdle(struct MenuItemPanelProc *proc) {
 
 }
 
-void ForceMenuItemPanel(ProcPtr _menu_proc, struct Unit *unit, int x, int y)
+void ForceMenuItemPanel(ProcPtr _menu_proc, struct Unit * unit, int x, int y)
 {
 	struct MenuProc *menu_proc = _menu_proc;
-	struct MenuItemPanelProc *proc;
+	struct MenuItemPanelProc * proc;
 
 	if (NULL == Proc_Find(gProcCmd_MenuItemPanel)) {
 		proc = Proc_Start(gProcCmd_MenuItemPanel, menu_proc);
@@ -78,9 +68,9 @@ void ForceMenuItemPanel(ProcPtr _menu_proc, struct Unit *unit, int x, int y)
 		proc->ItemSlotIndex = GetUnitEquippedWeaponSlot(unit);
 		proc->draw_arrow = TRUE;
 
-		Text_Allocate(&proc->text[0], 0xC);
-		Text_Allocate(&proc->text[1], 0xC);
-		Text_Allocate(&proc->text[2], 0xC);
+		InitTextDb(&proc->text[0], 0xC);
+		InitTextDb(&proc->text[1], 0xC);
+		InitTextDb(&proc->text[2], 0xC);
 
 		LoadIconPalette(1, proc->IconPalIndex);
 		BattleGenerateUiStats(proc->unit, BU_ISLOT_AUTO);
@@ -92,39 +82,37 @@ void ForceMenuItemPanel(ProcPtr _menu_proc, struct Unit *unit, int x, int y)
 	}
 }
 
-void UpdateMenuItemPanel(int slot) {
-	struct MenuItemPanelProc *proc = Proc_Find(gProcCmd_MenuItemPanel);
-	u16 *bg_base = BG_GetMapBuffer(0) + proc->x + 0x20 * proc->y;
-	struct TextHandle *texts = &proc->text[0];
-	struct Unit *unit = proc->unit;
-	int icon_pal = proc->IconPalIndex;
+void UpdateMenuItemPanel(int slot_or_item)
+{
+	struct MenuItemPanelProc * proc = Proc_Find(gProcCmd_MenuItemPanel);
+	u16 * bg_base = BG_GetMapBuffer(0) + proc->x + 0x20 * proc->y;
+	struct Text * texts = &proc->text[0];
+	struct Unit * unit = proc->unit;
+	int i, item, color, icon_pal = proc->IconPalIndex;
+	char * str;
 
-	int item, color;
-	char *str;
-	int i;
-
-	Text_Clear(&proc->text[0]);
-	Text_Clear(&proc->text[1]);
-	Text_Clear(&proc->text[2]);
+	ClearText(&proc->text[0]);
+	ClearText(&proc->text[1]);
+	ClearText(&proc->text[2]);
 
 	DrawUiFrame2(proc->x, proc->y, 0xE, 0x8, 0x0);
 
-	switch (slot) {
+	switch (slot_or_item) {
 	case 0:
 	case 1:
 	case 2:
 	case 3:
 	case 4:
-		item = unit->items[slot];
+		item = unit->items[slot_or_item];
 		break;
 
-	case 5:
-		item = gBmSt.itemUnk2C;
+	case BU_ISLOT_5:
+		item = gBmSt.um_tmp_item;
 		break;
 
 	default:
-		item = slot;
-		slot = BU_ISLOT_BALLISTA;
+		item = slot_or_item;
+		slot_or_item = BU_ISLOT_BALLISTA;
 		break;
 	} /* switch slot */
 
@@ -137,8 +125,8 @@ void UpdateMenuItemPanel(int slot) {
 		i = 0;
 
 		while (1) {
-			Text_InsertString(&texts[i], 0, TEXT_COLOR_NORMAL, str);
-			str = String_GetEnd(str);
+			Text_InsertDrawString(&texts[i], 0, TEXT_COLOR_SYSTEM_WHITE, str);
+			str = GetStringLineEnd(str);
 
 			if (0 == *str)
 				break;
@@ -152,37 +140,37 @@ void UpdateMenuItemPanel(int slot) {
 		gBattleActor.battleCritRate = gBattleTarget.battleCritRate;
 		gBattleActor.battleAvoidRate = gBattleTarget.battleAvoidRate;
 
-		Text_Draw(&texts[0], TILEMAP_LOCATED(bg_base, 1, 1));
-		Text_Draw(&texts[1], TILEMAP_LOCATED(bg_base, 1, 3));
-		Text_Draw(&texts[2], TILEMAP_LOCATED(bg_base, 1, 5));
+		PutText(&texts[0], TILEMAP_LOCATED(bg_base, 1, 1));
+		PutText(&texts[1], TILEMAP_LOCATED(bg_base, 1, 3));
+		PutText(&texts[2], TILEMAP_LOCATED(bg_base, 1, 5));
 		break;
 	
 	default:
-		BattleGenerateUiStats(unit, slot);
+		BattleGenerateUiStats(unit, slot_or_item);
 
-		if (BU_ISLOT_BALLISTA == slot) {
+		if (BU_ISLOT_BALLISTA == slot_or_item) {
 			gBattleTarget.battleAttack = gBattleActor.battleAttack;
 			gBattleTarget.battleHitRate = gBattleActor.battleHitRate;
 			gBattleTarget.battleCritRate = gBattleActor.battleCritRate;
 			gBattleTarget.battleAvoidRate = gBattleActor.battleAvoidRate;
 		}
 
-		color = CanUnitUseWeapon(unit, gBattleActor.weapon) ? TEXT_COLOR_BLUE : TEXT_COLOR_GRAY;
+		color = CanUnitUseWeapon(unit, gBattleActor.weapon) ? TEXT_COLOR_SYSTEM_BLUE : TEXT_COLOR_SYSTEM_GRAY;
 
-		Text_InsertString(&texts[0], 0x1C, TEXT_COLOR_NORMAL, GetStringFromIndex(0x4F1));
-		Text_InsertString(&texts[1], 0x02, TEXT_COLOR_NORMAL, GetStringFromIndex(0x4F3));
-		Text_InsertString(&texts[2], 0x02, TEXT_COLOR_NORMAL, GetStringFromIndex(0x4F4));
-		Text_InsertString(&texts[1], 0x32, TEXT_COLOR_NORMAL, GetStringFromIndex(0x501));
-		Text_InsertString(&texts[2], 0x32, TEXT_COLOR_NORMAL, GetStringFromIndex(0x4F5));
+		Text_InsertDrawString(&texts[0], 0x1C, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(0x4F1));
+		Text_InsertDrawString(&texts[1], 0x02, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(0x4F3));
+		Text_InsertDrawString(&texts[2], 0x02, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(0x4F4));
+		Text_InsertDrawString(&texts[1], 0x32, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(0x501));
+		Text_InsertDrawString(&texts[2], 0x32, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(0x4F5));
 		
-		Text_InsertNumberOr2Dashes(&texts[1], 0x24, color, gBattleActor.battleAttack);
-		Text_InsertNumberOr2Dashes(&texts[2], 0x24, color, gBattleActor.battleHitRate);
-		Text_InsertNumberOr2Dashes(&texts[1], 0x54, color, gBattleActor.battleCritRate);
-		Text_InsertNumberOr2Dashes(&texts[2], 0x54, color, gBattleActor.battleAvoidRate);
+		Text_InsertDrawNumberOrBlank(&texts[1], 0x24, color, gBattleActor.battleAttack);
+		Text_InsertDrawNumberOrBlank(&texts[2], 0x24, color, gBattleActor.battleHitRate);
+		Text_InsertDrawNumberOrBlank(&texts[1], 0x54, color, gBattleActor.battleCritRate);
+		Text_InsertDrawNumberOrBlank(&texts[2], 0x54, color, gBattleActor.battleAvoidRate);
 
-		Text_Draw(&proc->text[0], TILEMAP_LOCATED(gBG0TilemapBuffer, proc->x + 1, proc->y + 0x1));
-		Text_Draw(&proc->text[1], TILEMAP_LOCATED(gBG0TilemapBuffer, proc->x + 1, proc->y + 0x3));
-		Text_Draw(&proc->text[2], TILEMAP_LOCATED(gBG0TilemapBuffer, proc->x + 1, proc->y + 0x5));
+		PutText(&proc->text[0], TILEMAP_LOCATED(gBG0TilemapBuffer, proc->x + 1, proc->y + 0x1));
+		PutText(&proc->text[1], TILEMAP_LOCATED(gBG0TilemapBuffer, proc->x + 1, proc->y + 0x3));
+		PutText(&proc->text[2], TILEMAP_LOCATED(gBG0TilemapBuffer, proc->x + 1, proc->y + 0x5));
 		
 		DrawIcon(
 			TILEMAP_LOCATED(bg_base, 8, 1),

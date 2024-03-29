@@ -23,8 +23,10 @@
 #include "bmudisp.h"
 #include "bm.h"
 #include "bmsave.h"
-
+#include "bmlib.h"
+#include "worldmap.h"
 #include "bmio.h"
+#include "bmmind.h"
 
 // General Battle Map System Stuff, mostly low level hardware stuff but also more
 
@@ -113,9 +115,8 @@ static void WfxUpdate(void);
 static void ClearBattleMapState(void);
 static void InitMoreBMapGraphics(void);
 
-// TODO: figure out if those variables should really belong to EWRAM_DATA
-static EWRAM_DATA union WeatherEffectData sWeatherEffect = {};
-static EWRAM_DATA union GradientEffectData sGradientEffect = {};
+EWRAM_OVERLAY(0) union WeatherEffectData sWeatherEffect = {};
+EWRAM_OVERLAY(0) union GradientEffectData sGradientEffect = {};
 
 static CONST_DATA struct ProcCmd sProc_BMVSync[] = { // gProc_VBlankHandler
     PROC_MARK(PROC_MARK_1),
@@ -302,7 +303,7 @@ void BMapDispSuspend(void) {
         return; // gfx was already blocked, nothing needs to be done.
 
     SetSecondaryHBlankHandler(NULL);
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
     EnablePaletteSync();
     Proc_BlockEachMarked(1);
 }
@@ -334,15 +335,15 @@ void AllocWeatherParticles(unsigned weatherId) {
     case WEATHER_SNOWSTORM:
     case WEATHER_RAIN:
     case WEATHER_SANDSTORM:
-        SetupOAMBufferSplice(0x20);
+        InitOam(0x20);
         break;
 
     case WEATHER_FLAMES:
-        SetupOAMBufferSplice(0x10);
+        InitOam(0x10);
         break;
 
     default:
-        SetupOAMBufferSplice(0);
+        InitOam(0);
         break;
 
     } // switch (weatherId)
@@ -455,7 +456,7 @@ void WfxSandStorm_Init(void) {
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
 
     Decompress(gUnknown_085A3964, gGenericBuffer);
-    CopyTileGfxForObj(gGenericBuffer, OBJ_VRAM0 + 0x1C * 0x20, 4, 4);
+    Copy2dChr(gGenericBuffer, OBJ_VRAM0 + 0x1C * 0x20, 4, 4);
 
     for (i = 0; i < 0x40; ++i) {
         sWeatherEffect.particles[i].xPosition = AdvanceGetLCGRNValue();
@@ -495,7 +496,7 @@ void WfxSnowStorm_Init(void) {
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
 
     Decompress(gUnknown_085A39EC, gGenericBuffer);
-    CopyTileGfxForObj(gGenericBuffer, OBJ_VRAM0 + 0x18 * 0x20, 8, 4);
+    Copy2dChr(gGenericBuffer, OBJ_VRAM0 + 0x18 * 0x20, 8, 4);
 
     for (i = 0; i < 0x40; ++i) {
         unsigned type = typeLookup[i & 7];
@@ -598,7 +599,7 @@ void WfxFlamesInitGradientPublic(void) {
 
     for (i = 0; i < 4; ++i) {
         for (j = 0; j < 0x10; ++j) {
-            const int color = gPaletteBuffer[0x10 * (i + BM_BGPAL_TILESET_BASE) + j];
+            const int color = gPaletteBuffer[PAL_COLOR_OFFSET(i + BM_BGPAL_TILESET_BASE, j)];
 
             int r = RED_VALUE(color);
             int g = GREEN_VALUE(color);
@@ -624,7 +625,7 @@ void WfxFlamesInitGradient(void) {
 
     for (i = 0; i < 4; ++i) {
         for (j = 0; j < 0x10; ++j) {
-            const int color = gPaletteBuffer[0x10 * (i + BM_BGPAL_TILESET_BASE) + j];
+            const int color = gPaletteBuffer[PAL_COLOR_OFFSET(i + BM_BGPAL_TILESET_BASE, j)];
 
             int r = RED_VALUE(color);
             int g = GREEN_VALUE(color);
@@ -650,7 +651,7 @@ void WfxFlamesInitParticles(void) {
 
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
     Decompress(gUnknown_085A3A84, OBJ_VRAM0 + 0x18 * 0x20);
-    CopyToPaletteBuffer(gUnknown_085A3AC0, 0x340, 0x20);
+    ApplyPalette(gUnknown_085A3AC0, 0x1A);
 
     for (i = 0; i < 0x10; ++i) {
         sWeatherEffect.particles[i].xPosition = AdvanceGetLCGRNValue();
@@ -670,14 +671,14 @@ void WfxFlamesUpdateGradient(void) {
     int i, j;
 
     CpuFastCopy(
-        gPaletteBuffer + BM_BGPAL_TILESET_BASE * 0x10,
-        ((u16*)(PLTT)) + BM_BGPAL_TILESET_BASE * 0x10,
+        PAL_BG(BM_BGPAL_TILESET_BASE),
+        ((u16*)(PLTT)) + BGPAL_OFFSET(BM_BGPAL_TILESET_BASE),
 
         0x20 * 4
     );
 
     for (i = 12; i < 16; ++i) {
-        const int color = gPaletteBuffer[(BM_BGPAL_TILESET_BASE + 2) * 0x10 + i];
+        const int color = gPaletteBuffer[PAL_COLOR_OFFSET(BM_BGPAL_TILESET_BASE + 2, i)];
 
         int r = RED_VALUE(color);
         int g = GREEN_VALUE(color);
@@ -775,11 +776,7 @@ void WfxClouds_Init(void) {
         sWeatherEffect.gfxData
     );
 
-    CopyToPaletteBuffer(
-        gUnknown_085A401C,
-        ((0x10 + BM_OBJPAL_10) * 0x10 * sizeof(u16)),
-        0x10 * sizeof(u16)
-    );
+    ApplyPalette(gUnknown_085A401C, 0x10 + BM_OBJPAL_10);
 }
 
 void WfxClouds_VSync(void) {
@@ -804,7 +801,7 @@ void WfxClouds_VSync(void) {
         break;
 
     case 7:
-        CopyTileGfxForObj(gfx, OBJ_VRAM0 + (0x20 * 18), 14, 4);
+        Copy2dChr(gfx, OBJ_VRAM0 + (0x20 * 18), 14, 4);
         break;
 
     } // switch (GetGameClock() % 8)
@@ -844,7 +841,7 @@ void WfxInit(void) {
         WfxRain_Init();
         break;
 
-    case WEATHER_3:
+    case WEATHER_NIGHT:
         WfxBlue_Init();
         break;
 
@@ -878,7 +875,7 @@ void WfxVSync(void) {
         WfxRain_VSync();
         break;
 
-    case WEATHER_3:
+    case WEATHER_NIGHT:
         WfxBlue_VSync();
         break;
 
@@ -922,7 +919,7 @@ void SetWeather(unsigned weatherId) {
 
 int GetTextDisplaySpeed(void) {
     u8 speedLookup[4] = { 8, 4, 1, 0 };
-    return speedLookup[gPlaySt.cfgTextSpeed];
+    return speedLookup[gPlaySt.config.textSpeed];
 }
 
 int IsFirstPlaythrough(void) {
@@ -930,10 +927,10 @@ int IsFirstPlaythrough(void) {
     if (!tmp)
         return TRUE;
 
-    if (gPlaySt.chapterStateBits & PLAY_FLAG_7)
+    if (gPlaySt.chapterStateBits & PLAY_FLAG_EXTRA_MAP)
         return FALSE;
 
-    return gPlaySt.unk41_5;
+    return gPlaySt.config.unk41_5;
 }
 
 void InitPlayConfig(int isDifficult, s8 unk) {
@@ -945,23 +942,23 @@ void InitPlayConfig(int isDifficult, s8 unk) {
         gPlaySt.chapterStateBits |= PLAY_FLAG_HARD;
 
     // TODO: WHAT ARE THOSE
-    gPlaySt.cfgController = unk;
-    gPlaySt.cfgAnimationType = 0;
-    gPlaySt.cfgDisableTerrainDisplay = 0;
-    gPlaySt.cfgUnitDisplayType = 0;
-    gPlaySt.cfgAutoCursor = 0;
-    gPlaySt.cfgTextSpeed = 1; // TODO: (DEFAULT?) TEXT SPEED DEFINITIONS
-    gPlaySt.cfgGameSpeed = 0;
-    gPlaySt.cfgDisableBgm = 0;
-    gPlaySt.cfgDisableSoundEffects = 0;
-    gPlaySt.cfgWindowColor = 0;
-    gPlaySt.cfgDisableAutoEndTurns = 0;
-    gPlaySt.cfgNoSubtitleHelp = 0;
-    gPlaySt.cfgBattleForecastType = 0;
-    gPlaySt.unk42_8 = 0;
-    gPlaySt.unk43_2 = 0;
-    gPlaySt.cfgUnitColor = 0;
-    gPlaySt.unk41_5 = 0;
+    gPlaySt.config.controller = unk;
+    gPlaySt.config.animationType = 0;
+    gPlaySt.config.disableTerrainDisplay = 0;
+    gPlaySt.config.unitDisplayType = 0;
+    gPlaySt.config.autoCursor = 0;
+    gPlaySt.config.textSpeed = 1; // TODO: (DEFAULT?) TEXT SPEED DEFINITIONS
+    gPlaySt.config.gameSpeed = 0;
+    gPlaySt.config.disableBgm = 0;
+    gPlaySt.config.disableSoundEffects = 0;
+    gPlaySt.config.windowColor = 0;
+    gPlaySt.config.disableAutoEndTurns = 0;
+    gPlaySt.config.noSubtitleHelp = 0;
+    gPlaySt.config.battleForecastType = 0;
+    gPlaySt.config.debugControlRed = 0;
+    gPlaySt.config.debugControlGreen = 0;
+    gPlaySt.config.unitColor = 0;
+    gPlaySt.config.unk41_5 = 0;
 }
 
 void ClearBattleMapState(void) {
@@ -982,7 +979,7 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
     ClearBattleMapState();
     sub_80156D4();
     SetupMapSpritesPalettes();
-    ClearLocalEvents();
+    ResetChapterFlags();
     ResetUnitSprites();
     ResetMenuOverrides();
     ClearTraps();
@@ -991,7 +988,7 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
     gPlaySt.chapterTurnNumber = 0;
 
     // TODO: BATTLE MAP/CHAPTER/OBJECTIVE TYPE DEFINITION (STORY/TOWER/SKIRMISH)
-    if (GetChapterThing() == 2) {
+    if (GetBattleMapKind() == 2) {
         if (!(gPlaySt.chapterStateBits & PLAY_FLAG_PREPSCREEN))
             gPlaySt.chapterVisionRange = 3 * (NextRN_100() & 1);
     } else {
@@ -1011,8 +1008,8 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
 
     gPlaySt.unk48 = 0;
     gPlaySt.unk4A_1 = 0;
-    gPlaySt.unk4B = 0;
-    gPlaySt.unk4A_5 = 0;
+    gPlaySt.tutorial_counter = 0;
+    gPlaySt.tutorial_exec_type = 0;
 
     for (i = 1; i < 0x40; ++i) {
         struct Unit* unit = GetUnit(i);
@@ -1026,19 +1023,19 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
     }
 
     ClearTemporaryUnits();
-    LoadChapterBallistae();
+    LoadChapterTraps();
 
     if (gameCtrl)
         StartBMapMain(gameCtrl);
 
     // TODO: MACRO?
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
     EnablePaletteSync();
 
     SetBlendTargetA(TRUE, TRUE, TRUE, TRUE, TRUE);
-    sub_8001F48(TRUE);
+    SetBlendBackdropA(TRUE);
 
-    SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
+    SetBlendConfig(3, 0, 0, 0x10);
 }
 
 void RestartBattleMap(void) {
@@ -1061,14 +1058,14 @@ void RestartBattleMap(void) {
     InitChapterMap(gPlaySt.chapterIndex);
 
     InitMapObstacles();
-    LoadChapterBallistae();
+    LoadChapterTraps();
     BMapVSync_End();
     BMapVSync_Start();
 
     Proc_Start(gProc_MapTask, PROC_TREE_4);
 
     // TODO: MACRO?
-    gPaletteBuffer[0] = 0;
+    gPaletteBuffer[PAL_BACKDROP_OFFSET] = 0;
     EnablePaletteSync();
 
     gLCDControlBuffer.dispcnt.bg0_on = TRUE;
@@ -1139,9 +1136,9 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
     } // switch (gActionData.suspendPointType)
 
     SetBlendTargetA(TRUE, TRUE, TRUE, TRUE, TRUE);
-    sub_8001F48(TRUE);
+    SetBlendBackdropA(TRUE);
 
-    SetSpecialColorEffectsParameters(3, 0, 0, 0x10);
+    SetBlendConfig(3, 0, 0, 0x10);
 }
 
 void RefreshBMapDisplay_FromBattle(void) {
@@ -1181,7 +1178,7 @@ void InitMoreBMapGraphics(void) {
     RefreshUnitSprites();
     SetupMapSpritesPalettes();
     ForceSyncUnitSpriteSheet();
-    Font_LoadForUI();
+    InitSystemTextFont();
 }
 
 void RefreshBMapGraphics(void) {
@@ -1362,8 +1359,9 @@ void GameCtrl_DeclareCompletedChapter(void) {
     gPlaySt.chapterStateBits |= PLAY_FLAG_COMPLETE;
 }
 
-void GameCtrl_SavePlayThroughData(void) {
-    SetNextGameActionId(GAME_ACTION_3);
+void GameCtrl_SavePlayThroughData(void)
+{
+    SetNextGameActionId(GAME_ACTION_PLAYED_THROUGH);
     SavePlayThroughData();
 }
 

@@ -9,136 +9,25 @@
 #include "uiutils.h"
 #include "statscreen.h"
 #include "face.h"
-
+#include "sysutil.h"
 #include "bm.h"
 #include "bmitem.h"
 #include "bmtrade.h"
 #include "bmunit.h"
-
+#include "bmmind.h"
 #include "m4a.h"
+#include "uimenu.h"
+#include "helpbox.h"
 #include "soundwrapper.h"
 #include "event.h"
+#include "eventinfo.h"
+#include "eventscript.h"
+#include "EAstdlib.h"
 
-enum
-{
-    // MAGIC CONSTANTS
+EWRAM_DATA struct TradeMenuProc * gpTradeMenuProc = NULL;
 
-    UNIT_PANEL_WIDTH = 6,
-
-    ITEM_PANEL_WIDTH = 7,
-
-    ITEM_PANEL_LEFT_X = 1,
-    ITEM_PANEL_LEFT_Y = 8,
-
-    ITEM_PANEL_RIGHT_X = 15,
-    ITEM_PANEL_RIGHT_Y = 8,
-};
-
-enum
-{
-    TRADEMENU_UNIT_UNDEFINED = 0xFF,
-
-    TRADEMENU_UNIT_LEFT  = 0,
-    TRADEMENU_UNIT_RIGHT = 1,
-};
-
-struct TradeMenuProc
-{
-    /* 00 */ PROC_HEADER;
-
-    /* 2C */ struct Unit* units[2];
-
-    /* 34 */ s8 hasItem[2][UNIT_ITEM_COUNT + 1];
-
-    /* 40 */ s8 hasTraded;
-
-    /* 41 */ u8 hoverColumn;
-    /* 42 */ u8 hoverRow;
-
-    /* 43 */ u8 selectedColumn;
-    /* 44 */ u8 selectedRow;
-
-    /* 45 */ s8 extraCellEnabled;
-
-    /* 46 */ u8 extraColumn;
-    /* 47 */ u8 extraRow;
-
-    /* 48 */ u8 tradeTutorialState;
-
-    /* 49 */ u8 pad[0x4C - 0x49];
-    /* 4C */ short timer;
-};
-
-static void TradeMenu_InitUnitNameDisplay(struct TradeMenuProc* proc);
-
-static void TradeMenu_HighlightUpdater_OnInit(struct TradeMenuProc* proc);
-static void TradeMenu_HighlightUpdater_OnLoop(struct TradeMenuProc* proc);
-
-static int  TradeMenu_GetAdjustedRow(struct TradeMenuProc* proc, int col, int row);
-static void TradeMenu_InitItemText(struct TradeMenuProc* proc);
-static void TradeMenu_RefreshItemText(struct TradeMenuProc* proc);
-static void TradeMenu_RefreshSelectableCells(struct TradeMenuProc* proc);
-static s8   TradeMenu_UpdateSelection(struct TradeMenuProc* proc);
-static void TradeMenu_ApplyItemSwap(struct TradeMenuProc* proc);
-static void TradeMenu_InitItemDisplay(struct TradeMenuProc* proc);
-static void TradeMenu_OnInitUnselected(struct TradeMenuProc* proc);
-static void TradeMenu_OnLoopUnselected(struct TradeMenuProc* proc);
-static void TradeMenu_OnInitSelected(struct TradeMenuProc* proc);
-static void TradeMenu_OnLoopSelected(struct TradeMenuProc* proc);
-static void TradeMenu_OnEndSelected(struct TradeMenuProc* proc);
-static s8   TradeMenu_LoadForcedInitialHover(struct TradeMenuProc* proc);
-static void TradeMenu_ClearDisplay(struct TradeMenuProc* proc);
-
-static void TradeMenu_HelpBox_OnInit(struct Proc* proc);
-static void TradeMenu_HelpBox_OnLoop(struct Proc* proc);
-static void TradeMenu_HelpBox_OnEnd(struct Proc* proc);
-
-static void TradeMenu_TutorialHandCursor_Update(void);
-static void TradeMenu_DoubleTutorialHandCursor_Update(void);
-
-static void StartDoubleTradeMenuTutorialHandCursor(void);
-static void EndTradeMenuTutorialHandCursor(void);
-static void EndDoubleTradeMenuTutorialHandCursor(void);
-static void TradeMenu_TutorialWait_OnInit(struct TradeMenuProc* proc);
-static void TradeMenu_TutorialWait_OnLoop(struct TradeMenuProc* proc);
-
-static s8 TradeMenu_UpdateTutorial(struct TradeMenuProc* proc);
-
-// ASMCs
-void sub_802DEDC(struct Proc* ee);
-void sub_802E0A0(void);
-void sub_802E0B0(void);
-void sub_802E0C0(void);
-void sub_802E0D0(void);
-void sub_802E0E0(void);
-void sub_802E0F0(void);
-void sub_802E100(void);
-
-static s8 AreKeysHeld(void);
-
-static void TradeMenu_StartTutorialEventLock(struct TradeMenuProc* proc);
-static void TradeMenu_InitTradeTutorial(struct TradeMenuProc* proc);
-static void sub_802E168(struct TradeMenuProc* proc);
-static void sub_802E188(struct TradeMenuProc* proc);
-static void sub_802E1A8(struct TradeMenuProc* proc);
-
-enum
-{
-    L_TRADEMENU_UNSELECTED = 0,
-    L_TRADEMENU_SELECTED   = 1,
-    L_TRADEMENU_END        = 2,
-
-    L_TRADEMENU_LOADFORCED = 101,
-};
-
-// TODO: BM_OVERLAY_DATA?
-extern struct TextHandle gTradeMenuText[2][UNIT_ITEM_COUNT];
-
-EWRAM_DATA static struct TradeMenuProc* sTradeMenuProc = NULL;
-
-CONST_DATA
-static struct Vec2 sItemDisplayTileLocation[2][UNIT_ITEM_COUNT] = {
-    [TRADEMENU_UNIT_LEFT] = {
+CONST_DATA struct Vec2 gTradeItemDisplayTileLocation[2][UNIT_ITEM_COUNT] = {
+    [POS_L] = {
         { ITEM_PANEL_LEFT_X + 1, ITEM_PANEL_LEFT_Y + 1 },
         { ITEM_PANEL_LEFT_X + 1, ITEM_PANEL_LEFT_Y + 3 },
         { ITEM_PANEL_LEFT_X + 1, ITEM_PANEL_LEFT_Y + 5 },
@@ -146,7 +35,7 @@ static struct Vec2 sItemDisplayTileLocation[2][UNIT_ITEM_COUNT] = {
         { ITEM_PANEL_LEFT_X + 1, ITEM_PANEL_LEFT_Y + 9 },
     },
 
-    [TRADEMENU_UNIT_RIGHT] = {
+    [POS_R] = {
         { ITEM_PANEL_RIGHT_X + 1, ITEM_PANEL_RIGHT_Y + 1 },
         { ITEM_PANEL_RIGHT_X + 1, ITEM_PANEL_RIGHT_Y + 3 },
         { ITEM_PANEL_RIGHT_X + 1, ITEM_PANEL_RIGHT_Y + 5 },
@@ -155,17 +44,15 @@ static struct Vec2 sItemDisplayTileLocation[2][UNIT_ITEM_COUNT] = {
     }
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu_HighlightUpdater[] = {
+CONST_DATA struct ProcCmd ProcScr_TradeMenu_HighlightUpdater[] = {
     PROC_CALL(TradeMenu_HighlightUpdater_OnInit),
     PROC_REPEAT(TradeMenu_HighlightUpdater_OnLoop),
 
     PROC_END
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu[] = {
-    PROC_CALL(AddSkipThread2),
+CONST_DATA struct ProcCmd ProcScr_TradeMenu[] = {
+    PROC_CALL(LockGame),
     PROC_YIELD,
 
     PROC_WHILE_EXISTS(gProcScr_CamMove),
@@ -173,10 +60,10 @@ static struct ProcCmd sProcScr_TradeMenu[] = {
     PROC_CALL(TradeMenu_InitItemDisplay),
     PROC_CALL(TradeMenu_InitUnitNameDisplay),
 
-    PROC_START_CHILD(sProcScr_TradeMenu_HighlightUpdater),
+    PROC_START_CHILD(ProcScr_TradeMenu_HighlightUpdater),
 
 PROC_LABEL(L_TRADEMENU_LOADFORCED),
-    PROC_CALL(TradeMenu_InitTradeTutorial),
+    PROC_CALL(CallTradeTutEventStart),
     PROC_CALL_2(TradeMenu_LoadForcedInitialHover),
     PROC_YIELD,
 
@@ -196,13 +83,12 @@ PROC_LABEL(L_TRADEMENU_END),
     PROC_CALL(TradeMenu_ClearDisplay),
     PROC_CALL(ClearBg0Bg1),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu_HelpBox[] = {
+CONST_DATA struct ProcCmd ProcScr_TradeMenu_HelpBox[] = {
     PROC_CALL(TradeMenu_HelpBox_OnInit),
     PROC_REPEAT(TradeMenu_HelpBox_OnLoop),
 
@@ -211,32 +97,28 @@ static struct ProcCmd sProcScr_TradeMenu_HelpBox[] = {
     PROC_END
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu_TutorialHandCursor[] = {
+CONST_DATA struct ProcCmd ProcScr_TradeMenu_TutorialHandCursor[] = {
     PROC_SET_END_CB(TradeMenu_TutorialHandCursor_Update),
     PROC_REPEAT(TradeMenu_TutorialHandCursor_Update),
 
     PROC_END
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu_DoubleTutorialHandCursor[] = {
+CONST_DATA struct ProcCmd ProcScr_TradeMenu_DoubleTutorialHandCursor[] = {
     PROC_SET_END_CB(TradeMenu_DoubleTutorialHandCursor_Update),
     PROC_REPEAT(TradeMenu_DoubleTutorialHandCursor_Update),
 
     PROC_END
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu_TutorialWait[] = {
+CONST_DATA struct ProcCmd ProcScr_TradeMenu_TutorialWait[] = {
     PROC_CALL(TradeMenu_TutorialWait_OnInit),
     PROC_REPEAT(TradeMenu_TutorialWait_OnLoop),
 
     PROC_END
 };
 
-CONST_DATA
-static struct ProcCmd sProcScr_TradeMenu_TutorialEventLock[] = {
+CONST_DATA struct ProcCmd ProcScr_TradeMenu_TutorialEventLock[] = {
     PROC_WHILE(EventEngineExists),
     PROC_WHILE(AreKeysHeld),
 
@@ -246,25 +128,19 @@ static struct ProcCmd sProcScr_TradeMenu_TutorialEventLock[] = {
     PROC_END
 };
 
-// TODO: actual events!
-extern const u16 gUnknown_0859BC64[];
-extern const u16 gUnknown_0859BCA8[];
-extern const u16 gUnknown_0859BCF4[];
-extern const u16 gUnknown_0859BD40[];
-
-void TradeMenu_InitUnitNameDisplay(struct TradeMenuProc* proc)
+void TradeMenu_InitUnitNameDisplay(struct TradeMenuProc * proc)
 {
     char* str;
     int xStart;
 
     // TODO: constants
-    StartSmallBrownNameBoxes(6, 0x4800, 0x08, 0x800, 0x400, (struct Proc*) (proc));
+    StartSysBrownBox(6, 0x4800, 0x08, 0x800, 0x400, (struct Proc *) (proc));
 
-    sub_80ADBFC(0, -40, -1, 1);
-    sub_80ADBFC(1, 184, -1, 0);
+    EnableSysBrownBox(0, -40, -1, 1);
+    EnableSysBrownBox(1, 184, -1, 0);
 
     // TODO: special effect constants
-    SetSpecialColorEffectsParameters(1, 12, 6, 0);
+    SetBlendConfig(1, 12, 6, 0);
 
     // TODO: name functions
     SetBlendTargetA(FALSE, FALSE, FALSE, FALSE, FALSE);
@@ -273,48 +149,48 @@ void TradeMenu_InitUnitNameDisplay(struct TradeMenuProc* proc)
     // TODO: text color constants
 
     str = GetStringFromIndex(UNIT_NAME_ID(proc->units[0]));
-    xStart = ((8 * UNIT_PANEL_WIDTH) - GetStringTextWidth(str)) / 2;
+    xStart = ((8 * UNIT_PANEL_WIDTH) - GetStringTextLen(str)) / 2;
 
-    DrawTextInline(NULL, gBG0TilemapBuffer + TILEMAP_INDEX(0, 0), 0, xStart, UNIT_PANEL_WIDTH, str);
+    PutDrawText(NULL, gBG0TilemapBuffer + TILEMAP_INDEX(0, 0), 0, xStart, UNIT_PANEL_WIDTH, str);
 
     str = GetStringFromIndex(UNIT_NAME_ID(proc->units[1]));
-    xStart = ((8 * UNIT_PANEL_WIDTH) - GetStringTextWidth(str)) / 2;
+    xStart = ((8 * UNIT_PANEL_WIDTH) - GetStringTextLen(str)) / 2;
 
-    DrawTextInline(NULL, gBG0TilemapBuffer + TILEMAP_INDEX(24, 0), 0, xStart, UNIT_PANEL_WIDTH, str);
+    PutDrawText(NULL, gBG0TilemapBuffer + TILEMAP_INDEX(24, 0), 0, xStart, UNIT_PANEL_WIDTH, str);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
-void TradeMenu_HighlightUpdater_OnInit(struct TradeMenuProc* proc)
+void TradeMenu_HighlightUpdater_OnInit(struct TradeMenuProc * proc)
 {
-    proc->hoverColumn = TRADEMENU_UNIT_UNDEFINED;
+    proc->hoverColumn = (u8)POS_INVALID;
 }
 
-void TradeMenu_HighlightUpdater_OnLoop(struct TradeMenuProc* proc)
+void TradeMenu_HighlightUpdater_OnLoop(struct TradeMenuProc * proc)
 {
-    struct TradeMenuProc* tradeMenu = proc->proc_parent;
+    struct TradeMenuProc * tradeMenu = proc->proc_parent;
 
     if (proc->hoverColumn == tradeMenu->hoverColumn && proc->hoverRow == tradeMenu->hoverRow)
         return;
 
-    if (proc->hoverColumn != TRADEMENU_UNIT_UNDEFINED)
+    if (proc->hoverColumn != (u8)POS_INVALID)
     {
         ClearUiItemHover(
-            sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
-            sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y,
+            gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
+            gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y,
             12);
     }
 
     DrawUiItemHover(
-        sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-        sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y,
+        gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+        gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y,
         12);
 
     proc->hoverColumn = tradeMenu->hoverColumn;
     proc->hoverRow = tradeMenu->hoverRow;
 }
 
-int TradeMenu_GetAdjustedRow(struct TradeMenuProc* proc, int col, int row)
+int TradeMenu_GetAdjustedRow(struct TradeMenuProc * proc, int col, int row)
 {
     while (proc->hasItem[col][row] == 0 && row >= 0)
         row--;
@@ -322,7 +198,7 @@ int TradeMenu_GetAdjustedRow(struct TradeMenuProc* proc, int col, int row)
     return row;
 }
 
-void TradeMenu_InitItemText(struct TradeMenuProc* proc)
+void TradeMenu_InitItemText(struct TradeMenuProc * proc)
 {
     int col, row;
 
@@ -330,12 +206,12 @@ void TradeMenu_InitItemText(struct TradeMenuProc* proc)
     {
         for (row = 0; row < UNIT_ITEM_COUNT; ++row)
         {
-            Text_Allocate(&gTradeMenuText[col][row], ITEM_PANEL_WIDTH);
+            InitTextDb(&gTradeMenuText[col][row], ITEM_PANEL_WIDTH);
         }
     }
 }
 
-void TradeMenu_RefreshItemText(struct TradeMenuProc* proc)
+void TradeMenu_RefreshItemText(struct TradeMenuProc * proc)
 {
     u8 xLookup[] = { ITEM_PANEL_LEFT_X, ITEM_PANEL_RIGHT_X };
     u8 yLookup[] = { ITEM_PANEL_LEFT_Y, ITEM_PANEL_RIGHT_Y };
@@ -350,7 +226,7 @@ void TradeMenu_RefreshItemText(struct TradeMenuProc* proc)
         {
             int item = proc->units[col]->items[row];
 
-            Text_Clear(&gTradeMenuText[col][row]);
+            ClearText(&gTradeMenuText[col][row]);
 
             if (item)
             {
@@ -363,7 +239,7 @@ void TradeMenu_RefreshItemText(struct TradeMenuProc* proc)
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
-void TradeMenu_RefreshSelectableCells(struct TradeMenuProc* proc)
+void TradeMenu_RefreshSelectableCells(struct TradeMenuProc * proc)
 {
     int col, row;
 
@@ -380,19 +256,19 @@ void TradeMenu_RefreshSelectableCells(struct TradeMenuProc* proc)
     proc->hasItem[1][UNIT_ITEM_COUNT] = 0;
 }
 
-s8 TradeMenu_UpdateSelection(struct TradeMenuProc* proc)
+s8 TradeMenu_UpdateSelection(struct TradeMenuProc * proc)
 {
     s8 changedSelection = FALSE;
     int newSelectedRow;
 
-    if ((gKeyStatusPtr->repeatedKeys & DPAD_LEFT) && proc->hoverColumn == TRADEMENU_UNIT_RIGHT)
+    if ((gKeyStatusPtr->repeatedKeys & DPAD_LEFT) && proc->hoverColumn == POS_R)
     {
-        newSelectedRow = TradeMenu_GetAdjustedRow(proc, TRADEMENU_UNIT_LEFT, proc->hoverRow);
+        newSelectedRow = TradeMenu_GetAdjustedRow(proc, POS_L, proc->hoverRow);
 
         if (newSelectedRow < 0)
             goto end;
 
-        proc->hoverColumn = TRADEMENU_UNIT_LEFT;
+        proc->hoverColumn = POS_L;
         proc->hoverRow = newSelectedRow;
 
         changedSelection = TRUE;
@@ -401,14 +277,14 @@ s8 TradeMenu_UpdateSelection(struct TradeMenuProc* proc)
         PlaySoundEffect(0x67);
     }
 
-    if ((gKeyStatusPtr->repeatedKeys & DPAD_RIGHT) && proc->hoverColumn == TRADEMENU_UNIT_LEFT)
+    if ((gKeyStatusPtr->repeatedKeys & DPAD_RIGHT) && proc->hoverColumn == POS_L)
     {
-        newSelectedRow = TradeMenu_GetAdjustedRow(proc, TRADEMENU_UNIT_RIGHT, proc->hoverRow);
+        newSelectedRow = TradeMenu_GetAdjustedRow(proc, POS_R, proc->hoverRow);
 
         if (newSelectedRow < 0)
             goto end;
 
-        proc->hoverColumn = TRADEMENU_UNIT_RIGHT;
+        proc->hoverColumn = POS_R;
         proc->hoverRow = newSelectedRow;
 
         changedSelection = TRUE;
@@ -457,7 +333,7 @@ end:
     return changedSelection;
 }
 
-void TradeMenu_ApplyItemSwap(struct TradeMenuProc* proc)
+void TradeMenu_ApplyItemSwap(struct TradeMenuProc * proc)
 {
     u16* pItemA = &proc->units[proc->hoverColumn]->items[proc->hoverRow];
     u16* pItemB = &proc->units[proc->selectedColumn]->items[proc->selectedRow];
@@ -476,12 +352,12 @@ void TradeMenu_ApplyItemSwap(struct TradeMenuProc* proc)
     TradeMenu_RefreshItemText(proc);
 }
 
-void TradeMenu_InitItemDisplay(struct TradeMenuProc* proc)
+void TradeMenu_InitItemDisplay(struct TradeMenuProc * proc)
 {
     DrawUiFrame2(1,  8, 14, 12, 0);
     DrawUiFrame2(15, 8, 14, 12, 0);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     ResetIconGraphics();
     LoadIconPalettes(4); // TODO: palette id constant
@@ -499,27 +375,27 @@ void TradeMenu_InitItemDisplay(struct TradeMenuProc* proc)
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
 }
 
-void TradeMenu_OnInitUnselected(struct TradeMenuProc* proc)
+void TradeMenu_OnInitUnselected(struct TradeMenuProc * proc)
 {
     TradeMenu_RefreshSelectableCells(proc);
     proc->extraCellEnabled = FALSE;
 }
 
-void TradeMenu_OnLoopUnselected(struct TradeMenuProc* proc)
+void TradeMenu_OnLoopUnselected(struct TradeMenuProc * proc)
 {
     if (TradeMenu_UpdateTutorial(proc))
     {
         DisplayUiHand(
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
     }
     else
     {
         TradeMenu_UpdateSelection(proc);
 
         DisplayUiHand(
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
 
         if (gKeyStatusPtr->newKeys & A_BUTTON)
         {
@@ -533,12 +409,12 @@ void TradeMenu_OnLoopUnselected(struct TradeMenuProc* proc)
         }
         else if (gKeyStatusPtr->newKeys & R_BUTTON)
         {
-            Proc_StartBlocking(sProcScr_TradeMenu_HelpBox, proc);
+            Proc_StartBlocking(ProcScr_TradeMenu_HelpBox, proc);
         }
     }
 }
 
-void TradeMenu_OnInitSelected(struct TradeMenuProc* proc)
+void TradeMenu_OnInitSelected(struct TradeMenuProc * proc)
 {
     int lastRow;
 
@@ -561,29 +437,29 @@ void TradeMenu_OnInitSelected(struct TradeMenuProc* proc)
     }
 }
 
-void TradeMenu_OnLoopSelected(struct TradeMenuProc* proc)
+void TradeMenu_OnLoopSelected(struct TradeMenuProc * proc)
 {
     if (TradeMenu_UpdateTutorial(proc))
     {
         DisplayUiHand(
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
 
         DisplayFrozenUiHand(
-            8 * sItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].x,
-            8 * sItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].y);
+            8 * gTradeItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].x,
+            8 * gTradeItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].y);
     }
     else
     {
         TradeMenu_UpdateSelection(proc);
 
         DisplayUiHand(
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
-            8 * sItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].x,
+            8 * gTradeItemDisplayTileLocation[proc->hoverColumn][proc->hoverRow].y);
 
         DisplayFrozenUiHand(
-            8 * sItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].x,
-            8 * sItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].y);
+            8 * gTradeItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].x,
+            8 * gTradeItemDisplayTileLocation[proc->selectedColumn][proc->selectedRow].y);
 
         if (gKeyStatusPtr->newKeys & A_BUTTON)
         {
@@ -599,12 +475,12 @@ void TradeMenu_OnLoopSelected(struct TradeMenuProc* proc)
         }
         else if (gKeyStatusPtr->newKeys & R_BUTTON)
         {
-            Proc_StartBlocking(sProcScr_TradeMenu_HelpBox, proc);
+            Proc_StartBlocking(ProcScr_TradeMenu_HelpBox, proc);
         }
     }
 }
 
-void TradeMenu_OnEndSelected(struct TradeMenuProc* proc)
+void TradeMenu_OnEndSelected(struct TradeMenuProc * proc)
 {
     proc->hoverColumn = proc->selectedColumn;
     proc->hoverRow = proc->selectedRow;
@@ -617,7 +493,7 @@ void TradeMenu_OnEndSelected(struct TradeMenuProc* proc)
     proc->hoverRow = TradeMenu_GetAdjustedRow(proc, proc->hoverColumn, proc->hoverRow);
 }
 
-s8 TradeMenu_LoadForcedInitialHover(struct TradeMenuProc* proc)
+s8 TradeMenu_LoadForcedInitialHover(struct TradeMenuProc * proc)
 {
     if (gBmSt.unk3F < 0)
         return TRUE;
@@ -631,15 +507,15 @@ s8 TradeMenu_LoadForcedInitialHover(struct TradeMenuProc* proc)
     return FALSE;
 }
 
-void TradeMenu_ClearDisplay(struct TradeMenuProc* proc)
+void TradeMenu_ClearDisplay(struct TradeMenuProc * proc)
 {
     EndFaceById(0);
     EndFaceById(1);
 }
 
-void TradeMenu_HelpBox_OnInit(struct Proc* proc)
+void TradeMenu_HelpBox_OnInit(struct Proc * proc)
 {
-    struct TradeMenuProc* tradeMenu = proc->proc_parent;
+    struct TradeMenuProc * tradeMenu = proc->proc_parent;
 
     int item = tradeMenu->units[tradeMenu->hoverColumn]->items[tradeMenu->hoverRow];
 
@@ -654,19 +530,19 @@ void TradeMenu_HelpBox_OnInit(struct Proc* proc)
         tradeMenu->hasItem[tradeMenu->extraColumn][tradeMenu->extraRow] = FALSE;
     }
 
-    LoadDialogueBoxGfx(NULL, -1);
+    LoadHelpBoxGfx(NULL, -1);
 
     StartItemHelpBox(
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y,
         item);
 
     gKeyStatusPtr->newKeys = gKeyStatusPtr->newKeys &~ (B_BUTTON | R_BUTTON);
 }
 
-void TradeMenu_HelpBox_OnLoop(struct Proc* proc)
+void TradeMenu_HelpBox_OnLoop(struct Proc * proc)
 {
-    struct TradeMenuProc* tradeMenu = (struct TradeMenuProc*) proc->proc_parent;
+    struct TradeMenuProc * tradeMenu = (struct TradeMenuProc *) proc->proc_parent;
 
     s8 changedSelection = TradeMenu_UpdateSelection(tradeMenu);
     int item = tradeMenu->units[tradeMenu->hoverColumn]->items[tradeMenu->hoverRow];
@@ -674,8 +550,8 @@ void TradeMenu_HelpBox_OnLoop(struct Proc* proc)
     if (changedSelection)
     {
         StartItemHelpBox(
-            8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-            8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y,
+            8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+            8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y,
             item);
     }
 
@@ -685,20 +561,20 @@ void TradeMenu_HelpBox_OnLoop(struct Proc* proc)
     }
 
     DisplayUiHand(
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
 
     if (tradeMenu->extraCellEnabled)
     {
         DisplayFrozenUiHand(
-            8 * sItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].x,
-            8 * sItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].y);
+            8 * gTradeItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].x,
+            8 * gTradeItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].y);
     }
 }
 
-void TradeMenu_HelpBox_OnEnd(struct Proc* proc)
+void TradeMenu_HelpBox_OnEnd(struct Proc * proc)
 {
-    struct TradeMenuProc* tradeMenu = (struct TradeMenuProc*) proc->proc_parent;
+    struct TradeMenuProc * tradeMenu = (struct TradeMenuProc *) proc->proc_parent;
 
     if (tradeMenu->extraCellEnabled)
     {
@@ -708,95 +584,95 @@ void TradeMenu_HelpBox_OnEnd(struct Proc* proc)
     CloseHelpBox();
 
     DisplayUiHand(
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
 
     if (tradeMenu->extraCellEnabled)
     {
         DisplayFrozenUiHand(
-            8 * sItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].x,
-            8 * sItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].y);
+            8 * gTradeItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].x,
+            8 * gTradeItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].y);
     }
 }
 
-struct Proc* StartTradeMenu(struct Unit* lUnit, struct Unit* rUnit, int unused)
+struct Proc * StartTradeMenu(struct Unit* lUnit, struct Unit* rUnit, int unused)
 {
     int itemCount;
 
-    struct TradeMenuProc* proc = Proc_Start(sProcScr_TradeMenu, PROC_TREE_3);
+    struct TradeMenuProc * proc = Proc_Start(ProcScr_TradeMenu, PROC_TREE_3);
 
     proc->units[0] = lUnit;
     proc->units[1] = rUnit;
 
     proc->hasTraded = FALSE;
 
-    proc->hoverColumn = TRADEMENU_UNIT_LEFT;
+    proc->hoverColumn = POS_L;
     proc->hoverRow = 0;
 
-    proc->tradeTutorialState = 0;
+    proc->tradeTutorialState = TRADE_TUT_NONE;
 
-    sTradeMenuProc = proc;
+    gpTradeMenuProc = proc;
 
-    if (sub_80837F8())
+    if (CheckTradeTutorial())
     {
         SetKeyStatus_IgnoreMask(A_BUTTON | START_BUTTON | DPAD_DOWN | DPAD_UP);
-        proc->tradeTutorialState = 1;
+        proc->tradeTutorialState = TRADE_TUT_INIT;
     }
 
     if (GetUnitItemCount(lUnit) == 0)
     {
-        proc->hoverColumn = TRADEMENU_UNIT_RIGHT;
+        proc->hoverColumn = POS_R;
     }
 }
 
 void TradeMenu_TutorialHandCursor_Update(void)
 {
-    struct TradeMenuProc* tradeMenu = sTradeMenuProc;
+    struct TradeMenuProc * tradeMenu = gpTradeMenuProc;
 
     DisplayFrozenUiHand(
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
 }
 
 void TradeMenu_DoubleTutorialHandCursor_Update(void)
 {
-    struct TradeMenuProc* tradeMenu = sTradeMenuProc;
+    struct TradeMenuProc * tradeMenu = gpTradeMenuProc;
 
     DisplayFrozenUiHand(
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
-        8 * sItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].x,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->hoverColumn][tradeMenu->hoverRow].y);
 
     DisplayFrozenUiHand(
-        8 * sItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].x,
-        8 * sItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].y);
+        8 * gTradeItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].x,
+        8 * gTradeItemDisplayTileLocation[tradeMenu->selectedColumn][tradeMenu->selectedRow].y);
 }
 
 void StartTradeMenuTutorialHandCursor(void)
 {
-    Proc_Start(sProcScr_TradeMenu_TutorialHandCursor, PROC_TREE_3);
+    Proc_Start(ProcScr_TradeMenu_TutorialHandCursor, PROC_TREE_3);
 }
 
 void StartDoubleTradeMenuTutorialHandCursor(void)
 {
-    Proc_Start(sProcScr_TradeMenu_DoubleTutorialHandCursor, PROC_TREE_3);
+    Proc_Start(ProcScr_TradeMenu_DoubleTutorialHandCursor, PROC_TREE_3);
 }
 
 void EndTradeMenuTutorialHandCursor(void)
 {
-    Proc_EndEach(sProcScr_TradeMenu_TutorialHandCursor);
+    Proc_EndEach(ProcScr_TradeMenu_TutorialHandCursor);
 }
 
 void EndDoubleTradeMenuTutorialHandCursor(void)
 {
-    Proc_EndEach(sProcScr_TradeMenu_DoubleTutorialHandCursor);
+    Proc_EndEach(ProcScr_TradeMenu_DoubleTutorialHandCursor);
 }
 
-void TradeMenu_TutorialWait_OnInit(struct TradeMenuProc* proc)
+void TradeMenu_TutorialWait_OnInit(struct TradeMenuProc * proc)
 {
     proc->timer = 20;
 }
 
-void TradeMenu_TutorialWait_OnLoop(struct TradeMenuProc* proc)
+void TradeMenu_TutorialWait_OnLoop(struct TradeMenuProc * proc)
 {
     proc->timer--;
 
@@ -804,27 +680,25 @@ void TradeMenu_TutorialWait_OnLoop(struct TradeMenuProc* proc)
         Proc_Break(proc);
 }
 
-void sub_802DEDC(struct Proc* ee)
+void TradeMenuHandSTAL(struct Proc * ee)
 {
-    if (sTradeMenuProc->tradeTutorialState != 3 && sTradeMenuProc->tradeTutorialState != 5 && sTradeMenuProc->tradeTutorialState != 8)
+    if (gpTradeMenuProc->tradeTutorialState != 3 && gpTradeMenuProc->tradeTutorialState != 5 && gpTradeMenuProc->tradeTutorialState != 8)
     {
-        Proc_StartBlocking(sProcScr_TradeMenu_TutorialWait, ee);
+        Proc_StartBlocking(ProcScr_TradeMenu_TutorialWait, ee);
     }
 }
 
-s8 TradeMenu_UpdateTutorial(struct TradeMenuProc* proc)
+s8 TradeMenu_UpdateTutorial(struct TradeMenuProc * proc)
 {
     if (proc->tradeTutorialState != 4 && (gKeyStatusPtr->newKeys == 0))
         return FALSE;
 
-    switch (sTradeMenuProc->tradeTutorialState)
-    {
-
+    switch (gpTradeMenuProc->tradeTutorialState) {
     case 2:
         if (gKeyStatusPtr->newKeys & DPAD_RIGHT)
         {
             SetKeyStatus_IgnoreMask(START_BUTTON | DPAD_UP | DPAD_DOWN);
-            sub_802E168(proc);
+            CallTradeTutEventSlectItem(proc);
 
             return FALSE;
         }
@@ -846,7 +720,7 @@ s8 TradeMenu_UpdateTutorial(struct TradeMenuProc* proc)
                 if (GetItemIndex(proc->units[proc->hoverColumn]->items[proc->hoverRow]) == ITEM_VULNERARY)
                 {
                     SetKeyStatus_IgnoreMask(START_BUTTON | DPAD_UP | DPAD_DOWN);
-                    sub_802E0C0();
+                    SetTradeMenuTutStatus4();
 
                     return FALSE;
                 }
@@ -855,26 +729,26 @@ s8 TradeMenu_UpdateTutorial(struct TradeMenuProc* proc)
 
         PlaySoundEffect(0x6C); // TODO: SONG ID DEFINITIONS
 
-        sub_802E168(proc);
+        CallTradeTutEventSlectItem(proc);
 
         return TRUE;
 
     case 5:
         if (gKeyStatusPtr->newKeys & A_BUTTON)
         {
-            sub_802E1A8(proc);
+            CallTradeTutEventDone(proc);
 
             return FALSE;
         }
 
         PlaySoundEffect(0x6C); // TODO: SONG ID DEFINITIONS
 
-        sub_802E188(proc);
+        CallTradeTutEventPressAtoGetItem(proc);
 
         return TRUE;
 
     case 4:
-        sub_802E188(proc);
+        CallTradeTutEventPressAtoGetItem(proc);
 
         return TRUE;
 
@@ -882,56 +756,56 @@ s8 TradeMenu_UpdateTutorial(struct TradeMenuProc* proc)
         if (gKeyStatusPtr->newKeys & B_BUTTON)
         {
             SetKeyStatus_IgnoreMask(0);
-            UnsetEventId(0x87); // TODO: EID/FLAG DEFINTIONS
+            ClearFlag(0x87); // TODO: EID/FLAG DEFINTIONS
 
             return FALSE;
         }
 
         PlaySoundEffect(0x6C); // TODO: SONG ID DEFINITIONS
 
-        sub_802E1A8(proc);
+        CallTradeTutEventDone(proc);
 
         return TRUE;
 
     default:
         return FALSE;
 
-    } // switch (sTradeMenuProc->tradeTutorialState)
+    } // switch (gpTradeMenuProc->tradeTutorialState)
 }
 
-void sub_802E0A0(void)
+void SetTradeMenuTutStatus2(void)
 {
-    sTradeMenuProc->tradeTutorialState = 2;
+    gpTradeMenuProc->tradeTutorialState = 2;
 }
 
-void sub_802E0B0(void)
+void SetTradeMenuTutStatus3(void)
 {
-    sTradeMenuProc->tradeTutorialState = 3;
+    gpTradeMenuProc->tradeTutorialState = 3;
 }
 
-void sub_802E0C0(void)
+void SetTradeMenuTutStatus4(void)
 {
-    sTradeMenuProc->tradeTutorialState = 4;
+    gpTradeMenuProc->tradeTutorialState = 4;
 }
 
-void sub_802E0D0(void)
+void SetTradeMenuTutStatus5(void)
 {
-    sTradeMenuProc->tradeTutorialState = 5;
+    gpTradeMenuProc->tradeTutorialState = 5;
 }
 
-void sub_802E0E0(void)
+void SetTradeMenuTutStatus6(void)
 {
-    sTradeMenuProc->tradeTutorialState = 6;
+    gpTradeMenuProc->tradeTutorialState = 6;
 }
 
-void sub_802E0F0(void)
+void SetTradeMenuTutStatus7(void)
 {
-    sTradeMenuProc->tradeTutorialState = 7;
+    gpTradeMenuProc->tradeTutorialState = 7;
 }
 
-void sub_802E100(void)
+void SetTradeMenuTutStatus8(void)
 {
-    sTradeMenuProc->tradeTutorialState = 8;
+    gpTradeMenuProc->tradeTutorialState = 8;
 }
 
 s8 AreKeysHeld(void)
@@ -942,41 +816,142 @@ s8 AreKeysHeld(void)
     return TRUE;
 }
 
-void TradeMenu_StartTutorialEventLock(struct TradeMenuProc* proc)
+void TradeMenu_StartTutorialEventLock(struct TradeMenuProc * proc)
 {
-    Proc_StartBlocking(sProcScr_TradeMenu_TutorialEventLock, proc);
+    Proc_StartBlocking(ProcScr_TradeMenu_TutorialEventLock, proc);
 }
 
-void TradeMenu_InitTradeTutorial(struct TradeMenuProc* proc)
+CONST_DATA EventScr EventScr_TradeTutStart[] = {
+    EVBIT_MODIFY(3)
+    NoFade
+
+    IGNORE_KEYS(0)
+    ASMC(FreezeMenu)
+    STAL(8)
+
+    /**
+     * Here are the items Gilliam and Franz are carrying.
+     * Move the cursor to Franz's items on the right side.
+     * Press right on the + Control Pad.
+     */
+    _1A25
+    SVAL(EVT_SLOT_B, _EvtParams2(-1, -1))
+    TEXTSHOW(0x949)
+    TEXTEND
+
+    ASMC(ResumeMenu)
+    IGNORE_KEYS(R_BUTTON | DPAD_DOWN | DPAD_UP | START_BUTTON | B_BUTTON)
+    ASMC(SetTradeMenuTutStatus2)
+    ENDA
+};
+
+void CallTradeTutEventStart(struct TradeMenuProc * proc)
 {
-    if (proc->tradeTutorialState)
+    if (proc->tradeTutorialState != TRADE_TUT_NONE)
     {
-        CallEvent(gUnknown_0859BC64, EV_EXEC_QUIET);
+        CallEvent((void *)EventScr_TradeTutStart, EV_EXEC_QUIET);
         TradeMenu_StartTutorialEventLock(proc);
 
         StartTradeMenuTutorialHandCursor();
     }
 }
 
-void sub_802E168(struct TradeMenuProc* proc)
+CONST_DATA EventScr EventScr_TradeTut_SelectItem[] = {
+    EVBIT_MODIFY(3)
+    NoFade
+
+    ASMC(TradeMenuHandSTAL)
+
+    IGNORE_KEYS(0)
+    ASMC(FreezeMenu)
+    STAL(8)
+
+    /**
+     * Use the + Control Pad
+     * to select a vulnerary and press the  A Button.
+     */
+    _1A25
+    SVAL(EVT_SLOT_B, _EvtParams2(-1, -1))
+    TEXTSHOW(0x94A)
+    TEXTEND
+
+    ASMC(ResumeMenu)
+    IGNORE_KEYS(START_BUTTON)
+    ASMC(SetTradeMenuTutStatus3)
+    ENDA
+};
+
+void CallTradeTutEventSlectItem(struct TradeMenuProc * proc)
 {
-    CallEvent(gUnknown_0859BCA8, EV_EXEC_QUIET);
+    CallEvent((void *)EventScr_TradeTut_SelectItem, EV_EXEC_QUIET);
     TradeMenu_StartTutorialEventLock(proc);
 
     StartTradeMenuTutorialHandCursor();
 }
 
-void sub_802E188(struct TradeMenuProc* proc)
+CONST_DATA EventScr EventScr_TradeTut_PressAtoGetItem[] = {
+    EVBIT_MODIFY(3)
+    NoFade
+
+    ASMC(TradeMenuHandSTAL)
+
+    IGNORE_KEYS(0)
+    ASMC(FreezeMenu)
+    STAL(8)
+
+    /**
+     * Press the A Button now to accept the vulnerary from Franz.
+     */
+    _1A25
+    SVAL(EVT_SLOT_B, _EvtParams2(-1, -1))
+    TEXTSHOW(0x94B)
+    TEXTEND
+
+    ASMC(ResumeMenu)
+    IGNORE_KEYS(START_BUTTON)
+    ASMC(SetTradeMenuTutStatus5)
+    ENDA
+};
+
+void CallTradeTutEventPressAtoGetItem(struct TradeMenuProc * proc)
 {
-    CallEvent(gUnknown_0859BCF4, EV_EXEC_QUIET);
+    CallEvent((void *)EventScr_TradeTut_PressAtoGetItem, EV_EXEC_QUIET);
     TradeMenu_StartTutorialEventLock(proc);
 
     StartDoubleTradeMenuTutorialHandCursor();
 }
 
-void sub_802E1A8(struct TradeMenuProc* proc)
+CONST_DATA EventScr EventScr_TradeTutDone[] = {
+    EVBIT_MODIFY(3)
+    NoFade
+
+    ASMC(SetTradeMenuTutStatus7)
+    ASMC(StartTradeMenuTutorialHandCursor)
+    ASMC(TradeMenuHandSTAL)
+
+    IGNORE_KEYS(0)
+    ASMC(FreezeMenu)
+    STAL(8)
+
+    /**
+     * The item has successfully been traded.
+     * Press the B Button to finish your transaction.
+     */
+    _1A25
+    SVAL(EVT_SLOT_B, _EvtParams2(-1, -1))
+    TEXTSHOW(0x94C)
+    TEXTEND
+
+    ASMC(ResumeMenu)
+    IGNORE_KEYS(START_BUTTON | A_BUTTON)
+    DISABLEOPTIONS(~EVENT_MENUOVERRIDE_ITEM)
+    ASMC(SetTradeMenuTutStatus8)
+    ENDA
+};
+
+void CallTradeTutEventDone(struct TradeMenuProc * proc)
 {
-    CallEvent(gUnknown_0859BD40, EV_EXEC_QUIET);
+    CallEvent((void *)EventScr_TradeTutDone, EV_EXEC_QUIET);
     TradeMenu_StartTutorialEventLock(proc);
 
     StartTradeMenuTutorialHandCursor();

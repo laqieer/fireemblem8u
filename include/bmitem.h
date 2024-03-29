@@ -148,7 +148,7 @@ enum {
 #define ITEM_INDEX(aItem) ((aItem) & 0xFF)
 #define ITEM_USES(aItem) ((aItem) >> 8)
 
-extern const struct ItemData gItemData[];
+extern struct ItemData gItemData[];
 
 char* GetItemNameWithArticle(int item, s8 capitalize);
 
@@ -164,12 +164,12 @@ s8 CanUnitUseWeapon(struct Unit* unit, int item);
 s8 CanUnitUseWeaponNow(struct Unit* unit, int item);
 s8 CanUnitUseStaff(struct Unit* unit, int item);
 s8 CanUnitUseStaffNow(struct Unit* unit, int item);
-void DrawItemMenuLine(struct TextHandle* text, int item, s8 isGrayed, u16* mapOut);
-void DrawItemMenuLineLong(struct TextHandle* text, int item, s8 isGrayed, u16* mapOut);
-void DrawItemMenuLineNoColor(struct TextHandle* text, int item, u16* mapOut);
-void DrawItemStatScreenLine(struct TextHandle* text, int item, int nameColor, u16* mapOut);
+void DrawItemMenuLine(struct Text* text, int item, s8 isGrayed, u16* mapOut);
+void DrawItemMenuLineLong(struct Text* text, int item, s8 isGrayed, u16* mapOut);
+void DrawItemMenuLineNoColor(struct Text* text, int item, u16* mapOut);
+void DrawItemStatScreenLine(struct Text* text, int item, int nameColor, u16* mapOut);
 u16 GetItemAfterUse(int item);
-u32 GetUnitEquippedWeapon(struct Unit* unit);
+u16 GetUnitEquippedWeapon(struct Unit* unit);
 int GetUnitEquippedWeaponSlot(struct Unit* unit);
 s8 IsItemCoveringRange(int item, int range);
 void EquipUnitItemSlot(struct Unit* unit, int itemSlot);
@@ -223,5 +223,29 @@ int GetItemCostPerUse(int item);
 int GetItemMaxCost(int item);
 int GetItemAwardedExp(int item);
 const struct ItemData* GetItemData(int item);
+
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Excalibur;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_DarkGleipnir;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterHp;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterPow;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterSkl;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterSpd;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterLck;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterDef;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterRes;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterMov;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_BoosterCon;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Sieglinde;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Ivaldi;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Vidofnir;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_WretchAir;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Audhulma;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Siegmund;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Garm;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Nidhogg;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_NightMare;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_DemonLight;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_Ravger;
+extern CONST_DATA struct ItemStatBonuses ItemBonus_DivineStone;
 
 #endif // GUARD_ITEMS_H

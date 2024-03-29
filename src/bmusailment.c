@@ -19,7 +19,8 @@
 #include "trapfx.h"
 #include "bmudisp.h"
 #include "bm.h"
-
+#include "bmlib.h"
+#include "eventinfo.h"
 #include "bmusailment.h"
 
 extern u16 gUnknown_08A032AC[];
@@ -247,7 +248,7 @@ void StatusHealEffect_OverlayBg_Init() {
     ClearBg0Bg1();
 
     Decompress(gUnknown_08A032AC, (u8*)BG_VRAM + 0x5000);
-    CopyToPaletteBuffer(gUnknown_08A03334, 0x60, 0x20);
+    ApplyPalette(gUnknown_08A03334, 3);
 
     CallARM_FillTileRect(gBG0TilemapBuffer, gUnknown_08A03354, 0x3280);
 
@@ -358,7 +359,7 @@ void StatusHealEffect_BlendSpriteAnim_Loop(struct UnknownBMUSAilmentProc* proc) 
 
     proc->unk_2C += proc->unk_34;
 
-    SetSpecialColorEffectsParameters(1, proc->unk_2C & 0xFF, 0x10, 0);
+    SetBlendConfig(1, proc->unk_2C & 0xFF, 0x10, 0);
 
     proc->unk_4C--;
 
@@ -398,7 +399,7 @@ void StatusHealEffect_PalSpriteAnim_Init(struct UnknownBMUSAilmentProc* proc) {
             break;
     }
 
-    CopyToPaletteBuffer(pal, 0x240, 0x20);
+    ApplyPalette(pal, 0x12);
 
     proc->unk_4C = 0;
 

@@ -32,8 +32,8 @@ Img_SaveScreenSprits:  @ 0x08A26A74
 Pal_SaveScreenSprits:  @ 0x08A27F68
 	.incbin "baserom.gba", 0xA27F68, 0x120
 
-	.global gUnknown_08A28088
-gUnknown_08A28088:  @ 0x08A28088
+	.global Pal_08A28088
+Pal_08A28088:  @ 0x08A28088
 	.incbin "baserom.gba", 0xA28088, 0x20
 
 	.global gUnknown_08A280A8
@@ -50,15 +50,11 @@ Img_DifficultyMenuObjs:  @ 0x08A28A0C
 
 	.global Pal_DifficultyMenuObjs
 Pal_DifficultyMenuObjs:  @ 0x08A29418
-	.incbin "baserom.gba", 0xA29418, 0x82
+	.incbin "baserom.gba", 0xA29418, 0x80
 
-	.global gUnknown_08A2949A
-gUnknown_08A2949A:  @ 0x08A2949A
-	.incbin "baserom.gba", 0xA2949A, 0x20
-
-	.global gUnknown_08A294BA
-gUnknown_08A294BA:  @ 0x08A294BA
-	.incbin "baserom.gba", 0xA294BA, 0x9E
+	.global gUnknown_08A29498
+gUnknown_08A29498:  @ 0x08A29498
+	.incbin "baserom.gba", 0xA29498, 0xC0
 
 	.global gUnknown_08A29558
 gUnknown_08A29558:  @ 0x08A29558
@@ -100,12 +96,12 @@ gUnknown_08A2C5A8:  @ 0x08A2C5A8
 gUnknown_08A2C7A4:  @ 0x08A2C7A4
 	.incbin "baserom.gba", 0xA2C7A4, 0x94
 
-	.global gUnknown_08A2C838
-gUnknown_08A2C838:  @ 0x08A2C838
+	.global Img_SoundRoomVolumeGraph
+Img_SoundRoomVolumeGraph:  @ 0x08A2C838
 	.incbin "baserom.gba", 0xA2C838, 0x70
 
-	.global gUnknown_08A2C8A8
-gUnknown_08A2C8A8:  @ 0x08A2C8A8
+	.global Pal_SoundRoomVolumeGraph
+Pal_SoundRoomVolumeGraph:  @ 0x08A2C8A8
 	.incbin "baserom.gba", 0xA2C8A8, 0x60
 
 	.global gUnknown_08A2C908
@@ -116,12 +112,12 @@ gUnknown_08A2C908:  @ 0x08A2C908
 gUnknown_08A2C92C:  @ 0x08A2C92C
 	.incbin "baserom.gba", 0xA2C92C, 0x190
 
-	.global gUnknown_08A2CABC
-gUnknown_08A2CABC:  @ 0x08A2CABC
+	.global Img_SoundRoomUiElements
+Img_SoundRoomUiElements:  @ 0x08A2CABC
 	.incbin "baserom.gba", 0xA2CABC, 0x810
 
-	.global gUnknown_08A2D2CC
-gUnknown_08A2D2CC:  @ 0x08A2D2CC
+	.global Pal_SoundRoomUiElements
+Pal_SoundRoomUiElements:  @ 0x08A2D2CC
 	.incbin "baserom.gba", 0xA2D2CC, 0x60
 
 	.global gUnknown_08A2D32C
@@ -156,6 +152,6 @@ gUnknown_08A2E5EC:  @ 0x08A2E5EC
 gUnknown_08A2E8F0:  @ 0x08A2E8F0
 	.incbin "baserom.gba", 0xA2E8F0, 0x60
 
-	.global gUnknown_08A2E950
-gUnknown_08A2E950:  @ 0x08A2E950
+	.global Img_SysBlackBox
+Img_SysBlackBox:  @ 0x08A2E950
 	.incbin "baserom.gba", 0xA2E950, 0x24

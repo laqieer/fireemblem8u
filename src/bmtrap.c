@@ -17,42 +17,10 @@
 #include "bmusailment.h"
 #include "bmudisp.h"
 #include "bmsave.h"
-
+#include "eventinfo.h"
+#include "bmmind.h"
 #include "bmtrap.h"
-
-// code.s
-void PidStatsRecordLoseData(u8);
-void PidStatsRecordDefeatInfo(u8, u8, int);
-
-// trapfx.s
-void StartFireTrapAnim(ProcPtr, int, int);
-void StartFireTrapAnim2(ProcPtr, int, int);
-
-// ev_triggercheck.s
-s8 CheckForWaitEvents(void);
-void RunWaitEvents(void);
-struct TrapData* GetCurrentChapterBallistaePtr(void);
-struct TrapData* GetCurrentChapterBallistae2Ptr(void);
-
-// notifybox.s
-void NewPopup2_PlanA(ProcPtr, int, char*);
-
-struct UnknownBMTrapProc {
-    /* 00 */ PROC_HEADER;
-
-    /* 29 */ u8 _pad_29[0x50-0x29];
-
-    /* 50 */ s16 unk_50;
-    /* 52 */ s8 unk_52;
-    /* 53 */ s8 unk_53;
-    /* 54 */ struct Unit* unit;
-};
-
-void sub_80374F4(struct UnknownBMTrapProc* proc);
-void sub_8037510(struct UnknownBMTrapProc* proc);
-void sub_8037528(struct UnknownBMTrapProc* proc);
-void sub_8037540(struct UnknownBMTrapProc* proc);
-void sub_80375A0(struct UnknownBMTrapProc* proc);
+#include "popup.h"
 
 struct ProcCmd CONST_DATA sProcScr_ExecTrap8[] = {
     PROC_SLEEP(1),
@@ -131,7 +99,8 @@ void sub_8037540(struct UnknownBMTrapProc* proc) {
     return;
 }
 
-void sub_80375A0(struct UnknownBMTrapProc* proc) {
+void sub_80375A0(struct UnknownBMTrapProc * proc)
+{
     struct Unit* unit = proc->unit;
 
     ApplyHazardHealing(proc, unit, -10, -1);
@@ -152,8 +121,9 @@ void sub_80375A0(struct UnknownBMTrapProc* proc) {
     return;
 }
 
-int GetPickTrapType(struct Unit* unit) {
-    struct Trap* trap;
+int GetPickTrapType(struct Unit * unit)
+{
+    struct Trap * trap;
 
     if ((trap = GetTrapAt(unit->xPos, unit->yPos)) == NULL) {
         return 0;
@@ -184,7 +154,8 @@ int GetPickTrapType(struct Unit* unit) {
     return trap->type;
 }
 
-int ExecTrap(ProcPtr proc, struct Unit* unit, int param_3) {
+int ExecTrap(ProcPtr proc, struct Unit * unit, int param_3)
+{
     struct UnknownBMTrapProc* proc2;
 
     switch (GetPickTrapType(unit)) {
@@ -218,7 +189,7 @@ int ExecTrap(ProcPtr proc, struct Unit* unit, int param_3) {
     return 0;
 }
 
-s8 HandlePostActionTraps(ProcPtr proc) {
+bool HandlePostActionTraps(ProcPtr proc) {
 
     if (GetUnitCurrentHp(gActiveUnit) <= 0) {
         return 1;
@@ -245,18 +216,20 @@ s8 HandlePostActionTraps(ProcPtr proc) {
 
     WriteSuspendSave(3);
 
-    if (GetBattleAnimType() == 1) {
+    if (GetBattleAnimPreconfType() == PLAY_ANIMCONF_OFF) {
         RefreshUnitSprites();
     }
 
     return ExecTrap(proc, gActiveUnit, 0);
 }
 
-s8 sub_80377CC(ProcPtr proc) {
+bool sub_80377CC(ProcPtr proc)
+{
     return ExecTrap(proc, GetUnit(gActionData.targetIndex), 1);
 }
 
-s8 sub_80377F0(ProcPtr proc, struct Unit* unit) {
+bool sub_80377F0(ProcPtr proc, struct Unit * unit)
+{
     if (!GetPickTrapType(unit)) {
         MU_End(MU_GetByUnit(unit));
         RenderBmMap();
@@ -268,11 +241,13 @@ s8 sub_80377F0(ProcPtr proc, struct Unit* unit) {
     return ExecTrap(proc, unit, 2);
 }
 
-s8 sub_8037830(ProcPtr proc, struct Unit* unit) {
+bool sub_8037830(ProcPtr proc, struct Unit * unit)
+{
     return ExecTrap(proc, unit, 3);
 }
 
-void LoadTrapData(struct TrapData* data) {
+void LoadTrapData(const struct TrapData * data)
+{
     if (!data || !data->type) {
         return;
     } else {
@@ -318,15 +293,20 @@ void LoadTrapData(struct TrapData* data) {
     return;
 }
 
-void LoadChapterBallistae() {
-    LoadTrapData(GetCurrentChapterBallistaePtr());
-    LoadTrapData(GetCurrentChapterBallistae2Ptr());
+//! FE8U = 0x08037910
+void LoadChapterTraps(void)
+{
+    LoadTrapData(GetTrapPointer());
+    LoadTrapData(GetHardModeTrapPointer());
 
     return;
 }
 
-void AddGorgonEggTrap(s8 x, s8 y, u8 turnsToHatch, u8 level, u8 unk_05) {
-    AddDamagingTrap(x, y, TRAP_GORGON_EGG, turnsToHatch, level, 1, unk_05);
+//! FE8U = 0x08037928
+void AddGorgonEggTrap(s8 x, s8 y, u8 meta, u8 delay, u8 level)
+{
+    // The value of the "meta" parameter appears to be unused in the game logic
+    AddDamagingTrap(x, y, TRAP_GORGON_EGG, meta, delay, 1, level);
 
     return;
 }

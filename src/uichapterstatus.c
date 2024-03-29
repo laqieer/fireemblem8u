@@ -4,7 +4,7 @@
 #include "hardware.h"
 #include "fontgrp.h"
 #include "uiutils.h"
-#include "sallycursor.h"
+#include "prepscreen.h"
 #include "statscreen.h"
 #include "chapterdata.h"
 #include "m4a.h"
@@ -15,7 +15,9 @@
 #include "bmudisp.h"
 #include "bm.h"
 #include "bmsave.h"
-
+#include "bmlib.h"
+#include "helpbox.h"
+#include "worldmap.h"
 #include "uichapterstatus.h"
 
 #include "constants/characters.h"
@@ -45,14 +47,13 @@ struct ChapterStatusProc {
     /* 64 */ u16 unk_64;
 };
 
-extern struct TextHandle gChapterStatusText[2];
-
 struct Struct2004BBC {
-    struct TextHandle th;
+    struct Text th;
     struct Font font;
 };
 
-extern struct Struct2004BBC gUnknown_02004BBC;
+EWRAM_OVERLAY(0) struct Text gChapterStatusText[2] = {0};
+EWRAM_OVERLAY(0) struct Struct2004BBC gUnknown_02004BBC = {0};
 
 u16 sSprite_08A01AA4[] = {
     1,
@@ -112,7 +113,7 @@ u16 sSprite_08A01B2C[] = {
     0x8000, 0x8040, 0x0098
 };
 
-struct TextBatch gTextBatch_ChapterStatus[] = {
+struct TextInitInfo gTextInitInfo_ChapterStatus[] = {
     { gChapterStatusText + 0, 12 },
     { gChapterStatusText + 1, 12 },
 
@@ -127,9 +128,9 @@ void ChapterStatus_OnEnd(struct ChapterStatusProc* proc);
 void ChapterStatus_MaybeFocusLeaderUnit(struct ChapterStatusProc* proc);
 
 struct ProcCmd CONST_DATA gProcScr_ChapterStatusScreen[] = {
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
 
-    PROC_CALL(sub_8013D80),
+    PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
 
@@ -143,19 +144,19 @@ PROC_LABEL(0),
 PROC_LABEL(1),
     PROC_CALL(sub_8013F58),
     PROC_SLEEP(0),
-    PROC_CALL(EndBG3Slider),
+    PROC_CALL(EndMuralBackground),
 
     PROC_CALL(ChapterStatus_OnEnd),
 
     PROC_CALL(BMapDispResume),
     PROC_CALL(RefreshBMapGraphics),
-    PROC_CALL(sub_8013DA4),
+    PROC_CALL(StartFastFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
     PROC_CALL(ChapterStatus_MaybeFocusLeaderUnit),
     PROC_SLEEP(0),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
@@ -168,7 +169,7 @@ struct ProcCmd CONST_DATA gProcScr_08A01C04[] = {
 
     PROC_SLEEP(0),
     PROC_CALL(sub_808E3D4),
-    PROC_CALL(sub_8013FD8),
+    PROC_CALL(FadeInBlackSpeed40),
 
     PROC_SLEEP(0),
 
@@ -179,7 +180,7 @@ PROC_LABEL(1),
     PROC_CALL(sub_8013F58),
     PROC_SLEEP(0),
 
-    PROC_CALL(EndBG3Slider),
+    PROC_CALL(EndMuralBackground),
 
     PROC_CALL(ChapterStatus_OnEnd),
 
@@ -301,7 +302,7 @@ struct HelpBoxInfo sHelpInfo_ChapterStatus_TimePlayed = {
 
 
 void StartChapterStatusHelpBox(ProcPtr proc) {
-    LoadDialogueBoxGfx(OBJ_VRAM1 + 0x1000, 6);
+    LoadHelpBoxGfx(OBJ_VRAM1 + 0x1000, 6);
     StartMovingHelpBox(&sHelpInfo_ChapterStatus_AllyUnits, proc);
 
     return;
@@ -420,7 +421,7 @@ void sub_808DE38(struct ChapterStatusProc* proc) {
     int mod;
 
     base = gUnknown_08A2E8F0[0x2F];
-    palPtr = gUnknown_02022BA4;
+    palPtr = PAL_OBJ(7) + 0xE;
 
     mod = RED_VALUE(proc->unk_40 >> 1);
 
@@ -465,14 +466,14 @@ const char* SplitObjectiveTextOnNewline(const char* str) {
             return NULL;
         }
 
-        str = GetCharTextWidth(str, &width);
+        str = GetCharTextLen(str, &width);
     }
 }
 
 void sub_808DEF0(s8 flag) {
 
     if (flag) {
-        CpuFastFill16(0, gUnknown_02022C48, 0x20);
+        CpuFastFill16(0, PAL_OBJ(0xD), 0x20);
         EnablePaletteSync();
     } else {
         SetupMapSpritesPalettes();
@@ -496,7 +497,7 @@ void ChapterStatus_Init(struct ChapterStatusProc* proc) {
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 2;
 
-    Font_InitForUIDefault();
+    ResetText();
     LoadUiFrameGraphics();
 
     proc->unk_3c = 0;
@@ -510,13 +511,13 @@ void ChapterStatus_Init(struct ChapterStatusProc* proc) {
 
     ClearBg0Bg1();
 
-    CopyToPaletteBuffer(gUiFramePaletteA, 0x40, 0x60);
+    ApplyPalettes(gUiFramePaletteA, 2, 3);
     Decompress(gUnknown_08A2E5EC, (void*)(BG_VRAM + 0x5800));
     Decompress(gUnknown_08A2E4C4, gGenericBuffer);
     CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer, 0x1000);
 
     Decompress(gUnknown_08A2D32C, OBJ_VRAM0 + 0x3000);
-    CopyToPaletteBuffer(gUnknown_08A2E1B8, 0x300, 0x40);
+    ApplyPalettes(gUnknown_08A2E1B8, 0x18, 2);
 
     Decompress(gUnknown_08A2E1F8, OBJ_VRAM0 + 0x3300);
 
@@ -582,9 +583,9 @@ void ChapterStatus_Init(struct ChapterStatusProc* proc) {
     gLCDControlBuffer.wincnt.wout_enableBg3 = 1;
     gLCDControlBuffer.wincnt.wout_enableObj = 1;
 
-    sub_8086BB8(proc, 0, 14);
+    StartMuralBackground(proc, 0, 14);
 
-    CopyToPaletteBuffer(gUnknown_08B1754C, 0x1C0, 0x40);
+    ApplyPalettes(gUnknown_08B1754C, 0xE, 2);
 
     StartHelpPromptSprite(200, 18, 2, (struct Proc*)proc);
 
@@ -604,53 +605,53 @@ void DrawChapterStatusTextForUnit(struct Unit* unit) {
 
     TileMap_FillRect(gBG0TilemapBuffer + 0x139, 3, 3, 0);
 
-    SetFont(&ptr->font);
-    SetFontGlyphSet(0);
+    SetTextFont(&ptr->font);
+    SetTextFontGlyphs(0);
 
-    Text_80046B4(&ptr->th, 0);
+    SpriteText_DrawBackgroundExt(&ptr->th, 0);
 
     if (unit) {
         if (unit->state & (US_UNDER_A_ROOF | US_BIT9)) {
-            Text_SetColorId(&ptr->th, 2);
+            Text_SetColor(&ptr->th, 2);
 
-            Text_SetXCursor(&ptr->th, 130);
-            Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+            Text_SetCursor(&ptr->th, 130);
+            Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
 
-            Text_SetXCursor(&ptr->th, 162);
-            Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+            Text_SetCursor(&ptr->th, 162);
+            Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
 
-            Text_SetXCursor(&ptr->th, 186);
-            Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+            Text_SetCursor(&ptr->th, 186);
+            Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
 
             sub_808DEF0(1);
         } else {
             char* str;
 
-            Text_SetColorId(&ptr->th, 0);
+            Text_SetColor(&ptr->th, 0);
 
             str = GetStringFromIndex(unit->pCharacterData->nameTextId);
-            Text_SetXCursor(&ptr->th, GetStringTextCenteredPos(0x30, str));
-            Text_AppendString(&ptr->th, str);
+            Text_SetCursor(&ptr->th, GetStringTextCenteredPos(0x30, str));
+            Text_DrawString(&ptr->th, str);
 
-            Text_SetColorId(&ptr->th, 2);
+            Text_SetColor(&ptr->th, 2);
 
-            Text_SetXCursor(&ptr->th, 138);
-            Text_AppendNumberOr2Dashes(&ptr->th, unit->level);
+            Text_SetCursor(&ptr->th, 138);
+            Text_DrawNumberOrBlank(&ptr->th, unit->level);
 
             if (GetUnitCurrentHp(unit) >= 100) {
-                Text_SetXCursor(&ptr->th, 162);
-                Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+                Text_SetCursor(&ptr->th, 162);
+                Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
             } else {
-                Text_SetXCursor(&ptr->th, 170);
-                Text_AppendNumberOr2Dashes(&ptr->th, GetUnitCurrentHp(unit));
+                Text_SetCursor(&ptr->th, 170);
+                Text_DrawNumberOrBlank(&ptr->th, GetUnitCurrentHp(unit));
             }
 
             if (GetUnitMaxHp(unit) >= 100) {
-                Text_SetXCursor(&ptr->th, 186);
-                Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+                Text_SetCursor(&ptr->th, 186);
+                Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
             } else {
-                Text_SetXCursor(&ptr->th, 194);
-                Text_AppendNumberOr2Dashes(&ptr->th, GetUnitMaxHp(unit));
+                Text_SetCursor(&ptr->th, 194);
+                Text_DrawNumberOrBlank(&ptr->th, GetUnitMaxHp(unit));
             }
 
             PutFaceChibi(GetUnitMiniPortraitId(unit), gBG0TilemapBuffer + 0x139, 0x280, 4, 0);
@@ -658,24 +659,24 @@ void DrawChapterStatusTextForUnit(struct Unit* unit) {
             sub_808DEF0(0);
         }
     } else {
-        Text_SetColorId(&ptr->th, 2);
+        Text_SetColor(&ptr->th, 2);
 
-        Text_SetXCursor(&ptr->th, 130);
-        Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+        Text_SetCursor(&ptr->th, 130);
+        Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
 
-        Text_SetXCursor(&ptr->th, 162);
-        Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+        Text_SetCursor(&ptr->th, 162);
+        Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
 
-        Text_SetXCursor(&ptr->th, 186);
-        Text_AppendString(&ptr->th, GetStringFromIndex(0x535));
+        Text_SetCursor(&ptr->th, 186);
+        Text_DrawString(&ptr->th, GetStringFromIndex(0x535));
     }
 
-    Text_SetColorId(&ptr->th, 0);
+    Text_SetColor(&ptr->th, 0);
 
-    Text_SetXCursor(&ptr->th, 179);
-    Text_AppendString(&ptr->th, GetStringFromIndex(0x539));
+    Text_SetCursor(&ptr->th, 179);
+    Text_DrawString(&ptr->th, GetStringFromIndex(0x539));
 
-    SetFont(0);
+    SetTextFont(0);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 
@@ -683,11 +684,11 @@ void DrawChapterStatusTextForUnit(struct Unit* unit) {
 
     SetBlendTargetB(0, 0, 0, 1, 0);
 
-    SetSpecialColorEffectsParameters(1, 13, 3, 0);
+    SetBlendConfig(1, 13, 3, 0);
 
-    sub_8001F48(0);
+    SetBlendBackdropA(0);
 
-    sub_8001F64(0);
+    SetBlendBackdropB(0);
 
     return;
 }
@@ -703,16 +704,16 @@ void sub_808E3D4() {
 }
 
 void ChapterStatus_SetupFont(ProcPtr proc) {
-    CopyToPaletteBuffer(Pal_UIFont, 0x340, 0x20);
+    ApplyPalette(Pal_Text, 0x1A);
 
-    InitSomeOtherGraphicsRelatedStruct(&gUnknown_02004BBC.font, OBJ_VRAM0 + 0x7800, 0x1A);
+    InitSpriteTextFont(&gUnknown_02004BBC.font, OBJ_VRAM0 + 0x7800, 0x1A);
 
-    SetFont(&gUnknown_02004BBC.font);
-    SetFontGlyphSet(0);
+    SetTextFont(&gUnknown_02004BBC.font);
+    SetTextFontGlyphs(0);
 
-    Text_Init3(&gUnknown_02004BBC.th);
+    InitSpriteText(&gUnknown_02004BBC.th);
 
-    SetFont(0);
+    SetTextFont(0);
 
     return;
 }
@@ -720,15 +721,13 @@ void ChapterStatus_SetupFont(ProcPtr proc) {
 void DrawChapterStatusStatValues() {
     TileMap_FillRect(gBG0TilemapBuffer + 0x1C0, 15, 6, 0);
 
-    sub_8004B88(gBG0TilemapBuffer + 0x1C0 + 0xC, 2, gPlaySt.chapterTurnNumber);
+    PutNumber(gBG0TilemapBuffer + 0x1C0 + 0xC, 2, gPlaySt.chapterTurnNumber);
 
-    sub_8004B88(gBG0TilemapBuffer + 0x1C0 + 0x4B, 2, GetPartyGoldAmount());
+    PutNumber(gBG0TilemapBuffer + 0x1C0 + 0x4B, 2, GetPartyGoldAmount());
 
-    sub_8004B0C(gBG0TilemapBuffer + 0x1C0 + 0x4C, 3, 30);
-
-    sub_8004D5C(gBG0TilemapBuffer + 0x1C0 - 0x8F, 3, 36, 37);
-
-    sub_8004D5C(gBG0TilemapBuffer + 0x1C0 - 0x4F, 3, 34, 35);
+    PutSpecialChar(gBG0TilemapBuffer + 0x1C0 + 0x4C, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_G);
+    PutTwoSpecialChar(gBG0TilemapBuffer + 0x1C0 - 0x8F, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_LV_A, TEXT_SPECIAL_LV_B);
+    PutTwoSpecialChar(gBG0TilemapBuffer + 0x1C0 - 0x4F, TEXT_COLOR_SYSTEM_GOLD, TEXT_SPECIAL_HP_A, TEXT_SPECIAL_HP_B);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 
@@ -738,48 +737,48 @@ void DrawChapterStatusStatValues() {
 void ChapterStatus_DrawText(struct ChapterStatusProc* proc) {
     const char* str;
 
-    InitTextBatch(gTextBatch_ChapterStatus);
+    InitTextInitInfo(gTextInitInfo_ChapterStatus);
 
     ChapterStatus_SetupFont(proc);
 
     DrawChapterStatusTextForUnit(proc->units[proc->unitIndex]);
 
-    sub_8004B88(gBG1TilemapBuffer + 0xA4, 2, proc->numAllyUnits);
+    PutNumber(gBG1TilemapBuffer + 0xA4, 2, proc->numAllyUnits);
 
     if (gPlaySt.chapterVisionRange != 0) {
-        sub_8004B0C(gBG1TilemapBuffer + 0xA4 + 7, 2, 20);
-        sub_8004B0C(gBG1TilemapBuffer + 0xA4 + 8, 2, 20);
+        PutSpecialChar(gBG1TilemapBuffer + 0xA4 + 7, TEXT_COLOR_SYSTEM_BLUE, TEXT_SPECIAL_DASH);
+        PutSpecialChar(gBG1TilemapBuffer + 0xA4 + 8, TEXT_COLOR_SYSTEM_BLUE, TEXT_SPECIAL_DASH);
     } else {
-        sub_8004B88(gBG1TilemapBuffer + 0xA4 + 7, 2, proc->numEnemyUnits);
+        PutNumber(gBG1TilemapBuffer + 0xA4 + 7, 2, proc->numEnemyUnits);
     }
 
     proc->numObjectiveTextLines = 1;
 
     str = GetStringFromIndex(
-        GetChapterThing() != 2 ?
+        GetBattleMapKind() != 2 ?
             GetROMChapterStruct(gPlaySt.chapterIndex)->statusObjectiveTextId
             : 0x1C0 // TODO: Defeat all monsters[.]
     );
 
-    Text_InsertString(gChapterStatusText, GetStringTextCenteredPos(0x60, str), 0, str);
+    Text_InsertDrawString(gChapterStatusText, GetStringTextCenteredPos(0x60, str), 0, str);
 
     str = SplitObjectiveTextOnNewline(str);
 
     if (str != 0) {
-        Text_InsertString(gChapterStatusText + 1, GetStringTextCenteredPos(0x60, str), 0, str);
+        Text_InsertDrawString(gChapterStatusText + 1, GetStringTextCenteredPos(0x60, str), 0, str);
         proc->numObjectiveTextLines = 2;
     }
 
     if (proc->numObjectiveTextLines == 2) {
-        Text_Draw(gChapterStatusText + 0, gBG0TilemapBuffer + 0x141);
-        Text_Draw(gChapterStatusText + 1, gBG0TilemapBuffer + 0x181);
+        PutText(gChapterStatusText + 0, gBG0TilemapBuffer + 0x141);
+        PutText(gChapterStatusText + 1, gBG0TilemapBuffer + 0x181);
     } else {
-        Text_Draw(gChapterStatusText + 0, gBG0TilemapBuffer + 0x161);
+        PutText(gChapterStatusText + 0, gBG0TilemapBuffer + 0x161);
     }
 
     if (proc->timesCompleted != 0) {
         if (!(gPlaySt.chapterStateBits & PLAY_FLAG_POSTGAME)) {
-            DrawDecNumber(gBG0TilemapBuffer + 0x1A, 0, proc->timesCompleted + 1);
+            PutNumberOrBlank(gBG0TilemapBuffer + 0x1A, 0, proc->timesCompleted + 1);
         }
     }
 
@@ -884,8 +883,8 @@ void sub_808E79C(ProcPtr proc) {
 void sub_808E7B4(struct ChapterStatusProc* proc) {
     LoadObjUIGfx();
 
-    CopyToPaletteBuffer(gUnknown_08A2E4A4, 0x280, 0x20);
-    CopyToPaletteBuffer(gUnknown_08A2E8F0, 0x2E0, 0x20);
+    ApplyPalette(gUnknown_08A2E4A4, 0x14);
+    ApplyPalette(gUnknown_08A2E8F0, 0x17);
 
     Decompress(gUnknown_08A2E214, OBJ_VRAM0 + 0x6800);
 
@@ -928,7 +927,7 @@ void sub_808E818(struct ChapterStatusProc* proc) {
         PutSprite(4, 156 + (i * 32), 91, gObject_32x16, 0xA3D4 + (i * 4));
     }
 
-    sub_8004C68(gBG0TilemapBuffer + 0x213, 2, GetGameClock(), 0);
+    PutTime(gBG0TilemapBuffer + 0x213, 2, GetGameClock(), 0);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 

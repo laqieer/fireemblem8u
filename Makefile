@@ -33,7 +33,7 @@ ROM          := fireemblem8.gba
 ELF          := $(ROM:.gba=.elf)
 MAP          := $(ROM:.gba=.map)
 LDSCRIPT     := ldscript.txt
-SYM_FILES    := sym_iwram.txt sym_ewram.txt
+SYM_FILES    := sym_iwram.txt
 CFILES_GENERATED := $(C_SUBDIR)/msg_data.c
 CFILES       := $(wildcard $(C_SUBDIR)/*.c)
 ifeq (,$(findstring $(CFILES_GENERATED),$(CFILES)))
@@ -149,7 +149,7 @@ src/msg_data.c: msg_list.txt
 
 $(C_OBJECTS): %.o: %.c $(DEPS_DIR)/%.d
 	@$(MAKEDEP)
-	$(CPP) $(CPPFLAGS) $< | $(CC1) $(CC1FLAGS) -o $*.s
+	$(CPP) $(CPPFLAGS) $< | iconv -f UTF-8 -t CP932 | $(CC1) $(CC1FLAGS) -o $*.s
 	echo '.ALIGN 2, 0' >> $*.s
 	sed -i '/.section	.debug_line/i\.align 2, 0' $*.s
 	$(AS) $(ASFLAGS) $*.s -o $@

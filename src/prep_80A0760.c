@@ -6,7 +6,9 @@
 #include "soundwrapper.h"
 #include "face.h"
 #include "chapterdata.h"
+#include "cgtext.h"
 #include "prepscreen.h"
+#include "sysutil.h"
 
 /**
 * This proc seems to be the "sub-menu" dialogue that pops up when selecting "Fortune" on the prep screen in FE7.
@@ -23,10 +25,6 @@ struct PrepProcA1962C {
 
 s8 sub_80A0A34(void);
 s8 sub_80A0A70(void);
-
-extern u16 gUnknown_02022F28[];
-
-extern struct TextHandle gUnknown_02013498[];
 
 void FortuneSubMenu_Init_Null(void);
 void FortuneSubMenu_OnOptionSelected(ProcPtr);
@@ -93,8 +91,8 @@ int CONST_DATA gUnused_08A196E4[] = {
 
 //! FE8U = 0x080A0724
 void sub_80A0724(struct PrepProcA1962C* proc) {
-    sub_808F128(10, 7, 17, 4, proc->unk_2c, 0x06011000, -1, 0);
-    sub_808E9D8(0x7c);
+    StartCgText(10, 7, 17, 4, proc->unk_2c, OBJ_VRAM0 + 0x1000, -1, 0);
+    SetCgTextFlags(CG_TEXT_FLAG_2 | CG_TEXT_FLAG_3 | CG_TEXT_FLAG_4 | CG_TEXT_FLAG_5 | CG_TEXT_FLAG_6); 
     return;
 }
 
@@ -121,16 +119,16 @@ void FortuneSubMenu_Unused_SetAvailableOptions(struct PrepProcA1962C* proc) {
 void FortuneSubMenu_Unused_SetupText(struct PrepProcA1962C* proc) {
     int i;
 
-    struct TextHandle* th = gUnknown_02013498;
+    struct Text* th = gPrepItemTexts;
 
-    SetFontGlyphSet(0);
-    SetFont(0);
+    SetTextFontGlyphs(0);
+    SetTextFont(0);
 
-    TileMap_FillRect(gUnknown_02022F28, 31, 10, 0);
+    TileMap_FillRect(TILEMAP_LOCATED(gBG0TilemapBuffer, 0, 0xA), 31, 10, 0);
 
     for (i = 0; i < 4; i++) {
-        Text_Clear(th);
-        DrawTextInline(
+        ClearText(th);
+        PutDrawText(
             th++,
             gBG0TilemapBuffer + TILEMAP_INDEX(0x144 + (i & 1) * 14, (i >> 1) * 2),
             proc->unk_30[i] != 0 ? 0 : 1,
@@ -140,10 +138,10 @@ void FortuneSubMenu_Unused_SetupText(struct PrepProcA1962C* proc) {
         );
     }
 
-    th = gUnknown_02013498 + 0x1e;
+    th = gPrepItemTexts + 0x1e;
 
-    Text_Clear(th);
-    DrawTextInline(
+    ClearText(th);
+    PutDrawText(
         th,
         gBG0TilemapBuffer + 0x16,
         0,
@@ -187,9 +185,9 @@ s8 FortuneSubMenu_Unused_KeyHandler(struct PrepProcA1962C* proc) {
 
 //! FE8U = 0x080A0900
 void FortuneSubMenu_OnOptionSelected(ProcPtr proc) {
-    sub_808F270();
+    EndCgText();
     EndAllProcChildren(proc);
-    EndBG3Slider_();
+    EndMuralBackground_();
     EndFaceById(0);
     SetPrimaryHBlankHandler(0);
     return;
@@ -217,7 +215,7 @@ void StartFortuneSubMenu(int option, ProcPtr parent) {
 }
 
 //! FE8U = 0x080A095C
-int sub_80A095C(int var) {
+bool sub_80A095C(int var) {
     switch (var) {
         case 0:
             return 1;

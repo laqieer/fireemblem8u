@@ -6,6 +6,7 @@
 #include "hardware.h"
 #include "bmudisp.h"
 #include "bmfx.h"
+#include "bmlib.h"
 #include "soundwrapper.h"
 
 /**
@@ -85,17 +86,17 @@ void ProcEventWrapAnim_Init(struct ProcBmFx *proc)
 
     Decompress(Img_EventWarp, BG_CHR_ADDR(BGCHR_BMFX_IMG));
     ApplyPalette(Pal_EventWarp, BGPAL_EVENTWARP_IMG);
-    Decompress(Tsa_EventWarp, gBmFrameTmap0);
+    Decompress(Tsa_EventWarp, gUiTmScratchA);
 
     for (i = 0; i < 0x360; i++)
-        gBmFrameTmap0[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_EVENTWARP_IMG);
+        gUiTmScratchA[i] += TILEREF(BGCHR_BMFX_IMG, BGPAL_EVENTWARP_IMG);
 
     BG_Fill(gBG0TilemapBuffer, TILEREF(BGCHR_BMFX_IMG, 0));
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 
     PlaySoundEffect(0x0B4);
 
-    SetSpecialColorEffectsParameters(0x1, 0xA, 0xC, 0x0);
+    SetBlendConfig(0x1, 0xA, 0xC, 0x0);
     SetBlendTargetA(1, 0, 0, 0, 0);
     SetBlendTargetB(0, 1, 1, 1, 1);
 
@@ -129,7 +130,7 @@ void ProcEventWrapAnim_Loop(struct ProcBmFx *proc)
         RefreshUnitSprites();
     
     TileMap_CopyRect(
-        TILEMAP_LOCATED(gBmFrameTmap0, x, y),
+        TILEMAP_LOCATED(gUiTmScratchA, x, y),
         gBG0TilemapBuffer, 4, 7);
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
@@ -141,25 +142,25 @@ void ProcEventWrapAnim_End(struct ProcBmFx *proc)
     BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
-void StartEventWarpAnim(ProcPtr parent, int xCamera, int yCamera, s8 xWarp, s8 yWarp)
+void StartEventWarpAnim(ProcPtr parent, int x, int y, s8 subcmd, s8 flag)
 {
     struct ProcBmFx *proc;
     
     proc = Proc_Start(ProcScr_EventWrapAnim, parent);
-    proc->xPos = xWarp;
-    proc->yPos = yWarp;
+    proc->xPos = subcmd;
+    proc->yPos = flag;
 
-    xCamera = xCamera * 0x10 - gBmSt.camera.x - 0x08;
-    yCamera = yCamera * 0x10 - gBmSt.camera.y - 0x20;
-    BG_SetPosition(0, -xCamera, -yCamera);
+    x = x * 0x10 - gBmSt.camera.x - 0x08;
+    y = y * 0x10 - gBmSt.camera.y - 0x20;
+    BG_SetPosition(0, -x, -y);
 }
 
-void StartEventWarpAnim_unused(ProcPtr parent, int xCamera, int yCamera, s8 xWarp)
+void StartEventWarpAnim_unused(ProcPtr parent, int xCamera, int yCamera, s8 subcmd)
 {
     struct ProcBmFx *proc;
     
     proc = Proc_Start(ProcScr_EventWrapAnim, parent);
-    proc->xPos = xWarp;
+    proc->xPos = subcmd;
 
     BG_SetPosition(0, -xCamera, -yCamera);
     proc->yPos = 1;

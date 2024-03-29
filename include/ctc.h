@@ -1,6 +1,18 @@
 #ifndef GUARD_CTC_H
 #define GUARD_CTC_H
 
+#include "global.h"
+#include "gba_sprites.h"
+
+struct OAM_Attr0 {
+    u16 Y : 8;
+    u16 OM : 2;
+    u16 GM : 2;
+    u16 Mos : 1;
+    u16 CM : 1;
+    u16 Sh : 2;
+};
+
 #define OAM0_Y(ay)         ((ay) & 0x00FF)
 #define OAM0_AFFINE_ENABLE 0x0100
 #define OAM0_DOUBLESIZE    0x0200
@@ -40,8 +52,14 @@
 #define OAM1_SIZE_32x64    0xC000
 
 #define OAM2_CHR(ac)       ((ac) & 0x3FF)
-#define OAM2_LAYER(al)     (((al) << 10) & 0x0C00)
-#define OAM2_PAL(ap)       (((ap) << 12) & 0xF000)
+#define OAM2_LAYER(al)     (((al) & 0x3) << 10) // #define OAM2_LAYER(al) (((al) << 10) & 0x0C00)
+#define OAM2_PAL(ap)       (((ap) & 0xF) << 12) // #define OAM2_PAL(ap)   (((ap) << 12) & 0xF000)
+
+struct oam2_data {
+    u16 chr : 0xA;
+    u16 layer : 0x2;
+    u16 pal : 0x4;
+};
 
 extern u16 CONST_DATA gObject_8x8[];
 extern u16 CONST_DATA gObject_16x16[];
@@ -69,7 +87,7 @@ void PutSprite(int layer, int x, int y, const u16* object, int oam2);
 void PutSpriteExt(int layer, int xOam1, int yOam0, const u16* object, int oam2);
 void PushSpriteLayerObjects(int layer);
 
-struct SpriteProc* StartSpriteRefresher(ProcPtr parent, int layer, int x, int y, const u16* object, int tileref);
+struct SpriteProc * StartSpriteRefresher(ProcPtr parent, int layer, int x, int y, const u16* object, int tileref);
 void MoveSpriteRefresher(struct SpriteProc* proc, int x, int y);
 
 #endif  // GUARD_CTC_H

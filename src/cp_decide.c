@@ -10,7 +10,7 @@
 #include "cp_utility.h"
 #include "cp_script.h"
 #include "bmsave.h"
-
+#include "bmmind.h"
 #include "constants/classes.h"
 
 #include "cp_common.h"
@@ -22,6 +22,8 @@ static void DecideHealOrEscape(void);
 static void DecideScriptA(void);
 static void DecideScriptB(void);
 static void DecideSpecialItems(void);
+
+EWRAM_DATA struct AiDecision gAiDecision = {0};
 
 typedef void(*DecideFunc)(void);
 

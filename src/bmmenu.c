@@ -33,66 +33,41 @@
 #include "uiconfig.h"
 #include "bm.h"
 #include "unitinfowindow.h"
-
+#include "eventinfo.h"
+#include "menu_def.h"
+#include "worldmap.h"
+#include "savemenu.h"
+#include "prepscreen.h"
+#include "bmguide.h"
+#include "menuitempanel.h"
+#include "bmmind.h"
+#include "unitlistscreen.h"
 #include "constants/characters.h"
 #include "constants/classes.h"
 #include "constants/terrains.h"
 #include "constants/items.h"
 
-extern const struct MenuDef gUnitActionMenuDef;
-extern const struct MenuDef gBallistaRangeMenuDef;
-extern const struct MenuDef gUnknownMenuDef;
-extern const struct MenuDef gItemMenuDef;
-extern const struct MenuDef gItemSelectMenuDef;
-extern const struct MenuDef gItemSubMenuDef;
-extern const struct MenuDef gYesNoSelectionMenuDef;
-extern const struct MenuDef gStaffItemSelectMenuDef;
-extern const struct MenuDef gStealItemMenuDef;
-
-extern const struct SelectInfo gSelectInfo_Rescue;
-extern const struct SelectInfo gSelectInfo_Drop;
-extern const struct SelectInfo gSelectInfo_Take;
-extern const struct SelectInfo gSelectInfo_Give;
-extern const struct SelectInfo gSelectInfo_0859D3F8;
-extern const struct SelectInfo gSelectInfo_Trade;
-extern const struct SelectInfo gSelectInfo_Talk;
-extern const struct SelectInfo gSelectInfo_Support;
-extern const struct SelectInfo gSelectInfo_Pick;
-extern const struct SelectInfo gSelectInfo_Summon;
-extern const struct SelectInfo gSelectInfo_Steal;
-extern const struct SelectInfo gSelectInfo_Dance;
-
 extern u16 gUnknown_085A0D4C[];
 
 extern s8 gUnknown_080D7C04[4][2];
 
-extern u8 gUnknown_0895F5A4[4][2];
-
-u8 sub_8022B8C(struct MenuProc* menu, struct MenuItemProc* menuItem);
-u8 sub_8022BD8(struct MenuProc* menu, struct MenuItemProc* menuItem);
-void sub_80234AC(int, int);
-
-void BackToUnitMenu_CamWatch(ProcPtr proc);
-void BackToUnitMenu_RestartMenu(void);
+extern u8 gSummonConfig[4][2];
 
 struct ProcCmd CONST_DATA gProcScr_BackToUnitMenu[] = {
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
 
     PROC_CALL(BackToUnitMenu_CamWatch),
     PROC_WHILE_EXISTS(gProcScr_CamMove),
 
     PROC_CALL(BackToUnitMenu_RestartMenu),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
 
-void sub_8022E38(void);
-void sub_8022E54(void);
-
 struct ProcCmd CONST_DATA gProcScr_0859B630[] = {
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
 
     PROC_CALL(sub_8022E38),
 
@@ -101,7 +76,7 @@ struct ProcCmd CONST_DATA gProcScr_0859B630[] = {
 
     PROC_CALL(sub_8022E54),
 
-    PROC_CALL(SubSkipThread2),
+    PROC_CALL(UnlockGame),
 
     PROC_END,
 };
@@ -138,7 +113,7 @@ u8 CommandEffectEndPlayerPhase(struct MenuProc* menu, struct MenuItemProc* menuI
 
 u8 MapMenu_UnitCommand(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     Proc_Goto(Proc_Find(gProcScr_PlayerPhase), 10);
-    sub_80920C4();
+    StartUnitListScreenField();
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
@@ -150,7 +125,7 @@ u8 MapMenu_OptionsCommand(struct MenuProc* menu, struct MenuItemProc* menuItem) 
 }
 
 u8 sub_802263C(void) {
-    if (GetChapterThing() == 1) {
+    if (GetBattleMapKind() == 1) {
         return MENU_NOTSHOWN;
     }
 
@@ -164,7 +139,7 @@ u8 MapMenu_StatusCommand(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 }
 
 u8 MapMenu_IsGuideCommandAvailable(const struct MenuItemDef* def, int number) {
-    if (sub_80CDF4C()) {
+    if (IsGuideLocked()) {
         return MENU_NOTSHOWN;
     }
 
@@ -172,30 +147,30 @@ u8 MapMenu_IsGuideCommandAvailable(const struct MenuItemDef* def, int number) {
 }
 
 int MapMenu_GuideCommandDraw(struct MenuProc* menu, struct MenuItemProc* menuItem) {
-    if (!sub_80CF480()) {
-        Text_SetColorId(&menuItem->text, 4);
+    if (!BmGuideTextShowGreenOrNormal()) {
+        Text_SetColor(&menuItem->text, 4);
     }
 
     if (menuItem->availability == MENU_DISABLED) {
-        Text_SetColorId(&menuItem->text, 1);
+        Text_SetColor(&menuItem->text, 1);
     }
 
-    Text_AppendString(&menuItem->text, GetStringFromIndex(menuItem->def->nameMsgId));
+    Text_DrawString(&menuItem->text, GetStringFromIndex(menuItem->def->nameMsgId));
 
-    Text_Draw(&menuItem->text, BG_GetMapBuffer(menu->frontBg) + TILEMAP_INDEX(menuItem->xTile, menuItem->yTile));
+    PutText(&menuItem->text, BG_GetMapBuffer(menu->frontBg) + TILEMAP_INDEX(menuItem->xTile, menuItem->yTile));
 
     // return 0; // BUG?
 }
 
 u8 MapMenu_GuideCommand(struct MenuProc* menu, struct MenuItemProc* menuItem) {
-    Proc_Start(gProcScr_Guide, PROC_TREE_3);
+    Proc_Start(ProcScr_E_Guide1, PROC_TREE_3);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
 
 u8 MapMenu_DangerZone_UnusedEffect(void) {
     gActiveUnit = NULL;
-    gBmSt.unk3E = 0;
+    gBmSt.swapActionRangeCount = 0;
     Proc_Goto(Proc_Find(gProcScr_PlayerPhase), 0xC);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
@@ -203,7 +178,7 @@ u8 MapMenu_DangerZone_UnusedEffect(void) {
 
 u8 sub_8022724(void) {
 
-    Make6C_savemenu2(PROC_TREE_3);
+    Make6C_SaveMenuPostChapter(PROC_TREE_3);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
@@ -219,13 +194,13 @@ u8 EffectWait(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
 
-u8 GenericSelection_BackToUM(ProcPtr proc) {
+u8 GenericSelection_BackToUM(ProcPtr proc, struct SelectTarget * target) {
     EndTargetSelection(proc);
 
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     HideMoveRangeGraphics();
 
@@ -262,7 +237,7 @@ void BackToUnitMenu_RestartMenu(void) {
     return;
 }
 
-u8 GenericSelection_BackToUM_CamWait(ProcPtr proc) {
+u8 GenericSelection_BackToUM_CamWait(ProcPtr proc, struct SelectTarget * target) {
 
     EndTargetSelection(proc);
 
@@ -271,7 +246,7 @@ u8 GenericSelection_BackToUM_CamWait(ProcPtr proc) {
 
     HideMoveRangeGraphics();
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     Proc_Start(gProcScr_BackToUnitMenu, PROC_TREE_3);
 
@@ -282,7 +257,7 @@ u8 ItemMenu_ButtonBPressed(struct MenuProc* menu, struct MenuItemProc* menuItem)
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     StartSemiCenteredOrphanMenu(&gUnitActionMenuDef, gBmSt.cursorTarget.x - gBmSt.camera.x, 1, 22);
 
@@ -291,7 +266,7 @@ u8 ItemMenu_ButtonBPressed(struct MenuProc* menu, struct MenuItemProc* menuItem)
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6B | MENU_ACT_CLEAR | MENU_ACT_ENDFACE;
 }
 
-u8 RescueSelection_OnHelp(void) {
+u8 RescueSelection_OnHelp(ProcPtr proc, struct SelectTarget * target) {
     return 0;
 }
 
@@ -371,7 +346,7 @@ u8 TakeUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    if (gBmSt.unk3D & 1) {
+    if (gBmSt.taken_action & BM_TAKEN_ACTION_TAKE) {
         return MENU_NOTSHOWN;
     }
 
@@ -400,7 +375,7 @@ u8 GiveUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    if (gBmSt.unk3D & 1) {
+    if (gBmSt.taken_action & BM_TAKEN_ACTION_TAKE) {
         return MENU_NOTSHOWN;
     }
 
@@ -474,13 +449,13 @@ u8 UnitActionMenu_Attack(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     LoadIconPalettes(4);
 
     if (gActiveUnit->state & US_IN_BALLISTA) {
-        return sub_8022B8C(menu, menuItem);
+        return StartUnitBallistaSelect(menu, menuItem);
     }
 
-    return sub_8022BD8(menu, menuItem);
+    return StartUnitWeaponSelect(menu, menuItem);
 }
 
-u8 sub_8022B8C(struct MenuProc* menu, struct MenuItemProc* menuItem) {
+u8 StartUnitBallistaSelect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     ProcPtr proc = StartOrphanMenu(&gBallistaRangeMenuDef);
 
@@ -492,7 +467,7 @@ u8 sub_8022B8C(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
 
-u8 sub_8022BD8(struct MenuProc* menu, struct MenuItemProc* menuItem) {
+u8 StartUnitWeaponSelect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     ProcPtr proc = StartOrphanMenu(&gUnknownMenuDef);
 
     if (gActiveUnit->pClassData->number != CLASS_PHANTOM) {
@@ -558,7 +533,7 @@ u8 UnknownMenu_Selected(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     MakeTargetListForWeapon(gActiveUnit, gActiveUnit->items[0]);
 
-    NewTargetSelection(&gSelectInfo_0859D3F8);
+    NewTargetSelection(&gSelectInfo_Attack);
 
     sub_80832C8();
 
@@ -606,7 +581,7 @@ int BallistaRangeMenu_SwitchOut(struct MenuProc* menu, struct MenuItemProc* menu
     return 0;
 }
 
-u8 sub_8022DF0(ProcPtr proc, struct SelectTarget* target) {
+u8 AttackMapSelect_Select(ProcPtr proc, struct SelectTarget* target) {
 
     if (EventEngineExists() == 1) {
         return 0;
@@ -639,7 +614,7 @@ void sub_8022E54(void) {
     return;
 }
 
-u8 sub_8022E64(void) {
+u8 AttackMapSelect_Cancel(ProcPtr proc, struct SelectTarget * target) {
     if (EventEngineExists() == 1) {
         return 0;
     }
@@ -649,7 +624,7 @@ u8 sub_8022E64(void) {
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6B;
 }
 
-int sub_8022E8C(ProcPtr proc, struct SelectTarget* target) {
+u8 AttackMapSelect_SwitchIn(ProcPtr proc, struct SelectTarget* target) {
 
     struct Unit* unit = GetUnit(target->uid);
 
@@ -663,7 +638,7 @@ int sub_8022E8C(ProcPtr proc, struct SelectTarget* target) {
         InitObstacleBattleUnit();
     }
 
-    if (gActionData.itemSlotIndex == 8) {
+    if (gActionData.itemSlotIndex == BU_ISLOT_BALLISTA) {
         BattleGenerateBallistaSimulation(gActiveUnit, unit, gActiveUnit->xPos, gActiveUnit->yPos);
     } else {
         BattleGenerateSimulation(gActiveUnit, unit, -1, -1, gActionData.itemSlotIndex);
@@ -674,7 +649,7 @@ int sub_8022E8C(ProcPtr proc, struct SelectTarget* target) {
     return 0;
 }
 
-int sub_8022F10(void) {
+int AttackMapSelect_End(ProcPtr proc) {
 
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
@@ -690,7 +665,7 @@ u8 ItemSubMenu_IsTradeAvailable(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    if (gBmSt.unk3D & 2) {
+    if (gBmSt.taken_action & BM_TAKEN_ACTION_TRADE) {
         return MENU_NOTSHOWN;
     }
 
@@ -735,7 +710,7 @@ u8 UnitActionMenu_CanSeize(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    return GetAvailableLocaCommandAt(gActiveUnit->xPos, gActiveUnit->yPos) == 0x11
+    return GetAvailableTileEventCommand(gActiveUnit->xPos, gActiveUnit->yPos) == TILE_COMMAND_SEIZE
         ? MENU_ENABLED : MENU_NOTSHOWN;
 }
 
@@ -766,7 +741,7 @@ u8 VisitCommandUsability(const struct MenuItemDef* def, int number) {
             break;
     }
 
-    if (GetAvailableLocaCommandAt(gActiveUnit->xPos, gActiveUnit->yPos) == 0x10) {
+    if (GetAvailableTileEventCommand(gActiveUnit->xPos, gActiveUnit->yPos) == TILE_COMMAND_VISIT) {
         if (IsUnitMagicSealed(gActiveUnit)) {
             return MENU_DISABLED;
         }
@@ -829,7 +804,7 @@ u8 PlayCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    gBmSt.itemUnk2C = ITEM_UNK_CD;
+    gBmSt.um_tmp_item = ITEM_UNK_CD;
 
     return sub_80230F0(def);
 }
@@ -840,7 +815,7 @@ u8 DanceCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    gBmSt.itemUnk2C = ITEM_DANCE;
+    gBmSt.um_tmp_item = ITEM_DANCE;
 
     return sub_80230F0(def);
 }
@@ -893,7 +868,7 @@ u8 PlayCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
 }
 
-int sub_80232A4(ProcPtr proc, struct SelectTarget* target) {
+u8 RefreshMapSelect_Select(ProcPtr proc, struct SelectTarget* target) {
 
     gActionData.unitActionType = UNIT_ACTION_DANCE;
     gActionData.targetIndex = target->uid;
@@ -928,7 +903,7 @@ u8 ItemCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     ResetIconGraphics();
     LoadIconPalettes(4);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     proc = StartOrphanMenu(&gItemSelectMenuDef);
 
@@ -1013,25 +988,25 @@ int Menu_SwitchOut_DoNothing(struct MenuProc* menu, struct MenuItemProc* menuIte
 }
 
 void sub_80234AC(int x, int y) {
-    Font_InitForUI(&gUnknown_02002774, (void*)VRAM + 0x4000, 0x200, 0);
+    InitTextFont(&gUnknown_02002774, (void*)VRAM + 0x4000, 0x200, 0);
 
-    TileMap_CopyRect(gBG0TilemapBuffer + 0x2B, gBmFrameTmap0, 9, 19);
-    TileMap_CopyRect(gBG1TilemapBuffer + 0x2B, gUnknown_0200422C, 9, 19);
+    TileMap_CopyRect(gBG0TilemapBuffer + 0x2B, gUiTmScratchA, 9, 19);
+    TileMap_CopyRect(gBG1TilemapBuffer + 0x2B, gUiTmScratchB, 9, 19);
 
     return;
 }
 
 void ItemSubMenuEnd(struct MenuProc* menu) {
-    SetFont(0);
+    SetTextFont(0);
 
     return;
 }
 
 u8 MenuCommand_SelectNo(struct MenuProc* menu, struct MenuItemProc* menuItem) {
-    SetFont(NULL);
+    SetTextFont(NULL);
 
-    TileMap_CopyRect(gBmFrameTmap0, gBG0TilemapBuffer + 0x2B, 9, 19);
-    TileMap_CopyRect(gUnknown_0200422C, gBG1TilemapBuffer + 0x2B, 9, 19);
+    TileMap_CopyRect(gUiTmScratchA, gBG0TilemapBuffer + 0x2B, 9, 19);
+    TileMap_CopyRect(gUiTmScratchB, gBG1TilemapBuffer + 0x2B, 9, 19);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
 
@@ -1039,8 +1014,8 @@ u8 MenuCommand_SelectNo(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 }
 
 u8 sub_8023538(struct MenuProc* menu) {
-    SetFont(NULL);
-    Font_ResetAllocation();
+    SetTextFont(NULL);
+    ResetTextFont();
 
     EndAllMenus();
 
@@ -1080,8 +1055,8 @@ u8 sub_80235A8(struct MenuProc* menu) {
         return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6B | MENU_ACT_CLEAR;
     }
 
-    TileMap_CopyRect(gBmFrameTmap0, gBG0TilemapBuffer + 0x2B, 9, 0x13);
-    TileMap_CopyRect(gUnknown_0200422C, gBG1TilemapBuffer + 0x2B, 9, 0x13);
+    TileMap_CopyRect(gUiTmScratchA, gBG0TilemapBuffer + 0x2B, 9, 0x13);
+    TileMap_CopyRect(gUiTmScratchB, gBG1TilemapBuffer + 0x2B, 9, 0x13);
 
     TileMap_FillRect(gBG0TilemapBuffer + 0x2B - 0xA, 0xE, 0xC, 0);
     TileMap_FillRect(gBG1TilemapBuffer + 0x2B - 0xA, 0xD, 0xC, 0);
@@ -1155,9 +1130,9 @@ u8 ItemSubMenu_UseItem(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
     PlaySoundEffect(0x6A);
 
-    SetFont(NULL);
+    SetTextFont(NULL);
 
-    Font_ResetAllocation();
+    ResetTextFont();
 
     EndAllMenus();
 
@@ -1254,11 +1229,11 @@ u8 BallistaRangeMenu_Select(struct MenuProc* menu, struct MenuItemProc* menuItem
 
     ClearBg0Bg1();
 
-    gActionData.itemSlotIndex = 8;
+    gActionData.itemSlotIndex = BU_ISLOT_BALLISTA;
 
     FillBallistaRangeMaybe(gActiveUnit);
 
-    NewTargetSelection(&gSelectInfo_0859D3F8);
+    NewTargetSelection(&gSelectInfo_Attack);
 
     return MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_ENDFACE;
 }
@@ -1443,7 +1418,7 @@ u8 TalkCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A;
 }
 
-int TalkSelection_OnSelect(ProcPtr proc, struct SelectTarget* target) {
+u8 TalkSelection_OnSelect(ProcPtr proc, struct SelectTarget* target) {
 
     gActionData.unitActionType = UNIT_ACTION_TALK;
     gActionData.targetIndex = target->uid;
@@ -1670,13 +1645,13 @@ u8 ArmoryCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    return GetAvailableLocaCommandAt(gActiveUnit->xPos, gActiveUnit->yPos) == 0x16
+    return GetAvailableTileEventCommand(gActiveUnit->xPos, gActiveUnit->yPos) == TILE_COMMAND_ARMORY
         ? MENU_ENABLED : MENU_NOTSHOWN;
 }
 
 u8 ArmoryCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
-    sub_80840C4(gActiveUnit->xPos, gActiveUnit->yPos);
+    StartAvailableTileEvent(gActiveUnit->xPos, gActiveUnit->yPos);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
@@ -1691,13 +1666,13 @@ u8 VendorCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    return GetAvailableLocaCommandAt(gActiveUnit->xPos, gActiveUnit->yPos) == 0x17
+    return GetAvailableTileEventCommand(gActiveUnit->xPos, gActiveUnit->yPos) == TILE_COMMAND_VENDOR
         ? MENU_ENABLED : MENU_NOTSHOWN;
 }
 
 u8 VendorCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 
-    sub_80840C4(gActiveUnit->xPos, gActiveUnit->yPos);
+    StartAvailableTileEvent(gActiveUnit->xPos, gActiveUnit->yPos);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
@@ -1711,12 +1686,12 @@ u8 SecretShopCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    return GetAvailableLocaCommandAt(gActiveUnit->xPos, gActiveUnit->yPos) == 0x18
+    return GetAvailableTileEventCommand(gActiveUnit->xPos, gActiveUnit->yPos) == TILE_COMMAND_SECRET
         ? MENU_ENABLED : MENU_NOTSHOWN;
 }
 
 u8 SecretShopCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
-    sub_80840C4(gActiveUnit->xPos, gActiveUnit->yPos);
+    StartAvailableTileEvent(gActiveUnit->xPos, gActiveUnit->yPos);
 
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
@@ -1793,14 +1768,14 @@ u8 StealCommandEffect(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A;
 }
 
-void StealTargetSelection_OnInit(ProcPtr menu) {
+void StealMapSelect_Init(ProcPtr menu) {
     StartUnitInventoryInfoWindow(menu);
     StartSubtitleHelp(menu, GetStringFromIndex(0x86D)); // TODO: msgid "Select which unit to steal from."
 
     return;
 }
 
-int sub_802423C(ProcPtr proc, struct SelectTarget* target) {
+u8 StealMapSelect_SwitchIn(ProcPtr proc, struct SelectTarget* target) {
     ChangeActiveUnitFacing(target->x, target->y);
 
     RefreshUnitStealInventoryInfoWindow(GetUnit(target->uid));
@@ -1808,7 +1783,7 @@ int sub_802423C(ProcPtr proc, struct SelectTarget* target) {
     // return 0; // BUG?
 }
 
-int sub_8024260(ProcPtr proc, struct SelectTarget* target) {
+u8 StealMapSelect_Select(ProcPtr proc, struct SelectTarget* target) {
     int pos;
 
     gActionData.targetIndex = target->uid;
@@ -1822,9 +1797,9 @@ int sub_8024260(ProcPtr proc, struct SelectTarget* target) {
 
     CallARM_FillTileRect(gBG1TilemapBuffer + 0x42, gUnknown_085A0D4C, 0x1000);
 
-    pos = (0x38 - GetStringTextWidth(GetStringFromIndex(GetUnit(gActionData.targetIndex)->pCharacterData->nameTextId))) / 2;
+    pos = (56 - GetStringTextLen(GetStringFromIndex(GetUnit(gActionData.targetIndex)->pCharacterData->nameTextId))) / 2;
 
-    DrawTextInline(0, gBG0TilemapBuffer + 0x63, 0, pos, 7, GetStringFromIndex(GetUnit(gActionData.targetIndex)->pCharacterData->nameTextId));
+    PutDrawText(0, gBG0TilemapBuffer + 0x63, 0, pos, 7, GetStringFromIndex(GetUnit(gActionData.targetIndex)->pCharacterData->nameTextId));
 
     PutFace80x72_Core(gBG0TilemapBuffer + 0x63 + 0x40, GetUnitPortraitId(GetUnit(gActionData.targetIndex)), 0x200, 5);
 
@@ -1886,7 +1861,7 @@ u8 SummonCommandUsability(const struct MenuItemDef* def, int number) {
 
     for (a = 0; a < 3; a++) {
 
-        if (gActiveUnit->pCharacterData->number == gUnknown_0895F5A4[a][0]) {
+        if (gActiveUnit->pCharacterData->number == gSummonConfig[a][0]) {
             summonerId = a;
             break;
         }
@@ -1903,7 +1878,7 @@ u8 SummonCommandUsability(const struct MenuItemDef* def, int number) {
             continue;
         }
 
-        if (unit->pCharacterData->number != gUnknown_0895F5A4[summonerId][1]) {
+        if (unit->pCharacterData->number != gSummonConfig[summonerId][1]) {
             continue;
         }
 
@@ -1992,7 +1967,7 @@ u8 sub_8024564(ProcPtr proc, struct SelectTarget* target) {
 
 u8 ConvoyMenu_HelpBox(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     if (menuItem->itemNumber >= 5) {
-        StartItemHelpBox(menuItem->xTile << 3, menuItem->yTile << 3, gBmSt.itemUnk2C);
+        StartItemHelpBox(menuItem->xTile << 3, menuItem->yTile << 3, gBmSt.um_tmp_item);
         return 0;
     }
 
@@ -2021,13 +1996,13 @@ u8 BallistaRangeMenuHelpBox(struct MenuProc* menu, struct MenuItemProc* menuItem
     // return 0; // BUG?
 }
 
-void sub_802464C(ProcPtr proc) {
+void HealMapSelect_Init(ProcPtr proc) {
     StartUnitHpInfoWindow(proc);
 
     return;
 }
 
-u8 sub_8024658(ProcPtr proc, struct SelectTarget* target) {
+u8 HealMapSelect_SwitchIn(ProcPtr proc, struct SelectTarget* target) {
 
     ChangeActiveUnitFacing(target->x, target->y);
 
@@ -2113,7 +2088,6 @@ void TalkSupportSelection_OnInit(ProcPtr menu) {
     return;
 }
 
-
 u8 TalkSupportSelection_OnChange(ProcPtr proc, struct SelectTarget* target) {
     ChangeActiveUnitFacing(target->x, target->y);
     RefreshUnitHpInfoWindow(GetUnit(target->uid));
@@ -2121,30 +2095,28 @@ u8 TalkSupportSelection_OnChange(ProcPtr proc, struct SelectTarget* target) {
     // return 0; // BUG?
 }
 
-void sub_80247F4(ProcPtr menu) {
+void RefreshMapSelect_Init(ProcPtr menu) {
     StartUnitHpInfoWindow(menu);
     StartSubtitleHelp(menu, GetStringFromIndex(0x870)); // TODO: msgid "Select unit to refresh.[.]"
 
     return;
 }
 
-
-u8 sub_8024814(ProcPtr proc, struct SelectTarget* target) {
+u8 RefreshMapSelect_SwitchIn(ProcPtr proc, struct SelectTarget* target) {
     ChangeActiveUnitFacing(target->x, target->y);
     RefreshUnitHpInfoWindow(GetUnit(target->uid));
 
     // return 0; // BUG?
 }
 
-void sub_8024838(ProcPtr menu) {
+void WarpUnitMapSelect_Init(ProcPtr menu) {
 
     StartUnitHpInfoWindow(menu);
 
     return;
 }
 
-
-u8 sub_8024844(ProcPtr proc, struct SelectTarget* target) {
+u8 WarpUnitMapSelect_SwitchIn(ProcPtr proc, struct SelectTarget* target) {
     ChangeActiveUnitFacing(target->x, target->y);
     RefreshUnitHpInfoWindow(GetUnit(target->uid));
 
@@ -2157,9 +2129,7 @@ void SummonSelection_OnInit(ProcPtr menu) {
     return;
 }
 
-
-void SummonSelection_OnChange(void) {
-    return;
+u8 SummonSelection_OnChange(ProcPtr proc, struct SelectTarget * target) {
 }
 
 void sub_8024888(ProcPtr menu) {
@@ -2190,7 +2160,7 @@ u8 RideCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    if (gBmSt.unk3D & 8) {
+    if (gBmSt.taken_action & BM_TAKEN_ACTION_BALLISTA) {
         return MENU_NOTSHOWN;
     }
 
@@ -2223,7 +2193,7 @@ u8 ExitCommandUsability(const struct MenuItemDef* def, int number) {
         return MENU_NOTSHOWN;
     }
 
-    if (gBmSt.unk3D & 8) {
+    if (gBmSt.taken_action & BM_TAKEN_ACTION_BALLISTA) {
         return MENU_NOTSHOWN;
     }
 
@@ -2319,8 +2289,8 @@ u8 ItemMenu_Is1stCommandAvailable(const struct MenuItemDef* def, int number) {
 }
 
 int ItemMenu_Draw1stCommand(struct MenuProc* menu, struct MenuItemProc* menuItem) {
-    Text_InsertString(&menuItem->text, 16, 0, GetItemName(gBmSt.itemUnk2C));
-    Text_Draw(&menuItem->text, gBG0TilemapBuffer + TILEMAP_INDEX(menuItem->xTile, menuItem->yTile));
+    Text_InsertDrawString(&menuItem->text, 16, 0, GetItemName(gBmSt.um_tmp_item));
+    PutText(&menuItem->text, gBG0TilemapBuffer + TILEMAP_INDEX(menuItem->xTile, menuItem->yTile));
 
     return 0;
 }
@@ -2374,7 +2344,7 @@ u8 ItemMenu_SelectOtherCommands(struct MenuProc* menu, struct MenuItemProc* menu
 
 int ItemMenu_SwitchIn(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     if (menuItem->itemNumber == 0) {
-        UpdateMenuItemPanel(5);
+        UpdateMenuItemPanel(BU_ISLOT_5);
     } else {
         UpdateMenuItemPanel(menuItem->itemNumber - 1);
     }
@@ -2390,7 +2360,7 @@ u8 ItemMenuHelpBox(struct MenuProc* menu, struct MenuItemProc* menuItem) {
     int item;
 
     if (menuItem->itemNumber == 0) {
-        item = gBmSt.itemUnk2C;
+        item = gBmSt.um_tmp_item;
     } else {
         item = gActiveUnit->items[menuItem->itemNumber - 1];
     }
@@ -2403,7 +2373,7 @@ u8 ItemMenuHelpBox(struct MenuProc* menu, struct MenuItemProc* menuItem) {
 u8 MapMenu_IsRecordsCommandAvailable(const struct MenuItemDef* def, int number) {
     u8 chapterId;
 
-    if (GetChapterThing() != 1) {
+    if (GetBattleMapKind() != 1) {
         return MENU_NOTSHOWN;
     }
 
@@ -2413,13 +2383,13 @@ u8 MapMenu_IsRecordsCommandAvailable(const struct MenuItemDef* def, int number) 
         return MENU_ENABLED;
     }
 
-    if ((CheckEventId(0x71) == 0) ||
-        (CheckEventId(0x72) == 0) ||
-        (CheckEventId(0x73) == 0) ||
-        (CheckEventId(0x74) == 0) ||
-        (CheckEventId(0x75) == 0) ||
-        (CheckEventId(0x76) == 0) ||
-        (CheckEventId(0x77) == 0)) {
+    if ((CheckFlag(0x71) == 0) ||
+        (CheckFlag(0x72) == 0) ||
+        (CheckFlag(0x73) == 0) ||
+        (CheckFlag(0x74) == 0) ||
+        (CheckFlag(0x75) == 0) ||
+        (CheckFlag(0x76) == 0) ||
+        (CheckFlag(0x77) == 0)) {
         return MENU_NOTSHOWN;
     }
 
@@ -2434,7 +2404,7 @@ u8 MapMenu_RecordsCommand(struct MenuProc* menu, struct MenuItemProc* menuItem) 
 }
 
 u8 MapMenu_IsRetreatCommandAvailable(const struct MenuItemDef* def, int number) {
-    if (GetChapterThing() == 0) {
+    if (GetBattleMapKind() == 0) {
         return MENU_NOTSHOWN;
     }
 

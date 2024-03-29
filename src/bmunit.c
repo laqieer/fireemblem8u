@@ -15,12 +15,15 @@
 #include "bmreliance.h"
 #include "bmtrick.h"
 #include "monstergen.h"
-#include "sallycursor.h"
+#include "prepscreen.h"
 #include "uiselecttarget.h"
 #include "bmdifficulty.h"
 #include "cp_utility.h"
 #include "bmudisp.h"
 #include "bmsave.h"
+#include "muctrl.h"
+#include "bmmind.h"
+#include "eventcall.h"
 
 EWRAM_DATA u8 gActiveUnitId = 0;
 EWRAM_DATA struct Vec2 gActiveUnitMoveOrigin = {};
@@ -668,7 +671,7 @@ void UnitInitFromDefinition(struct Unit* unit, const struct UnitDefinition* uDef
 
     unit->level = uDef->level;
 
-    GetPreferredPositionForUNIT(uDef, &unit->xPos, &unit->yPos, FALSE);
+    GenUnitDefinitionFinalPosition(uDef, &unit->xPos, &unit->yPos, FALSE);
 
     if (UNIT_IS_GORGON_EGG(unit)) {
         int i;
@@ -1012,7 +1015,7 @@ void UnitGetDeathDropLocation(struct Unit* unit, int* xOut, int* yOut) {
     struct Unit* rescuee = GetUnit(unit->rescue);
 
     // Fill the movement map
-    GenerateExtendedMovementMap(unit->xPos, unit->yPos, gUnknown_0880BB96);
+    GenerateExtendedMovementMap(unit->xPos, unit->yPos, TerrainTable_MovCost_FlyNormal);
 
     // Put the active unit on the unit map (kinda, just marking its spot)
     gBmMapUnit[gActiveUnit->yPos][gActiveUnit->xPos] = 0xFF;
@@ -1062,7 +1065,7 @@ void UnitBeginAction(struct Unit* unit) {
     gActionData.unitActionType = 0;
     gActionData.moveCount = 0;
 
-    gBmSt.unk3D = 0;
+    gBmSt.taken_action = 0;
     gBmSt.unk3F = 0xFF;
 
     sub_802C334();
@@ -1080,7 +1083,7 @@ void UnitBeginCantoAction(struct Unit* unit) {
 
     gActionData.unitActionType = 0;
 
-    gBmSt.unk3D = 0;
+    gBmSt.taken_action = 0;
 
     sub_802C334();
 
@@ -1374,7 +1377,7 @@ int GetUnitLastItem(struct Unit* unit) {
 
 const s8* GetUnitMovementCost(struct Unit* unit) {
     if (unit->state & US_IN_BALLISTA)
-        return gUnknown_0880BC18;
+        return Unk_TerrainTable_0880BC18;
 
     switch (gPlaySt.chapterWeatherId) {
 
@@ -1545,7 +1548,7 @@ u16 CountAvailableBlueUnits(void) {
     return result;
 }
 
-int CountRedUnits(void) {
+u16 CountRedUnits(void) {
     int i;
 
     u16 result = 0;
@@ -1565,7 +1568,7 @@ int CountRedUnits(void) {
     return result;
 }
 
-int CountGreenUnits(void) {
+u16 CountGreenUnits(void) {
     int i;
 
     u16 result = 0;
@@ -1603,7 +1606,7 @@ void ClearCutsceneUnits(void) {
     }
 }
 
-void sub_8019108(void) {
+void RefreshAllies(void) {
     int i;
 
     for (i = 1; i < 0x40; ++i) {

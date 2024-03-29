@@ -2,6 +2,7 @@
 #include "bmunit.h"
 #include "agb_sram.h"
 #include "bmsave.h"
+#include "sio.h"
 
 struct MultiArenaSaveTeam EWRAM_DATA gMultiArenaSaveTeamBufA = {0};
 struct MultiArenaSaveTeam EWRAM_DATA gMultiArenaSaveTeamBufB = {0};
@@ -17,6 +18,79 @@ int CONST_DATA sArenaCpTeamNameLut[] = {
     0x2C4,      /* General */
     0x2CB,      /* Archer */
     0x2E2,      /* Druid */
+};
+
+struct MultiArenaRankingEnt const gInitialMultiArenaRankings[MULTIARENA_MAX_RANKINGS] = {
+    [0] = {
+        .ranking = 0,
+        .player_count = 1,
+        .mode = 0,
+        .points = 100,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [1] = {
+        .ranking = 0,
+        .player_count = 1,
+        .mode = 1,
+        .points = 90,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [2] = {
+        .ranking = 0,
+        .player_count = 1,
+        .mode = 0,
+        .points = 80,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [3] = {
+        .ranking = 0,
+        .player_count = 2,
+        .mode = 1,
+        .points = 70,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [4] = {
+        .ranking = 0,
+        .player_count = 2,
+        .mode = 0,
+        .points = 60,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [5] = {
+        .ranking = 1,
+        .player_count = 2,
+        .mode = 1,
+        .points = 50,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [6] = {
+        .ranking = 1,
+        .player_count = 3,
+        .mode = 0,
+        .points = 40,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [7] = {
+        .ranking = 1,
+        .player_count = 3,
+        .mode = 1,
+        .points = 30,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [8] = {
+        .ranking = 1,
+        .player_count = 3,
+        .mode = 0,
+        .points = 20,
+        .name = { 0x81, 0x40, 0, },
+    },
+    [9] = {
+        .ranking = 1,
+        .player_count = 3,
+        .mode = 1,
+        .points = 10,
+        .name = { 0x81, 0x40, 0, },
+    },
 };
 
 void WriteNewMultiArenaSave(void)
@@ -51,7 +125,7 @@ void WriteNewMultiArenaSave(void)
         ranking_ent.points = gInitialMultiArenaRankings[i].points;
 
         GetStringFromIndexInBuffer(sArenaCpTeamNameLut[i], rank_name);
-        sub_8042DC8(rank_name, ranking_ent.name);
+        SioStrCpy(rank_name, ranking_ent.name);
         WriteAndVerifySramFast(&ranking_ent, &dst->rankings[i], sizeof(ranking_ent));
     }
 
@@ -81,7 +155,7 @@ bool ReadMultiArenaSaveTeamName(int team, char *dst)
     if (gMultiArenaSaveTeamBufA.name[0] == 0)
         return FALSE;
 
-    sub_8042DC8(gMultiArenaSaveTeamBufA.name, dst);
+    SioStrCpy(gMultiArenaSaveTeamBufA.name, dst);
 
     return TRUE;
 }
@@ -206,23 +280,23 @@ void ReadMultiArenaSaveRankings(struct MultiArenaRankingEnt *dst)
     ReadSramFast(src_sram->rankings, dst, sizeof(src_sram->rankings));
 }
 
-void WriteMultiArenaSaveConfig(u16 const *config_src)
+void WriteMultiArenaSaveConfig(void const * config_src)
 {
     struct SaveBlockInfo block_info;
 
     struct MultiArenaSaveBlock * dst_sram = GetSaveWriteAddr(SAVE_ID_ARENA);
 
-    WriteAndVerifySramFast(config_src, &dst_sram->config, sizeof(u16));
+    WriteAndVerifySramFast(config_src, &dst_sram->config, 2);
 
     block_info.magic32 = SAVEMAGIC32_ARENA;
     block_info.kind = SAVEBLOCK_KIND_ARENA;
     WriteSaveBlockInfo(&block_info, SAVE_ID_ARENA);
 }
 
-void ReadMultiArenaSaveConfig(u16 *config_dst)
+void ReadMultiArenaSaveConfig(void * config_dst)
 {
     struct MultiArenaSaveBlock * src_sram = GetSaveReadAddr(SAVE_ID_ARENA);
-    ReadSramFast(&src_sram->config, config_dst, sizeof(u16));
+    ReadSramFast(&src_sram->config, config_dst, 2);
 }
 
 bool IsMultiArenaSaveReady(void)

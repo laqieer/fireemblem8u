@@ -18,6 +18,8 @@
 #include "popup.h"
 #include "bmudisp.h"
 #include "bm.h"
+#include "bmbattle.h"
+#include "eventinfo.h"
 
 #include "cp_perform.h"
 
@@ -211,11 +213,11 @@ void AiStartCombatAction(struct CpPerformProc* proc) {
         gActionData.trapType = trap->extra;
     }
 
-    if ((s8)gAiDecision.itemSlot != -1) {
+    if ((s8)gAiDecision.itemSlot != BU_ISLOT_AUTO) {
         EquipUnitItemSlot(gActiveUnit, gAiDecision.itemSlot);
         gActionData.itemSlotIndex = 0;
     } else {
-        gActionData.itemSlotIndex = 8;
+        gActionData.itemSlotIndex = BU_ISLOT_BALLISTA;
     }
 
     ApplyUnitAction(proc);
@@ -251,7 +253,7 @@ void AiStartStealAction(struct CpPerformProc* proc) {
     return;
 }
 
-struct PopupInstruction CONST_DATA gPopup_085A80A4[] = {
+struct PopupInstruction CONST_DATA PopupScr_085A80A4[] = {
     POPUP_SOUND(0x5C),
     POPUP_MSG(0x12), // TODO: msgid "The village was destroyed."
     POPUP_END
@@ -273,11 +275,11 @@ s8 AiPillageAction(struct CpPerformProc* proc) {
         ActionStaffDoorChestUseItem(proc);
     } else {
         s8 y2 = y - 1;
-        sub_80840C4((s8)x, y2);
+        StartAvailableTileEvent((s8)x, y2);
 
         PlaySoundEffect(0xAB);
 
-        NewPopup_Simple(gPopup_085A80A4, 0x60, 0, proc);
+        NewPopup_Simple(PopupScr_085A80A4, 0x60, 0, proc);
     }
 
     return 1;
@@ -318,7 +320,7 @@ s8 AiTalkAction(struct CpPerformProc* proc) {
     gActiveUnit->yPos = gAiDecision.yMove;
 
     if (gAiDecision.targetId == 0) {
-        sub_8083FB0(
+        StartCharacterEvent(
             GetUnit(gAiDecision.itemSlot)->pCharacterData->number,
             GetUnit(gAiDecision.xTarget)->pCharacterData->number
         );

@@ -11,6 +11,8 @@
 #include "uiutils.h"
 #include "player_interface.h"
 #include "bm.h"
+#include "bmlib.h"
+#include "bmdebug.h"
 #include "mapanim.h"
 
 /* section.bss */
@@ -35,13 +37,13 @@ void MADebug_FormatPrint(int num, int index, int color)
 
     switch (index) {
     case 0:
-        Text_Clear(&pMADebugInfoData->infos[num].text[0]);
+        ClearText(&pMADebugInfoData->infos[num].text[0]);
 
-        Text_InsertNumberOr2Dashes(
+        Text_InsertDrawNumberOrBlank(
             &pMADebugInfoData->infos[num].text[0],
             16, color, charId);
 
-        DrawTextInline(
+        PutDrawText(
             &pMADebugInfoData->infos[num].text[0],
             TILEMAP_LOCATED(gBG0TilemapBuffer, num*12 + 6, 0),
             color, 24, 0, GetStringFromIndex(charData->nameTextId));
@@ -51,13 +53,13 @@ void MADebug_FormatPrint(int num, int index, int color)
         break;
 
     case 1:
-        Text_Clear(&pMADebugInfoData->infos[num].text[1]);
+        ClearText(&pMADebugInfoData->infos[num].text[1]);
 
-        Text_InsertNumberOr2Dashes(
+        Text_InsertDrawNumberOrBlank(
             &pMADebugInfoData->infos[num].text[1],
             8, color, pMADebugInfoData->infos[num].data[1]);
 
-        Text_Draw(
+        PutText(
             &pMADebugInfoData->infos[num].text[1],
             TILEMAP_LOCATED(gBG0TilemapBuffer, num*12 + 7, 2));
 
@@ -66,13 +68,13 @@ void MADebug_FormatPrint(int num, int index, int color)
         break;
 
     case 2:
-        Text_Clear(&pMADebugInfoData->infos[num].text[2]);
+        ClearText(&pMADebugInfoData->infos[num].text[2]);
 
-        Text_InsertNumberOr2Dashes(
+        Text_InsertDrawNumberOrBlank(
             &pMADebugInfoData->infos[num].text[2],
             8, color, pMADebugInfoData->infos[num].data[2]);
 
-        Text_Draw(
+        PutText(
             &pMADebugInfoData->infos[num].text[2],
             TILEMAP_LOCATED(gBG0TilemapBuffer, num*12 + 10, 2));
 
@@ -81,13 +83,13 @@ void MADebug_FormatPrint(int num, int index, int color)
         break;
 
     case 3:
-        Text_Clear(&pMADebugInfoData->infos[num].text[3]);
+        ClearText(&pMADebugInfoData->infos[num].text[3]);
 
-        Text_InsertNumberOr2Dashes(
+        Text_InsertDrawNumberOrBlank(
             &pMADebugInfoData->infos[num].text[3],
             16, color, classId);
 
-        DrawTextInline(
+        PutDrawText(
             &pMADebugInfoData->infos[num].text[3],
             TILEMAP_LOCATED(gBG0TilemapBuffer, num*12 + 6, 4),
             color, 24, 0, GetStringFromIndex(classData->nameTextId));
@@ -97,13 +99,13 @@ void MADebug_FormatPrint(int num, int index, int color)
         break;
 
     case 4:
-        Text_Clear(&pMADebugInfoData->infos[num].text[4]);
+        ClearText(&pMADebugInfoData->infos[num].text[4]);
 
-        Text_InsertNumberOr2Dashes(
+        Text_InsertDrawNumberOrBlank(
             &pMADebugInfoData->infos[num].text[4],
             16, color, unk);
 
-        DrawTextInline(
+        PutDrawText(
             &pMADebugInfoData->infos[num].text[4],
             TILEMAP_LOCATED(gBG0TilemapBuffer, num*12 + 6, 6),
             color, 24, 0, GetItemName(pMADebugInfoData->infos[num].data[4]));
@@ -113,13 +115,13 @@ void MADebug_FormatPrint(int num, int index, int color)
         break;
 
     case 5 ... 9:
-        Text_Clear(&pMADebugInfoData->infos[num].text[index]);
+        ClearText(&pMADebugInfoData->infos[num].text[index]);
 
-        Text_InsertNumberOr2Dashes(
+        Text_InsertDrawNumberOrBlank(
             &pMADebugInfoData->infos[num].text[index],
             8, color, pMADebugInfoData->infos[num].data[index]);
 
-        DrawTextInline(
+        PutDrawText(
             &pMADebugInfoData->infos[num].text[index],
             TILEMAP_LOCATED(gBG0TilemapBuffer, num*12 - 57, index*2),
             color, 16, 0,
@@ -169,9 +171,9 @@ void MADebug_InitScreen(struct MADebugProc* proc)
     int i, j;
 
     MU_EndAll();
-    Font_InitForUIDefault();
+    ResetText();
 
-    SetSpecialColorEffectsParameters(2, 8, 8, 0);
+    SetBlendConfig(2, 8, 8, 0);
 
     SetBlendTargetA(0, 1, 0, 0, 0);
     SetBlendTargetB(0, 0, 1, 1, 1);
@@ -184,17 +186,17 @@ void MADebug_InitScreen(struct MADebugProc* proc)
     DrawUiFrame2(0, 0, 29, 19, 1); // TODO: UI_STYLE...
 
     for (i = 0; MADebugStrings2[i]; ++i)
-        MADrawTextMaybe(
+        PutString(
             TILEMAP_LOCATED(gBG0TilemapBuffer, 1, i*2), 0, MADebugStrings2[i]);
 
     for (i = 0; i < 10; ++i) {
         for (j = 0; j < 2; ++j) {
-            Text_Allocate(&pMADebugInfoData->infos[j].text[i], gUnknown_089A3798[i].a);
+            InitTextDb(&pMADebugInfoData->infos[j].text[i], gUnknown_089A3798[i].a);
 
             if (j == proc->unk64 && i == proc->unk66)
-                MADebug_FormatPrint(j, i, TEXT_COLOR_NORMAL);
+                MADebug_FormatPrint(j, i, TEXT_COLOR_SYSTEM_WHITE);
             else
-                MADebug_FormatPrint(j, i, TEXT_COLOR_GRAY);
+                MADebug_FormatPrint(j, i, TEXT_COLOR_SYSTEM_GRAY);
         }
     }
 
@@ -260,10 +262,10 @@ void MADebug_MainLoop(struct MADebugProc* proc)
         proc->unk66 = gUnknown_089A3798[proc->unk66].c;
 
     if (gKeyStatusPtr->repeatedKeys & DPAD_ANY)
-        MADebug_FormatPrint(oldActor, oldField, TEXT_COLOR_GRAY);
+        MADebug_FormatPrint(oldActor, oldField, TEXT_COLOR_SYSTEM_GRAY);
 
     if (gKeyStatusPtr->repeatedKeys & (DPAD_ANY | A_BUTTON | B_BUTTON))
-        MADebug_FormatPrint(proc->unk64, proc->unk66, TEXT_COLOR_NORMAL);
+        MADebug_FormatPrint(proc->unk64, proc->unk66, TEXT_COLOR_SYSTEM_WHITE);
 }
 
 void SetupMADebugBattleUnit(struct BattleUnit* bu, int dActor)
@@ -369,16 +371,16 @@ void MADebug_DoBattleAnim(void)
 /* section.data */
 /* I think this maybe some encoded string ? */
 CONST_DATA char *MADebugStrings1[] = {
-    "\x81\x5B\x81\x5B\x81\x5B",
-    "\x8D\x55\x8C\x82",
-    "\x8D\x55\x8C\x82\x83\x66",
-    "\x8D\x55\x8C\x82\x83\x8A",
-    "\x8D\x55\x8C\x82\x93\xC5",
-    "\x95\x4B\x8E\x45",
-    "\x95\x4B\x8E\x45\x83\x66",
-    "\x95\x4B\x8E\x45\x83\x8A",
-    "\x95\x4B\x8E\x45\x93\xC5",
-    "\x8B\xF3\x82\xD4\x82\xE8"
+    "ーーー",
+    "攻撃",
+    "攻撃デ",
+    "攻撃リ",
+    "攻撃毒",
+    "必殺",
+    "必殺デ",
+    "必殺リ",
+    "必殺毒",
+    "空ぶり"
 };
 
 CONST_DATA struct Unk089A3798 gUnknown_089A3798[] = {
@@ -395,23 +397,23 @@ CONST_DATA struct Unk089A3798 gUnknown_089A3798[] = {
 };
 
 CONST_DATA char* MADebugStrings2[] = {
-    "\x82\x6F\x82\x68\x82\x63",
-    "\x82\x77\x82\x78",
-    "\x95\xBA\x8E\xED",
-    "\x95\x90\x8A\xED",
-    "\x82\x50",
-    "\x82\x51",
-    "\x82\x52",
-    "\x82\x53",
-    "\x82\x54",
+    "ＰＩＤ",
+    "ＸＹ",
+    "兵種",
+    "武器",
+    "１",
+    "２",
+    "３",
+    "４",
+    "５",
     NULL
 };
 
-CONST_DATA struct MADebugInfo* pMADebugInfoData = &MADebugInfoData;
+CONST_DATA struct MADebugInfo * pMADebugInfoData = &MADebugInfoData;
 
 CONST_DATA struct ProcCmd ProcScr_MADebug[] = {
     PROC_SLEEP(0x1),
-    PROC_CALL(AddSkipThread2),
+    PROC_CALL(LockGame),
     PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_SLEEP(0x1),
     PROC_CALL(InitDebugMapAnim),
