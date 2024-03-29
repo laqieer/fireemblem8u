@@ -149,7 +149,7 @@ src/msg_data.c: msg_list.txt
 
 $(C_OBJECTS): %.o: %.c $(DEPS_DIR)/%.d
 	@$(MAKEDEP)
-	$(CPP) $(CPPFLAGS) $< | iconv -f UTF-8 -t CP932 | $(CC1) $(CC1FLAGS) -o $*.s
+	$(CPP) $(CPPFLAGS) $< | gnu-iconv -f UTF-8 -t CP932 | $(CC1) $(CC1FLAGS) -o $*.s
 	echo '.ALIGN 2, 0' >> $*.s
 	sed -i '/.section	.debug_line/i\.align 2, 0' $*.s
 	$(AS) $(ASFLAGS) $*.s -o $@
