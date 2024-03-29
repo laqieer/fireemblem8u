@@ -6,6 +6,6 @@ RUN apk add bash python3
 
 COPY . .
 
-RUN ./install_iconv.sh && make
+RUN /bin/bash ./install_iconv.sh && make
 
 ENTRYPOINT make
