@@ -2,12 +2,10 @@ FROM laqieer/gba-disasm-decomp-tools:fireemblem8u
 
 MAINTAINER laqieer <laqieer@126.com>
 
-RUN apk add python3
+RUN apk add bash python3
 
 COPY . .
 
-RUN chmod +x install_iconv.sh && ./install_iconv.sh
-
-RUN make
+RUN ./install_iconv.sh && make
 
 ENTRYPOINT make
