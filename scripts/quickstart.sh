@@ -3,15 +3,17 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/quickstart.sh [--rom /path/to/baserom.gba]
+Usage: ./scripts/quickstart.sh [--rom /path/to/baserom.gba] [--refresh-agbcc]
 
 Options:
-  --rom PATH   Copy the ROM from PATH to baserom.gba if it is missing.
+  --rom PATH        Copy the ROM from PATH to baserom.gba if it is missing.
+  --refresh-agbcc   Force re-clone/rebuild of agbcc even if one exists in tools/agbcc.
 
 You can also set FIREEMBLEM8U_ROM to point to the ROM.
 EOF
 }
 
+FORCE_AGBCC_UPDATE=0
 ROM_SOURCE="${FIREEMBLEM8U_ROM:-}"
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -21,6 +23,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --rom=*)
       ROM_SOURCE="${1#*=}"
+      shift 1
+      ;;
+    --refresh-agbcc)
+      FORCE_AGBCC_UPDATE=1
       shift 1
       ;;
     -h|--help)
@@ -38,6 +44,8 @@ done
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 AGBCC_SRC_DIR="${PROJECT_DIR}/.deps/agbcc"
+AGBCC_INSTALL_DIR="${PROJECT_DIR}/tools/agbcc"
+AGBCC_BIN="${AGBCC_INSTALL_DIR}/bin/agbcc"
 BASEROM_PATH="${PROJECT_DIR}/baserom.gba"
 
 ensure_baserom() {
@@ -126,6 +134,11 @@ install_deps() {
 }
 
 prepare_agbcc() {
+  if [[ -x "${AGBCC_BIN}" && ${FORCE_AGBCC_UPDATE} -eq 0 ]]; then
+    echo "[=] Using existing agbcc at ${AGBCC_INSTALL_DIR}"
+    return
+  fi
+
   mkdir -p "${PROJECT_DIR}/.deps"
   if [[ ! -d "${AGBCC_SRC_DIR}/.git" ]]; then
     echo "[+] Cloning agbcc into ${AGBCC_SRC_DIR}"

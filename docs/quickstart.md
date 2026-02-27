@@ -13,7 +13,7 @@ Get a working build of this decompilation with a single command.
 From the repo root, run:
 
 ```bash
-./scripts/quickstart.sh [--rom /path/to/baserom.gba]
+./scripts/quickstart.sh [--rom /path/to/baserom.gba] [--refresh-agbcc]
 ```
 
 What the script now does:
@@ -24,7 +24,7 @@ What the script now does:
    - `pkg-config` / `pkgconf`
    - `libpng`
    - `python3`, `pip3`, `numpy`, `pillow`
-3. Clones and builds [`pret/agbcc`](https://github.com/pret/agbcc) inside `.deps/agbcc` (ignored by git) if it isn’t already present (or updates it to the latest `master`), then installs it into `tools/agbcc`.
+3. Checks whether `tools/agbcc/bin/agbcc` already exists. If it does, the script reuses it; otherwise it clones and builds [`pret/agbcc`](https://github.com/pret/agbcc) inside `.deps/agbcc` (ignored by git), installs it into `tools/agbcc`, and you can force a refresh any time with `--refresh-agbcc`.
 4. Builds helper tools via `./build_tools.sh`.
 5. Runs `make -j$(nproc)` to produce `fireemblem8.gba`.
 6. Verifies the ROM hash with `sha1sum -c checksum.sha1`.
@@ -40,7 +40,7 @@ fireemblem8.gba: OK
 
 - **Missing ROM** – Provide `--rom /path/to/rom.gba` or set `FIREEMBLEM8U_ROM=/path/to/rom.gba` when running the script.
 - **Unsupported distro** – Install the prerequisites manually (arm-none-eabi toolchain, pkg-config, libpng, python3, pip, numpy, pillow) then rerun the script; it’ll skip package installs once the tools are on your PATH.
-- **Already-installed toolchain** – The script detects `arm-none-eabi-*` binaries and skips reinstalling them.
+- **Already-installed toolchain** – The script detects `arm-none-eabi-*` binaries and skips reinstalling them. Existing `tools/agbcc` installs are reused too; run `./scripts/quickstart.sh --refresh-agbcc` if you need a fresh copy.
 - **Slower rebuilds** – Subsequent `make` runs are faster. For incremental work, run `make -j$(nproc)` manually.
 
 After the script finishes, launch your preferred emulator with `fireemblem8.gba` or start modifying the source.
