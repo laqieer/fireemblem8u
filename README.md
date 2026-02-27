@@ -9,7 +9,17 @@ This is a disassembly of Fire Emblem: The Sacred Stones (U)[!]
 It builds the following ROM:
 * fireemblem8.gba `sha1: c25b145e37456171ada4b0d440bf88a19f4d509f`
 
-### Setting up the repository
+### Quick Start
+
+If you just want to get the repo building quickly (Ubuntu/WSL, Arch, or macOS/Homebrew), drop your legally obtained ROM at the repo root as `baserom.gba` and run:
+
+```
+./scripts/quickstart.sh [--rom /path/to/baserom.gba] [--refresh-agbcc]
+```
+
+See [`docs/quickstart.md`](docs/quickstart.md) for full details, flags, and troubleshooting tips.
+
+### Setting up the repository manually
 
 1. You must have a copy of the Fire Emblem: The Sacred Stones ROM named `baserom.gba` in the repository directory.
 2. Install [devkitPro](https://devkitpro.org/wiki/Getting_Started) or [GNU Arm Embedded Toolchain](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm).
