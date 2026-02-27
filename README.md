@@ -11,7 +11,7 @@ It builds the following ROM:
 
 ### Quick Start
 
-If you just want to get the repo building quickly (Ubuntu/WSL, Arch, or macOS/Homebrew), drop your legally obtained ROM at the repo root as `baserom.gba` and run:
+If you just want to get the repo building quickly (Ubuntu/WSL, Arch Linux, or macOS/Homebrew), drop your legally obtained ROM at the repo root as `baserom.gba` and run:
 
 ```
 ./scripts/quickstart.sh [--rom /path/to/baserom.gba] [--refresh-agbcc]

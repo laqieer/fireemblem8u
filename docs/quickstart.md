@@ -1,11 +1,11 @@
 # Fire Emblem 8U Quick Start
 
-Get a working build of this decompilation with a single command.
+Get a working build of this decompilation with a single command using the bundled `scripts/quickstart.sh` helper. (If you prefer manual setup or run on another distro/package manager, see the README section below.)
 
 ## Prerequisites
 
 - A legally obtained copy of **Fire Emblem: The Sacred Stones (USA)**. Place it at the repo root as `baserom.gba`, or provide a path via `--rom /path/to/rom.gba` or `FIREEMBLEM8U_ROM=/path/to/rom.gba` when running the script.
-- Ubuntu/WSL, Arch/pacman, or macOS/Homebrew with sudo/admin access. The script auto-detects these package managers.
+- Ubuntu/WSL (apt), Arch Linux/pacman, or macOS/Homebrew with sudo/admin access. The script only auto-installs dependencies for these package managers; other environments can still run manually.
 - ~2.5 GB of free disk space and up to 15 minutes for the first full build.
 
 ## One-command setup
