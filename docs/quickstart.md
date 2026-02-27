@@ -24,7 +24,7 @@ What the script now does:
    - `pkg-config` / `pkgconf`
    - `libpng`
    - `python3`, `pip3`, `numpy`, `pillow`
-3. Clones and builds [`pret/agbcc`](https://github.com/pret/agbcc) inside `tools/agbcc` (ignored by git) if it isn’t already present, then installs it into this repo.
+3. Clones and builds [`pret/agbcc`](https://github.com/pret/agbcc) inside `.deps/agbcc` (ignored by git) if it isn’t already present (or updates it to the latest `master`), then installs it into `tools/agbcc`.
 4. Builds helper tools via `./build_tools.sh`.
 5. Runs `make -j$(nproc)` to produce `fireemblem8.gba`.
 6. Verifies the ROM hash with `sha1sum -c checksum.sha1`.

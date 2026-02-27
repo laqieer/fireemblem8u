@@ -37,7 +37,7 @@ done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-AGBCC_DIR="${PROJECT_DIR}/tools/agbcc"
+AGBCC_SRC_DIR="${PROJECT_DIR}/.deps/agbcc"
 BASEROM_PATH="${PROJECT_DIR}/baserom.gba"
 
 ensure_baserom() {
@@ -82,7 +82,7 @@ install_deps() {
     echo "[!] No supported package manager detected (apt, pacman, brew)." >&2
     echo "    Install the prerequisites manually: binutils arm-none-eabi toolchain, pkg-config, libpng, python3, pip, numpy, pillow." >&2
     return
-  }
+  fi
 
   local need_toolchain=0
   if ! have_cmd arm-none-eabi-as; then
@@ -123,17 +123,20 @@ install_deps() {
       return
       ;;
   esac
-
-  install_python_modules
 }
 
 prepare_agbcc() {
-  if [[ ! -d "${AGBCC_DIR}" ]]; then
-    echo "[+] Cloning agbcc into ${AGBCC_DIR}"
-    git clone https://github.com/pret/agbcc.git "${AGBCC_DIR}"
+  mkdir -p "${PROJECT_DIR}/.deps"
+  if [[ ! -d "${AGBCC_SRC_DIR}/.git" ]]; then
+    echo "[+] Cloning agbcc into ${AGBCC_SRC_DIR}"
+    rm -rf "${AGBCC_SRC_DIR}"
+    git clone https://github.com/pret/agbcc.git "${AGBCC_SRC_DIR}"
   fi
 
-  pushd "${AGBCC_DIR}" >/dev/null
+  pushd "${AGBCC_SRC_DIR}" >/dev/null
+    echo "[+] Updating agbcc source"
+    git fetch origin >/dev/null
+    git reset --hard origin/master >/dev/null
     echo "[+] Building agbcc"
     ./build.sh
     echo "[+] Installing agbcc into project"
