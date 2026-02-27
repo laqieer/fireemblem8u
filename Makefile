@@ -156,6 +156,7 @@ src/msg_data.c: $(TEXT_SRC) $(TEXT_DEFS)
 # Graphics Recipes
 
 include graphics_file_rules.mk
+include graphics/banim/assets/img/banim_img_rules.mk
 include songs.mk
 include json_data_rules.mk
 
