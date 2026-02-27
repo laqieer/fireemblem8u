@@ -99,24 +99,44 @@ install_deps() {
 
   case "${pkg_mgr}" in
     apt)
+      local sudo_cmd=""
+      if (( EUID != 0 )); then
+        if have_cmd sudo; then
+          sudo_cmd="sudo"
+        else
+          echo "[!] Need root privileges to install packages via apt, but sudo is unavailable." >&2
+          echo "    Install the prerequisites manually and rerun the script." >&2
+          return
+        fi
+      fi
       echo "[+] Updating apt package index..."
-      sudo apt-get update -y >/dev/null
+      ${sudo_cmd} apt-get update -y >/dev/null
       local packages=(pkg-config libpng-dev python3-pip python3-numpy python3-pil)
       if (( need_toolchain )); then
         packages=(binutils-arm-none-eabi "${packages[@]}")
       fi
       if [[ ${#packages[@]} -gt 0 ]]; then
         echo "[+] Installing packages via apt: ${packages[*]}"
-        sudo apt-get install -y "${packages[@]}" >/dev/null
+        ${sudo_cmd} apt-get install -y "${packages[@]}" >/dev/null
       fi
       ;;
     pacman)
+      local sudo_cmd=""
+      if (( EUID != 0 )); then
+        if have_cmd sudo; then
+          sudo_cmd="sudo"
+        else
+          echo "[!] Need root privileges to install packages via pacman, but sudo is unavailable." >&2
+          echo "    Install the prerequisites manually and rerun the script." >&2
+          return
+        fi
+      fi
       local packages=(pkgconf libpng python-pip python-numpy python-pillow)
       if (( need_toolchain )); then
         packages=(arm-none-eabi-binutils "${packages[@]}")
       fi
       echo "[+] Installing packages via pacman: ${packages[*]}"
-      sudo pacman -Sy --needed --noconfirm "${packages[@]}"
+      ${sudo_cmd} pacman -Sy --needed --noconfirm "${packages[@]}"
       ;;
     brew)
       local packages=(pkg-config libpng)

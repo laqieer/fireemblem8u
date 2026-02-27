@@ -39,6 +39,7 @@ fireemblem8.gba: OK
 ## Troubleshooting
 
 - **Missing ROM** – Provide `--rom /path/to/rom.gba` or set `FIREEMBLEM8U_ROM=/path/to/rom.gba` when running the script.
+- **No sudo/root** – apt/pacman installs require elevated privileges. If you run the script without sudo, it will skip the package install step and remind you to install the prerequisites manually before re-running. Homebrew installs keep working without sudo.
 - **Unsupported distro** – Install the prerequisites manually (arm-none-eabi toolchain, pkg-config, libpng, python3, pip, numpy, pillow) then rerun the script; it’ll skip package installs once the tools are on your PATH.
 - **Already-installed toolchain** – The script detects `arm-none-eabi-*` binaries and skips reinstalling them. Existing `tools/agbcc` installs are reused too; run `./scripts/quickstart.sh --refresh-agbcc` if you need a fresh copy.
 - **Slower rebuilds** – Subsequent `make` runs are faster. For incremental work, run `make -j$(nproc)` manually.
