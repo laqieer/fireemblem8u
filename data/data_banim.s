@@ -9796,7 +9796,8 @@ Pal_EkrElfireBG:  @ 0x08603B50
 
 	.global Tsa_EkrElfireBG
 Tsa_EkrElfireBG:  @ 0x08603D50
-	.incbin "baserom.gba", 0x603D50, 0x248
+	.incbin "./graphics/banim/assets/tsa/00603D50_Tsa_EkrElfireBG.tsa.lz"
+	.incbin "baserom.gba", 0x603D50 + 0x1B0, 0x248 - 0x1B0
 
 	.global Img_EfxElfireOBJ
 Img_EfxElfireOBJ:  @ 0x08603F98
@@ -16396,7 +16397,8 @@ Img_08665FF4:  @ 0x08665FF4
 
 	.global Img_08666A6C
 Img_08666A6C:  @ 0x08666A6C
-	.incbin "baserom.gba", 0x666A6C, 0x1304    @ 0x667D70 - 0x666A6C
+	.incbin "./graphics/banim/assets/img/00666A6C_Img_08666A6C.4bpp.lz"
+	.incbin "baserom.gba", 0x666A6C + 0x744, 0x1304 - 0x744    @ 0x667D70 - 0x666A6C
 
 	.global Pal_08667D70
 Pal_08667D70:  @ 0x08667D70
@@ -28833,7 +28835,8 @@ Img_086B9620:  @ 0x086B9620
 
 	.global Img_086BAF14
 Img_086BAF14:  @ 0x086BAF14
-	.incbin "baserom.gba", 0x6BAF14, 0x1910    @ 0x6BC824 - 0x6BAF14
+	.incbin "./graphics/banim/assets/img/006BAF14_Img_086BAF14.4bpp.lz"
+	.incbin "baserom.gba", 0x6BAF14 + 0x18F0, 0x1910 - 0x18F0    @ 0x6BC824 - 0x6BAF14
 
 	.global Pal_efxCrimsonEyeBGFinish1
 Pal_efxCrimsonEyeBGFinish1:  @ 0x086BC824
@@ -31620,7 +31623,8 @@ Tsa_0872150C:  @ 0x0872150C
 
 	.global Tsa_08721784
 Tsa_08721784:  @ 0x08721784
-	.incbin "baserom.gba", 0x721784, 0x1A84    @ 0x723208 - 0x721784
+	.incbin "./graphics/banim/assets/tsa/00721784_Tsa_08721784.tsa.lz"
+	.incbin "baserom.gba", 0x721784 + 0x278, 0x1A84 - 0x278    @ 0x723208 - 0x721784
 
 	.global AnimScr_DarkBreath_Far
 AnimScr_DarkBreath_Far:  @ 0x08723208
