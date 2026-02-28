@@ -8,10 +8,10 @@
 
 | 项目 | 说明 |
 | --- | --- |
-| `graphics/banim/assets/img` | 651 份 LZ77 压缩的 `.4bpp.lz` + 对应 `.png` 预览 |
-| `graphics/banim/assets/pal` | 120 份 `.gbapal`（16/256 色调色板） |
-| `graphics/banim/assets/tsa` | 617 份 `.tsa.lz` + 解压后的 `.tsa` |
-| `graphics/banim/assets/misc` | 2 个尚未细分的块：`gUnk_085dd518`、`gUnknown_08678D20` |
+| `graphics/banim/assets/img` | 651 份 PNG 源文件；`.4bpp`/`.4bpp.lz` 在构建时由 `banim_img_rules.mk` 自动生成 |
+| `graphics/banim/assets/pal` | 120 份 `.pal` 源调色板；`.gbapal` 作为构建产物由 `banim_pal_rules.mk` 生成 |
+| `graphics/banim/assets/tsa` | 617 份未压 `.tsa` + 对应的构建产物 `.tsa.lz`（由规则生成） |
+| `graphics/banim/assets/misc` | 2 个尚未细分的块：`gUnk_085dd518`、`gUnknown_08678D20`（已解压成 `.bin` 源） |
 | `reports/data_banim_incbin_report.txt` | `data/data_banim.s` 中剩余 `baserom` 引用清单（含行号、起止地址） |
 | `reports/data_banim_incbin_labels.csv` | 每条 `incbin` 的标签、偏移、尺寸（供脚本消费） |
 | `reports/data_banim_asset_map.csv` | 旧路径 → 新路径（img/pal/tsa）映射，用于校验/回溯 |
@@ -45,6 +45,22 @@ projects/fireemblem8u/
     ├── tool.py
     └── update_banim_img_rules.py
 ```
+
+## 全流程概览（2026-02-27 ~ 2026-02-28）
+
+1. **拉平 1390 条 `.incbin`（02-27 10:52~11:07）**：`data/data_banim.s` 原本直接指向 `baserom.gba`。先用脚本依序读取标签、ROM 偏移、长度，将所有块 dump 到 `graphics/banim_incbin/<offset>_<label>.bin`，并用 `reports/data_banim_incbin_{report,labels}.(txt/csv)` 记录来源。
+2. **按资源类型落盘（11:14 起）**：依据标签前缀（`Img_`/`Pal_`/`Tsa_` 等）切片进 `graphics/banim/assets/{img,pal,tsa,misc}`，为后续 PNG、调色板、TSA 处理奠基。
+3. **PNG Round-trip 验证（11:22~13:59）**：
+   - 批量解压 `.4bpp.lz` → `.4bpp` → `.png`，删除仓库里的 `.4bpp`，只留下 PNG。
+   - 写 `scripts/update_banim_img_rules.py` 统计 tile 数/宽度，生成 `banim_img_rules.mk`，解决 9 个“宽度未知”导致的 diff。
+   - 清理 `data/banim/data_banim.o`、重跑 `scripts/arm_compressing_linker.py`，再以 `make -j8 && sha1sum -c checksum.sha1` 证明 PNG → .4bpp → ROM 无损。
+4. **全面源码化（14:02~20:55）**：在群聊 20 分钟一报节奏下，继续把剩余资产转成可读格式：
+   - `.gbapal` → `.pal` → （必要时）`.agbpal`，同时生成 `banim_pal_rules.mk`。
+   - `.tsa.lz`/`misc.lz` 解压到未压 `*.tsa`/`*.bin`，但 `.incbin` 仍引用压缩成品。
+   - `.animscr.lz` 反汇编为 `graphics/banim/assets/animscr/*.s`，格式对齐 `banim-ekrmainminifx.s`，并用 `banim_animscr_rules.mk` 再压回 `.animscr.lz`。
+   - 所有构建产物统一移到 `build/banim_generated/`，仓库仅保存源资产。
+5. **最终交付（22:30）**：整理脚本/规则/PNG/.pal/.tsa/.s 变更，提交 `b76b8a0e Source battle animation assets for deterministic builds agent=banim-migrator model=github-copilot/gpt-5.1-codex openclaw=2026.2.25`，标志 banim 资产完全可重复构建。
+6. **文档补全（02-28 05:37~06:46）**：基于群聊新增本指南及附录，记录所有 edge case——`gbapal↔pal↔agbpal`、`gbagfx width/num_tiles`、TSA 头部判断、animscr 宏化、`.incbin` 命名规则等。
 
 ## 拆解步骤
 
@@ -186,12 +202,13 @@ PY
 
 #### 4.2 调色板
 
-调色板本身没有压缩，拆分时直接写成 `.gbapal` 即可。必要时可以用 `tool.read_palette` 验证颜色数量。
+调色板本身没有压缩，拆分时先落地为 `.gbapal`，随后用 `gbagfx foo.gbapal foo.pal` 得到可编辑的 `.pal`。提交时只保留 `.pal`（由 `banim_pal_rules.mk` 在构建阶段重新生成 `.gbapal`），必要时可用 `tool.read_palette` 验证颜色数量或检查 16/256 色限制。
 
 #### 4.3 TSA
 
-1. 先将 `.tsa.lz` 解压为 `.tsa`（平面 tile map 数据）。
-2. `.tsa` 文件与对应背景/OBJ 的 `.png` 配套，用于美术确认。
+1. 先将 `.tsa.lz` 解压为 `.tsa`（平面 tile map 数据），仓库只保留未压 `.tsa`。
+2. `.incbin` 仍引用构建阶段重新 LZ77 压缩的 `.tsa.lz`，由 `make banim` 自动生成。
+3. `.tsa` 文件与对应背景/OBJ 的 `.png` 配套，用于美术确认。
 
 ```bash
 python3 - <<'PY'
@@ -252,6 +269,39 @@ PY
 | `.tsa` 无法解压 | 确认源文件确实是 LZ77；若 size ≤ 0x3C，说明原本是未压缩数据，直接复制即可 |
 | `tool.py` 报 `gbagfx` 找不到 | 确认 `tools/gbagfx` 已编译；必要时重新 `make tools` |
 | 校验脚本提示 SHA1 不一致 | 多半是 PNG 导出后忘记重新压回 `.4bpp.lz`，运行 `make banim` 可重新生成压缩文件 |
+
+## Edge Case 处理与经验
+
+### 1. `.incbin` 命名与构建产物分离
+- `.incbin` 永远引用“可重现的构建产物”，例如 `graphics/banim/assets/img/005DDC64_Img_BreathSprites.4bpp.lz`。
+- 仓库中保留的是源资产：PNG、`.pal`、未压 `.tsa`/`.bin`、宏化 `.s`；实际 `.4bpp`/`.gbapal`/`.tsa.lz`/`.animscr.lz` 都由 `make banim` 在 `build/banim_generated/` 目录生成。
+- 命名格式 `<ROM偏移>_<Label>` 保证每个源文件都能追溯到原始地址，`reports/data_banim_asset_map.csv` 则记录旧 → 新路径映射。
+
+### 2. PNG ↔ 4bpp Round-trip & width/tiles 约束
+- `scripts/update_banim_img_rules.py` 会解压 `.4bpp.lz`、计算 tile 数，并把已知宽度写进 `CONSTRAINTS`：
+  - 宽度来自两处：一是配套 TSA（若可推导列数），二是游戏调用里写死的 `width`/`height` 常量。
+  - 如果无法整除，则在规则里写死 `num_tiles`，例如 `Img_EfxLokmsunaObj`。
+- 规则文件会生成注释（如 `# 16x11 tiles`），方便复核并防止 `gbagfx` 默认 32 列带来的空行。
+
+### 3. 调色板 α-bit 与 `.agbpal` 场景
+- `.gbapal` 属于构建产物，`make clean` 会清理，所以需要保存 `.pal` 源文件。
+- 转换链：`gbagfx foo.gbapal foo.pal` → 美术编辑 → `gbagfx foo.pal foo.gbapal`。
+- 若 round-trip 时 RGB555 最高位（俗称 alpha bit）出现 0/1 差异，说明该数据应直接视为最终调色板：把源文件改名为 `.agbpal` 并更新 `.incbin`，避免无谓的转换。
+
+### 4. TSA 头部判断与宽度来源
+- 批量检测脚本会尝试把前两个 halfword 视作 `width-1`/`height-1`，验证 `4 + width * height * 2 == len(file)`。若不成立，就认定该 TSA 没有头部（当前 banim TSA 均属此类）。
+- 无头 TSA 的宽度需靠：① 与之配套的 PNG 规则；② 游戏脚本/调用；③ 手动在查看器里试宽度。若无可靠宽度，至少保证 `num_tiles` 精准。
+
+### 5. AnimSCR 宏化细节
+- 反汇编时按 32-bit 指令位域（`ANFMT_NOT_FORCESPRITE`、`ANFMT_PTRINS`、`ANIM_INS_TYPE_*` 等）拆解，并映射到 `include/animscr.inc` 宏。
+- 指针全部转成标签：读取 0x08xxxxxx 地址 → 减去 0x08000000 → 匹配同一文件内的 `AnimSprite` 块，保持与 `banim-ekrmainminifx.s` 相同的命名模式。
+- 生成的 `.s` 会在 `banim_animscr_rules.mk` 下重新汇编→压缩→供 `.incbin` 引用。
+
+### 6. 构建失效的应对（`data_banim.o` 案例）
+- 删除 `.4bpp` 期间，如果 `data/banim/data_banim.o` 被普通规则覆盖，会导致 `ld` 报 “file format not recognized”。
+- 处理方式：`rm data/banim/data_banim.o && make data/banim/data_banim.o`，让 `scripts/arm_compressing_linker.py` 重新生成压缩对象。
+- 全量构建后务必执行 `sha1sum -c checksum.sha1`，确认和 `baserom` 完全一致。
+
 
 ## 附录：格式与转换规则
 
