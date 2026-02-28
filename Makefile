@@ -36,6 +36,8 @@ JSONPROC   := tools/jsonproc/jsonproc$(EXE)
 FETSATOOL  := scripts/gfxtools/tsa_generator.py
 TMAP2TSA   := scripts/tmap2tsa.py
 MARTOMAP   := scripts/mar_to_map.py
+PYTHON    ?= python3
+PAL2GBAPAL := $(PYTHON) scripts/jasc_pal_to_gbapal.py
 
 ifeq ($(UNAME),Darwin)
 	SED := sed -i ''
@@ -168,7 +170,7 @@ include json_data_rules.mk
 %.1bpp: %.png  ; $(GBAGFX) $< $@
 %.4bpp: %.png  ; $(GBAGFX) $< $@
 %.8bpp: %.png  ; $(GBAGFX) $< $@
-%.gbapal: %.pal ; $(GBAGFX) $< $@
+%.gbapal: %.pal ; $(PAL2GBAPAL) $< $@
 %.gbapal: %.png ; $(GBAGFX) $< $@
 %.lz: % ; $(GBAGFX) $< $@
 %.rl: % ; $(GBAGFX) $< $@
