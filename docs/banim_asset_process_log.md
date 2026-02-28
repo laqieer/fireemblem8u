@@ -71,3 +71,4 @@
 - 若任务由群聊下达，需在 `docs/banim_asset_process_log.md` 追加对应条目，保持“指令 → 执行 → 结果”闭环。
 | 09:56 | @ou_7228… | “先把 incbin 这 4 个资产的地方恢复成 master 分支的直接 incbin baserom 的形式，再构建。” | 将 `data/data_banim.s` 四处 `.incbin` 恢复为 `baserom.gba` 片段（0x603D50/0x666A6C/0x6BAF14/0x721784），改为 ROM dump 流程后 `make -j8`、`sha1sum -c checksum.sha1` 以及 `scripts/bindiff.sh` 均通过。 |
 | 10:11 | @ou_7228… | “还原之前revert掉的调色板提取，删除所有的gbapal文件，执行make命令，检查结果，如果匹配就提交推送。” | 扫描并删除全部生成的 `*.gbapal`，`make clean && make -j8 > build.log`，`sha1sum -c checksum.sha1` 与 `scripts/bindiff.sh baserom.gba fireemblem8.gba` 均通过，确认 ROM 与 `baserom.gba` 一致（高位调色板流程完好）。 |
+| 10:21 | @ou_7228… | “不需要自己写pal2gbapal，就用gbagfx转换，提交的pal文件里的换行符不是lf而是crlf，配置pal文件在git检出时指定换行符crlf。” | 移除 `scripts/jasc_pal_to_gbapal.py`，令 Makefile 的 `PAL2GBAPAL` 回到 `gbagfx`，并在 `.gitattributes` 里明确 `*.pal text eol=crlf`（满足 CRLF 检出要求）。完成后重新 `make clean && make -j8 > build.log`、`sha1sum -c checksum.sha1` 与 `scripts/bindiff.sh`，确认 ROM 仍与 `baserom.gba` 一致。 |
