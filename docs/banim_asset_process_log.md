@@ -75,3 +75,4 @@
 | 10:43 | @ou_7228… | “假设 gbagfx 压缩后的文件是 N 字节，检查下是否匹配原 rom 里的对应位置的前 N 个字节。” | 对 0x603D50/0x666A6C/0x6BAF14/0x721784 四个资产重新用 gbagfx 压缩，逐一比对 `baserom.gba` 对应 offset 的前 N 字节，结果全部完全一致（差异只在压缩流更短，导致尾部缺少剩余字节）。 |
 | 10:46 | @ou_7228… | “前 N 个字节解压是这份资源，后面其实是别的数据；把前 N 个字节换成 gbagfx 生成的输出，剩余部分继续 incbin ROM，再 make 看结果。” | 为四个差异资产生成 `.4bpp/.tsa.lz` 并拆分 `.incbin`：先引用 gbagfx 生成的前 N 字节，再 `incbin baserom.gba` 的剩余字节，准备重建校验。 |
 | 10:49 | @ou_7228… | （续上条） | 完成拆分后执行 `make clean && make -j8`、`sha1sum -c checksum.sha1`、`scripts/bindiff.sh baserom.gba fireemblem8.gba`，全部通过，确认“前 N 字节用 gbagfx 输出 + 剩余字节继续 incbin ROM” 的方案保持 ROM 对齐。 |
+| 11:46 | @ou_7228… | “第3个剩余的32字节是调色板。把列出来的这些也都解压提取还原成对应资源，且命名成有意义的名字，最后构建OK再提交推送。” | 提取四段“尾巴”资产：生成 `Tsa_EfxElfireBG_Clear`、`Img_EfxMagdhisEffectBG_LayerB`、`Pal_EfxCrimsonEyeBGFinishIntro`、`AnimScr_NaglfarBG4`，更新 `data/data_banim.s` 标签并 `make -j8` → `sha1sum -c checksum.sha1` → `scripts/bindiff.sh` 均通过，准备提交。 |

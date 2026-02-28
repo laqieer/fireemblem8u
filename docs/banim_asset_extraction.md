@@ -370,3 +370,11 @@ Banim 的 `.tsa` 资产存在两种来源：
 ---
 
 如需重新跑整套流程，按以上步骤执行即可；若只新增/修改少量资源，可以直接参考第 4～6 步单独更新对应文件。
+### 2026-02-28 11:46 UTC：补全四段“尾巴”资产
+
+- **Tsa_EfxElfireBG_Clear (`0x603F00-0x603F97`)**：原本夹在 `Tsa_EkrElfireBG` 与 `Img_EfxElfireOBJ` 之间，全 0 TSA（30×40 tiles）。现提取成 `graphics/banim/assets/tsa/00603F00_Tsa_EfxElfireBG_Clear.{tsa,tsa.lz}` 并在 `data/data_banim.s` 定义新全局标签，后续可单独引用。
+- **Img_EfxMagdhisEffectBG_LayerB (`0x6671B0-0x667D6F`)**：是 Magdhis 背景的附加 224 tiles 图块，之前因压缩流尾段被误并在 `Img_08666A6C` 之后。现输出 `graphics/banim/assets/img/006671B0_Img_EfxMagdhisEffectBG_LayerB.{4bpp,4bpp.lz}`。
+- **Pal_EfxCrimsonEyeBGFinishIntro (`0x6BC804-0x6BC823`)**：32 字节的 RGB555 调色板，位于 `Img_086BAF14` 之后，早前误认为 LZ 尾段。现存成 `graphics/banim/assets/pal/006BC804_Pal_EfxCrimsonEyeBGFinishIntro.{agbpal,pal}`（`.pal` 采用 CRLF）。
+- **AnimScr_NaglfarBG4 (`0x7219FC-0x723207`)**：对应 Naglfar 第四阶段 BG 的脚本表，以前被附在 `Tsa_08721784` 尾部。现拆出 `graphics/banim/assets/animscr/007219FC_AnimScr_NaglfarBG4.bin` 并在数据段标注。
+
+上述四个资源均通过 `make -j8` 重建，`sha1sum -c checksum.sha1` 与 `scripts/bindiff.sh baserom.gba fireemblem8.gba` 均保持完全匹配。
