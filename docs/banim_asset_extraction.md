@@ -285,8 +285,7 @@ PY
 
 ### 3. 调色板 α-bit 与 `.agbpal` 场景
 - `.gbapal` 属于构建产物，`make clean` 会清理，所以需要保存 `.pal` 源文件。
-- 转换链：`gbagfx foo.gbapal foo.pal` → 美术编辑 → `scripts/jasc_pal_to_gbapal.py foo.pal foo.gbapal`（该脚本复刻 `gbagfx` 的 8→5 bit 圆整逻辑、兼容 CRLF/LF，避免平台差异）。
-- **高位检测**：在把 `.gbapal` dump 成 `.pal` 之前，先扫描每个 halfword 的 bit15；只要出现 1，这份调色板就不能安全地 round-trip 成 `.pal`。工具链约定直接把此类文件改后缀为 `.agbpal` 并在 `data/data_banim.s` / `reports/data_banim_asset_map.csv` 中引用 `.agbpal`，构建时也只做 `.agbpal → .agbpal.lz` 压缩，不再尝试文本化。
+- 转换链：`gbagfx foo.gbapal foo.pal` → 美术编辑 → `gbagfx foo.pal foo.gbapal`。
 - 若 round-trip 时 RGB555 最高位（俗称 alpha bit）出现 0/1 差异，说明该数据应直接视为最终调色板：把源文件改名为 `.agbpal` 并更新 `.incbin`，避免无谓的转换。
 
 ### 4. TSA 头部判断与宽度来源

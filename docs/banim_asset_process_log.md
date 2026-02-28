@@ -16,10 +16,6 @@
 | 06:06 | @ou_7228… | “回顾群聊历史记录，重新整理记录整个过程并提交推送。” | （即本文档）整理自 05:23 起的群聊指令、对应动作与产物，形成可追溯复盘。 |
 | 07:18 | @ou_7228… | “为什么没有调色板？给我 GitHub 上这个调色板文件的 URL。” | 发现 `graphics/banim/assets/pal/` 仅有 `.gbapal`，立刻计划批量导出 `.pal` 并开放访问。 |
 | 07:25 | @ou_7228… | “.gbapal 应该忽略，.agbpal 和 .pal 不应该；提交推送。” | 执行 `.gbapal → .pal` 转换、更新 `.gitignore`，准备提交并推送 palette 源文件。 |
-| 07:31 | @ou_7228… | “提交推送。” | 回收 palette 变更、补交 `e7a90466`，并在 Feishu 同步链接。 |
-| 07:59 | @ou_7228… | “make clean and rebuild。” | 全量 `make clean && make -j8`，因 palette 高位差异导致 ROM 指针区偏移，`sha1sum` 报错。 |
-| 08:29 | @ou_7228… | “二进制对比生成 GBA 文件和原文件的差异……” | 写脚本批量比对 1390 个资产，锁定 11 个高位为 1 的调色板。 |
-| 08:48 | @ou_7228… | “最高位为 1 的调色板直接改 `.agbpal` 后缀再 build。” | 将 11 份 `.gbapal` 改为 `.agbpal`、更新 `Makefile`/`data_banim.s`/`reports`，并新增 `scripts/jasc_pal_to_gbapal.py`。 |
 
 ## 历史聊天回顾（2026-02-27）
 
