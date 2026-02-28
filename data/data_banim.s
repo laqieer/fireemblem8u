@@ -4519,7 +4519,7 @@ Img_EfxNormalEffectBG:  @ 0x085E8D88
 
 	.global Pal_EfxNormalEffectBG
 Pal_EfxNormalEffectBG:  @ 0x085E9150
-	.incbin "./graphics/banim/assets/pal/005E9150_Pal_EfxNormalEffectBG.gbapal"
+	.incbin "./graphics/banim/assets/pal/005E9150_Pal_EfxNormalEffectBG.agbpal"
 
 	.global Tsa1_EfxNormalEffectBG
 Tsa1_EfxNormalEffectBG:
@@ -8508,7 +8508,7 @@ Img_ThunderSpellBg:  @ 0x085F2DC0
 
 	.global Pal_ThunderSpellBg
 Pal_ThunderSpellBg:  @ 0x085F367C
-	.incbin "./graphics/banim/assets/pal/005F367C_Pal_ThunderSpellBg.gbapal" @ 0x5F387C - 0x5F367C
+	.incbin "./graphics/banim/assets/pal/005F367C_Pal_ThunderSpellBg.agbpal" @ 0x5F387C - 0x5F367C
 
 	.global Tsa_EfxThuderBg1
 Tsa_EfxThuderBg1:  @ 0x085F387C
@@ -9272,7 +9272,7 @@ Img_FireSpellBg:  @ 0x085F5638
 
 	.global Pal_FireSpellBg
 Pal_FireSpellBg:  @ 0x085F6230
-	.incbin "./graphics/banim/assets/pal/005F6230_Pal_FireSpellBg.gbapal" @ 0x5F6250 - 0x5F6230
+	.incbin "./graphics/banim/assets/pal/005F6230_Pal_FireSpellBg.agbpal" @ 0x5F6250 - 0x5F6230
 
 	.global Tsa_085F6250
 Tsa_085F6250:  @ 0x085F6250
@@ -9376,7 +9376,7 @@ Img_FireSpellSprites:  @ 0x085F7768
 
 	.global Pal_FireSpellSprites
 Pal_FireSpellSprites:  @ 0x085F7D64
-	.incbin "./graphics/banim/assets/pal/005F7D64_Pal_FireSpellSprites.gbapal"
+	.incbin "./graphics/banim/assets/pal/005F7D64_Pal_FireSpellSprites.agbpal"
 
 .global AnimSprite_EfxFireOBJ_L_1
 AnimSprite_EfxFireOBJ_L_1:  @ 0x5F7D84
@@ -9700,7 +9700,7 @@ Img_08600784:	@ 0x08600784
 
 	.global Pal_EfxFireHitBG
 Pal_EfxFireHitBG:  @ 0x0860108C
-	.incbin "./graphics/banim/assets/pal/0060108C_Pal_EfxFireHitBG.gbapal"
+	.incbin "./graphics/banim/assets/pal/0060108C_Pal_EfxFireHitBG.agbpal"
 
 	.global Tsa_086010AC
 Tsa_086010AC:	@ 0x086010AC
@@ -9804,7 +9804,7 @@ Img_EfxElfireOBJ:  @ 0x08603F98
 
 	.global Pal_EfxElfireOBJ
 Pal_EfxElfireOBJ:  @ 0x08604210
-	.incbin "./graphics/banim/assets/pal/00604210_Pal_EfxElfireOBJ.gbapal"
+	.incbin "./graphics/banim/assets/pal/00604210_Pal_EfxElfireOBJ.agbpal"
 
 .global AnimSprite_EfxElfireOBJ_1
 AnimSprite_EfxElfireOBJ_1:  @ 0x604230
@@ -15278,7 +15278,7 @@ Img_EclipseBg_M:  @ 0x0864DFFC
 
 	.global Pal_EclipseBg_B
 Pal_EclipseBg_B:  @ 0x0864E790
-	.incbin "./graphics/banim/assets/pal/0064E790_Pal_EclipseBg_B.gbapal"
+	.incbin "./graphics/banim/assets/pal/0064E790_Pal_EclipseBg_B.agbpal"
 
 	.global Pal_EclipseBg_C
 Pal_EclipseBg_C:  @ 0x0864E7B0
@@ -15406,7 +15406,7 @@ Img_EclipseSprites_08651240:  @ 0x08651240
 
 	.global Pal_EclipseSprites
 Pal_EclipseSprites:  @ 0x0865163C
-	.incbin "./graphics/banim/assets/pal/0065163C_Pal_EclipseSprites.gbapal"
+	.incbin "./graphics/banim/assets/pal/0065163C_Pal_EclipseSprites.agbpal"
 
 .global AnimSprite_EfxHazymoonOBJ2_1_1
 AnimSprite_EfxHazymoonOBJ2_1_1:  @ 0x65165C
@@ -16859,7 +16859,7 @@ Tsa_HealSpellBg:  @ 0x0866F774
 
 	.global Pal_HealSpellBg
 Pal_HealSpellBg:  @ 0x086700D4
-	.incbin "./graphics/banim/assets/pal/006700D4_Pal_HealSpellBg.gbapal"
+	.incbin "./graphics/banim/assets/pal/006700D4_Pal_HealSpellBg.agbpal"
 
 	.global Img_HealSprites_Sparkles
 Img_HealSprites_Sparkles:  @ 0x086702D4
@@ -16883,7 +16883,7 @@ Tsa_EfxLiveBG_B_R:  @ 0x086716A0
 
 	.global Pal_08672000
 Pal_08672000:  @ 0x08672000
-	.incbin "./graphics/banim/assets/pal/00672000_Pal_08672000.gbapal"
+	.incbin "./graphics/banim/assets/pal/00672000_Pal_08672000.agbpal"
 
 	.global Pal_08672220
 Pal_08672220:  @ 0x08672220
@@ -27170,7 +27170,7 @@ AnimScr_EfxMshield2: @ 0x692674
 
 	.global Pal_IvaldiSprites
 Pal_IvaldiSprites:  @ 0x086926E0
-	.incbin "./graphics/banim/assets/pal/006926E0_Pal_IvaldiSprites.gbapal"
+	.incbin "./graphics/banim/assets/pal/006926E0_Pal_IvaldiSprites.agbpal"
 
 	.global Img_IvaldiSprites
 Img_IvaldiSprites:  @ 0x08692B10
