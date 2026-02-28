@@ -1382,8 +1382,10 @@ AnimScr_EfxSongObj2: @ 0x5DD4B4
     ANIMSCR_BLOCKED
 
 .global gUnk_085dd518
+.global Tsa_BreathBgBase
 gUnk_085dd518:
-    .incbin "./graphics/banim/assets/misc/005DD518_gUnk_085dd518.bin"
+Tsa_BreathBgBase:  @ 0x085DD518
+	.incbin "./graphics/banim/assets/tsa/005DD518_Tsa_BreathBgBase.tsa.lz"
 
 	.global Img_BreathSprites
 Img_BreathSprites:  @ 0x085DDC64
@@ -20019,8 +20021,10 @@ Pal_08678B20:  @ 0x08678B20
 	.incbin "./graphics/banim/assets/pal/00678B20_Pal_08678B20.gbapal"
 
 	.global gUnknown_08678D20
+.global Tsa_StatusEffectBgBase
 gUnknown_08678D20:
-    .incbin "./graphics/banim/assets/misc/00678D20_gUnknown_08678D20.bin"
+Tsa_StatusEffectBgBase:  @ 0x08678D20
+	.incbin "./graphics/banim/assets/tsa/00678D20_Tsa_StatusEffectBgBase.tsa.lz"
 
 	.global Img_08679B04
 Img_08679B04:  @ 0x08679B04

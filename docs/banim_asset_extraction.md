@@ -11,7 +11,7 @@
 | `graphics/banim/assets/img` | 651 份 PNG 源文件；`.4bpp`/`.4bpp.lz` 在构建时由 `banim_img_rules.mk` 自动生成 |
 | `graphics/banim/assets/pal` | 120 份 `.pal` 源调色板；`.gbapal` 作为构建产物由 `banim_pal_rules.mk` 生成 |
 | `graphics/banim/assets/tsa` | 617 份未压 `.tsa` + 对应的构建产物 `.tsa.lz`（由规则生成） |
-| `graphics/banim/assets/misc` | 2 个尚未细分的块：`gUnk_085dd518`、`gUnknown_08678D20`（已解压成 `.bin` 源） |
+| `graphics/banim/assets/misc` | （已清空）所有历史块都拆成 `Tsa_*` 资源，见 2026-02-28 12:15 UTC 记录 |
 | `reports/data_banim_incbin_report.txt` | `data/data_banim.s` 中剩余 `baserom` 引用清单（含行号、起止地址） |
 | `reports/data_banim_incbin_labels.csv` | 每条 `incbin` 的标签、偏移、尺寸（供脚本消费） |
 | `reports/data_banim_asset_map.csv` | 旧路径 → 新路径（img/pal/tsa）映射，用于校验/回溯 |
@@ -378,3 +378,15 @@ Banim 的 `.tsa` 资产存在两种来源：
 - **AnimScr_NaglfarBG4 (`0x7219FC-0x723207`)**：对应 Naglfar 第四阶段 BG 的脚本表，以前被附在 `Tsa_08721784` 尾部。现拆出 `graphics/banim/assets/animscr/007219FC_AnimScr_NaglfarBG4.bin` 并在数据段标注。
 
 上述四个资源均通过 `make -j8` 重建，`sha1sum -c checksum.sha1` 与 `scripts/bindiff.sh baserom.gba fireemblem8.gba` 均保持完全匹配。
+### 2026-02-28 12:15 UTC：`misc/` 剩余块 → TSA 资源
+
+Feishu 指令“分析 `graphics/banim/assets/misc` 下的二进制块，并解压提取还原成对应资源”对准了仍未拆解的两段 `gUnk`/`gUnknown` 数据。确认流程如下：
+
+1. **判断格式**：两份 `.bin` 的首字节均为 `0x10`，解压后分别得到 1024/2048 字节数据。按 16 bit little-endian 查看，每项高 6 bit 均落在 `0x0~0x4 << 10` 范围内（即 TSA 的 palette/hflip 段），证实它们本质上是 tile map。
+2. **尺寸推断**：解压后共有 512 / 1024 个 halfword，恰好对应 32×16 与 32×32 的 BG TSA。结合相邻资产：
+   - `0x085DD518` 段位于 `AnimScr_EfxSongObj` 与 `Img_BreathSprites` 之间，使用的 tile index 上限 0x30F，完全覆盖 Breath 系列 sprites，因此命名为 `Tsa_BreathBgBase`。
+   - `0x08678D20` 段紧挨着 Map/Status 效果的 palettes & TSA（Restore/Silence/Sleep 等），tile index 覆盖整段状态 BG/OBJ 图块，命名为 `Tsa_StatusEffectBgBase`。
+3. **落盘与构建**：
+   - 将解压后的 TSA 写入 `graphics/banim/assets/tsa/005DD518_Tsa_BreathBgBase.tsa` 与 `graphics/banim/assets/tsa/00678D20_Tsa_StatusEffectBgBase.tsa`。
+   - 通过 `tools/gbagfx/gbagfx foo.tsa foo.tsa.lz` 重新压缩，`data/data_banim.s` 中新增别名标签（保留原 `gUnk_*`/`gUnknown_*`，并添加描述性 label）。
+   - 删除 `graphics/banim/assets/misc/*.bin`，至此 `misc/` 目录清空，banim 资产全部进入常规 img/pal/tsa/animscr 流程。
