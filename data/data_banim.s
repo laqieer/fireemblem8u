@@ -1386,7 +1386,15 @@ AnimScr_EfxSongObj2: @ 0x5DD4B4
 gUnk_085dd518:
 Tsa_BreathBgBase:  @ 0x085DD518
 	.incbin "./graphics/banim/assets/tsa/005DD518_Tsa_BreathBgBase.tsa.lz"
-	.incbin "baserom.gba", 0x5DD518 + 0x21C, 0x74C - 0x21C
+
+	.global Pal_BreathBgBase
+Pal_BreathBgBase:  @ 0x085DD734
+	.incbin "./graphics/banim/assets/pal/005DD734_Pal_BreathBgBase.agbpal"
+
+	.global Tsa_085DDAF4
+Tsa_085DDAF4:  @ 0x085DDAF4
+	.incbin "./graphics/banim/assets/tsa/005DDAF4_Tsa_085DDAF4.tsa.lz"
+
 
 	.global Img_BreathSprites
 Img_BreathSprites:  @ 0x085DDC64
@@ -20026,7 +20034,11 @@ Pal_08678B20:  @ 0x08678B20
 gUnknown_08678D20:
 Tsa_StatusEffectBgBase:  @ 0x08678D20
 	.incbin "./graphics/banim/assets/tsa/00678D20_Tsa_StatusEffectBgBase.tsa.lz"
-	.incbin "baserom.gba", 0x678D20 + 0x584, 0xDE4 - 0x584
+
+	.global Pal_StatusEffectBgBase
+Pal_StatusEffectBgBase:  @ 0x086792A4
+	.incbin "./graphics/banim/assets/pal/006792A4_Pal_086792A4.agbpal"
+
 
 	.global Img_08679B04
 Img_08679B04:  @ 0x08679B04
