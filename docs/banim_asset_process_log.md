@@ -23,6 +23,7 @@
 | 09:18 | @ou_7228… | “对提取出来的所有资源文件的构建产物作字节对比，找出所有差异文件。” | 编写 Python 校验脚本，逐条比对 1,390 个资产与 ROM 字节，定位 4 个不一致文件并生成差异报告。 |
 | 09:21 | @ou_7228… | “修复差异文件，再次构建。” | 从 `baserom.gba` 回填上述 4 个文件（两份 `.tsa.lz`、两份 `.4bpp.lz`），重新 `make -j8`，`sha1sum -c checksum.sha1` 通过，`scripts/bindiff.sh` 零差异。 |
 | 09:23 | @ou_7228… | “提交推送。” | 更新此日志并准备提交，以文档形式记录差异排查与修复。 |
+| 09:26 | @ou_7228… | “把之前 revert 的调色板提取还原回来，再次构建。” | 对 `72c277d9` 执行 `git revert --no-commit` → `git revert --continue`，恢复 `.agbpal` 工作流；`make clean` 后重新 `make -j8`，`sha1sum -c checksum.sha1` 仍因指针偏移失败，正在用 `scripts/bindiff.sh` 定位差异。 |
 
 ## 历史聊天回顾（2026-02-27）
 
@@ -68,3 +69,4 @@
   Agent: <name> | Model: <model_id> | OpenClaw: <version>
   ```
 - 若任务由群聊下达，需在 `docs/banim_asset_process_log.md` 追加对应条目，保持“指令 → 执行 → 结果”闭环。
+| 09:56 | @ou_7228… | “先把 incbin 这 4 个资产的地方恢复成 master 分支的直接 incbin baserom 的形式，再构建。” | 将 `data/data_banim.s` 四处 `.incbin` 恢复为 `baserom.gba` 片段（0x603D50/0x666A6C/0x6BAF14/0x721784），改为 ROM dump 流程后 `make -j8`、`sha1sum -c checksum.sha1` 以及 `scripts/bindiff.sh` 均通过。 |
