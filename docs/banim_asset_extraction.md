@@ -253,6 +253,69 @@ PY
 | `tool.py` 报 `gbagfx` 找不到 | 确认 `tools/gbagfx` 已编译；必要时重新 `make tools` |
 | 校验脚本提示 SHA1 不一致 | 多半是 PNG 导出后忘记重新压回 `.4bpp.lz`，运行 `make banim` 可重新生成压缩文件 |
 
+## 附录：格式与转换规则
+
+### A. gbapal ↔ pal ↔ agbpal
+
+| 扩展名 | 含义 | 生成方式 |
+| --- | --- | --- |
+| `.gbapal` | 直接从 ROM 读出的 15-bit BGR 小端调色板，长度 = 颜色数 × 2 字节。默认所有 banim palette 资产都以这个格式存盘。 | `scripts/tool.dump_palette` 会输出 `.gbapal`，同时调用 `gbagfx` 生成 `.pal` 预览。 |
+| `.pal` | Windows RIFF/Adobe 兼容的 8-bit RGB 调色板，方便美术工具编辑。 | `gbagfx in.gbapal out.pal`；反向转换用 `gbagfx in.pal out.gbapal`。 |
+| `.agbpal` | 与 `.gbapal` 内容一致，只是用于标记“可直接被 `incbin` 的最终 GBA 调色板”。在非 banim 目录（如 item/unit icon）中，Makefile 约定引用 `.agbpal`。 | 将确认完毕的 `.gbapal` 重命名为 `.agbpal`（或在 `make` 规则中输出 `.agbpal`）。 |
+
+使用规则：
+1. 永远把 `.gbapal` 视为真值来源；如需调色，先 `gbagfx foo.gbapal foo-edit.pal`，在图形软件里改 `.pal`，再 `gbagfx foo-edit.pal foo.gbapal`。
+2. 若该调色板最终要由 `incbin` 引入（尤其是非 LZ 压缩表），在提交前 rename 为 `.agbpal` 并更新引用；否则维持 `.gbapal`，由 `make banim` 自动压缩。
+
+### B. gbagfx 的 `-width` / `-num_tiles` 取值
+
+我们通过 `scripts/update_banim_img_rules.py` 把 ROM 中的真实参数固化到 `graphics/banim/assets/img/banim_img_rules.mk`，规则如下：
+
+1. **Tile 总数**：对指定 Label 的 `.4bpp.lz`，脚本会先 LZ77 解压，再用 `len(raw) // 32` 得出 tile 数（每 tile 32 字节）。这个值会写入 `-num_tiles`，保证重新压缩不会因为多/少 tile 而改变长度。
+2. **宽度**：
+   - 若某资源在 `CONSTRAINTS` 中提供 `width`，表示它在游戏里被固定成 `width` 个 8×8 tile；脚本会自动推算高度 `tiles // width` 并在注释写明，例如 “16x11 tiles”。
+   - 没有 `width` 约束的资源就纯粹靠 `-num_tiles`，让 `gbagfx` 自行按 PNG 的行数拆 tile。
+3. **新增资源时**：
+   - 先把 `.4bpp.lz` 解压并确认 tile 数；
+   - 如果该图有配套 TSA（或能确认宽度），把 Label 加入 `CONSTRAINTS` 并写上 `width`；
+   - 若只需要限制 tile 数，则写 `"Label": {"num_tiles": 实际 tile 数}`。
+4. **PNG → 4bpp Round-trip**：`make banim` 会 include `banim_img_rules.mk`；缺失规则时默认 `-width 32`，容易导致列数错误，所以不要跳过脚本。
+
+### C. TSA 是否带尺寸头的判断
+
+Banim 的 `.tsa` 资产存在两种来源：
+
+1. **`dump_map` 导出的“带头”版本**：文件前两个字节（有符号）分别存 `width-1`、`height-1`，后续才是 16-bit 条目。若 `(文件长度 - 2)` 正好等于 `2 × width × height`，说明这是带头格式，可直接喂给 `tool.save_image(..., mapfile=...)`，它会按头里的尺寸去拼图。
+2. **按偏移切片得到的“裸 TSA”**：大多数 banim 的 `Tsa_*` 属于此类，没有尺寸头，文件开头就是 tile entry（bit[0:9] tile index，bit[10] H flip，bit[11] V flip，bit[12:15] palette）。判断方法：
+   - 将首两个字节视作 width/height 时得出的面积若与 `文件长度 - 2` 不匹配，就视为无头；
+   - 另一特征是首个 16-bit 值通常 ≥ 0x400（因为高位 palette 位为 1），这不可能出现在“width-1”字段。
+3. **无头 TSA 如何求宽度**：
+   - 如果该图在 `banim_img_rules.mk` 有 `width` 约束，直接使用；
+   - 否则根据实际用途推断：OBJ 类素材通常按 1×N strip，背景类一般是 16 列或配套地图事件会写死列数。必要时可以在人类工具中加载 TSA + PNG，尝试不同宽度直到贴图不再错位。
+
+### D. animscr（二进制脚本 → 宏汇编）
+
+参考 `include/animscr.inc`：
+
+1. **指令字格式**（32 bit）：
+   - bit[31] = `ANFMT_NOT_FORCESPRITE`，置位表示这条命令不会强制刷新当前 OBJ（即 WAIT/LOOP/COMMAND 等控制指令）。
+   - bit[30] = `ANFMT_PTRINS`，置位表示低 30 位是指向 sprite/函数的指针，且 bit[28] 决定指令类型（frame vs function）。
+   - bit[27:24] = `ANIM_INS_TYPE_*`，值 0~6 对应 STOP/END/LOOP/MOVE/WAIT/COMMAND/FRAME。
+   - 低位 payload：依指令不同存时间、跳转次数或指针偏移。
+2. **宏映射规则**：
+   - `ANIMSCR_FORCE_SPRITE SpriteLabel, time`：用于 `ANIM_INS_TYPE_FRAME` 且 `ANFMT_PTRINS_FRAME` 置位的指令；反编译时读取 32-bit，取出指针→`SpriteLabel`，时间字段 = `(word & 0x1F)`，高位 bit[2:4] 影响 `time` 的上层位，宏里 `(time & 0x3)` / `((time & 0x1C) << 26)` 已封装。
+   - `ANIMSCR_WAIT n`：`ANIM_INS_TYPE_WAIT` + `ANFMT_NOT_FORCESPRITE`，低 24 位直接写持续帧数。
+   - `ANIMSCR_LOOP`、`ANIMSCR_BLOCKED`、`ANIMSCR_DISABLED`：分别对应 `ANIM_INS_TYPE_LOOP/STOP/END` 的控制指令，均带 `ANFMT_NOT_FORCESPRITE`。
+   - `ANIMSCR_FORCE_SPRITE` 之外的函数跳转（bit[30]=1 但 `ANFMT_PTRINS_FUNC`）会转成专用宏，如 `ANIMSCR_FORCE_SPRITE AnimSprite_X, t` / 或直接 `.4byte Label` 当函数调用，目前 banim 里主要见到 `ANIMSCR_FORCE_SPRITE` 与控制宏。
+3. **`AnimSprite` 表**：每帧由 `ANIM_SPRITE` / `ANIM_SPRITE_XFLIP` / `ANIM_SPRITE_AFFIN` 等宏描述（6 halfword = 12 字节）。脚本在转换时保持一个“帧号 → Label”映射，遇到 frame 指针就生成 `AnimSprite_*` 标签。
+4. **转换流程**：
+   - 读取 `.animscr.bin`，按 4 字节拆分；
+   - 解析高位判断指令类型 → 映射到对应宏；
+   - 指向 sprite 数据的指针（0x08XXXXXX）减去 `0x08000000` 得到文件内偏移，再对照 `AnimSprite` 表生成 label；
+   - 把每条指令翻译成宏语句，保持和原脚本同顺序，结尾保留 `ANIMSCR_LOOP / ANIMSCR_BLOCKED / ANIMSCR_DISABLED` 等控制流。
+
+> 以上规则确保我们从二进制脚本反汇编回 `.s` 后，使用 `include/animscr.inc` 提供的宏重新汇编即可复原原始指令字。
+
 ---
 
 如需重新跑整套流程，按以上步骤执行即可；若只新增/修改少量资源，可以直接参考第 4～6 步单独更新对应文件。
