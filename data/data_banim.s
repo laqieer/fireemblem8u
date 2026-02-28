@@ -20038,6 +20038,13 @@ Tsa_StatusEffectBgBase:  @ 0x08678D20
 	.global Pal_StatusEffectBgBase
 Pal_StatusEffectBgBase:  @ 0x086792A4
 	.incbin "./graphics/banim/assets/pal/006792A4_Pal_086792A4.agbpal"
+	.global Tsa_08679304
+Tsa_08679304:  @ 0x08679304
+	.incbin "./graphics/banim/assets/tsa/00679304_Tsa_08679304.tsa"
+
+
+
+
 
 
 	.global Img_08679B04
@@ -27196,7 +27203,7 @@ AnimScr_EfxMshield2: @ 0x692674
 
 	.global Pal_IvaldiSprites
 Pal_IvaldiSprites:  @ 0x086926E0
-	.incbin "./graphics/banim/assets/pal/006926E0_Pal_IvaldiSprites.agbpal"
+	.incbin "./graphics/banim/assets/img/006926E0_Img_IvaldiSprites.4bpp.lz"
 
 	.global Img_IvaldiSprites
 Img_IvaldiSprites:  @ 0x08692B10
