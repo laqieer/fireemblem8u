@@ -31658,14 +31658,7 @@ Tsa_0872150C:  @ 0x0872150C
 	.global Tsa_08721784
 Tsa_08721784:  @ 0x08721784
 	.incbin "./graphics/banim/assets/tsa/00721784_Tsa_08721784.tsa.lz"
-
-	.global AnimScr_NaglfarBG4
-AnimScr_NaglfarBG4:  @ 0x087219FC
-	.incbin "./graphics/banim/assets/animscr/007219FC_AnimScr_NaglfarBG4.bin"
-
-	.global AnimScr_DarkBreath_Far
-AnimScr_DarkBreath_Far:  @ 0x08723208
-	.incbin "./graphics/banim/assets/animscr/00723208_AnimScr_DarkBreath_Far.bin" @ 0x723274 - 0x723208
+	.include "data/banim/animscr_naglfarbg4_darkbreath.s"
 
 	.global Img_08723274
 Img_08723274:  @ 0x08723274

@@ -8,8 +8,6 @@
 @   0x08722638-0x08723208: OAM sprite arrays (DarkBreath_Far)
 @   0x08723208-0x08723274: AnimScr script (DarkBreath_Far)
 
-.include "animscr.inc"
-.include "gba_sprites.inc"
 
 .section .data
 
