@@ -1,0 +1,58 @@
+name: Build Verification
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential binutils-arm-none-eabi libpng-dev && python -m pip install ttp numpy pillow
+
+      - uses: actions/checkout@v4
+
+      - name: Check for BASEROM_URL secret and download
+        id: baserom
+        env:
+          BASEROM_URL: ${{ secrets.BASEROM_URL }}
+        run: |
+          if [ -z "$BASEROM_URL" ]; then
+            echo "BASEROM_URL secret is not set. Skipping build verification."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "BASEROM_URL secret is set. Proceeding to download..."
+          wget -q -O downloaded_rom.gba "$BASEROM_URL"
+          
+          # Target SHA1 hash for FE8U baserom
+          TARGET_HASH="c25b145e37456171ada4b0d440bf88a19f4d509f"
+          ACTUAL_HASH=$(sha1sum downloaded_rom.gba | awk '{print $1}')
+          
+          if [ "$ACTUAL_HASH" != "$TARGET_HASH" ]; then
+            echo "Error: Hash mismatch for downloaded ROM."
+            echo "Expected: $TARGET_HASH"
+            echo "Actual:   $ACTUAL_HASH"
+            exit 1
+          fi
+          
+          echo "Hash matched successfully. Renaming to baserom.gba..."
+          mv downloaded_rom.gba baserom.gba
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Install agbcc
+        if: steps.baserom.outputs.skip != 'true'
+        run: git clone https://github.com/pret/agbcc.git && cd agbcc/ && ./build.sh && ./install.sh .. && cd ..
+
+      - name: Build tools
+        if: steps.baserom.outputs.skip != 'true'
+        run: ./build_tools.sh
+
+      - name: Build and verify ROM
+        if: steps.baserom.outputs.skip != 'true'
+        run: make clean && make fireemblem8.gba compare -j$(nproc)
