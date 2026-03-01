@@ -19,6 +19,21 @@ If you just want to get the repo building quickly (Ubuntu/WSL, Arch Linux, or ma
 
 See [`docs/quickstart.md`](docs/quickstart.md) for full details, flags, and troubleshooting tips.
 
+### Building
+
+To build the ROM:
+```bash
+make fireemblem8.gba -j$(nproc)
+```
+To clean all build artifacts:
+```bash
+make clean
+```
+To clean all build artifacts **except** the extremely slow battle animation compression outputs:
+```bash
+make clean_fast
+```
+
 ### Setting up the repository manually
 
 1. You must have a copy of the Fire Emblem: The Sacred Stones ROM named `baserom.gba` in the repository directory.
