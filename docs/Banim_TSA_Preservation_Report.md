@@ -51,3 +51,15 @@ To support dynamic generation from PNGs, the graphics toolchain would require a 
 **Conclusion:** Under the current build architecture, the `.tsa` and `.4bpp` files in `graphics/banim/assets/` are **truly non-regeneratable binary assets**. 
 
 **Action:** These assets must be preserved in the repository. They cannot be safely deleted or replaced by PNG-based generation flows at this time.
+
+## Validation: Comparison with `pokeemerald`
+To ensure our conclusion aligns with established GBA decompilation practices, we investigated the `pret/pokeemerald` repository (a highly mature GBA decomp project) to see how they handle equivalent background layouts (Tilemaps / map `.bin` files).
+
+### Findings from `pokeemerald`
+1. **Raw Binary Retention:** The project retains tilemap files as raw `.bin` assets in the `graphics/` directory. They are committed directly to the repository alongside `.png` tilesets.
+2. **One-Way Tooling:** Their graphics conversion tool (`tools/gbagfx`) includes a `-tilemap` flag. However, analyzing the C source code (`main.c` and `gfx.c`) reveals this flag is used **exclusively for decoding**. It reads the `.bin` tilemap to reconstruct a complete `.png` image for human viewing. 
+3. **No Encoding Capability:** There is no `WriteTilemap` function in `gbagfx`. The tool completely lacks the ability to take a flat `.png` image and parse it back into a compressed tileset `.4bpp` and a layout map `.bin`.
+4. **Build Process:** The `Makefile` rules only handle `.png` -> `.4bpp` (pixel format conversion) and LZ77 compression. The `.bin` tilemaps are bypassed in the build pipeline and simply included via `.incbin` in assembly files.
+
+### Final Verification
+The architectural approach in `pokeemerald` validates our findings. Tilemaps (or TSAs) contain explicit hardware layout instructions (10-bit tile index, hflip, vflip, 4-bit palette number). Because a single `.png` cannot implicitly define shared tileset boundaries or exact hardware attributes without loss of original mapping, preserving the binary TSA data is the correct and standard methodology.
