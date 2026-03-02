@@ -36,6 +36,8 @@ JSONPROC   := tools/jsonproc/jsonproc$(EXE)
 FETSATOOL  := scripts/gfxtools/tsa_generator.py
 TMAP2TSA   := scripts/tmap2tsa.py
 MARTOMAP   := scripts/mar_to_map.py
+PYTHON    ?= python3
+PAL2GBAPAL := $(GBAGFX)
 
 ifeq ($(UNAME),Darwin)
 	SED := sed -i ''
@@ -163,6 +165,7 @@ src/msg_data.c: $(TEXT_SRC) $(TEXT_DEFS)
 # Graphics Recipes
 
 include graphics_file_rules.mk
+include graphics/banim/assets/img/banim_img_rules.mk
 include songs.mk
 include json_data_rules.mk
 
@@ -174,7 +177,7 @@ include json_data_rules.mk
 %.1bpp: %.png  ; $(GBAGFX) $< $@
 %.4bpp: %.png  ; $(GBAGFX) $< $@
 %.8bpp: %.png  ; $(GBAGFX) $< $@
-%.gbapal: %.pal ; $(GBAGFX) $< $@
+%.gbapal: %.pal ; $(PAL2GBAPAL) $< $@
 %.gbapal: %.png ; $(GBAGFX) $< $@
 %.lz: % ; $(GBAGFX) $< $@
 %.rl: % ; $(GBAGFX) $< $@
