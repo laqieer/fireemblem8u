@@ -105,19 +105,26 @@ compare: $(ROM)
 
 .PHONY: compare
 
-clean:
-	$(RM) $(ROM) $(ELF) $(MAP) $(ALL_OBJECTS) $(OBJECTS_LST) $(SFILES_COMPILED) graphics/*.h $(CFILES_GENERATED)
-	$(RM) -rf $(DEPS_DIR)
+CLEAN_FILES := $(ROM) $(ELF) $(MAP) $(OBJECTS_LST) $(SFILES_COMPILED) graphics/*.h $(CFILES_GENERATED)
+CLEAN_DIRS := $(DEPS_DIR)
+CLEAN_BINS := graphics/statscreen/*.bin $(SAMPLE_SUBDIR)/*.bin $(MAP_LAYOUT_SUBDIR)/*.bin $(AUTO_GEN_TARGETS)
+CLEAN_SONGS := $(MID_SUBDIR)/*.s
+
+# Shared clean routine
+clean_common:
+	$(RM) $(CLEAN_FILES) $(CLEAN_BINS) $(CLEAN_SONGS)
+	$(RM) -rf $(CLEAN_DIRS)
+
+clean_fast: clean_common
+	$(RM) $(C_OBJECTS) $(ASM_OBJECTS) $(MID_OBJECTS)
+	@find . \( -iname '*.o' -o -iname '*.obj' -o -iname '*.feimg*.bin'  -o -iname '*.fetsa*.bin' -o -iname '*.1bpp' -o -iname '*.4bpp' -o -iname '*.8bpp' -o -iname '*.gbapal' -o -iname '*.lz' -o -iname '*.fk' -o -iname '*.latfont' -o -iname '*.hwjpnfont' -o -iname '*.fwjpnfont' \) -not -path './data/banim/*' -exec rm {} +
+
+.PHONY: clean_fast clean_common
+
+clean: clean_common
+	$(RM) $(ALL_OBJECTS)
 	# Remove battle animation binaries
 	$(RM) -f data/banim/*.bin data/banim/*.o data/banim/*.lz data/banim/*.bak
-	# Remove TSA files generated from tilemaps
-	$(RM) -f graphics/statscreen/*.bin
-	# Remove converted sound samples
-	$(RM) -f $(SAMPLE_SUBDIR)/*.bin
-	$(RM) -f $(MAP_LAYOUT_SUBDIR)/*.bin
-	# Remove converted songs
-	$(RM) -f $(MID_SUBDIR)/*.s
-	$(RM) -f $(AUTO_GEN_TARGETS)
 	@find . \( -iname '*.o' -o -iname '*.obj' -o -iname '*.feimg*.bin'  -o -iname '*.fetsa*.bin' -o -iname '*.1bpp' -o -iname '*.4bpp' -o -iname '*.8bpp' -o -iname '*.gbapal' -o -iname '*.lz' -o -iname '*.fk' -o -iname '*.latfont' -o -iname '*.hwjpnfont' -o -iname '*.fwjpnfont' \) -exec rm {} +
 
 .PHONY: clean
