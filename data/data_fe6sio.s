@@ -11,7 +11,7 @@
     b FE6SIO_Init
 
 FE6_RomHeader: @ 0xB1A0BC
-    .incbin "baserom.gba", 0xB1A0BC, 0xC0 - 4
+    .incbin "dump/data_fe6sio_B1A0BC.bin"
 
 FE6SIO_Init: @ 08B1A178
     b _reset
@@ -88,4 +88,4 @@ _reset: @ 0x08B1A1C4
 
     .space 0x100
 
-	.incbin "baserom.gba", 0xB1A368, 0xB1F734 - 0xB1A368
+	.incbin "dump/data_fe6sio_B1A368.bin"
