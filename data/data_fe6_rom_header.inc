@@ -1,3 +1,9 @@
+@ FE6 ROM Header Data
+@ Disassembled from the extracted binary block at 0xB1A0BC
+@ This block contains the standard Nintendo GBA logo followed by the Game Title ("FIREEMBLEM6")
+@ and other standard ROM header metadata for FE6, which is heavily reused/referenced by the link arena or SIO communication features.
+
+@ Standard GBA Nintendo Logo (compressed)
 	.byte 0x24,0xff,0xae,0x51,0x69,0x9a,0xa2,0x21
 	.byte 0x3d,0x84,0x82,0x0a,0x84,0xe4,0x09,0xad
 	.byte 0x11,0x24,0x8b,0x98,0xc0,0x81,0x7f,0x21
