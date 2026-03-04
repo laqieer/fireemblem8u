@@ -4,7 +4,7 @@
 
 	.global gUiFrameImage
 gUiFrameImage:  @ 0x085B65C0
-	.incbin "dump/data_5B65C0_5B65C0.bin"
+	.incbin "dump/data_5B65C0_5B65C0.4bpp.lz"
 
 	.global gUiFramePaletteA
 gUiFramePaletteA:  @ 0x085B6BB4
@@ -24,7 +24,7 @@ gUiFramePaletteD:  @ 0x085B6C14
 
 	.global gLegacyUiFrameAImage
 gLegacyUiFrameAImage:  @ 0x085B6CB4
-	.incbin "dump/data_5B65C0_5B6CB4.bin"
+	.incbin "dump/data_5B65C0_5B6CB4.4bpp.lz"
 
 	.global gLegacyUiFrameAPalette
 gLegacyUiFrameAPalette:  @ 0x085B7560
@@ -36,7 +36,7 @@ gUiBarPaletteA:  @ 0x085B7580
 
 	.global gLegacyUiFrameBImage
 gLegacyUiFrameBImage:  @ 0x085B75A0
-	.incbin "dump/data_5B65C0_5B75A0.bin"
+	.incbin "dump/data_5B65C0_5B75A0.4bpp.lz"
 
 	.global gLegacyUiFrameBPalette
 gLegacyUiFrameBPalette:  @ 0x085B7E54
@@ -48,7 +48,7 @@ gUiBarPaletteB:  @ 0x085B7E74
 
 	.global gLegacyUiFrameCImage
 gLegacyUiFrameCImage:  @ 0x085B7E94
-	.incbin "dump/data_5B65C0_5B7E94.bin"
+	.incbin "dump/data_5B65C0_5B7E94.4bpp.lz"
 
 	.global gLegacyUiFrameCPalette
 gLegacyUiFrameCPalette:
@@ -60,7 +60,7 @@ gUiBarPaletteC:
 
 	.global gLegacyUiFrameDImage
 gLegacyUiFrameDImage:
-	.incbin "dump/data_5B65C0_5B8754.bin"
+	.incbin "dump/data_5B65C0_5B8754.4bpp.lz"
 
 	.global gLegacyUiFrameDPalette
 gLegacyUiFrameDPalette:
@@ -72,7 +72,7 @@ gUiBarPaletteD:
 
 	.global gUnkUiFrameImage
 gUnkUiFrameImage:  @ 0x085B8FF0
-	.incbin "dump/data_5B65C0_5B8FF0.bin"
+	.incbin "dump/data_5B65C0_5B8FF0.4bpp.lz"
 
 	.global gUnkUiFramePalettes
 gUnkUiFramePalettes:  @ 0x085B9244

@@ -4,7 +4,7 @@
 
     .global Img_EfxPierceCriticalEffectBG
 Img_EfxPierceCriticalEffectBG:  @ 0x085CFB70
-    .incbin "dump/banim-efxhitobj_5CFB70.bin"
+    .incbin "dump/banim-efxhitobj_5CFB70.4bpp.lz"
 
     .global Pal_EfxPierceCriticalEffectBG
 Pal_EfxPierceCriticalEffectBG:  @ 0x085D0820
@@ -20,7 +20,7 @@ TsaR_EfxPierceCriticalEffectBG:  @ 0x085D0CE0
 
     .global Img_EfxPierceNormalEffectBG
 Img_EfxPierceNormalEffectBG:  @ 0x085D0FD0
-    .incbin "dump/banim-efxhitobj_5D0FD0.bin"
+    .incbin "dump/banim-efxhitobj_5D0FD0.4bpp.lz"
 
     .global Pal_EfxPierceNormalEffectBG
 Pal_EfxPierceNormalEffectBG:  @ 0x085D1470

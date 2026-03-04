@@ -2,7 +2,7 @@
 
 	.global Img_CommGameBgScreen
 Img_CommGameBgScreen:  @ 0x08B12DB4
-	.incbin "dump/data_B12A60_B12DB4.bin"
+	.incbin "dump/data_B12A60_B12DB4.4bpp.lz"
 
 	.global Pal_CommGameBgScreenInShop
 Pal_CommGameBgScreenInShop:  @ 0x08B1754C
@@ -18,11 +18,11 @@ Tsa_08B176CC:  @ 0x08B176CC
 
 	.global Img_08B177C0
 Img_08B177C0:  @ 0x08B177C0
-	.incbin "dump/data_B12A60_B177C0.bin"
+	.incbin "dump/data_B12A60_B177C0.4bpp.lz"
 
 	.global Img_08B17864
 Img_08B17864:  @ 0x08B17864
-	.incbin "dump/data_B12A60_B17864.bin"
+	.incbin "dump/data_B12A60_B17864.4bpp.lz"
 
 	.global Pal_08B17B44
 Pal_08B17B44:  @ 0x08B17B44
@@ -30,7 +30,7 @@ Pal_08B17B44:  @ 0x08B17B44
 
 	.global Img_ChapterIntro_LensFlare
 Img_ChapterIntro_LensFlare:  @ 0x08B17B64
-	.incbin "dump/data_B12A60_B17B64.bin"
+	.incbin "dump/data_B12A60_B17B64.4bpp.lz"
 
 	.global Tsa_08B18D68
 Tsa_08B18D68:  @ 0x08B18D68
@@ -42,7 +42,7 @@ Pal_ChapterIntro_LensFlare:  @ 0x08B18ED4
 
 	.global Img_ChapterIntro_Fog
 Img_ChapterIntro_Fog:  @ 0x08B18F34
-	.incbin "dump/data_B12A60_B18F34.bin"
+	.incbin "dump/data_B12A60_B18F34.4bpp.lz"
 
 	.global Tsa_ChapterIntro_Fog
 Tsa_ChapterIntro_Fog:  @ 0x08B196D8
@@ -54,7 +54,7 @@ Pal_ChapterIntro_Fog:  @ 0x08B19854
 
 	.global Img_ChapterIntro_Sprites
 Img_ChapterIntro_Sprites:  @ 0x08B19874
-	.incbin "dump/data_B12A60_B19874.bin"
+	.incbin "dump/data_B12A60_B19874.4bpp.lz"
 
 	.global Pal_ChapterIntro_Sprites
 Pal_ChapterIntro_Sprites:  @ 0x08B19DEC

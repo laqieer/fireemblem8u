@@ -18,7 +18,7 @@ TsaConf_BanimTmA4:  @ 0x085BA020
 
 	.global Img_NODAMGEMIS
 Img_NODAMGEMIS:  @ 0x085BA0B8
-	.incbin "dump/banim-efxbattle_5BA0B8.bin"
+	.incbin "dump/banim-efxbattle_5BA0B8.4bpp.lz"
 
 	.global Pal_085BA2E0
 Pal_085BA2E0:  @ 0x085BA2E0

@@ -4,7 +4,7 @@
 
     .global Img_EkrLvupNumBig
 Img_EkrLvupNumBig:  @ 0x085C8278
-    .incbin "dump/banim-efxlvupobj_5C8278.bin"
+    .incbin "dump/banim-efxlvupobj_5C8278.4bpp"
     @.incbin "./graphics/lvup/EkrLvupNumBig.4bpp"
 
 .global AnimSprite_LvupStatup_1

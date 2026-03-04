@@ -6,7 +6,7 @@ gPal_StoneShatterAnim:  @ 081C0AFC
 
     .global gImg_StoneShatterAnim
 gImg_StoneShatterAnim:  @ 081C0B1C
-    .incbin "dump/const_data_1C0AFC_1C0B1C.bin"
+    .incbin "dump/const_data_1C0AFC_1C0B1C.4bpp.lz"
 
     .global gTsa_StoneShatter_081C1900
 gTsa_StoneShatter_081C1900:  @ 081C1900

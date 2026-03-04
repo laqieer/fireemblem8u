@@ -2,7 +2,7 @@
 
 	.global gGfx_MiscUiGraphics
 gGfx_MiscUiGraphics:  @ 0x0859E8E0
-	.incbin "dump/data_59E8E0_59E8E0.bin"
+	.incbin "dump/data_59E8E0_59E8E0.4bpp.lz"
 
 	.global gPal_MiscUiGraphics
 gPal_MiscUiGraphics:  @ 0x0859ED70
@@ -10,11 +10,11 @@ gPal_MiscUiGraphics:  @ 0x0859ED70
 
 	.global gImg_UiCursorHandTop
 gImg_UiCursorHandTop:  @ 0x0859EDB0
-	.incbin "dump/data_59E8E0_59EDB0.bin"
+	.incbin "dump/data_59E8E0_59EDB0.4bpp.lz"
 
 	.global gImg_UiCursorHandBottom
 gImg_UiCursorHandBottom:  @ 0x0859EDEC
-	.incbin "dump/data_59E8E0_59EDEC.bin"
+	.incbin "dump/data_59E8E0_59EDEC.4bpp.lz"
 
 	.global gPal_MapSprite
 gPal_MapSprite:
@@ -50,7 +50,7 @@ Pal_Text:  @ 0x0859EF00
 
 	.global gUnknown_0859EF20
 gUnknown_0859EF20:  @ 0x0859EF20
-	.incbin "dump/data_59E8E0_59EF20.bin"
+	.incbin "dump/data_59E8E0_59EF20.4bpp"
 
 	.global Pal_HelpBox
 Pal_HelpBox:  @ 0x0859EF40
@@ -78,11 +78,11 @@ Pal_TalkBubble_Inverted:  @ 0x0859F000
 
 	.global Img_PhaseChangeUnk
 Img_PhaseChangeUnk:  @ 0x0859F020
-	.incbin "dump/data_59E8E0_59F020.bin"
+	.incbin "dump/data_59E8E0_59F020.4bpp.lz"
 
 	.global Img_PhaseChangePlayer
 Img_PhaseChangePlayer:  @ 0x0859F3F8
-	.incbin "dump/data_59E8E0_59F3F8.bin"
+	.incbin "dump/data_59E8E0_59F3F8.4bpp.lz"
 
 	.global Pal_PhaseChangePlayer
 Pal_PhaseChangePlayer:  @ 0x0859FA2C
@@ -90,7 +90,7 @@ Pal_PhaseChangePlayer:  @ 0x0859FA2C
 
 	.global Img_PhaseChangeEnemy
 Img_PhaseChangeEnemy:  @ 0x0859FA4C
-	.incbin "dump/data_59E8E0_59FA4C.bin"
+	.incbin "dump/data_59E8E0_59FA4C.4bpp.lz"
 
 	.global Pal_PhaseChangeEnemy
 Pal_PhaseChangeEnemy:  @ 0x085A0068
@@ -98,7 +98,7 @@ Pal_PhaseChangeEnemy:  @ 0x085A0068
 
 	.global Img_PhaseChangeOther
 Img_PhaseChangeOther:  @ 0x085A0088
-	.incbin "dump/data_59E8E0_5A0088.bin"
+	.incbin "dump/data_59E8E0_5A0088.4bpp.lz"
 
 	.global Pal_PhaseChangeOther
 Pal_PhaseChangeOther:  @ 0x085A0698
@@ -110,7 +110,7 @@ Pal_085A06B8:  @ 0x085A06B8
 
 	.global Img_PhaseChangeSquares
 Img_PhaseChangeSquares:  @ 0x085A06D8
-	.incbin "dump/data_59E8E0_5A06D8.bin"
+	.incbin "dump/data_59E8E0_5A06D8.4bpp.lz"
 
 	.global gUnknown_085A0838
 gUnknown_085A0838:  @ 0x085A0838
@@ -130,7 +130,7 @@ gTSA_BattleForecastExtended:  @ 0x085A0AEC
 
 	.global gBattleForecast_x2x4Gfx
 gBattleForecast_x2x4Gfx:  @ 0x085A0C80
-	.incbin "dump/data_59E8E0_5A0C80.bin"
+	.incbin "dump/data_59E8E0_5A0C80.4bpp.lz"
 
 	.global gBattleForecast_x2x4Pal
 gBattleForecast_x2x4Pal:  @ 0x085A0D2C
@@ -154,11 +154,11 @@ SpriteAnim_GasTrapHorizontal:  @ 0x085A129C
 
 	.global Img_GasTrapVertical
 Img_GasTrapVertical:  @ 0x085A1510
-	.incbin "dump/data_59E8E0_5A1510.bin"
+	.incbin "dump/data_59E8E0_5A1510.4bpp.lz"
 
 	.global Img_GasTrapHorizontal
 Img_GasTrapHorizontal:  @ 0x085A1AF8
-	.incbin "dump/data_59E8E0_5A1AF8.bin"
+	.incbin "dump/data_59E8E0_5A1AF8.4bpp.lz"
 
 	.global Pal_GasTrap
 Pal_GasTrap:  @ 0x085A206C
@@ -170,7 +170,7 @@ Pal_ArrowTrap:  @ 0x085A208C
 
 	.global Img_ArrowTrap
 Img_ArrowTrap:  @ 0x085A20AC
-	.incbin "dump/data_59E8E0_5A20AC.bin"
+	.incbin "dump/data_59E8E0_5A20AC.4bpp.lz"
 
 	.global SpriteAnim_ArrowTrap
 SpriteAnim_ArrowTrap:  @ 0x085A2384
@@ -178,7 +178,7 @@ SpriteAnim_ArrowTrap:  @ 0x085A2384
 
 	.global Img_FireTrap
 Img_FireTrap:  @ 0x085A2940
-	.incbin "dump/data_59E8E0_5A2940.bin"
+	.incbin "dump/data_59E8E0_5A2940.4bpp.lz"
 
 	.global Pal_FireTrap
 Pal_FireTrap:  @ 0x085A2DDC
@@ -194,7 +194,7 @@ Pal_FireTrap2:  @ 0x085A3490
 
 	.global Img_PikeTrap
 Img_PikeTrap:  @ 0x085A34B0
-	.incbin "dump/data_59E8E0_5A34B0.bin"
+	.incbin "dump/data_59E8E0_5A34B0.4bpp.lz"
 
 	.global SpriteAnim_PikeTrap
 SpriteAnim_PikeTrap:  @ 0x085A3730
@@ -206,31 +206,31 @@ Pal_PikeTrap:  @ 0x085A3944
 
 	.global gUnknown_085A3964
 gUnknown_085A3964:  @ 0x085A3964
-	.incbin "dump/data_59E8E0_5A3964.bin"
+	.incbin "dump/data_59E8E0_5A3964.4bpp.lz"
 
 	.global gUnknown_085A39EC
 gUnknown_085A39EC:  @ 0x085A39EC
-	.incbin "dump/data_59E8E0_5A39EC.bin"
+	.incbin "dump/data_59E8E0_5A39EC.4bpp.lz"
 
 	.global gUnknown_085A3A84
 gUnknown_085A3A84:  @ 0x085A3A84
-	.incbin "dump/data_59E8E0_5A3A84.bin"
+	.incbin "dump/data_59E8E0_5A3A84.4bpp.lz"
 
 	.global gUnknown_085A3AC0
 gUnknown_085A3AC0:  @ 0x085A3AC0
-	.incbin "dump/data_59E8E0_5A3AC0.bin"
+	.incbin "dump/data_59E8E0_5A3AC0.4bpp"
 
 	.global gUnknown_085A3B00
 gUnknown_085A3B00:  @ 0x085A3B00
-	.incbin "dump/data_59E8E0_5A3B00.bin"
+	.incbin "dump/data_59E8E0_5A3B00.4bpp.lz"
 
 	.global gUnknown_085A401C
 gUnknown_085A401C:  @ 0x085A401C
-	.incbin "dump/data_59E8E0_5A401C.bin"
+	.incbin "dump/data_59E8E0_5A401C.4bpp"
 
 	.global Img_LightRune
 Img_LightRune:  @ 0x085A403C
-	.incbin "dump/data_59E8E0_5A403C.bin"
+	.incbin "dump/data_59E8E0_5A403C.4bpp.lz"
 
 	.global Pal_LightRune
 Pal_LightRune:  @ 0x085A5760
@@ -238,11 +238,11 @@ Pal_LightRune:  @ 0x085A5760
 
 	.global Tsa_LightRune
 Tsa_LightRune:  @ 0x085A5780
-	.incbin "dump/data_59E8E0_5A5780.bin"
+	.incbin "dump/data_59E8E0_5A5780.4bpp.lz"
 
 	.global Img_EventWarp
 Img_EventWarp:  @ 0x085A5A60
-	.incbin "dump/data_59E8E0_5A5A60.bin"
+	.incbin "dump/data_59E8E0_5A5A60.4bpp.lz"
 
 	.global Pal_EventWarp
 Pal_EventWarp:  @ 0x085A61A8
@@ -250,15 +250,15 @@ Pal_EventWarp:  @ 0x085A61A8
 
 	.global Tsa_EventWarp
 Tsa_EventWarp:  @ 0x085A61C8
-	.incbin "dump/data_59E8E0_5A61C8.bin"
+	.incbin "dump/data_59E8E0_5A61C8.4bpp.lz"
 
 	.global gUnknown_085A638C
 gUnknown_085A638C:  @ 0x085A638C
-	.incbin "dump/data_59E8E0_5A638C.bin"
+	.incbin "dump/data_59E8E0_5A638C.4bpp.lz"
 
 	.global gUnknown_085A643C
 gUnknown_085A643C:  @ 0x085A643C
-	.incbin "dump/data_59E8E0_5A643C.bin"
+	.incbin "dump/data_59E8E0_5A643C.4bpp"
 
 	.global Tsa_PlayerRankFog
 Tsa_PlayerRankFog:  @ 0x085A647C
@@ -266,11 +266,11 @@ Tsa_PlayerRankFog:  @ 0x085A647C
 
 	.global Img_DanceringFx
 Img_DanceringFx:  @ 0x085A6C80
-	.incbin "dump/data_59E8E0_5A6C80.bin"
+	.incbin "dump/data_59E8E0_5A6C80.4bpp.lz"
 
 	.global Tsa_DanceringFx
 Tsa_DanceringFx:  @ 0x085A7A64
-	.incbin "dump/data_59E8E0_5A7A64.bin"
+	.incbin "dump/data_59E8E0_5A7A64.4bpp.lz"
 
 	.global Pal_DanceringFx
 Pal_DanceringFx:  @ 0x085A7CA0
@@ -278,7 +278,7 @@ Pal_DanceringFx:  @ 0x085A7CA0
 
 	.global Img_MineFx
 Img_MineFx:  @ 0x085A7CC0
-	.incbin "dump/data_59E8E0_5A7CC0.bin"
+	.incbin "dump/data_59E8E0_5A7CC0.4bpp.lz"
 
 	.global SpritAnim_MineFx
 SpritAnim_MineFx:  @ 0x085A7E34

@@ -4,4 +4,4 @@
 
 	.global gSinLookup
 gSinLookup:  @ 0x080D751C
-	.incbin "dump/trig_rodata_0D751C.bin"
+	.incbin "dump/trig_rodata_0D751C.4bpp"
