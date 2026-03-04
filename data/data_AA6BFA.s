@@ -43,32 +43,32 @@ gUnknown_08AA707C:  @ 0x08AA707C
 
 	.global gUnknown_08AA709C
 gUnknown_08AA709C:  @ 0x08AA709C
-	.incbin "baserom.gba", 0xAA709C, 0x20
+	.incbin "dump/data_AA6BFA_AA709C.bin"
 
 	.global gUnknown_08AA70BC
 gUnknown_08AA70BC:  @ 0x08AA70BC
-	.incbin "baserom.gba", 0xAA70BC, 0x20
+	.incbin "dump/data_AA6BFA_AA70BC.bin"
 
 	.global gUnknown_08AA70DC
 gUnknown_08AA70DC:  @ 0x08AA70DC
-	.incbin "baserom.gba", 0xAA70DC, 0xE
+	.incbin "dump/data_AA6BFA_AA70DC.bin"
 
 	.global gUnknown_08AA70EA
 gUnknown_08AA70EA:  @ 0x08AA70EA
-	.incbin "baserom.gba", 0xAA70EA, 0x2C
+	.incbin "dump/data_AA6BFA_AA70EA.bin"
 
 	.global gUnknown_08AA7116
 gUnknown_08AA7116:  @ 0x08AA7116
-	.incbin "baserom.gba", 0xAA7116, 0x14
+	.incbin "dump/data_AA6BFA_AA7116.bin"
 
 	.global gUnknown_08AA712A
 gUnknown_08AA712A:  @ 0x08AA712A
-	.incbin "baserom.gba", 0xAA712A, 0x32
+	.incbin "dump/data_AA6BFA_AA712A.bin"
 
 	.global gUnknown_08AA715C
 gUnknown_08AA715C:  @ 0x08AA715C
-	.incbin "baserom.gba", 0xAA715C, 0x38
+	.incbin "dump/data_AA6BFA_AA715C.bin"
 
 	.global gUnknown_08AA7194
 gUnknown_08AA7194:  @ 0x08AA7194
-	.incbin "baserom.gba", 0xAA7194, 0x34
+	.incbin "dump/data_AA6BFA_AA7194.bin"

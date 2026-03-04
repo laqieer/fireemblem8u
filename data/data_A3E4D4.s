@@ -1,174 +1,174 @@
     .section .data
 
-	.incbin "baserom.gba", 0xA3F21C, 0x4F4
+	.incbin "dump/data_A3E4D4_A3F21C.bin"
 
 	.global Pal_CharacterEndingMenu
 Pal_CharacterEndingMenu:  @ 0x08A3F710
-	.incbin "baserom.gba", 0xA3F710, 0x40
+	.incbin "dump/data_A3E4D4_A3F710.bin"
 
 	.global Img_CharacterEndingMenu
 Img_CharacterEndingMenu:  @ 0x08A3F750
-	.incbin "baserom.gba", 0xA3F750, 0x89C
+	.incbin "dump/data_A3E4D4_A3F750.bin"
 
 	.global Tsa_CharacterEnding_TopBorder
 Tsa_CharacterEnding_TopBorder:  @ 0x08A3FFEC
-    .incbin "baserom.gba", 0xA3FFEC, 0x7C
+    .incbin "dump/data_A3E4D4_A3FFEC.bin"
 
 	.global Tsa_CharacterEnding_BottomBorder
 Tsa_CharacterEnding_BottomBorder:  @ 0x08A40068
-	.incbin "baserom.gba", 0xA40068, 0x7C
+	.incbin "dump/data_A3E4D4_A40068.bin"
 
 	.global gTsa_SoloEndingNameplate
 gTsa_SoloEndingNameplate:  @ 0x08A400E4
-	.incbin "baserom.gba", 0xA400E4, 0x120
+	.incbin "dump/data_A3E4D4_A400E4.bin"
 
 	.global gTsa_SoloEndingWindow
 gTsa_SoloEndingWindow:  @ 0x08A40204
-	.incbin "baserom.gba", 0xA40204, 0x148
+	.incbin "dump/data_A3E4D4_A40204.bin"
 
 	.global gTsa_PairedEndingNameplates
 gTsa_PairedEndingNameplates:  @ 0x08A4034C
-	.incbin "baserom.gba", 0xA4034C, 0x124
+	.incbin "dump/data_A3E4D4_A4034C.bin"
 
 	.global gTsa_PairedEndingWindow
 gTsa_PairedEndingWindow:  @ 0x08A40470
-	.incbin "baserom.gba", 0xA40470, 0x144
+	.incbin "dump/data_A3E4D4_A40470.bin"
 
 	.global Pal_FinScreen
 Pal_FinScreen:  @ 0x08A405B4
-	.incbin "baserom.gba", 0xA405B4, 0x20
+	.incbin "dump/data_A3E4D4_A405B4.bin"
 
 	.global Img_FinScreen
 Img_FinScreen:  @ 0x08A405D4
-	.incbin "baserom.gba", 0xA405D4, 0x3FC
+	.incbin "dump/data_A3E4D4_A405D4.bin"
 
 	.global Tsa_FinScreen
 Tsa_FinScreen:  @ 0x08A409D0
-	.incbin "baserom.gba", 0xA409D0, 0x104
+	.incbin "dump/data_A3E4D4_A409D0.bin"
 
 	.global Pal_08A40AD4
 Pal_08A40AD4:  @ 0x08A40AD4
-    .incbin "baserom.gba", 0xA40AD4, 0x40
+    .incbin "dump/data_A3E4D4_A40AD4.bin"
 
 	.global Tsa_08A40B14
 Tsa_08A40B14:  @ 0x08A40B14
-	.incbin "baserom.gba", 0xA40B14, 0x4B4
+	.incbin "dump/data_A3E4D4_A40B14.bin"
 
 	.global Pal_StaffReelEnt_08A40FC8
 Pal_StaffReelEnt_08A40FC8:  @ 0x08A40FC8
-	.incbin "baserom.gba", 0xA40FC8, 0x20    @ 0xA40FE8 - 0xA40FC8
+	.incbin "dump/data_A3E4D4_A40FC8.bin"@ 0xA40FE8 - 0xA40FC8
 
 	.global Img_StaffReelEnt_08A40FE8
 Img_StaffReelEnt_08A40FE8:  @ 0x08A40FE8
-	.incbin "baserom.gba", 0xA40FE8, 0xB48    @ 0xA41B30 - 0xA40FE8
+	.incbin "dump/data_A3E4D4_A40FE8.bin"@ 0xA41B30 - 0xA40FE8
 
 	.global Img_StaffReelEnt_08A41B30
 Img_StaffReelEnt_08A41B30:  @ 0x08A41B30
-	.incbin "baserom.gba", 0xA41B30, 0xC18    @ 0xA42748 - 0xA41B30
+	.incbin "dump/data_A3E4D4_A41B30.bin"@ 0xA42748 - 0xA41B30
 
 	.global Img_StaffReelEnt_08A42748
 Img_StaffReelEnt_08A42748:  @ 0x08A42748
-	.incbin "baserom.gba", 0xA42748, 0xB78    @ 0xA432C0 - 0xA42748
+	.incbin "dump/data_A3E4D4_A42748.bin"@ 0xA432C0 - 0xA42748
 
 	.global Img_StaffReelEnt_08A432C0
 Img_StaffReelEnt_08A432C0:  @ 0x08A432C0
-	.incbin "baserom.gba", 0xA432C0, 0x9FC    @ 0xA43CBC - 0xA432C0
+	.incbin "dump/data_A3E4D4_A432C0.bin"@ 0xA43CBC - 0xA432C0
 
 	.global Img_StaffReelEnt_08A43CBC
 Img_StaffReelEnt_08A43CBC:  @ 0x08A43CBC
-	.incbin "baserom.gba", 0xA43CBC, 0x1494    @ 0xA45150 - 0xA43CBC
+	.incbin "dump/data_A3E4D4_A43CBC.bin"@ 0xA45150 - 0xA43CBC
 
 	.global Img_StaffReelEnt_08A45150
 Img_StaffReelEnt_08A45150:  @ 0x08A45150
-	.incbin "baserom.gba", 0xA45150, 0x4CC    @ 0xA4561C - 0xA45150
+	.incbin "dump/data_A3E4D4_A45150.bin"@ 0xA4561C - 0xA45150
 
 	.global Img_StaffReelEnt_08A4561C
 Img_StaffReelEnt_08A4561C:  @ 0x08A4561C
-	.incbin "baserom.gba", 0xA4561C, 0x93C    @ 0xA45F58 - 0xA4561C
+	.incbin "dump/data_A3E4D4_A4561C.bin"@ 0xA45F58 - 0xA4561C
 
 	.global Img_StaffReelEnt_08A45F58
 Img_StaffReelEnt_08A45F58:  @ 0x08A45F58
-	.incbin "baserom.gba", 0xA45F58, 0xA30    @ 0xA46988 - 0xA45F58
+	.incbin "dump/data_A3E4D4_A45F58.bin"@ 0xA46988 - 0xA45F58
 
 	.global Img_StaffReelEnt_08A46988
 Img_StaffReelEnt_08A46988:  @ 0x08A46988
-	.incbin "baserom.gba", 0xA46988, 0x928    @ 0xA472B0 - 0xA46988
+	.incbin "dump/data_A3E4D4_A46988.bin"@ 0xA472B0 - 0xA46988
 
 	.global Img_StaffReelEnt_08A472B0
 Img_StaffReelEnt_08A472B0:  @ 0x08A472B0
-	.incbin "baserom.gba", 0xA472B0, 0x1494    @ 0xA48744 - 0xA472B0
+	.incbin "dump/data_A3E4D4_A472B0.bin"@ 0xA48744 - 0xA472B0
 
 	.global Img_StaffReelEnt_08A48744
 Img_StaffReelEnt_08A48744:  @ 0x08A48744
-	.incbin "baserom.gba", 0xA48744, 0x1064    @ 0xA497A8 - 0xA48744
+	.incbin "dump/data_A3E4D4_A48744.bin"@ 0xA497A8 - 0xA48744
 
 	.global Img_StaffReelEnt_08A497A8
 Img_StaffReelEnt_08A497A8:  @ 0x08A497A8
-	.incbin "baserom.gba", 0xA497A8, 0x122C    @ 0xA4A9D4 - 0xA497A8
+	.incbin "dump/data_A3E4D4_A497A8.bin"@ 0xA4A9D4 - 0xA497A8
 
 	.global Img_StaffReelEnt_08A4A9D4
 Img_StaffReelEnt_08A4A9D4:  @ 0x08A4A9D4
-	.incbin "baserom.gba", 0xA4A9D4, 0x434    @ 0xA4AE08 - 0xA4A9D4
+	.incbin "dump/data_A3E4D4_A4A9D4.bin"@ 0xA4AE08 - 0xA4A9D4
 
 	.global Tsa_StaffReelEnt_08A4AE08
 Tsa_StaffReelEnt_08A4AE08:  @ 0x08A4AE08
-	.incbin "baserom.gba", 0xA4AE08, 0x288    @ 0xA4B090 - 0xA4AE08
+	.incbin "dump/data_A3E4D4_A4AE08.bin"@ 0xA4B090 - 0xA4AE08
 
 	.global Tsa_StaffReelEnt_08A4B090
 Tsa_StaffReelEnt_08A4B090:  @ 0x08A4B090
-	.incbin "baserom.gba", 0xA4B090, 0x264    @ 0xA4B2F4 - 0xA4B090
+	.incbin "dump/data_A3E4D4_A4B090.bin"@ 0xA4B2F4 - 0xA4B090
 
 	.global Tsa_StaffReelEnt_08A4B2F4
 Tsa_StaffReelEnt_08A4B2F4:  @ 0x08A4B2F4
-	.incbin "baserom.gba", 0xA4B2F4, 0x264    @ 0xA4B558 - 0xA4B2F4
+	.incbin "dump/data_A3E4D4_A4B2F4.bin"@ 0xA4B558 - 0xA4B2F4
 
 	.global Tsa_StaffReelEnt_08A4B558
 Tsa_StaffReelEnt_08A4B558:  @ 0x08A4B558
-	.incbin "baserom.gba", 0xA4B558, 0x230    @ 0xA4B788 - 0xA4B558
+	.incbin "dump/data_A3E4D4_A4B558.bin"@ 0xA4B788 - 0xA4B558
 
 	.global Tsa_StaffReelEnt_08A4B788
 Tsa_StaffReelEnt_08A4B788:  @ 0x08A4B788
-	.incbin "baserom.gba", 0xA4B788, 0x3C8    @ 0xA4BB50 - 0xA4B788
+	.incbin "dump/data_A3E4D4_A4B788.bin"@ 0xA4BB50 - 0xA4B788
 
 	.global Tsa_StaffReelEnt_08A4BB50
 Tsa_StaffReelEnt_08A4BB50:  @ 0x08A4BB50
-	.incbin "baserom.gba", 0xA4BB50, 0x174    @ 0xA4BCC4 - 0xA4BB50
+	.incbin "dump/data_A3E4D4_A4BB50.bin"@ 0xA4BCC4 - 0xA4BB50
 
 	.global Tsa_StaffReelEnt_08A4BCC4
 Tsa_StaffReelEnt_08A4BCC4:  @ 0x08A4BCC4
-	.incbin "baserom.gba", 0xA4BCC4, 0x1FC    @ 0xA4BEC0 - 0xA4BCC4
+	.incbin "dump/data_A3E4D4_A4BCC4.bin"@ 0xA4BEC0 - 0xA4BCC4
 
 	.global Tsa_StaffReelEnt_08A4BEC0
 Tsa_StaffReelEnt_08A4BEC0:  @ 0x08A4BEC0
-	.incbin "baserom.gba", 0xA4BEC0, 0x224    @ 0xA4C0E4 - 0xA4BEC0
+	.incbin "dump/data_A3E4D4_A4BEC0.bin"@ 0xA4C0E4 - 0xA4BEC0
 
 	.global Tsa_StaffReelEnt_08A4C0E4
 Tsa_StaffReelEnt_08A4C0E4:  @ 0x08A4C0E4
-	.incbin "baserom.gba", 0xA4C0E4, 0x224    @ 0xA4C308 - 0xA4C0E4
+	.incbin "dump/data_A3E4D4_A4C0E4.bin"@ 0xA4C308 - 0xA4C0E4
 
 	.global Tsa_StaffReelEnt_08A4C308
 Tsa_StaffReelEnt_08A4C308:  @ 0x08A4C308
-	.incbin "baserom.gba", 0xA4C308, 0x3E4    @ 0xA4C6EC - 0xA4C308
+	.incbin "dump/data_A3E4D4_A4C308.bin"@ 0xA4C6EC - 0xA4C308
 
 	.global Tsa_StaffReelEnt_08A4C6EC
 Tsa_StaffReelEnt_08A4C6EC:  @ 0x08A4C6EC
-	.incbin "baserom.gba", 0xA4C6EC, 0x304    @ 0xA4C9F0 - 0xA4C6EC
+	.incbin "dump/data_A3E4D4_A4C6EC.bin"@ 0xA4C9F0 - 0xA4C6EC
 
 	.global Tsa_StaffReelEnt_08A4C9F0
 Tsa_StaffReelEnt_08A4C9F0:  @ 0x08A4C9F0
-	.incbin "baserom.gba", 0xA4C9F0, 0x350    @ 0xA4CD40 - 0xA4C9F0
+	.incbin "dump/data_A3E4D4_A4C9F0.bin"@ 0xA4CD40 - 0xA4C9F0
 
 	.global Tsa_StaffReelEnt_08A4CD40
 Tsa_StaffReelEnt_08A4CD40:  @ 0x08A4CD40
-	.incbin "baserom.gba", 0xA4CD40, 0x1EC    @ 0xA4CF2C - 0xA4CD40
+	.incbin "dump/data_A3E4D4_A4CD40.bin"@ 0xA4CF2C - 0xA4CD40
 
 	.global gGfx_BrownTextBox
 gGfx_BrownTextBox:  @ 0x08A4CF2C
-	.incbin "baserom.gba", 0xA4CF2C, 0x1A0
+	.incbin "dump/data_A3E4D4_A4CF2C.bin"
 
 	.global gPal_BrownTextBox
 gPal_BrownTextBox:  @ 0x08A4D0CC
-	.incbin "baserom.gba", 0xA4D0CC, 0x11C
+	.incbin "dump/data_A3E4D4_A4D0CC.bin"
 
 	.align 2, 0
 	.global cg_0_part_0_tiles
@@ -772,287 +772,287 @@ cg_9_palette: @8a832a4
 
 	.global gUnknown_08A83364
 gUnknown_08A83364:  @ 0x08A83364
-	.incbin "baserom.gba", 0xA83364, 0x12C00
+	.incbin "dump/data_A3E4D4_A83364.bin"
 
 	.global gUnknown_08A95F64
 gUnknown_08A95F64:  @ 0x08A95F64
-	.incbin "baserom.gba", 0xA95F64, 0x80
+	.incbin "dump/data_A3E4D4_A95F64.bin"
 
 	.global gUnknown_08A95FE4
 gUnknown_08A95FE4:  @ 0x08A95FE4
-	.incbin "baserom.gba", 0xA95FE4, 0x80
+	.incbin "dump/data_A3E4D4_A95FE4.bin"
 
 	.global gUnknown_08A96064
 gUnknown_08A96064:  @ 0x08A96064
-	.incbin "baserom.gba", 0xA96064, 0x2A4
+	.incbin "dump/data_A3E4D4_A96064.bin"
 
 	.global Img_GmapNodes
 Img_GmapNodes:  @ 0x08A96308
-	.incbin "baserom.gba", 0xA96308, 0x1108
+	.incbin "dump/data_A3E4D4_A96308.bin"
 
 	.global Img_GmapCastleNodes
 Img_GmapCastleNodes:  @ 0x08A97410
-	.incbin "baserom.gba", 0xA97410, 0x630
+	.incbin "dump/data_A3E4D4_A97410.bin"
 
 	.global gUnknown_08A97A40
 gUnknown_08A97A40:  @ 0x08A97A40
-	.incbin "baserom.gba", 0xA97A40, 0x20
+	.incbin "dump/data_A3E4D4_A97A40.bin"
 
 	.global gPal_GMapPI_ShopIcons
 gPal_GMapPI_ShopIcons:  @ 0x08A97A60
-	.incbin "baserom.gba", 0xA97A60, 0x20
+	.incbin "dump/data_A3E4D4_A97A60.bin"
 
 	.global gGfx_GMapPI_ShopIcons
 gGfx_GMapPI_ShopIcons:  @ 0x08A97A80
-	.incbin "baserom.gba", 0xA97A80, 0x4C
+	.incbin "dump/data_A3E4D4_A97A80.bin"
 
 	.global gPal_08A97ACC
 gPal_08A97ACC:  @ 0x08A97ACC
-	.incbin "baserom.gba", 0xA97ACC, 0x20
+	.incbin "dump/data_A3E4D4_A97ACC.bin"
 
 	.global Sprite_08A97AEC
 Sprite_08A97AEC:  @ 0x08A97AEC
-	.incbin "baserom.gba", 0xA97AEC, 0x1AC
+	.incbin "dump/data_A3E4D4_A97AEC.bin"
 
 	.global gImg_WorldmapNodeRevealEffect
 gImg_WorldmapNodeRevealEffect:  @ 0x08A97C98
-	.incbin "baserom.gba", 0xA97C98, 0x190
+	.incbin "dump/data_A3E4D4_A97C98.bin"
 
 	.global gPal_WorldmapNodeRevealEffect
 gPal_WorldmapNodeRevealEffect:  @ 0x08A97E28
-	.incbin "baserom.gba", 0xA97E28, 0x20
+	.incbin "dump/data_A3E4D4_A97E28.bin"
 
 	.global gUnknown_08A97E48
 gUnknown_08A97E48:  @ 0x08A97E48
-	.incbin "baserom.gba", 0xA97E48, 0x90
+	.incbin "dump/data_A3E4D4_A97E48.bin"
 
 	.global Img_GmapPath
 Img_GmapPath:  @ 0x08A97ED8
-	.incbin "baserom.gba", 0xA97ED8, 0xCC
+	.incbin "dump/data_A3E4D4_A97ED8.bin"
 
 	.global gUnknown_08A97FA4
 gUnknown_08A97FA4:  @ 0x08A97FA4
-	.incbin "baserom.gba", 0xA97FA4, 0x20
+	.incbin "dump/data_A3E4D4_A97FA4.bin"
 
 	.global gUnknown_08A97FC4
 gUnknown_08A97FC4:  @ 0x08A97FC4
-	.incbin "baserom.gba", 0xA97FC4, 0x34
+	.incbin "dump/data_A3E4D4_A97FC4.bin"
 
 	.global gUnknown_08A97FF8
 gUnknown_08A97FF8:  @ 0x08A97FF8
-	.incbin "baserom.gba", 0xA97FF8, 0x38
+	.incbin "dump/data_A3E4D4_A97FF8.bin"
 
 	.global gUnknown_08A98030
 gUnknown_08A98030:  @ 0x08A98030
-	.incbin "baserom.gba", 0xA98030, 0x24
+	.incbin "dump/data_A3E4D4_A98030.bin"
 
 	.global gUnknown_08A98054
 gUnknown_08A98054:  @ 0x08A98054
-	.incbin "baserom.gba", 0xA98054, 0x18
+	.incbin "dump/data_A3E4D4_A98054.bin"
 
 	.global gUnknown_08A9806C
 gUnknown_08A9806C:  @ 0x8A9806C
-	.incbin "baserom.gba", 0xA9806C, 0x24
+	.incbin "dump/data_A3E4D4_A9806C.bin"
 
 	.global gUnknown_08A98090
 gUnknown_08A98090:  @ 0x8A98090
-	.incbin "baserom.gba", 0xA98090, 0x24
+	.incbin "dump/data_A3E4D4_A98090.bin"
 
 	.global gUnknown_08A980B4
 gUnknown_08A980B4:  @ 0x8A980B4
-	.incbin "baserom.gba", 0xA980B4, 0x28
+	.incbin "dump/data_A3E4D4_A980B4.bin"
 
 	.global gUnknown_08A980DC
 gUnknown_08A980DC:  @ 0x8A980DC
-	.incbin "baserom.gba", 0xA980DC, 0x28
+	.incbin "dump/data_A3E4D4_A980DC.bin"
 
 	.global gUnknown_08A98104
 gUnknown_08A98104:  @ 0x8A98104
-	.incbin "baserom.gba", 0xA98104, 0x40
+	.incbin "dump/data_A3E4D4_A98104.bin"
 
 	.global gUnknown_08A98144
 gUnknown_08A98144:  @ 0x8A98144
-	.incbin "baserom.gba", 0xA98144, 0x24
+	.incbin "dump/data_A3E4D4_A98144.bin"
 
 	.global gUnknown_08A98168
 gUnknown_08A98168:  @ 0x8A98168
-	.incbin "baserom.gba", 0xA98168, 0x34
+	.incbin "dump/data_A3E4D4_A98168.bin"
 
 	.global gUnknown_08A9819C
 gUnknown_08A9819C:  @ 0x8A9819C
-	.incbin "baserom.gba", 0xA9819C, 0x20
+	.incbin "dump/data_A3E4D4_A9819C.bin"
 
 	.global gUnknown_08A981BC
 gUnknown_08A981BC:  @ 0x8A981BC
-	.incbin "baserom.gba", 0xA981BC, 0x38
+	.incbin "dump/data_A3E4D4_A981BC.bin"
 
 	.global gUnknown_08A981F4
 gUnknown_08A981F4:  @ 0x8A981F4
-	.incbin "baserom.gba", 0xA981F4, 0x34
+	.incbin "dump/data_A3E4D4_A981F4.bin"
 
 	.global gUnknown_08A98228
 gUnknown_08A98228:  @ 0x8A98228
-	.incbin "baserom.gba", 0xA98228, 0x54
+	.incbin "dump/data_A3E4D4_A98228.bin"
 
 	.global gUnknown_08A9827C
 gUnknown_08A9827C:  @ 0x8A9827C
-	.incbin "baserom.gba", 0xA9827C, 0x58
+	.incbin "dump/data_A3E4D4_A9827C.bin"
 
 	.global gUnknown_08A982D4
 gUnknown_08A982D4:  @ 0x8A982D4
-	.incbin "baserom.gba", 0xA982D4, 0x40
+	.incbin "dump/data_A3E4D4_A982D4.bin"
 
 	.global gUnknown_08A98314
 gUnknown_08A98314:  @ 0x8A98314
-	.incbin "baserom.gba", 0xA98314, 0x30
+	.incbin "dump/data_A3E4D4_A98314.bin"
 
 	.global gUnknown_08A98344
 gUnknown_08A98344:  @ 0x8A98344
-	.incbin "baserom.gba", 0xA98344, 0x28
+	.incbin "dump/data_A3E4D4_A98344.bin"
 
 	.global gUnknown_08A9836C
 gUnknown_08A9836C:  @ 0x8A9836C
-	.incbin "baserom.gba", 0xA9836C, 0x50
+	.incbin "dump/data_A3E4D4_A9836C.bin"
 
 	.global gUnknown_08A983BC
 gUnknown_08A983BC:  @ 0x8A983BC
-	.incbin "baserom.gba", 0xA983BC, 0x34
+	.incbin "dump/data_A3E4D4_A983BC.bin"
 
 	.global gUnknown_08A983F0
 gUnknown_08A983F0:  @ 0x8A983F0
-	.incbin "baserom.gba", 0xA983F0, 0x58
+	.incbin "dump/data_A3E4D4_A983F0.bin"
 
 	.global gUnknown_08A98448
 gUnknown_08A98448:  @ 0x8A98448
-	.incbin "baserom.gba", 0xA98448, 0x34
+	.incbin "dump/data_A3E4D4_A98448.bin"
 
 	.global gUnknown_08A9847C
 gUnknown_08A9847C:  @ 0x8A9847C
-	.incbin "baserom.gba", 0xA9847C, 0x58
+	.incbin "dump/data_A3E4D4_A9847C.bin"
 
 	.global gUnknown_08A984D4
 gUnknown_08A984D4:  @ 0x8A984D4
-	.incbin "baserom.gba", 0xA984D4, 0x38
+	.incbin "dump/data_A3E4D4_A984D4.bin"
 
 	.global gUnknown_08A9850C
 gUnknown_08A9850C:  @ 0x8A9850C
-	.incbin "baserom.gba", 0xA9850C, 0x34
+	.incbin "dump/data_A3E4D4_A9850C.bin"
 
 	.global gUnknown_08A98540
 gUnknown_08A98540:  @ 0x8A98540
-	.incbin "baserom.gba", 0xA98540, 0x28
+	.incbin "dump/data_A3E4D4_A98540.bin"
 
 	.global gUnknown_08A98568
 gUnknown_08A98568:  @ 0x8A98568
-	.incbin "baserom.gba", 0xA98568, 0x3C
+	.incbin "dump/data_A3E4D4_A98568.bin"
 
 	.global gUnknown_08A985A4
 gUnknown_08A985A4:  @ 0x8A985A4
-	.incbin "baserom.gba", 0xA985A4, 0x58
+	.incbin "dump/data_A3E4D4_A985A4.bin"
 
 	.global gUnknown_08A985FC
 gUnknown_08A985FC:  @ 0x8A985FC
-	.incbin "baserom.gba", 0xA985FC, 0x40
+	.incbin "dump/data_A3E4D4_A985FC.bin"
 
 	.global gUnknown_08A9863C
 gUnknown_08A9863C:  @ 0x8A9863C
-	.incbin "baserom.gba", 0xA9863C, 0x58
+	.incbin "dump/data_A3E4D4_A9863C.bin"
 
 	.global gUnknown_08A98694
 gUnknown_08A98694:  @ 0x8A98694
-	.incbin "baserom.gba", 0xA98694, 0x2C
+	.incbin "dump/data_A3E4D4_A98694.bin"
 
 	.global gUnknown_08A986C0
 gUnknown_08A986C0:  @ 0x08A986C0
-	.incbin "baserom.gba", 0xA986C0, 0x538
+	.incbin "dump/data_A3E4D4_A986C0.bin"
 
 	.global gUnknown_08A98BF8
 gUnknown_08A98BF8:  @ 0x08A98BF8
-	.incbin "baserom.gba", 0xA98BF8, 0x104
+	.incbin "dump/data_A3E4D4_A98BF8.bin"
 
 	.global gUnknown_08A98CFC
 gUnknown_08A98CFC:  @ 0x08A98CFC
-	.incbin "baserom.gba", 0xA98CFC, 0x5C
+	.incbin "dump/data_A3E4D4_A98CFC.bin"
 
 	.global gUnknown_08A98D58
 gUnknown_08A98D58:  @ 0x08A98D58
-	.incbin "baserom.gba", 0xA98D58, 0x30
+	.incbin "dump/data_A3E4D4_A98D58.bin"
 
 	.global gUnknown_08A98D88
 gUnknown_08A98D88:  @ 0x08A98D88
-	.incbin "baserom.gba", 0xA98D88, 0x18
+	.incbin "dump/data_A3E4D4_A98D88.bin"
 
 	.global gUnknown_08A98DA0
 gUnknown_08A98DA0:  @ 0x08A98DA0
-	.incbin "baserom.gba", 0xA98DA0, 0x18
+	.incbin "dump/data_A3E4D4_A98DA0.bin"
 
 	.global gUnknown_08A98DB8
 gUnknown_08A98DB8:  @ 0x08A98DB8
-	.incbin "baserom.gba", 0xA98DB8, 0x14
+	.incbin "dump/data_A3E4D4_A98DB8.bin"
 
 	.global gUnknown_08A98DCC
 gUnknown_08A98DCC:  @ 0x08A98DCC
-	.incbin "baserom.gba", 0xA98DCC, 0x60
+	.incbin "dump/data_A3E4D4_A98DCC.bin"
 
 	.global gUnknown_08A98E2C
 gUnknown_08A98E2C:  @ 0x08A98E2C
-	.incbin "baserom.gba", 0xA98E2C, 0x20
+	.incbin "dump/data_A3E4D4_A98E2C.bin"
 
 	.global gUnknown_08A98E4C
 gUnknown_08A98E4C:  @ 0x08A98E4C
-    .incbin "baserom.gba", 0xA98E4C, 0x20
+    .incbin "dump/data_A3E4D4_A98E4C.bin"
 
 	.global gUnknown_08A98E6C
 gUnknown_08A98E6C:  @ 0x08A98E6C
-	.incbin "baserom.gba", 0xA98E6C, 0x20
+	.incbin "dump/data_A3E4D4_A98E6C.bin"
 
 	.global gUnknown_08A98E8C
 gUnknown_08A98E8C:  @ 0x08A98E8C
-	.incbin "baserom.gba", 0xA98E8C, 0x20
+	.incbin "dump/data_A3E4D4_A98E8C.bin"
 
 	.global gUnknown_08A98EAC
 gUnknown_08A98EAC:  @ 0x08A98EAC
-	.incbin "baserom.gba", 0xA98EAC, 0x84
+	.incbin "dump/data_A3E4D4_A98EAC.bin"
 
 	.global gUnknown_08A98F30
 gUnknown_08A98F30:  @ 0x08A98F30
-	.incbin "baserom.gba", 0xA98F30, 0xEC
+	.incbin "dump/data_A3E4D4_A98F30.bin"
 
 	.global gGfx_GMapPI_LevelNums
 gGfx_GMapPI_LevelNums:  @ 0x08A9901C
-	.incbin "baserom.gba", 0xA9901C, 0x104
+	.incbin "dump/data_A3E4D4_A9901C.bin"
 
 	.global gPal_GMapPI_LevelNums
 gPal_GMapPI_LevelNums:  @ 0x08A99120
-	.incbin "baserom.gba", 0xA99120, 0x20
+	.incbin "dump/data_A3E4D4_A99120.bin"
 
 	.global Img_EventGmap
 Img_EventGmap:  @ 0x08A99140
-	.incbin "baserom.gba", 0xA99140, 0x4E34
+	.incbin "dump/data_A3E4D4_A99140.bin"
 
 	.global Tsa_EventGmap
 Tsa_EventGmap:  @ 0x08A9DF74
-	.incbin "baserom.gba", 0xA9DF74, 0x550
+	.incbin "dump/data_A3E4D4_A9DF74.bin"
 
 	.global Pal_EventGmap
 Pal_EventGmap:  @ 0x08A9E4C4
-	.incbin "baserom.gba", 0xA9E4C4, 0x80
+	.incbin "dump/data_A3E4D4_A9E4C4.bin"
 
 	.global gImg_08A9E544
 gImg_08A9E544:  @ 0x08A9E544
-	.incbin "baserom.gba", 0xA9E544, 0x78
+	.incbin "dump/data_A3E4D4_A9E544.bin"
 
 	.global gPal_08A9E5BC
 gPal_08A9E5BC:  @ 0x08A9E5BC
-	.incbin "baserom.gba", 0xA9E5BC, 0x20
+	.incbin "dump/data_A3E4D4_A9E5BC.bin"
 
 	.global gTsa_08A9E5DC
 gTsa_08A9E5DC:  @ 0x08A9E5DC
-	.incbin "baserom.gba", 0xA9E5DC, 0xAC
+	.incbin "dump/data_A3E4D4_A9E5DC.bin"
 
 	.global Pal_WmHighLightNationMap
 Pal_WmHighLightNationMap:  @ 0x08A9E688
-	.incbin "baserom.gba", 0xA9E688, 0x40
+	.incbin "dump/data_A3E4D4_A9E688.bin"
 
     .global Img_WmHightLightMapFrecia
 Img_WmHightLightMapFrecia:
@@ -1060,104 +1060,104 @@ Img_WmHightLightMapFrecia:
 
     .global Ap_WmHightLightMapFrecia
 Ap_WmHightLightMapFrecia:
-    .incbin "baserom.gba", 0xA9EC24, 0xA9EC94 - 0xA9EC24
+    .incbin "dump/data_A3E4D4_A9EC24.bin"
 
     .global Img_WmHightLightMap2
 Img_WmHightLightMap2:
-    .incbin "baserom.gba", 0xA9EC94, 0xA9F358 - 0xA9EC94
+    .incbin "dump/data_A3E4D4_A9EC94.bin"
 
     .global Ap_WmHightLightMap2
 Ap_WmHightLightMap2:
-    .incbin "baserom.gba", 0xA9F358, 0xA9F494 - 0xA9F358
+    .incbin "dump/data_A3E4D4_A9F358.bin"
 
     .global Img_WmHightLightMap3
 Img_WmHightLightMap3:
-    .incbin "baserom.gba", 0xA9F494, 0xA9F9C8 - 0xA9F494
+    .incbin "dump/data_A3E4D4_A9F494.bin"
 
     .global Ap_WmHightLightMap3
 Ap_WmHightLightMap3:
-    .incbin "baserom.gba", 0xA9F9C8, 0xA9FA2C - 0xA9F9C8
+    .incbin "dump/data_A3E4D4_A9F9C8.bin"
 
     .global Img_WmHightLightMap4
 Img_WmHightLightMap4:
-    .incbin "baserom.gba", 0xA9FA2C, 0xA9FEA4 - 0xA9FA2C
+    .incbin "dump/data_A3E4D4_A9FA2C.bin"
 
     .global Ap_WmHightLightMap4
 Ap_WmHightLightMap4:
-    .incbin "baserom.gba", 0xA9FEA4, 0xA9FF00 - 0xA9FEA4
+    .incbin "dump/data_A3E4D4_A9FEA4.bin"
 
     .global Img_WmHightLightMap5
 Img_WmHightLightMap5:
-    .incbin "baserom.gba", 0xA9FF00, 0xAA020C - 0xA9FF00
+    .incbin "dump/data_A3E4D4_A9FF00.bin"
 
     .global Ap_WmHightLightMap5
 Ap_WmHightLightMap5:
-    .incbin "baserom.gba", 0xAA020C, 0xAA0240 - 0xAA020C
+    .incbin "dump/data_A3E4D4_AA020C.bin"
 
     .global Img_WmHightLightMap6
 Img_WmHightLightMap6:
-    .incbin "baserom.gba", 0xAA0240, 0xAA0760 - 0xAA0240
+    .incbin "dump/data_A3E4D4_AA0240.bin"
 
     .global Ap_WmHightLightMap6
 Ap_WmHightLightMap6:
-    .incbin "baserom.gba", 0xAA0760, 0xAA07B0 - 0xAA0760
+    .incbin "dump/data_A3E4D4_AA0760.bin"
 
     .global Img_WmHightLightMap7
 Img_WmHightLightMap7:
-    .incbin "baserom.gba", 0xAA07B0, 0xAA0B90 - 0xAA07B0
+    .incbin "dump/data_A3E4D4_AA07B0.bin"
 
     .global Ap_WmHightLightMap7
 Ap_WmHightLightMap7:
-    .incbin "baserom.gba", 0xAA0B90, 0xAA0BC8 - 0xAA0B90
+    .incbin "dump/data_A3E4D4_AA0B90.bin"
 
     .global Img_WmHightLightMap8
 Img_WmHightLightMap8:
-    .incbin "baserom.gba", 0xAA0BC8, 0xAA10E4 - 0xAA0BC8
+    .incbin "dump/data_A3E4D4_AA0BC8.bin"
 
     .global Ap_WmHightLightMap8
 Ap_WmHightLightMap8:
-    .incbin "baserom.gba", 0xAA10E4, 0xAA114C - 0xAA10E4
+    .incbin "dump/data_A3E4D4_AA10E4.bin"
 
 	.global Img_WorldMapPlaceDot
 Img_WorldMapPlaceDot:  @ 0x08AA114C
-	.incbin "baserom.gba", 0xAA114C, 0x44
+	.incbin "dump/data_A3E4D4_AA114C.bin"
 
 	.global Pal_WmPlaceDot_Highlight
 Pal_WmPlaceDot_Highlight:  @ 0x08AA1190
-	.incbin "baserom.gba", 0xAA1190, 0x20
+	.incbin "dump/data_A3E4D4_AA1190.bin"
 
 	.global Pal_WmPlaceDot_Standard
 Pal_WmPlaceDot_Standard:  @ 0x08AA11B0
-	.incbin "baserom.gba", 0xAA11B0, 0x20
+	.incbin "dump/data_A3E4D4_AA11B0.bin"
 
 	.global gUnknown_08AA11D0
 gUnknown_08AA11D0:  @ 0x08AA11D0
-	.incbin "baserom.gba", 0xAA11D0, 0xB0
+	.incbin "dump/data_A3E4D4_AA11D0.bin"
 
 	.global Img_WorldmapMinimap
 Img_WorldmapMinimap:  @ 0x08AA1280
-	.incbin "baserom.gba", 0xAA1280, 0x60C
+	.incbin "dump/data_A3E4D4_AA1280.bin"
 
 	.global Pal_WorldmapMinimap
 Pal_WorldmapMinimap:  @ 0x08AA188C
-	.incbin "baserom.gba", 0xAA188C, 0x20
+	.incbin "dump/data_A3E4D4_AA188C.bin"
 
 	.global gUnknown_08AA18AC
 gUnknown_08AA18AC:  @ 0x08AA18AC
-	.incbin "baserom.gba", 0xAA18AC, 0x84
+	.incbin "dump/data_A3E4D4_AA18AC.bin"
 
 	.global gUnknown_08AA1930
 gUnknown_08AA1930:  @ 0x08AA1930
-	.incbin "baserom.gba", 0xAA1930, 0x20
+	.incbin "dump/data_A3E4D4_AA1930.bin"
 
 	.global gUnknown_08AA1950
 gUnknown_08AA1950:  @ 0x08AA1950
-	.incbin "baserom.gba", 0xAA1950, 0x20
+	.incbin "dump/data_A3E4D4_AA1950.bin"
 
 	.global gImg_WorldmapSkirmish
 gImg_WorldmapSkirmish:  @ 0x08AA1970
-	.incbin "baserom.gba", 0xAA1970, 0x300
+	.incbin "dump/data_A3E4D4_AA1970.bin"
 
 	.global SpriteAnim_WorldmapSkirmish
 SpriteAnim_WorldmapSkirmish:  @ 0x08AA1C70
-	.incbin "baserom.gba", 0xAA1C70, 0x3D4
+	.incbin "dump/data_A3E4D4_AA1C70.bin"

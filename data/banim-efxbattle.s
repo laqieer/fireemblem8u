@@ -14,23 +14,23 @@ TsaConf_BanimTmA3:  @ 0x085B9F88
 
 	.global TsaConf_BanimTmA4
 TsaConf_BanimTmA4:  @ 0x085BA020
-	.incbin "baserom.gba", 0x5BA020, 0x98    @ 0x5BA0B8 - 0x5BA020
+	.incbin "dump/banim-efxbattle_5BA020.bin"@ 0x5BA0B8 - 0x5BA020
 
 	.global Img_NODAMGEMIS
 Img_NODAMGEMIS:  @ 0x085BA0B8
-	.incbin "baserom.gba", 0x5BA0B8, 0x228
+	.incbin "dump/banim-efxbattle_5BA0B8.bin"
 
 	.global Pal_085BA2E0
 Pal_085BA2E0:  @ 0x085BA2E0
-	.incbin "baserom.gba", 0x5BA2E0, 0x20
+	.incbin "dump/banim-efxbattle_5BA2E0.bin"
 
 	.global Pal_085BA300
 Pal_085BA300:  @ 0x085BA300
-	.incbin "baserom.gba", 0x5BA300, 0x20
+	.incbin "dump/banim-efxbattle_5BA300.bin"
 
 	.global Pal_085BA320
 Pal_085BA320:  @ 0x085BA320
-	.incbin "baserom.gba", 0x5BA320, 0x20
+	.incbin "dump/banim-efxbattle_5BA320.bin"
 
 /* This is unused, called in FE7 UnitKakudai1 (although is also unused in FE7) */
 	.global Img_BanimArcherFBallistaIntro

@@ -2,59 +2,59 @@
 
 	.global Img_PrepHelpButtonSprites
 Img_PrepHelpButtonSprites:  @ 0x08A199C8
-	.incbin "baserom.gba", 0xA199C8, 0x244
+	.incbin "dump/data_A195B0_A199C8.bin"
 
 	.global Img_MenuScrollBar
 Img_MenuScrollBar:  @ 0x08A19C0C
-	.incbin "baserom.gba", 0xA19C0C, 0xA0
+	.incbin "dump/data_A195B0_A19C0C.bin"
 
 	.global Pal_MenuScrollBar
 Pal_MenuScrollBar:  @ 0x08A19CAC
-	.incbin "baserom.gba", 0xA19CAC, 0x20
+	.incbin "dump/data_A195B0_A19CAC.bin"
 
 	.global gUnknown_08A19CCC
 gUnknown_08A19CCC:  @ 0x08A19CCC
-	.incbin "baserom.gba", 0xA19CCC, 0x3B8
+	.incbin "dump/data_A195B0_A19CCC.bin"
 
 	.global Pal_SpinningArrow
 Pal_SpinningArrow:  @ 0x08A1A084
-	.incbin "baserom.gba", 0xA1A084, 0x20
+	.incbin "dump/data_A195B0_A1A084.bin"
 
 	.global gUnknown_08A1A0A4
 gUnknown_08A1A0A4:  @ 0x08A1A0A4
-	.incbin "baserom.gba", 0xA1A0A4, 0x198
+	.incbin "dump/data_A195B0_A1A0A4.bin"
 
 	.global gUnknown_08A1A23C
 gUnknown_08A1A23C:  @ 0x08A1A23C
-	.incbin "baserom.gba", 0xA1A23C, 0x1C0
+	.incbin "dump/data_A195B0_A1A23C.bin"
 
 	.global gUnknown_08A1A3FC
 gUnknown_08A1A3FC:  @ 0x08A1A3FC
-	.incbin "baserom.gba", 0xA1A3FC, 0x20
+	.incbin "dump/data_A195B0_A1A3FC.bin"
 
 	.global Tsa_08A1A41C
 Tsa_08A1A41C:  @ 0x08A1A41C
-	.incbin "baserom.gba", 0xA1A41C, 0x18
+	.incbin "dump/data_A195B0_A1A41C.bin"
 
 	.global Tsa_08A1A434
 Tsa_08A1A434:  @ 0x08A1A434
-	.incbin "baserom.gba", 0xA1A434, 0x40
+	.incbin "dump/data_A195B0_A1A434.bin"
 
 	.global Tsa_08A1A474
 Tsa_08A1A474:  @ 0x08A1A474
-	.incbin "baserom.gba", 0xA1A474, 0x54
+	.incbin "dump/data_A195B0_A1A474.bin"
 
 	.global gUnknown_08A1A4C8
 gUnknown_08A1A4C8:  @ 0x08A1A4C8
-	.incbin "baserom.gba", 0xA1A4C8, 0x41C
+	.incbin "dump/data_A195B0_A1A4C8.bin"
 
 	.global gGfx_SupportScreenBanner
 gGfx_SupportScreenBanner:  @ 0x08A1A8E4
-	.incbin "baserom.gba", 0xA1A8E4, 0x3A4
+	.incbin "dump/data_A195B0_A1A8E4.bin"
 
 	.global gUnknown_08A1AC88
 gUnknown_08A1AC88:  @ 0x08A1AC88
-	.incbin "baserom.gba", 0xA1AC88, 0x450
+	.incbin "dump/data_A195B0_A1AC88.bin"
 
 	.global Img_SysBrownBox
 Img_SysBrownBox:  @ 0x08A1B0D8
@@ -66,156 +66,156 @@ Pal_SysBrownBox:  @ 0x08A1B154
 
 	.global gPal_SupportScreenBanner
 gPal_SupportScreenBanner:  @ 0x08A1B174
-	.incbin "baserom.gba", 0xA1B174, 0x20
+	.incbin "dump/data_A195B0_A1B174.bin"
 
 	.global gUnknown_08A1B194
 gUnknown_08A1B194:  @ 0x08A1B194
-	.incbin "baserom.gba", 0xA1B194, 0x68
+	.incbin "dump/data_A195B0_A1B194.bin"
 
 	.global gUnknown_08A1B1FC
 gUnknown_08A1B1FC:  @ 0x08A1B1FC
-	.incbin "baserom.gba", 0xA1B1FC, 0x43C
+	.incbin "dump/data_A195B0_A1B1FC.bin"
 
 	.global gUnknown_08A1B638
 gUnknown_08A1B638:  @ 0x08A1B638
-	.incbin "baserom.gba", 0xA1B638, 0x20
+	.incbin "dump/data_A195B0_A1B638.bin"
 
 	.global gUnknown_08A1B658
 gUnknown_08A1B658:  @ 0x08A1B658
-	.incbin "baserom.gba", 0xA1B658, 0x40
+	.incbin "dump/data_A195B0_A1B658.bin"
 
 	.global gUnknown_08A1B698
 gUnknown_08A1B698:  @ 0x08A1B698
-	.incbin "baserom.gba", 0xA1B698, 0x98
+	.incbin "dump/data_A195B0_A1B698.bin"
 
 	.global gUnknown_08A1B730
 gUnknown_08A1B730:  @ 0x08A1B730
-	.incbin "baserom.gba", 0xA1B730, 0x98
+	.incbin "dump/data_A195B0_A1B730.bin"
 
 	.global gUnknown_08A1B7C8
 gUnknown_08A1B7C8:  @ 0x08A1B7C8
-	.incbin "baserom.gba", 0xA1B7C8, 0xF0
+	.incbin "dump/data_A195B0_A1B7C8.bin"
 
 	.global gUnknown_08A1B8B8
 gUnknown_08A1B8B8:  @ 0x08A1B8B8
-	.incbin "baserom.gba", 0xA1B8B8, 0xD8
+	.incbin "dump/data_A195B0_A1B8B8.bin"
 
 	.global gUnknown_08A1B990
 gUnknown_08A1B990:  @ 0x08A1B990
-	.incbin "baserom.gba", 0xA1B990, 0x5C
+	.incbin "dump/data_A195B0_A1B990.bin"
 
 	.global gUnknown_08A1B9EC
 gUnknown_08A1B9EC:  @ 0x08A1B9EC
-	.incbin "baserom.gba", 0xA1B9EC, 0xCC
+	.incbin "dump/data_A195B0_A1B9EC.bin"
 
 	.global Img_PrepItemUseScreen
 Img_PrepItemUseScreen:  @ 0x08A1BAB8
-	.incbin "baserom.gba", 0xA1BAB8, 0x2C
+	.incbin "dump/data_A195B0_A1BAB8.bin"
 
 	.global Tsa_PrepItemUseScreen
 Tsa_PrepItemUseScreen:  @ 0x08A1BAE4
-	.incbin "baserom.gba", 0xA1BAE4, 0xEC
+	.incbin "dump/data_A195B0_A1BAE4.bin"
 
 	.global gUnknown_08A1BBD0
 gUnknown_08A1BBD0:  @ 0x08A1BBD0
-	.incbin "baserom.gba", 0xA1BBD0, 0xF0
+	.incbin "dump/data_A195B0_A1BBD0.bin"
 
 	.global gUnknown_08A1BCC0
 gUnknown_08A1BCC0:  @ 0x08A1BCC0
-	.incbin "baserom.gba", 0xA1BCC0, 0x40
+	.incbin "dump/data_A195B0_A1BCC0.bin"
 
 	.global gUnknown_08A1BD00
 gUnknown_08A1BD00:  @ 0x08A1BD00
-	.incbin "baserom.gba", 0xA1BD00, 0x40
+	.incbin "dump/data_A195B0_A1BD00.bin"
 
 	.global gUnknown_08A1BD40
 gUnknown_08A1BD40:  @ 0x08A1BD40
-	.incbin "baserom.gba", 0xA1BD40, 0x20
+	.incbin "dump/data_A195B0_A1BD40.bin"
 
 	.global gUnknown_08A1BD60
 gUnknown_08A1BD60:  @ 0x08A1BD60
-	.incbin "baserom.gba", 0xA1BD60, 0x9A4
+	.incbin "dump/data_A195B0_A1BD60.bin"
 
 	.global Img_SpinningArrow
 Img_SpinningArrow:  @ 0x08A1C704
-	.incbin "baserom.gba", 0xA1C704, 0xD4
+	.incbin "dump/data_A195B0_A1C704.bin"
 
 	.global gImg_UiSpinningArrow_Horizontal
 gImg_UiSpinningArrow_Horizontal:  @ 0x08A1C7D8
-	.incbin "baserom.gba", 0xA1C7D8, 0xDC
+	.incbin "dump/data_A195B0_A1C7D8.bin"
 
 	.global gUnknown_08A1C8B4
 gUnknown_08A1C8B4:  @ 0x08A1C8B4
-	.incbin "baserom.gba", 0xA1C8B4, 0x4B4
+	.incbin "dump/data_A195B0_A1C8B4.bin"
 
 	.global Img_08A1CD68
 Img_08A1CD68:  @ 0x08A1CD68
-	.incbin "baserom.gba", 0xA1CD68, 0x5C
+	.incbin "dump/data_A195B0_A1CD68.bin"
 
 	.global Img_UnitListBanners
 Img_UnitListBanners:  @ 0x08A1CDC4
-	.incbin "baserom.gba", 0xA1CDC4, 0x4C4
+	.incbin "dump/data_A195B0_A1CDC4.bin"
 
 	.global Img_UnitListBanner_Animation
 Img_UnitListBanner_Animation:  @ 0x08A1D288
-	.incbin "baserom.gba", 0xA1D288, 0x1C0
+	.incbin "dump/data_A195B0_A1D288.bin"
 
 	.global Pal_08A1D448
 Pal_08A1D448:  @ 0x08A1D448
-	.incbin "baserom.gba", 0xA1D448, 0x80
+	.incbin "dump/data_A195B0_A1D448.bin"
 
 	.global gUnknown_08A1D4C8
 gUnknown_08A1D4C8:  @ 0x08A1D4C8
-	.incbin "baserom.gba", 0xA1D4C8, 0x20
+	.incbin "dump/data_A195B0_A1D4C8.bin"
 
 	.global Img_PrepTextShadow
 Img_PrepTextShadow:  @ 0x08A1D4E8
-	.incbin "baserom.gba", 0xA1D4E8, 0x28
+	.incbin "dump/data_A195B0_A1D4E8.bin"
 
 	.global gUnknown_08A1D510
 gUnknown_08A1D510:  @ 0x08A1D510
-	.incbin "baserom.gba", 0xA1D510, 0x28C
+	.incbin "dump/data_A195B0_A1D510.bin"
 
 	.global Pal_MapBattleInfoNum
 Pal_MapBattleInfoNum:  @ 0x08A1D79C
-	.incbin "baserom.gba", 0xA1D79C, 0x40
+	.incbin "dump/data_A195B0_A1D79C.bin"
 
 	.global Img_PrepPopupWindow
 Img_PrepPopupWindow:  @ 0x08A1D7DC
-	.incbin "baserom.gba", 0xA1D7DC, 0x74
+	.incbin "dump/data_A195B0_A1D7DC.bin"
 
 	.global Pal_08A1D850
 Pal_08A1D850:  @ 0x08A1D850
-	.incbin "baserom.gba", 0xA1D850, 0x20
+	.incbin "dump/data_A195B0_A1D850.bin"
 
 	.global Pal_08A1D870
 Pal_08A1D870:  @ 0x08A1D870
-	.incbin "baserom.gba", 0xA1D870, 0x20
+	.incbin "dump/data_A195B0_A1D870.bin"
 
 	.global Pal_08A1D890
 Pal_08A1D890:  @ 0x08A1D890
-	.incbin "baserom.gba", 0xA1D890, 0x20
+	.incbin "dump/data_A195B0_A1D890.bin"
 
 	.global Pal_08A1D8B0
 Pal_08A1D8B0:  @ 0x08A1D8B0
-	.incbin "baserom.gba", 0xA1D8B0, 0x20
+	.incbin "dump/data_A195B0_A1D8B0.bin"
 
 	.global Img_PrepWindow
 Img_PrepWindow:  @ 0x08A1D8D0
-	.incbin "baserom.gba", 0xA1D8D0, 0x2B0
+	.incbin "dump/data_A195B0_A1D8D0.bin"
 
 	.global gUnknown_08A1DB80
 gUnknown_08A1DB80:  @ 0x08A1DB80
-	.incbin "baserom.gba", 0xA1DB80, 0x9C
+	.incbin "dump/data_A195B0_A1DB80.bin"
 
 	.global gTsa_SupportSubScreen
 gTsa_SupportSubScreen:  @ 0x08A1DC1C
-	.incbin "baserom.gba", 0xA1DC1C, 0xF0
+	.incbin "dump/data_A195B0_A1DC1C.bin"
 
 	.global gGfx_SupportMenu
 gGfx_SupportMenu:  @ 0x08A1DD0C
-	.incbin "baserom.gba", 0xA1DD0C, 0x3CC
+	.incbin "dump/data_A195B0_A1DD0C.bin"
 
 	.global gPal_SupportMenu
 gPal_SupportMenu:  @ 0x08A1E0D8
-	.incbin "baserom.gba", 0xA1E0D8, 0x20
+	.incbin "dump/data_A195B0_A1E0D8.bin"

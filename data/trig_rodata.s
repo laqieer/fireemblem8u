@@ -4,4 +4,4 @@
 
 	.global gSinLookup
 gSinLookup:  @ 0x080D751C
-	.incbin "baserom.gba", 0xD751C, 0x280
+	.incbin "dump/trig_rodata_0D751C.bin"

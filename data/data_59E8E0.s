@@ -2,19 +2,19 @@
 
 	.global gGfx_MiscUiGraphics
 gGfx_MiscUiGraphics:  @ 0x0859E8E0
-	.incbin "baserom.gba", 0x59E8E0, 0x490
+	.incbin "dump/data_59E8E0_59E8E0.bin"
 
 	.global gPal_MiscUiGraphics
 gPal_MiscUiGraphics:  @ 0x0859ED70
-	.incbin "baserom.gba", 0x59ED70, 0x40
+	.incbin "dump/data_59E8E0_59ED70.bin"
 
 	.global gImg_UiCursorHandTop
 gImg_UiCursorHandTop:  @ 0x0859EDB0
-	.incbin "baserom.gba", 0x59EDB0, 0x3C
+	.incbin "dump/data_59E8E0_59EDB0.bin"
 
 	.global gImg_UiCursorHandBottom
 gImg_UiCursorHandBottom:  @ 0x0859EDEC
-	.incbin "baserom.gba", 0x59EDEC, 0x34
+	.incbin "dump/data_59E8E0_59EDEC.bin"
 
 	.global gPal_MapSprite
 gPal_MapSprite:
@@ -38,256 +38,256 @@ gPal_MapSpriteArena:
 
 	.global gPal_LightRune
 gPal_LightRune:  @ 0x0859EEC0
-	.incbin "baserom.gba", 0x59EEC0, 0x20
+	.incbin "dump/data_59E8E0_59EEC0.bin"
 
 	.global gPal_MapSpriteSepia
 gPal_MapSpriteSepia:  @ 0x0859EEE0
-	.incbin "baserom.gba", 0x59EEE0, 0x20
+	.incbin "dump/data_59E8E0_59EEE0.bin"
 
 	.global Pal_Text
 Pal_Text:  @ 0x0859EF00
-	.incbin "baserom.gba", 0x59EF00, 0x20
+	.incbin "dump/data_59E8E0_59EF00.bin"
 
 	.global gUnknown_0859EF20
 gUnknown_0859EF20:  @ 0x0859EF20
-	.incbin "baserom.gba", 0x59EF20, 0x20
+	.incbin "dump/data_59E8E0_59EF20.bin"
 
 	.global Pal_HelpBox
 Pal_HelpBox:  @ 0x0859EF40
-	.incbin "baserom.gba", 0x59EF40, 0x20
+	.incbin "dump/data_59E8E0_59EF40.bin"
 
 	.global gPal_HelpTextBox
 gPal_HelpTextBox:  @ 0x0859EF60
-	.incbin "baserom.gba", 0x59EF60, 0x20
+	.incbin "dump/data_59E8E0_59EF60.bin"
 
 	.global gPal_YellowTextBox
 gPal_YellowTextBox:  @ 0x0859EF80
-	.incbin "baserom.gba", 0x59EF80, 0x40
+	.incbin "dump/data_59E8E0_59EF80.bin"
 
 	.global Pal_GreenTextColors
 Pal_GreenTextColors:  @ 0x0859EFC0
-	.incbin "baserom.gba", 0x59EFC0, 0x20
+	.incbin "dump/data_59E8E0_59EFC0.bin"
 
 	.global Pal_Text_Inverted
 Pal_Text_Inverted:  @ 0x0859EFE0
-	.incbin "baserom.gba", 0x59EFE0, 0x20
+	.incbin "dump/data_59E8E0_59EFE0.bin"
 
 	.global Pal_TalkBubble_Inverted
 Pal_TalkBubble_Inverted:  @ 0x0859F000
-	.incbin "baserom.gba", 0x59F000, 0x20
+	.incbin "dump/data_59E8E0_59F000.bin"
 
 	.global Img_PhaseChangeUnk
 Img_PhaseChangeUnk:  @ 0x0859F020
-	.incbin "baserom.gba", 0x59F020, 0x3D8
+	.incbin "dump/data_59E8E0_59F020.bin"
 
 	.global Img_PhaseChangePlayer
 Img_PhaseChangePlayer:  @ 0x0859F3F8
-	.incbin "baserom.gba", 0x59F3F8, 0x634
+	.incbin "dump/data_59E8E0_59F3F8.bin"
 
 	.global Pal_PhaseChangePlayer
 Pal_PhaseChangePlayer:  @ 0x0859FA2C
-	.incbin "baserom.gba", 0x59FA2C, 0x20
+	.incbin "dump/data_59E8E0_59FA2C.bin"
 
 	.global Img_PhaseChangeEnemy
 Img_PhaseChangeEnemy:  @ 0x0859FA4C
-	.incbin "baserom.gba", 0x59FA4C, 0x61C
+	.incbin "dump/data_59E8E0_59FA4C.bin"
 
 	.global Pal_PhaseChangeEnemy
 Pal_PhaseChangeEnemy:  @ 0x085A0068
-	.incbin "baserom.gba", 0x5A0068, 0x20
+	.incbin "dump/data_59E8E0_5A0068.bin"
 
 	.global Img_PhaseChangeOther
 Img_PhaseChangeOther:  @ 0x085A0088
-	.incbin "baserom.gba", 0x5A0088, 0x610
+	.incbin "dump/data_59E8E0_5A0088.bin"
 
 	.global Pal_PhaseChangeOther
 Pal_PhaseChangeOther:  @ 0x085A0698
-	.incbin "baserom.gba", 0x5A0698, 0x20
+	.incbin "dump/data_59E8E0_5A0698.bin"
 
 	.global Pal_085A06B8
 Pal_085A06B8:  @ 0x085A06B8
-	.incbin "baserom.gba", 0x5A06B8, 0x20
+	.incbin "dump/data_59E8E0_5A06B8.bin"
 
 	.global Img_PhaseChangeSquares
 Img_PhaseChangeSquares:  @ 0x085A06D8
-	.incbin "baserom.gba", 0x5A06D8, 0x160
+	.incbin "dump/data_59E8E0_5A06D8.bin"
 
 	.global gUnknown_085A0838
 gUnknown_085A0838:  @ 0x085A0838
-	.incbin "baserom.gba", 0x5A0838, 0xB8
+	.incbin "dump/data_59E8E0_5A0838.bin"
 
 	.global gUnknown_085A08F0
 gUnknown_085A08F0:  @ 0x085A08F0
-	.incbin "baserom.gba", 0x5A08F0, 0xB8
+	.incbin "dump/data_59E8E0_5A08F0.bin"
 
 	.global gTSA_BattleForecastStandard
 gTSA_BattleForecastStandard:  @ 0x085A09A8
-	.incbin "baserom.gba", 0x5A09A8, 0x144
+	.incbin "dump/data_59E8E0_5A09A8.bin"
 
 	.global gTSA_BattleForecastExtended
 gTSA_BattleForecastExtended:  @ 0x085A0AEC
-	.incbin "baserom.gba", 0x5A0AEC, 0x194
+	.incbin "dump/data_59E8E0_5A0AEC.bin"
 
 	.global gBattleForecast_x2x4Gfx
 gBattleForecast_x2x4Gfx:  @ 0x085A0C80
-	.incbin "baserom.gba", 0x5A0C80, 0xAC
+	.incbin "dump/data_59E8E0_5A0C80.bin"
 
 	.global gBattleForecast_x2x4Pal
 gBattleForecast_x2x4Pal:  @ 0x085A0D2C
-	.incbin "baserom.gba", 0x5A0D2C, 0x20
+	.incbin "dump/data_59E8E0_5A0D2C.bin"
 
 	.global gUnknown_085A0D4C
 gUnknown_085A0D4C:  @ 0x085A0D4C
-	.incbin "baserom.gba", 0x5A0D4C, 0x154
+	.incbin "dump/data_59E8E0_5A0D4C.bin"
 
 	.global gUnknown_085A0EA0
 gUnknown_085A0EA0:  @ 0x085A0EA0
-	.incbin "baserom.gba", 0x5A0EA0, 0x158
+	.incbin "dump/data_59E8E0_5A0EA0.bin"
 
 	.global SpriteAnim_GasTrapVertical
 SpriteAnim_GasTrapVertical:  @ 0x085A0FF8
-	.incbin "baserom.gba", 0x5A0FF8, 0x2A4
+	.incbin "dump/data_59E8E0_5A0FF8.bin"
 
 	.global SpriteAnim_GasTrapHorizontal
 SpriteAnim_GasTrapHorizontal:  @ 0x085A129C
-	.incbin "baserom.gba", 0x5A129C, 0x274
+	.incbin "dump/data_59E8E0_5A129C.bin"
 
 	.global Img_GasTrapVertical
 Img_GasTrapVertical:  @ 0x085A1510
-	.incbin "baserom.gba", 0x5A1510, 0x5E8
+	.incbin "dump/data_59E8E0_5A1510.bin"
 
 	.global Img_GasTrapHorizontal
 Img_GasTrapHorizontal:  @ 0x085A1AF8
-	.incbin "baserom.gba", 0x5A1AF8, 0x574
+	.incbin "dump/data_59E8E0_5A1AF8.bin"
 
 	.global Pal_GasTrap
 Pal_GasTrap:  @ 0x085A206C
-	.incbin "baserom.gba", 0x5A206C, 0x20
+	.incbin "dump/data_59E8E0_5A206C.bin"
 
 	.global Pal_ArrowTrap
 Pal_ArrowTrap:  @ 0x085A208C
-	.incbin "baserom.gba", 0x5A208C, 0x20
+	.incbin "dump/data_59E8E0_5A208C.bin"
 
 	.global Img_ArrowTrap
 Img_ArrowTrap:  @ 0x085A20AC
-	.incbin "baserom.gba", 0x5A20AC, 0x2D8
+	.incbin "dump/data_59E8E0_5A20AC.bin"
 
 	.global SpriteAnim_ArrowTrap
 SpriteAnim_ArrowTrap:  @ 0x085A2384
-	.incbin "baserom.gba", 0x5A2384, 0x5BC
+	.incbin "dump/data_59E8E0_5A2384.bin"
 
 	.global Img_FireTrap
 Img_FireTrap:  @ 0x085A2940
-	.incbin "baserom.gba", 0x5A2940, 0x49C
+	.incbin "dump/data_59E8E0_5A2940.bin"
 
 	.global Pal_FireTrap
 Pal_FireTrap:  @ 0x085A2DDC
-	.incbin "baserom.gba", 0x5A2DDC, 0x20
+	.incbin "dump/data_59E8E0_5A2DDC.bin"
 
 	.global SpriteAnim_FireTrap
 SpriteAnim_FireTrap:  @ 0x085A2DFC
-	.incbin "baserom.gba", 0x5A2DFC, 0x694
+	.incbin "dump/data_59E8E0_5A2DFC.bin"
 
 	.global Pal_FireTrap2
 Pal_FireTrap2:  @ 0x085A3490
-	.incbin "baserom.gba", 0x5A3490, 0x20
+	.incbin "dump/data_59E8E0_5A3490.bin"
 
 	.global Img_PikeTrap
 Img_PikeTrap:  @ 0x085A34B0
-	.incbin "baserom.gba", 0x5A34B0, 0x280
+	.incbin "dump/data_59E8E0_5A34B0.bin"
 
 	.global SpriteAnim_PikeTrap
 SpriteAnim_PikeTrap:  @ 0x085A3730
-	.incbin "baserom.gba", 0x5A3730, 0x214
+	.incbin "dump/data_59E8E0_5A3730.bin"
 
 	.global Pal_PikeTrap
 Pal_PikeTrap:  @ 0x085A3944
-	.incbin "baserom.gba", 0x5A3944, 0x20
+	.incbin "dump/data_59E8E0_5A3944.bin"
 
 	.global gUnknown_085A3964
 gUnknown_085A3964:  @ 0x085A3964
-	.incbin "baserom.gba", 0x5A3964, 0x88
+	.incbin "dump/data_59E8E0_5A3964.bin"
 
 	.global gUnknown_085A39EC
 gUnknown_085A39EC:  @ 0x085A39EC
-	.incbin "baserom.gba", 0x5A39EC, 0x98
+	.incbin "dump/data_59E8E0_5A39EC.bin"
 
 	.global gUnknown_085A3A84
 gUnknown_085A3A84:  @ 0x085A3A84
-	.incbin "baserom.gba", 0x5A3A84, 0x3C
+	.incbin "dump/data_59E8E0_5A3A84.bin"
 
 	.global gUnknown_085A3AC0
 gUnknown_085A3AC0:  @ 0x085A3AC0
-	.incbin "baserom.gba", 0x5A3AC0, 0x40
+	.incbin "dump/data_59E8E0_5A3AC0.bin"
 
 	.global gUnknown_085A3B00
 gUnknown_085A3B00:  @ 0x085A3B00
-	.incbin "baserom.gba", 0x5A3B00, 0x51C
+	.incbin "dump/data_59E8E0_5A3B00.bin"
 
 	.global gUnknown_085A401C
 gUnknown_085A401C:  @ 0x085A401C
-	.incbin "baserom.gba", 0x5A401C, 0x20
+	.incbin "dump/data_59E8E0_5A401C.bin"
 
 	.global Img_LightRune
 Img_LightRune:  @ 0x085A403C
-	.incbin "baserom.gba", 0x5A403C, 0x1724
+	.incbin "dump/data_59E8E0_5A403C.bin"
 
 	.global Pal_LightRune
 Pal_LightRune:  @ 0x085A5760
-	.incbin "baserom.gba", 0x5A5760, 0x20
+	.incbin "dump/data_59E8E0_5A5760.bin"
 
 	.global Tsa_LightRune
 Tsa_LightRune:  @ 0x085A5780
-	.incbin "baserom.gba", 0x5A5780, 0x2E0
+	.incbin "dump/data_59E8E0_5A5780.bin"
 
 	.global Img_EventWarp
 Img_EventWarp:  @ 0x085A5A60
-	.incbin "baserom.gba", 0x5A5A60, 0x748
+	.incbin "dump/data_59E8E0_5A5A60.bin"
 
 	.global Pal_EventWarp
 Pal_EventWarp:  @ 0x085A61A8
-	.incbin "baserom.gba", 0x5A61A8, 0x20
+	.incbin "dump/data_59E8E0_5A61A8.bin"
 
 	.global Tsa_EventWarp
 Tsa_EventWarp:  @ 0x085A61C8
-	.incbin "baserom.gba", 0x5A61C8, 0x1C4
+	.incbin "dump/data_59E8E0_5A61C8.bin"
 
 	.global gUnknown_085A638C
 gUnknown_085A638C:  @ 0x085A638C
-	.incbin "baserom.gba", 0x5A638C, 0xB0
+	.incbin "dump/data_59E8E0_5A638C.bin"
 
 	.global gUnknown_085A643C
 gUnknown_085A643C:  @ 0x085A643C
-	.incbin "baserom.gba", 0x5A643C, 0x40
+	.incbin "dump/data_59E8E0_5A643C.bin"
 
 	.global Tsa_PlayerRankFog
 Tsa_PlayerRankFog:  @ 0x085A647C
-	.incbin "baserom.gba", 0x5A647C, 0x804
+	.incbin "dump/data_59E8E0_5A647C.bin"
 
 	.global Img_DanceringFx
 Img_DanceringFx:  @ 0x085A6C80
-	.incbin "baserom.gba", 0x5A6C80, 0xDE4
+	.incbin "dump/data_59E8E0_5A6C80.bin"
 
 	.global Tsa_DanceringFx
 Tsa_DanceringFx:  @ 0x085A7A64
-	.incbin "baserom.gba", 0x5A7A64, 0x23C
+	.incbin "dump/data_59E8E0_5A7A64.bin"
 
 	.global Pal_DanceringFx
 Pal_DanceringFx:  @ 0x085A7CA0
-	.incbin "baserom.gba", 0x5A7CA0, 0x20
+	.incbin "dump/data_59E8E0_5A7CA0.bin"
 
 	.global Img_MineFx
 Img_MineFx:  @ 0x085A7CC0
-	.incbin "baserom.gba", 0x5A7CC0, 0x174
+	.incbin "dump/data_59E8E0_5A7CC0.bin"
 
 	.global SpritAnim_MineFx
 SpritAnim_MineFx:  @ 0x085A7E34
-	.incbin "baserom.gba", 0x5A7E34, 0x94
+	.incbin "dump/data_59E8E0_5A7E34.bin"
 
 	.global Pal_MineFx
 Pal_MineFx:  @ 0x085A7EC8
-	.incbin "baserom.gba", 0x5A7EC8, 0x20
+	.incbin "dump/data_59E8E0_5A7EC8.bin"
 
 	.global Pal_EventCursorShinning
 Pal_EventCursorShinning:  @ 0x085A7EE8
-	.incbin "baserom.gba", 0x5A7EE8, 0x20
+	.incbin "dump/data_59E8E0_5A7EE8.bin"

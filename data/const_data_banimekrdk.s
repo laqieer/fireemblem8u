@@ -1,7 +1,7 @@
     .section .rodata
 
-	.incbin "baserom.gba", 0xDFA2C, 0xE1164 - 0xDFA2C
+	.incbin "dump/const_data_banimekrdk_0DFA2C.bin"
 
 	.global Pal_080E1164
 Pal_080E1164:  @ 0x080E1164
-	.incbin "baserom.gba", 0xE1164, 0x230
+	.incbin "dump/const_data_banimekrdk_0E1164.bin"

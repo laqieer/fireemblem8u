@@ -14,27 +14,27 @@ Img_TriFalconKnightSwordBG:  @ 0x080E2B54
 
 	.global Tsa_EkrTriPegagusRightBG1
 Tsa_EkrTriPegagusRightBG1:  @ 0x080E3554
-	.incbin "baserom.gba", 0xE3554, 0xE3668 - 0xE3554
+	.incbin "dump/const_data_E162A_0E3554.bin"
 
 	.global Tsa_EkrTriPegagusRightBG2
 Tsa_EkrTriPegagusRightBG2:  @ 0x080E3668
-	.incbin "baserom.gba", 0xE3668, 0xE378C - 0xE3668
+	.incbin "dump/const_data_E162A_0E3668.bin"
 
 	.global Tsa_EkrTriPegagusRightBG3
 Tsa_EkrTriPegagusRightBG3:  @ 0x080E378C
-	.incbin "baserom.gba", 0xE378C, 0xE3864 - 0xE378C
+	.incbin "dump/const_data_E162A_0E378C.bin"
 
 	.global Tsa_EkrTriPegagusLeftBG1
 Tsa_EkrTriPegagusLeftBG1:  @ 0x080E3864
-	.incbin "baserom.gba", 0xE3864, 0xE3980 - 0xE3864
+	.incbin "dump/const_data_E162A_0E3864.bin"
 
 	.global Tsa_EkrTriPegagusLeftBG2
 Tsa_EkrTriPegagusLeftBG2:  @ 0x080E3980
-	.incbin "baserom.gba", 0xE3980, 0xE3AA4 - 0xE3980
+	.incbin "dump/const_data_E162A_0E3980.bin"
 
 	.global Tsa_EkrTriPegagusLeftBG3
 Tsa_EkrTriPegagusLeftBG3:  @ 0x080E3AA4
-	.incbin "baserom.gba", 0xE3AA4, 0xE3B78 - 0xE3AA4
+	.incbin "dump/const_data_E162A_0E3AA4.bin"
 
 	.global Img_TriPegasusKnightOBJ
 Img_TriPegasusKnightOBJ:  @ 0x080E3B78

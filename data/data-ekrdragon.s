@@ -18,4 +18,4 @@ ProcScr_EkrDragon_08758720:  @ 0x08758720
 
 	.global gUnknown_08758740
 gUnknown_08758740:  @ 0x08758740
-	.incbin "baserom.gba", 0x758740, 0x14
+	.incbin "dump/data-ekrdragon_758740.bin"

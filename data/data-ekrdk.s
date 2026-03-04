@@ -2,236 +2,236 @@
 
 	.global Tsa_087F45D0
 Tsa_087F45D0:  @ 0x087F45D0
-	.incbin "baserom.gba", 0x7F45D0, 0x1C8
+	.incbin "dump/data-ekrdk_7F45D0.bin"
 
 	.global Img_DemonKingBG
 Img_DemonKingBG:  @ 0x087F4798
-	.incbin "baserom.gba", 0x7F4798, 0x31F4
+	.incbin "dump/data-ekrdk_7F4798.bin"
 
 	.global Tsa_DemonKingBG1
 Tsa_DemonKingBG1:  @ 0x087F798C
-	.incbin "baserom.gba", 0x7F798C, 0x43C
+	.incbin "dump/data-ekrdk_7F798C.bin"
 
 	.global Tsa_DemonKingBG2
 Tsa_DemonKingBG2:  @ 0x087F7DC8
-	.incbin "baserom.gba", 0x7F7DC8, 0x408
+	.incbin "dump/data-ekrdk_7F7DC8.bin"
 
 	.global Tsa_DemonKingBG3
 Tsa_DemonKingBG3:  @ 0x087F7DC8
-	.incbin "baserom.gba", 0x7F81D0, 0x40C
+	.incbin "dump/data-ekrdk_7F81D0.bin"
 
 	.global Pal_DemonKingBG
 Pal_DemonKingBG:  @ 0x087F85DC
-	.incbin "baserom.gba", 0x7F85DC, 0x20
+	.incbin "dump/data-ekrdk_7F85DC.bin"
 
 	.global Img_EfxSelfThunderBG1
 Img_EfxSelfThunderBG1:
-	.incbin "baserom.gba", 0x7F85FC, 0x7F88A0 - 0x7F85FC
+	.incbin "dump/data-ekrdk_7F85FC.bin"
 
 	.global Img_EfxSelfThunderBG2
 Img_EfxSelfThunderBG2:
-	.incbin "baserom.gba", 0x7F88A0, 0x7F8C88 - 0x7F88A0
+	.incbin "dump/data-ekrdk_7F88A0.bin"
 
 	.global Img_EfxSelfThunderBG3
 Img_EfxSelfThunderBG3:
-	.incbin "baserom.gba", 0x7F8C88, 0x7F914C - 0x7F8C88
+	.incbin "dump/data-ekrdk_7F8C88.bin"
 
 	.global Img_EfxSelfThunderBG4
 Img_EfxSelfThunderBG4:
-	.incbin "baserom.gba", 0x7F914C, 0x7F96FC - 0x7F914C
+	.incbin "dump/data-ekrdk_7F914C.bin"
 
 	.global Img_EfxSelfThunderBG5
 Img_EfxSelfThunderBG5:
-	.incbin "baserom.gba", 0x7F96FC, 0x7F9CF0 - 0x7F96FC
+	.incbin "dump/data-ekrdk_7F96FC.bin"
 
 	.global Img_EfxSelfThunderBG6
 Img_EfxSelfThunderBG6:
-	.incbin "baserom.gba", 0x7F9CF0, 0x7FA26C - 0x7F9CF0
+	.incbin "dump/data-ekrdk_7F9CF0.bin"
 
 	.global Img_EfxSelfThunderBG7
 Img_EfxSelfThunderBG7:
-	.incbin "baserom.gba", 0x7FA26C, 0x7FA7D0 - 0x7FA26C
+	.incbin "dump/data-ekrdk_7FA26C.bin"
 
 	.global Img_EfxSelfThunderBG8
 Img_EfxSelfThunderBG8:
-	.incbin "baserom.gba", 0x7FA7D0, 0x7FACA8 - 0x7FA7D0
+	.incbin "dump/data-ekrdk_7FA7D0.bin"
 
 	.global Img_EfxSelfThunderBG9
 Img_EfxSelfThunderBG9:
-	.incbin "baserom.gba", 0x7FACA8, 0x7FB0E8 - 0x7FACA8
+	.incbin "dump/data-ekrdk_7FACA8.bin"
 
 	.global Img_EfxSelfThunderBG10
 Img_EfxSelfThunderBG10:
-	.incbin "baserom.gba", 0x7FB0E8, 0x7FB490 - 0x7FB0E8
+	.incbin "dump/data-ekrdk_7FB0E8.bin"
 
 	.global Img_EfxSelfThunderBG11
 Img_EfxSelfThunderBG11:
-	.incbin "baserom.gba", 0x7FB490, 0x7FB830 - 0x7FB490
+	.incbin "dump/data-ekrdk_7FB490.bin"
 
 	.global Img_EfxSelfThunderBG12
 Img_EfxSelfThunderBG12:
-	.incbin "baserom.gba", 0x7FB830, 0x7FBB8C - 0x7FB830
+	.incbin "dump/data-ekrdk_7FB830.bin"
 
 	.global Img_EfxSelfThunderBG13
 Img_EfxSelfThunderBG13:
-	.incbin "baserom.gba", 0x7FBB8C, 0x7FBEE4 - 0x7FBB8C
+	.incbin "dump/data-ekrdk_7FBB8C.bin"
 
 	.global Img_EfxSelfThunderBG14
 Img_EfxSelfThunderBG14:
-	.incbin "baserom.gba", 0x7FBEE4, 0x7FC288 - 0x7FBEE4
+	.incbin "dump/data-ekrdk_7FBEE4.bin"
 
 	.global Img_EfxSelfThunderBG15
 Img_EfxSelfThunderBG15:
-	.incbin "baserom.gba", 0x7FC288, 0x7FC5F0 - 0x7FC288
+	.incbin "dump/data-ekrdk_7FC288.bin"
 
 	.global Img_EfxSelfThunderBG16
 Img_EfxSelfThunderBG16:
-	.incbin "baserom.gba", 0x7FC5F0, 0x7FC940 - 0x7FC5F0
+	.incbin "dump/data-ekrdk_7FC5F0.bin"
 
 	.global TSA1_EfxSelfThunderBG1
 TSA1_EfxSelfThunderBG1:
-	.incbin "baserom.gba", 0x7FC940, 0x7FCA6C - 0x7FC940
+	.incbin "dump/data-ekrdk_7FC940.bin"
 
 	.global TSA1_EfxSelfThunderBG2
 TSA1_EfxSelfThunderBG2:
-	.incbin "baserom.gba", 0x7FCA6C, 0x7FCBB8 - 0x7FCA6C
+	.incbin "dump/data-ekrdk_7FCA6C.bin"
 
 	.global TSA1_EfxSelfThunderBG3
 TSA1_EfxSelfThunderBG3:
-	.incbin "baserom.gba", 0x7FCBB8, 0x7FCD34 - 0x7FCBB8
+	.incbin "dump/data-ekrdk_7FCBB8.bin"
 
 	.global TSA1_EfxSelfThunderBG4
 TSA1_EfxSelfThunderBG4:
-	.incbin "baserom.gba", 0x7FCD34, 0x7FCEB8 - 0x7FCD34
+	.incbin "dump/data-ekrdk_7FCD34.bin"
 
 	.global TSA1_EfxSelfThunderBG5
 TSA1_EfxSelfThunderBG5:
-	.incbin "baserom.gba", 0x7FCEB8, 0x7FD050 - 0x7FCEB8
+	.incbin "dump/data-ekrdk_7FCEB8.bin"
 
 	.global TSA1_EfxSelfThunderBG6
 TSA1_EfxSelfThunderBG6:
-	.incbin "baserom.gba", 0x7FD050, 0x7FD1D4 - 0x7FD050
+	.incbin "dump/data-ekrdk_7FD050.bin"
 
 	.global TSA1_EfxSelfThunderBG7
 TSA1_EfxSelfThunderBG7:
-	.incbin "baserom.gba", 0x7FD1D4, 0x7FD358 - 0x7FD1D4
+	.incbin "dump/data-ekrdk_7FD1D4.bin"
 
 	.global TSA1_EfxSelfThunderBG8
 TSA1_EfxSelfThunderBG8:
-	.incbin "baserom.gba", 0x7FD358, 0x7FD4CC - 0x7FD358
+	.incbin "dump/data-ekrdk_7FD358.bin"
 
 	.global TSA1_EfxSelfThunderBG9
 TSA1_EfxSelfThunderBG9:
-	.incbin "baserom.gba", 0x7FD4CC, 0x7FD624 - 0x7FD4CC
+	.incbin "dump/data-ekrdk_7FD4CC.bin"
 
 	.global TSA1_EfxSelfThunderBG10
 TSA1_EfxSelfThunderBG10:
-	.incbin "baserom.gba", 0x7FD624, 0x7FD768 - 0x7FD624
+	.incbin "dump/data-ekrdk_7FD624.bin"
 
 	.global TSA1_EfxSelfThunderBG11
 TSA1_EfxSelfThunderBG11:
-	.incbin "baserom.gba", 0x7FD768, 0x7FD8B0 - 0x7FD768
+	.incbin "dump/data-ekrdk_7FD768.bin"
 
 	.global TSA1_EfxSelfThunderBG12
 TSA1_EfxSelfThunderBG12:
-	.incbin "baserom.gba", 0x7FD8B0, 0x7FD9EC - 0x7FD8B0
+	.incbin "dump/data-ekrdk_7FD8B0.bin"
 
 	.global TSA1_EfxSelfThunderBG13
 TSA1_EfxSelfThunderBG13:
-	.incbin "baserom.gba", 0x7FD9EC, 0x7FDB24 - 0x7FD9EC
+	.incbin "dump/data-ekrdk_7FD9EC.bin"
 
 	.global TSA1_EfxSelfThunderBG14
 TSA1_EfxSelfThunderBG14:
-	.incbin "baserom.gba", 0x7FDB24, 0x7FDC78 - 0x7FDB24
+	.incbin "dump/data-ekrdk_7FDB24.bin"
 
 	.global TSA1_EfxSelfThunderBG15
 TSA1_EfxSelfThunderBG15:
-	.incbin "baserom.gba", 0x7FDC78, 0x7FDDC8 - 0x7FDC78
+	.incbin "dump/data-ekrdk_7FDC78.bin"
 
 	.global TSA1_EfxSelfThunderBG16
 TSA1_EfxSelfThunderBG16:
-	.incbin "baserom.gba", 0x7FDDC8, 0x7FDF14 - 0x7FDDC8
+	.incbin "dump/data-ekrdk_7FDDC8.bin"
 
 	.global TSA2_EfxSelfThunderBG1
 TSA2_EfxSelfThunderBG1:	@ 0x087FDF14
-	.incbin "baserom.gba", 0x7FDF14, 0x7FE03C - 0x7FDF14
+	.incbin "dump/data-ekrdk_7FDF14.bin"
 
 	.global TSA2_EfxSelfThunderBG2
 TSA2_EfxSelfThunderBG2:	@ 0x087FE03C
-	.incbin "baserom.gba", 0x7FE03C, 0x7FE17C - 0x7FE03C
+	.incbin "dump/data-ekrdk_7FE03C.bin"
 
 	.global TSA2_EfxSelfThunderBG3
 TSA2_EfxSelfThunderBG3:	@ 0x087FE17C
-	.incbin "baserom.gba", 0x7FE17C, 0x7FE2D4 - 0x7FE17C
+	.incbin "dump/data-ekrdk_7FE17C.bin"
 
 	.global TSA2_EfxSelfThunderBG4
 TSA2_EfxSelfThunderBG4:	@ 0x087FE2D4
-	.incbin "baserom.gba", 0x7FE2D4, 0x7FE434 - 0x7FE2D4
+	.incbin "dump/data-ekrdk_7FE2D4.bin"
 
 	.global TSA2_EfxSelfThunderBG5
 TSA2_EfxSelfThunderBG5:	@ 0x087FE434
-	.incbin "baserom.gba", 0x7FE434, 0x7FE5AC - 0x7FE434
+	.incbin "dump/data-ekrdk_7FE434.bin"
 
 	.global TSA2_EfxSelfThunderBG6
 TSA2_EfxSelfThunderBG6:	@ 0x087FE5AC
-	.incbin "baserom.gba", 0x7FE5AC, 0x7FE71C - 0x7FE5AC
+	.incbin "dump/data-ekrdk_7FE5AC.bin"
 
 	.global TSA2_EfxSelfThunderBG7
 TSA2_EfxSelfThunderBG7:	@ 0x087FE71C
-	.incbin "baserom.gba", 0x7FE71C, 0x7FE898 - 0x7FE71C
+	.incbin "dump/data-ekrdk_7FE71C.bin"
 
 	.global TSA2_EfxSelfThunderBG8
 TSA2_EfxSelfThunderBG8:	@ 0x087FE898
-	.incbin "baserom.gba", 0x7FE898, 0x7FEA08 - 0x7FE898
+	.incbin "dump/data-ekrdk_7FE898.bin"
 
 	.global TSA2_EfxSelfThunderBG9
 TSA2_EfxSelfThunderBG9:	@ 0x087FEA08
-	.incbin "baserom.gba", 0x7FEA08, 0x7FEB60 - 0x7FEA08
+	.incbin "dump/data-ekrdk_7FEA08.bin"
 
 	.global TSA2_EfxSelfThunderBG10
 TSA2_EfxSelfThunderBG10:	@ 0x087FEB60
-	.incbin "baserom.gba", 0x7FEB60, 0x7FECA0 - 0x7FEB60
+	.incbin "dump/data-ekrdk_7FEB60.bin"
 
 	.global TSA2_EfxSelfThunderBG11
 TSA2_EfxSelfThunderBG11:	@ 0x087FECA0
-	.incbin "baserom.gba", 0x7FECA0, 0x7FEDE8 - 0x7FECA0
+	.incbin "dump/data-ekrdk_7FECA0.bin"
 
 	.global TSA2_EfxSelfThunderBG12
 TSA2_EfxSelfThunderBG12:	@ 0x087FEDE8
-	.incbin "baserom.gba", 0x7FEDE8, 0x7FEF20 - 0x7FEDE8
+	.incbin "dump/data-ekrdk_7FEDE8.bin"
 
 	.global TSA2_EfxSelfThunderBG13
 TSA2_EfxSelfThunderBG13:	@ 0x087FEF20
-	.incbin "baserom.gba", 0x7FEF20, 0x7FF058 - 0x7FEF20
+	.incbin "dump/data-ekrdk_7FEF20.bin"
 
 	.global TSA2_EfxSelfThunderBG14
 TSA2_EfxSelfThunderBG14:	@ 0x087FF058
-	.incbin "baserom.gba", 0x7FF058, 0x7FF1AC - 0x7FF058
+	.incbin "dump/data-ekrdk_7FF058.bin"
 
 	.global TSA2_EfxSelfThunderBG15
 TSA2_EfxSelfThunderBG15:	@ 0x087FF1AC
-	.incbin "baserom.gba", 0x7FF1AC, 0x7FF2F8 - 0x7FF1AC
+	.incbin "dump/data-ekrdk_7FF1AC.bin"
 
 	.global TSA2_EfxSelfThunderBG16
 TSA2_EfxSelfThunderBG16:	@ 0x087FF2F8
-	.incbin "baserom.gba", 0x7FF2F8, 0x7FF448 - 0x7FF2F8
+	.incbin "dump/data-ekrdk_7FF2F8.bin"
 
 	.global Pal1_EfxSelfThunderBG
 Pal1_EfxSelfThunderBG:	@ 0x087FF448
-	.incbin "baserom.gba", 0x7FF448, 0x7FF468 - 0x7FF448
+	.incbin "dump/data-ekrdk_7FF448.bin"
 
 	.global Pal2_EfxSelfThunderBG
 Pal2_EfxSelfThunderBG:	@ 0x087FF468
-	.incbin "baserom.gba", 0x7FF468, 0x7FF488 - 0x7FF468
+	.incbin "dump/data-ekrdk_7FF468.bin"
 
 	.global Img_DemoKingTunkFace
 Img_DemoKingTunkFace:  @ 0x087FF488
-	.incbin "baserom.gba", 0x7FF488, 0x11C4
+	.incbin "dump/data-ekrdk_7FF488.bin"
 
 	.global Img_DemoKingTunkFace2
 Img_DemoKingTunkFace2:  @ 0x0880064C
-	.incbin "baserom.gba", 0x80064C, 0x1194
+	.incbin "dump/data-ekrdk_80064C.bin"
 
 	.global Pal_DemoKingTunkFace
 Pal_DemoKingTunkFace:  @ 0x088017E0
-	.incbin "baserom.gba", 0x8017E0, 0x20
+	.incbin "dump/data-ekrdk_8017E0.bin"
