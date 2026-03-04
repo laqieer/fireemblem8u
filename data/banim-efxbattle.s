@@ -18,19 +18,19 @@ TsaConf_BanimTmA4:  @ 0x085BA020
 
 	.global Img_NODAMGEMIS
 Img_NODAMGEMIS:  @ 0x085BA0B8
-	.incbin "dump/banim-efxbattle_5BA0B8.4bpp.lz"
+	.incbin "graphics/banim/efxbattle/Img_NODAMGEMIS.4bpp.lz"
 
 	.global Pal_085BA2E0
 Pal_085BA2E0:  @ 0x085BA2E0
-	.incbin "dump/banim-efxbattle_5BA2E0.gbapal"
+	.incbin "graphics/banim/efxbattle/Pal_085BA2E0.gbapal"
 
 	.global Pal_085BA300
 Pal_085BA300:  @ 0x085BA300
-	.incbin "dump/banim-efxbattle_5BA300.gbapal"
+	.incbin "graphics/banim/efxbattle/Pal_085BA300.gbapal"
 
 	.global Pal_085BA320
 Pal_085BA320:  @ 0x085BA320
-	.incbin "dump/banim-efxbattle_5BA320.gbapal"
+	.incbin "graphics/banim/efxbattle/Pal_085BA320.gbapal"
 
 /* This is unused, called in FE7 UnitKakudai1 (although is also unused in FE7) */
 	.global Img_BanimArcherFBallistaIntro

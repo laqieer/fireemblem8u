@@ -2,23 +2,23 @@
 
     .global Img_08801C14
 Img_08801C14:  @ 0x08801C14
-    .incbin "dump/data-banimmisc_801C14.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_08801C14.4bpp.lz"
 
     .global Img_EfxLeftNameBox
 Img_EfxLeftNameBox:  @ 0x08801F7C
-    .incbin "dump/data-banimmisc_801F7C.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxLeftNameBox.4bpp.lz"
 
     .global Img_EfxLeftItemBox
 Img_EfxLeftItemBox:  @ 0x08801FF4
-    .incbin "dump/data-banimmisc_801FF4.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxLeftItemBox.4bpp.lz"
 
     .global Img_EfxRightNameBox
 Img_EfxRightNameBox:  @ 0x08802044
-    .incbin "dump/data-banimmisc_802044.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxRightNameBox.4bpp.lz"
 
     .global Img_EfxRightItemBox
 Img_EfxRightItemBox:  @ 0x088020BC
-    .incbin "dump/data-banimmisc_8020BC.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxRightItemBox.4bpp.lz"
 
     .global gUnknown_0880210C
 gUnknown_0880210C:  @ 0x0880210C
@@ -34,11 +34,11 @@ gUnknown_08802274:  @ 0x08802274
 
     .global gUnknown_08802348
 gUnknown_08802348:  @ 0x08802348
-    .incbin "dump/data-banimmisc_802348.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802348.4bpp"
 
     .global gUnknown_08802428
 gUnknown_08802428:  @ 0x08802428
-    .incbin "dump/data-banimmisc_802428.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802428.4bpp"
 
     .global gUnknown_08802508
 gUnknown_08802508:  @ 0x08802508
@@ -46,47 +46,47 @@ gUnknown_08802508:  @ 0x08802508
 
     .global gUnknown_08802558
 gUnknown_08802558:  @ 0x08802558
-    .incbin "dump/data-banimmisc_802558.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802558.4bpp"
 
     .global Img_EfxSideHitDmgCrit
 Img_EfxSideHitDmgCrit:  @ 0x088025D8
-    .incbin "dump/data-banimmisc_8025D8.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxSideHitDmgCrit.4bpp.lz"
 
     .global Img_EfxWTAArrow1
 Img_EfxWTAArrow1:  @ 0x08802674
-    .incbin "dump/data-banimmisc_802674.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxWTAArrow1.4bpp.lz"
 
     .global Img_EfxWTAArrow2
 Img_EfxWTAArrow2:  @ 0x08802698
-    .incbin "dump/data-banimmisc_802698.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EfxWTAArrow2.4bpp.lz"
 
     .global gUnknown_088026E4
 gUnknown_088026E4:  @ 0x088026E4
-    .incbin "dump/data-banimmisc_8026E4.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_088026E4.4bpp"
 
     .global gUnknown_08802884
 gUnknown_08802884:  @ 0x08802884
-    .incbin "dump/data-banimmisc_802884.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802884.4bpp"
 
     .global gUnknown_08802904
 gUnknown_08802904:  @ 0x08802904
-    .incbin "dump/data-banimmisc_802904.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802904.4bpp"
 
     .global gUnknown_08802B04
 gUnknown_08802B04:  @ 0x08802B04
-    .incbin "dump/data-banimmisc_802B04.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802B04.4bpp"
 
     .global gPalEfxHpBarGreen
 gPalEfxHpBarGreen:  @ 0x08802B84
-    .incbin "dump/data-banimmisc_802B84.gbapal"
+    .incbin "graphics/banim/misc/gPalEfxHpBarGreen.gbapal"
 
     .global gUnknown_08802BC4
 gUnknown_08802BC4:  @ 0x08802BC4
-    .incbin "dump/data-banimmisc_802BC4.4bpp"
+    .incbin "graphics/banim/misc/gUnknown_08802BC4.4bpp"
 
     .global gPalEfxHpBarPurple
 gPalEfxHpBarPurple:  @ 0x08802C84
-    .incbin "dump/data-banimmisc_802C84.gbapal"
+    .incbin "graphics/banim/misc/gPalEfxHpBarPurple.gbapal"
 
     .global Pal_BanimUnitFlashing
 Pal_BanimUnitFlashing:  @ 0x08802D24
@@ -114,28 +114,28 @@ Pal_ExpBar:  @ 0x08803590
 
     .global Img_LevelUpBoxFrame
 Img_LevelUpBoxFrame:  @ 0x088035B0
-    .incbin "dump/data-banimmisc_8035B0.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_LevelUpBoxFrame.4bpp.lz"
 
     .global Tsa_LevelUpBoxFrame
 Tsa_LevelUpBoxFrame:  @ 0x088039E8
-    .incbin "dump/data-banimmisc_8039E8.4bpp.lz"
+    .incbin "graphics/banim/misc/Tsa_LevelUpBoxFrame.4bpp.lz"
 
     .global Pal_LevelUpBoxFrame
 Pal_LevelUpBoxFrame:  @ 0x08803B10
-    .incbin "dump/data-banimmisc_803B10.gbapal"
+    .incbin "graphics/banim/misc/Pal_LevelUpBoxFrame.gbapal"
 
     .global Img_EkrPopup
 Img_EkrPopup:  @ 0x08803B30
-    .incbin "dump/data-banimmisc_803B30.4bpp.lz"
+    .incbin "graphics/banim/misc/Img_EkrPopup.4bpp.lz"
 
     .global gUnknown_08803BD0
 gUnknown_08803BD0:  @ 0x08803BD0
-    .incbin "dump/data-banimmisc_803BD0.4bpp.lz"
+    .incbin "graphics/banim/misc/gUnknown_08803BD0.4bpp.lz"
 
     .global Pal_EkrPopup
 Pal_EkrPopup:  @ 0x08803CB0
-    .incbin "dump/data-banimmisc_803CB0.gbapal"
+    .incbin "graphics/banim/misc/Pal_EkrPopup.gbapal"
 
     .global Tsa_EkrPopup
 Tsa_EkrPopup:  @ 0x08803CD0
-    .incbin "dump/data-banimmisc_803CD0.tsa.lz"
+    .incbin "graphics/banim/misc/Tsa_EkrPopup.tsa.lz"

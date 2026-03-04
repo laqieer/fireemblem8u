@@ -13,141 +13,141 @@ Pal_LvupApfx:  @ 0x085BB2DC
 
 	.global Img_ArenaBattleBg
 Img_ArenaBattleBg:  @ 0x085BC188
-	.incbin "dump/banim-efxlvupfx_5BC188.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img_ArenaBattleBg.4bpp.lz"
 
 	.global Tsa_ArenaBattleBg
 Tsa_ArenaBattleBg:  @ 0x085BE7F4
-	.incbin "dump/banim-efxlvupfx_5BE7F4.tsa.lz"
+	.incbin "graphics/banim/efxlvupfx/Tsa_ArenaBattleBg.tsa.lz"
 
 	.global Pal_ArenaBattleBg_A
 Pal_ArenaBattleBg_A:  @ 0x085BEF94
-	.incbin "dump/banim-efxlvupfx_5BEF94.gbapal"
+	.incbin "graphics/banim/efxlvupfx/Pal_ArenaBattleBg_A.gbapal"
 
 	.global Pal_ArenaBattleBg_B
 Pal_ArenaBattleBg_B:  @ 0x085BF014
-	.incbin "dump/banim-efxlvupfx_5BF014.gbapal"
+	.incbin "graphics/banim/efxlvupfx/Pal_ArenaBattleBg_B.gbapal"
 
 	.global Pal_ArenaBattleBg_C
 Pal_ArenaBattleBg_C:  @ 0x085BF094
-	.incbin "dump/banim-efxlvupfx_5BF094.gbapal"
+	.incbin "graphics/banim/efxlvupfx/Pal_ArenaBattleBg_C.gbapal"
 
 	.incbin "dump/banim-efxlvupfx_5BF114.bin"
 
 	.global Img1_EfxLvupBG
 Img1_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5BF708.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img1_EfxLvupBG.4bpp.lz"
 
 	.global Img2_EfxLvupBG
 Img2_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5C02E0.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img2_EfxLvupBG.4bpp.lz"
 
 	.global Img3_EfxLvupBG
 Img3_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5C1110.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img3_EfxLvupBG.4bpp.lz"
 
 	.global Img4_EfxLvupBG
 Img4_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5C1CD4.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img4_EfxLvupBG.4bpp.lz"
 
 	.global Img5_EfxLvupBG
 Img5_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5C2914.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img5_EfxLvupBG.4bpp.lz"
 
 	.global Img6_EfxLvupBG
 Img6_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5C3698.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img6_EfxLvupBG.4bpp.lz"
 
 	.global Img7_EfxLvupBG
 Img7_EfxLvupBG:
-	.incbin "dump/banim-efxlvupfx_5C439C.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img7_EfxLvupBG.4bpp.lz"
 
 	.global Pal_EfxLvupBG
 Pal_EfxLvupBG:  @ 0x085C48AC
-	.incbin "dump/banim-efxlvupfx_5C48AC.gbapal"
+	.incbin "graphics/banim/efxlvupfx/Pal_EfxLvupBG.gbapal"
 
     .global Tsa1_EfxLvupBG
 Tsa1_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C48CC.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa1_EfxLvupBG.tsa.lz"
 
     .global Tsa2_EfxLvupBG
 Tsa2_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C4A2C.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa2_EfxLvupBG.tsa.lz"
 
     .global Tsa3_EfxLvupBG
 Tsa3_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C4BA0.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa3_EfxLvupBG.tsa.lz"
 
     .global Tsa4_EfxLvupBG
 Tsa4_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C4D34.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa4_EfxLvupBG.tsa.lz"
 
     .global Tsa5_EfxLvupBG
 Tsa5_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C4EE8.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa5_EfxLvupBG.tsa.lz"
 
     .global Tsa6_EfxLvupBG
 Tsa6_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C50C0.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa6_EfxLvupBG.tsa.lz"
 
     .global Tsa7_EfxLvupBG
 Tsa7_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C52B8.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa7_EfxLvupBG.tsa.lz"
 
     .global Tsa8_EfxLvupBG
 Tsa8_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C54D4.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa8_EfxLvupBG.tsa.lz"
 
     .global Tsa9_EfxLvupBG
 Tsa9_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C56E8.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa9_EfxLvupBG.tsa.lz"
 
     .global Tsa10_EfxLvupBG
 Tsa10_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C5818.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa10_EfxLvupBG.tsa.lz"
 
     .global Tsa11_EfxLvupBG
 Tsa11_EfxLvupBG:
-    .incbin "dump/banim-efxlvupfx_5C58E0.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa11_EfxLvupBG.tsa.lz"
 
 	.global Img_EfxLvupBG2
 Img_EfxLvupBG2:  @ 0x085C5994
-	.incbin "dump/banim-efxlvupfx_5C5994.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img_EfxLvupBG2.4bpp.lz"
 
 	.global Pal_EfxLvupBG2
 Pal_EfxLvupBG2:  @ 0x085C6054
-	.incbin "dump/banim-efxlvupfx_5C6054.gbapal"
+	.incbin "graphics/banim/efxlvupfx/Pal_EfxLvupBG2.gbapal"
 
 	.global Pal_EfxLvupBGCOL
 Pal_EfxLvupBGCOL:  @ 0x085C60D4
-	.incbin "dump/banim-efxlvupfx_5C60D4.gbapal"
+	.incbin "graphics/banim/efxlvupfx/Pal_EfxLvupBGCOL.gbapal"
 
     .global Tsa1_EfxLvupBG2
 Tsa1_EfxLvupBG2:
-    .incbin "dump/banim-efxlvupfx_5C60F4.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa1_EfxLvupBG2.tsa.lz"
 
     .global Tsa2_EfxLvupBG2
 Tsa2_EfxLvupBG2:
-    .incbin "dump/banim-efxlvupfx_5C61D8.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa2_EfxLvupBG2.tsa.lz"
 
     .global Tsa3_EfxLvupBG2
 Tsa3_EfxLvupBG2:
-    .incbin "dump/banim-efxlvupfx_5C62BC.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa3_EfxLvupBG2.tsa.lz"
 
     .global Tsa4_EfxLvupBG2
 Tsa4_EfxLvupBG2:
-    .incbin "dump/banim-efxlvupfx_5C63DC.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa4_EfxLvupBG2.tsa.lz"
 
     .global Tsa5_EfxLvupBG2
 Tsa5_EfxLvupBG2:
-    .incbin "dump/banim-efxlvupfx_5C64FC.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa5_EfxLvupBG2.tsa.lz"
 
     .global Tsa6_EfxLvupBG2
 Tsa6_EfxLvupBG2:
-    .incbin "dump/banim-efxlvupfx_5C6618.tsa.lz"
+    .incbin "graphics/banim/efxlvupfx/Tsa6_EfxLvupBG2.tsa.lz"
 
 	.global Img_EfxLvupOBJ2
 Img_EfxLvupOBJ2:  @ 0x085C6730
-	.incbin "dump/banim-efxlvupfx_5C6730.4bpp.lz"
+	.incbin "graphics/banim/efxlvupfx/Img_EfxLvupOBJ2.4bpp.lz"
 
 	.global AnimSprite_EfxLvupOBJ2_085C69C8
 AnimSprite_EfxLvupOBJ2_085C69C8:	@ 0x085C69C8

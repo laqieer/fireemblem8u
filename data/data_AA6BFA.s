@@ -43,11 +43,11 @@ gUnknown_08AA707C:  @ 0x08AA707C
 
 	.global gUnknown_08AA709C
 gUnknown_08AA709C:  @ 0x08AA709C
-	.incbin "dump/data_AA6BFA_AA709C.4bpp"
+	.incbin "graphics/misc/gUnknown_08AA709C.4bpp"
 
 	.global gUnknown_08AA70BC
 gUnknown_08AA70BC:  @ 0x08AA70BC
-	.incbin "dump/data_AA6BFA_AA70BC.4bpp"
+	.incbin "graphics/misc/gUnknown_08AA70BC.4bpp"
 
 	.global gUnknown_08AA70DC
 gUnknown_08AA70DC:  @ 0x08AA70DC
