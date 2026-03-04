@@ -10,7 +10,7 @@ TsaConf_BanimTmA2:  @ 0x085B9EF0
 
 	.global TsaConf_BanimTmA3
 TsaConf_BanimTmA3:  @ 0x085B9F88
-	.incbin "baserom.gba", 0x5B9F88, 0x98    @ 0x5BA020 - 0x5B9F88
+	.incbin "dump/banim-efxbattle_5B9F88.bin" @ 0x5BA020 - 0x5B9F88
 
 	.global TsaConf_BanimTmA4
 TsaConf_BanimTmA4:  @ 0x085BA020
