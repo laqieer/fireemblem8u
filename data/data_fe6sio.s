@@ -88,4 +88,4 @@ _reset: @ 0x08B1A1C4
 
     .space 0x100
 
-	.incbin "dump/data_fe6sio_B1A368.4bpp.lz"
+	.incbin "dump/data_fe6sio_B1A368.bin"

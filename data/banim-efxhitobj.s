@@ -64,4 +64,4 @@ Tsa9_EfxPierceNormalEffectBG:
 
     .global TsaA_EfxPierceNormalEffectBG
 TsaA_EfxPierceNormalEffectBG:
-    .incbin "dump/banim-efxhitobj_5D1DA0.4bpp.lz"
+    .incbin "dump/banim-efxhitobj_5D1DA0.bin"
