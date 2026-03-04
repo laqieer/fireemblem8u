@@ -4,7 +4,7 @@
 
 	.global Pal_CharacterEndingMenu
 Pal_CharacterEndingMenu:  @ 0x08A3F710
-	.incbin "dump/data_A3E4D4_A3F710.bin"
+	.incbin "dump/data_A3E4D4_A3F710.gbapal"
 
 	.global Img_CharacterEndingMenu
 Img_CharacterEndingMenu:  @ 0x08A3F750
@@ -36,7 +36,7 @@ gTsa_PairedEndingWindow:  @ 0x08A40470
 
 	.global Pal_FinScreen
 Pal_FinScreen:  @ 0x08A405B4
-	.incbin "dump/data_A3E4D4_A405B4.bin"
+	.incbin "dump/data_A3E4D4_A405B4.gbapal"
 
 	.global Img_FinScreen
 Img_FinScreen:  @ 0x08A405D4
@@ -48,7 +48,7 @@ Tsa_FinScreen:  @ 0x08A409D0
 
 	.global Pal_08A40AD4
 Pal_08A40AD4:  @ 0x08A40AD4
-    .incbin "dump/data_A3E4D4_A40AD4.bin"
+    .incbin "dump/data_A3E4D4_A40AD4.gbapal"
 
 	.global Tsa_08A40B14
 Tsa_08A40B14:  @ 0x08A40B14
@@ -56,7 +56,7 @@ Tsa_08A40B14:  @ 0x08A40B14
 
 	.global Pal_StaffReelEnt_08A40FC8
 Pal_StaffReelEnt_08A40FC8:  @ 0x08A40FC8
-	.incbin "dump/data_A3E4D4_A40FC8.bin"@ 0xA40FE8 - 0xA40FC8
+	.incbin "dump/data_A3E4D4_A40FC8.gbapal"@ 0xA40FE8 - 0xA40FC8
 
 	.global Img_StaffReelEnt_08A40FE8
 Img_StaffReelEnt_08A40FE8:  @ 0x08A40FE8
@@ -800,7 +800,7 @@ gUnknown_08A97A40:  @ 0x08A97A40
 
 	.global gPal_GMapPI_ShopIcons
 gPal_GMapPI_ShopIcons:  @ 0x08A97A60
-	.incbin "dump/data_A3E4D4_A97A60.bin"
+	.incbin "dump/data_A3E4D4_A97A60.gbapal"
 
 	.global gGfx_GMapPI_ShopIcons
 gGfx_GMapPI_ShopIcons:  @ 0x08A97A80
@@ -808,7 +808,7 @@ gGfx_GMapPI_ShopIcons:  @ 0x08A97A80
 
 	.global gPal_08A97ACC
 gPal_08A97ACC:  @ 0x08A97ACC
-	.incbin "dump/data_A3E4D4_A97ACC.bin"
+	.incbin "dump/data_A3E4D4_A97ACC.gbapal"
 
 	.global Sprite_08A97AEC
 Sprite_08A97AEC:  @ 0x08A97AEC
@@ -820,7 +820,7 @@ gImg_WorldmapNodeRevealEffect:  @ 0x08A97C98
 
 	.global gPal_WorldmapNodeRevealEffect
 gPal_WorldmapNodeRevealEffect:  @ 0x08A97E28
-	.incbin "dump/data_A3E4D4_A97E28.bin"
+	.incbin "dump/data_A3E4D4_A97E28.gbapal"
 
 	.global gUnknown_08A97E48
 gUnknown_08A97E48:  @ 0x08A97E48
@@ -1024,7 +1024,7 @@ gGfx_GMapPI_LevelNums:  @ 0x08A9901C
 
 	.global gPal_GMapPI_LevelNums
 gPal_GMapPI_LevelNums:  @ 0x08A99120
-	.incbin "dump/data_A3E4D4_A99120.bin"
+	.incbin "dump/data_A3E4D4_A99120.gbapal"
 
 	.global Img_EventGmap
 Img_EventGmap:  @ 0x08A99140
@@ -1036,7 +1036,7 @@ Tsa_EventGmap:  @ 0x08A9DF74
 
 	.global Pal_EventGmap
 Pal_EventGmap:  @ 0x08A9E4C4
-	.incbin "dump/data_A3E4D4_A9E4C4.bin"
+	.incbin "dump/data_A3E4D4_A9E4C4.gbapal"
 
 	.global gImg_08A9E544
 gImg_08A9E544:  @ 0x08A9E544
@@ -1044,7 +1044,7 @@ gImg_08A9E544:  @ 0x08A9E544
 
 	.global gPal_08A9E5BC
 gPal_08A9E5BC:  @ 0x08A9E5BC
-	.incbin "dump/data_A3E4D4_A9E5BC.bin"
+	.incbin "dump/data_A3E4D4_A9E5BC.gbapal"
 
 	.global gTsa_08A9E5DC
 gTsa_08A9E5DC:  @ 0x08A9E5DC
@@ -1052,7 +1052,7 @@ gTsa_08A9E5DC:  @ 0x08A9E5DC
 
 	.global Pal_WmHighLightNationMap
 Pal_WmHighLightNationMap:  @ 0x08A9E688
-	.incbin "dump/data_A3E4D4_A9E688.bin"
+	.incbin "dump/data_A3E4D4_A9E688.gbapal"
 
     .global Img_WmHightLightMapFrecia
 Img_WmHightLightMapFrecia:
@@ -1124,11 +1124,11 @@ Img_WorldMapPlaceDot:  @ 0x08AA114C
 
 	.global Pal_WmPlaceDot_Highlight
 Pal_WmPlaceDot_Highlight:  @ 0x08AA1190
-	.incbin "dump/data_A3E4D4_AA1190.bin"
+	.incbin "dump/data_A3E4D4_AA1190.gbapal"
 
 	.global Pal_WmPlaceDot_Standard
 Pal_WmPlaceDot_Standard:  @ 0x08AA11B0
-	.incbin "dump/data_A3E4D4_AA11B0.bin"
+	.incbin "dump/data_A3E4D4_AA11B0.gbapal"
 
 	.global gUnknown_08AA11D0
 gUnknown_08AA11D0:  @ 0x08AA11D0
@@ -1140,7 +1140,7 @@ Img_WorldmapMinimap:  @ 0x08AA1280
 
 	.global Pal_WorldmapMinimap
 Pal_WorldmapMinimap:  @ 0x08AA188C
-	.incbin "dump/data_A3E4D4_AA188C.bin"
+	.incbin "dump/data_A3E4D4_AA188C.gbapal"
 
 	.global gUnknown_08AA18AC
 gUnknown_08AA18AC:  @ 0x08AA18AC

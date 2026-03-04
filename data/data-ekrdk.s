@@ -22,7 +22,7 @@ Tsa_DemonKingBG3:  @ 0x087F7DC8
 
 	.global Pal_DemonKingBG
 Pal_DemonKingBG:  @ 0x087F85DC
-	.incbin "dump/data-ekrdk_7F85DC.bin"
+	.incbin "dump/data-ekrdk_7F85DC.gbapal"
 
 	.global Img_EfxSelfThunderBG1
 Img_EfxSelfThunderBG1:
@@ -218,11 +218,11 @@ TSA2_EfxSelfThunderBG16:	@ 0x087FF2F8
 
 	.global Pal1_EfxSelfThunderBG
 Pal1_EfxSelfThunderBG:	@ 0x087FF448
-	.incbin "dump/data-ekrdk_7FF448.bin"
+	.incbin "dump/data-ekrdk_7FF448.gbapal"
 
 	.global Pal2_EfxSelfThunderBG
 Pal2_EfxSelfThunderBG:	@ 0x087FF468
-	.incbin "dump/data-ekrdk_7FF468.bin"
+	.incbin "dump/data-ekrdk_7FF468.gbapal"
 
 	.global Img_DemoKingTunkFace
 Img_DemoKingTunkFace:  @ 0x087FF488
@@ -234,4 +234,4 @@ Img_DemoKingTunkFace2:  @ 0x0880064C
 
 	.global Pal_DemoKingTunkFace
 Pal_DemoKingTunkFace:  @ 0x088017E0
-	.incbin "dump/data-ekrdk_8017E0.bin"
+	.incbin "dump/data-ekrdk_8017E0.gbapal"

@@ -6,7 +6,7 @@ gGfx_MiscUiGraphics:  @ 0x0859E8E0
 
 	.global gPal_MiscUiGraphics
 gPal_MiscUiGraphics:  @ 0x0859ED70
-	.incbin "dump/data_59E8E0_59ED70.bin"
+	.incbin "dump/data_59E8E0_59ED70.gbapal"
 
 	.global gImg_UiCursorHandTop
 gImg_UiCursorHandTop:  @ 0x0859EDB0
@@ -38,15 +38,15 @@ gPal_MapSpriteArena:
 
 	.global gPal_LightRune
 gPal_LightRune:  @ 0x0859EEC0
-	.incbin "dump/data_59E8E0_59EEC0.bin"
+	.incbin "dump/data_59E8E0_59EEC0.gbapal"
 
 	.global gPal_MapSpriteSepia
 gPal_MapSpriteSepia:  @ 0x0859EEE0
-	.incbin "dump/data_59E8E0_59EEE0.bin"
+	.incbin "dump/data_59E8E0_59EEE0.gbapal"
 
 	.global Pal_Text
 Pal_Text:  @ 0x0859EF00
-	.incbin "dump/data_59E8E0_59EF00.bin"
+	.incbin "dump/data_59E8E0_59EF00.gbapal"
 
 	.global gUnknown_0859EF20
 gUnknown_0859EF20:  @ 0x0859EF20
@@ -54,27 +54,27 @@ gUnknown_0859EF20:  @ 0x0859EF20
 
 	.global Pal_HelpBox
 Pal_HelpBox:  @ 0x0859EF40
-	.incbin "dump/data_59E8E0_59EF40.bin"
+	.incbin "dump/data_59E8E0_59EF40.gbapal"
 
 	.global gPal_HelpTextBox
 gPal_HelpTextBox:  @ 0x0859EF60
-	.incbin "dump/data_59E8E0_59EF60.bin"
+	.incbin "dump/data_59E8E0_59EF60.gbapal"
 
 	.global gPal_YellowTextBox
 gPal_YellowTextBox:  @ 0x0859EF80
-	.incbin "dump/data_59E8E0_59EF80.bin"
+	.incbin "dump/data_59E8E0_59EF80.gbapal"
 
 	.global Pal_GreenTextColors
 Pal_GreenTextColors:  @ 0x0859EFC0
-	.incbin "dump/data_59E8E0_59EFC0.bin"
+	.incbin "dump/data_59E8E0_59EFC0.gbapal"
 
 	.global Pal_Text_Inverted
 Pal_Text_Inverted:  @ 0x0859EFE0
-	.incbin "dump/data_59E8E0_59EFE0.bin"
+	.incbin "dump/data_59E8E0_59EFE0.gbapal"
 
 	.global Pal_TalkBubble_Inverted
 Pal_TalkBubble_Inverted:  @ 0x0859F000
-	.incbin "dump/data_59E8E0_59F000.bin"
+	.incbin "dump/data_59E8E0_59F000.gbapal"
 
 	.global Img_PhaseChangeUnk
 Img_PhaseChangeUnk:  @ 0x0859F020
@@ -86,7 +86,7 @@ Img_PhaseChangePlayer:  @ 0x0859F3F8
 
 	.global Pal_PhaseChangePlayer
 Pal_PhaseChangePlayer:  @ 0x0859FA2C
-	.incbin "dump/data_59E8E0_59FA2C.bin"
+	.incbin "dump/data_59E8E0_59FA2C.gbapal"
 
 	.global Img_PhaseChangeEnemy
 Img_PhaseChangeEnemy:  @ 0x0859FA4C
@@ -94,7 +94,7 @@ Img_PhaseChangeEnemy:  @ 0x0859FA4C
 
 	.global Pal_PhaseChangeEnemy
 Pal_PhaseChangeEnemy:  @ 0x085A0068
-	.incbin "dump/data_59E8E0_5A0068.bin"
+	.incbin "dump/data_59E8E0_5A0068.gbapal"
 
 	.global Img_PhaseChangeOther
 Img_PhaseChangeOther:  @ 0x085A0088
@@ -102,11 +102,11 @@ Img_PhaseChangeOther:  @ 0x085A0088
 
 	.global Pal_PhaseChangeOther
 Pal_PhaseChangeOther:  @ 0x085A0698
-	.incbin "dump/data_59E8E0_5A0698.bin"
+	.incbin "dump/data_59E8E0_5A0698.gbapal"
 
 	.global Pal_085A06B8
 Pal_085A06B8:  @ 0x085A06B8
-	.incbin "dump/data_59E8E0_5A06B8.bin"
+	.incbin "dump/data_59E8E0_5A06B8.gbapal"
 
 	.global Img_PhaseChangeSquares
 Img_PhaseChangeSquares:  @ 0x085A06D8
@@ -134,7 +134,7 @@ gBattleForecast_x2x4Gfx:  @ 0x085A0C80
 
 	.global gBattleForecast_x2x4Pal
 gBattleForecast_x2x4Pal:  @ 0x085A0D2C
-	.incbin "dump/data_59E8E0_5A0D2C.bin"
+	.incbin "dump/data_59E8E0_5A0D2C.gbapal"
 
 	.global gUnknown_085A0D4C
 gUnknown_085A0D4C:  @ 0x085A0D4C
@@ -162,11 +162,11 @@ Img_GasTrapHorizontal:  @ 0x085A1AF8
 
 	.global Pal_GasTrap
 Pal_GasTrap:  @ 0x085A206C
-	.incbin "dump/data_59E8E0_5A206C.bin"
+	.incbin "dump/data_59E8E0_5A206C.gbapal"
 
 	.global Pal_ArrowTrap
 Pal_ArrowTrap:  @ 0x085A208C
-	.incbin "dump/data_59E8E0_5A208C.bin"
+	.incbin "dump/data_59E8E0_5A208C.gbapal"
 
 	.global Img_ArrowTrap
 Img_ArrowTrap:  @ 0x085A20AC
@@ -182,7 +182,7 @@ Img_FireTrap:  @ 0x085A2940
 
 	.global Pal_FireTrap
 Pal_FireTrap:  @ 0x085A2DDC
-	.incbin "dump/data_59E8E0_5A2DDC.bin"
+	.incbin "dump/data_59E8E0_5A2DDC.gbapal"
 
 	.global SpriteAnim_FireTrap
 SpriteAnim_FireTrap:  @ 0x085A2DFC
@@ -190,7 +190,7 @@ SpriteAnim_FireTrap:  @ 0x085A2DFC
 
 	.global Pal_FireTrap2
 Pal_FireTrap2:  @ 0x085A3490
-	.incbin "dump/data_59E8E0_5A3490.bin"
+	.incbin "dump/data_59E8E0_5A3490.gbapal"
 
 	.global Img_PikeTrap
 Img_PikeTrap:  @ 0x085A34B0
@@ -202,7 +202,7 @@ SpriteAnim_PikeTrap:  @ 0x085A3730
 
 	.global Pal_PikeTrap
 Pal_PikeTrap:  @ 0x085A3944
-	.incbin "dump/data_59E8E0_5A3944.bin"
+	.incbin "dump/data_59E8E0_5A3944.gbapal"
 
 	.global gUnknown_085A3964
 gUnknown_085A3964:  @ 0x085A3964
@@ -234,7 +234,7 @@ Img_LightRune:  @ 0x085A403C
 
 	.global Pal_LightRune
 Pal_LightRune:  @ 0x085A5760
-	.incbin "dump/data_59E8E0_5A5760.bin"
+	.incbin "dump/data_59E8E0_5A5760.gbapal"
 
 	.global Tsa_LightRune
 Tsa_LightRune:  @ 0x085A5780
@@ -246,7 +246,7 @@ Img_EventWarp:  @ 0x085A5A60
 
 	.global Pal_EventWarp
 Pal_EventWarp:  @ 0x085A61A8
-	.incbin "dump/data_59E8E0_5A61A8.bin"
+	.incbin "dump/data_59E8E0_5A61A8.gbapal"
 
 	.global Tsa_EventWarp
 Tsa_EventWarp:  @ 0x085A61C8
@@ -274,7 +274,7 @@ Tsa_DanceringFx:  @ 0x085A7A64
 
 	.global Pal_DanceringFx
 Pal_DanceringFx:  @ 0x085A7CA0
-	.incbin "dump/data_59E8E0_5A7CA0.bin"
+	.incbin "dump/data_59E8E0_5A7CA0.gbapal"
 
 	.global Img_MineFx
 Img_MineFx:  @ 0x085A7CC0
@@ -286,8 +286,8 @@ SpritAnim_MineFx:  @ 0x085A7E34
 
 	.global Pal_MineFx
 Pal_MineFx:  @ 0x085A7EC8
-	.incbin "dump/data_59E8E0_5A7EC8.bin"
+	.incbin "dump/data_59E8E0_5A7EC8.gbapal"
 
 	.global Pal_EventCursorShinning
 Pal_EventCursorShinning:  @ 0x085A7EE8
-	.incbin "dump/data_59E8E0_5A7EE8.bin"
+	.incbin "dump/data_59E8E0_5A7EE8.gbapal"

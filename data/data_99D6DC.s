@@ -50,7 +50,7 @@ TileSet_9A174C:
 
 	.global Pal_EventMapAnimMaskfx
 Pal_EventMapAnimMaskfx:  @ 0x089A18D4
-	.incbin "dump/data_99D6DC_9A18D4.bin"
+	.incbin "dump/data_99D6DC_9A18D4.gbapal"
 
 	.global Img_Congratulations
 Img_Congratulations:  @ 0x089A18F4

@@ -22,15 +22,15 @@ Img_NODAMGEMIS:  @ 0x085BA0B8
 
 	.global Pal_085BA2E0
 Pal_085BA2E0:  @ 0x085BA2E0
-	.incbin "dump/banim-efxbattle_5BA2E0.bin"
+	.incbin "dump/banim-efxbattle_5BA2E0.gbapal"
 
 	.global Pal_085BA300
 Pal_085BA300:  @ 0x085BA300
-	.incbin "dump/banim-efxbattle_5BA300.bin"
+	.incbin "dump/banim-efxbattle_5BA300.gbapal"
 
 	.global Pal_085BA320
 Pal_085BA320:  @ 0x085BA320
-	.incbin "dump/banim-efxbattle_5BA320.bin"
+	.incbin "dump/banim-efxbattle_5BA320.gbapal"
 
 /* This is unused, called in FE7 UnitKakudai1 (although is also unused in FE7) */
 	.global Img_BanimArcherFBallistaIntro

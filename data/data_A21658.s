@@ -6,7 +6,7 @@ Img_SaveMenuBG:  @ 0x08A21658
 
 	.global Pal_SaveMenuBG
 Pal_SaveMenuBG:  @ 0x08A25DCC
-	.incbin "dump/data_A21658_A25DCC.bin"
+	.incbin "dump/data_A21658_A25DCC.gbapal"
 
 	.global Tsa_SaveMenuBG
 Tsa_SaveMenuBG:  @ 0x08A25ECC
@@ -18,7 +18,7 @@ Img_MainMenuBgFog:  @ 0x08A26380
 
 	.global Pal_MainMenuBgFog
 Pal_MainMenuBgFog:  @ 0x08A268D8
-	.incbin "dump/data_A21658_A268D8.bin"
+	.incbin "dump/data_A21658_A268D8.gbapal"
 
 	.global Tsa_MainMenuBgFog
 Tsa_MainMenuBgFog:  @ 0x08A268F8
@@ -30,11 +30,11 @@ Img_SaveScreenSprits:  @ 0x08A26A74
 
 	.global Pal_SaveScreenSprits
 Pal_SaveScreenSprits:  @ 0x08A27F68
-	.incbin "dump/data_A21658_A27F68.bin"
+	.incbin "dump/data_A21658_A27F68.gbapal"
 
 	.global Pal_08A28088
 Pal_08A28088:  @ 0x08A28088
-	.incbin "dump/data_A21658_A28088.bin"
+	.incbin "dump/data_A21658_A28088.gbapal"
 
 	.global gUnknown_08A280A8
 gUnknown_08A280A8:  @ 0x08A280A8
@@ -50,7 +50,7 @@ Img_DifficultyMenuObjs:  @ 0x08A28A0C
 
 	.global Pal_DifficultyMenuObjs
 Pal_DifficultyMenuObjs:  @ 0x08A29418
-	.incbin "dump/data_A21658_A29418.bin"
+	.incbin "dump/data_A21658_A29418.gbapal"
 
 	.global gUnknown_08A29498
 gUnknown_08A29498:  @ 0x08A29498
@@ -62,7 +62,7 @@ gUnknown_08A29558:  @ 0x08A29558
 
 	.global Pal_08A295B4
 Pal_08A295B4:  @ 0x08A295B4
-	.incbin "dump/data_A21658_A295B4.bin"
+	.incbin "dump/data_A21658_A295B4.gbapal"
 
 	.global Tsa_CommGameBgScreenInShop
 Tsa_CommGameBgScreenInShop:  @ 0x08A295D4
@@ -102,7 +102,7 @@ Img_SoundRoomVolumeGraph:  @ 0x08A2C838
 
 	.global Pal_SoundRoomVolumeGraph
 Pal_SoundRoomVolumeGraph:  @ 0x08A2C8A8
-	.incbin "dump/data_A21658_A2C8A8.bin"
+	.incbin "dump/data_A21658_A2C8A8.gbapal"
 
 	.global gUnknown_08A2C908
 gUnknown_08A2C908:  @ 0x08A2C908
@@ -118,7 +118,7 @@ Img_SoundRoomUiElements:  @ 0x08A2CABC
 
 	.global Pal_SoundRoomUiElements
 Pal_SoundRoomUiElements:  @ 0x08A2D2CC
-	.incbin "dump/data_A21658_A2D2CC.bin"
+	.incbin "dump/data_A21658_A2D2CC.gbapal"
 
 	.global Img_PlayStatusSprites
 Img_PlayStatusSprites:  @ 0x08A2D32C
@@ -126,7 +126,7 @@ Img_PlayStatusSprites:  @ 0x08A2D32C
 
 	.global Pal_PlayStatusSprites
 Pal_PlayStatusSprites:  @ 0x08A2E1B8
-	.incbin "dump/data_A21658_A2E1B8.bin"
+	.incbin "dump/data_A21658_A2E1B8.gbapal"
 
 	.global Img_ChapterStatusSelectorSprite
 Img_ChapterStatusSelectorSprite:  @ 0x08A2E1F8
@@ -138,7 +138,7 @@ Img_StatusScreenLabelSprites:  @ 0x08A2E214
 
 	.global Pal_StatusScreenLabelSprites
 Pal_StatusScreenLabelSprites:  @ 0x08A2E4A4
-	.incbin "dump/data_A21658_A2E4A4.bin"
+	.incbin "dump/data_A21658_A2E4A4.gbapal"
 
 	.global Tsa_ChapterStatusUi
 Tsa_ChapterStatusUi:  @ 0x08A2E4C4
@@ -150,7 +150,7 @@ Img_08A2E5EC:  @ 0x08A2E5EC
 
 	.global Pal_08A2E8F0
 Pal_08A2E8F0:  @ 0x08A2E8F0
-	.incbin "dump/data_A21658_A2E8F0.bin"
+	.incbin "dump/data_A21658_A2E8F0.gbapal"
 
 	.global Img_SysBlackBox
 Img_SysBlackBox:  @ 0x08A2E950

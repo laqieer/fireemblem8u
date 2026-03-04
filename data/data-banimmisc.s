@@ -78,7 +78,7 @@ gUnknown_08802B04:  @ 0x08802B04
 
     .global gPalEfxHpBarGreen
 gPalEfxHpBarGreen:  @ 0x08802B84
-    .incbin "dump/data-banimmisc_802B84.bin"
+    .incbin "dump/data-banimmisc_802B84.gbapal"
 
     .global gUnknown_08802BC4
 gUnknown_08802BC4:  @ 0x08802BC4
@@ -86,7 +86,7 @@ gUnknown_08802BC4:  @ 0x08802BC4
 
     .global gPalEfxHpBarPurple
 gPalEfxHpBarPurple:  @ 0x08802C84
-    .incbin "dump/data-banimmisc_802C84.bin"
+    .incbin "dump/data-banimmisc_802C84.gbapal"
 
     .global Pal_BanimUnitFlashing
 Pal_BanimUnitFlashing:  @ 0x08802D24
@@ -122,7 +122,7 @@ Tsa_LevelUpBoxFrame:  @ 0x088039E8
 
     .global Pal_LevelUpBoxFrame
 Pal_LevelUpBoxFrame:  @ 0x08803B10
-    .incbin "dump/data-banimmisc_803B10.bin"
+    .incbin "dump/data-banimmisc_803B10.gbapal"
 
     .global Img_EkrPopup
 Img_EkrPopup:  @ 0x08803B30
@@ -134,7 +134,7 @@ gUnknown_08803BD0:  @ 0x08803BD0
 
     .global Pal_EkrPopup
 Pal_EkrPopup:  @ 0x08803CB0
-    .incbin "dump/data-banimmisc_803CB0.bin"
+    .incbin "dump/data-banimmisc_803CB0.gbapal"
 
     .global Tsa_EkrPopup
 Tsa_EkrPopup:  @ 0x08803CD0

@@ -22,4 +22,4 @@ Img_080DC350:
 
 	.global Pal_080DC85C
 Pal_080DC85C:  @ 0x080DC85C
-	.incbin "dump/const_data_DB034_0DC85C.bin"
+	.incbin "dump/const_data_DB034_0DC85C.gbapal"

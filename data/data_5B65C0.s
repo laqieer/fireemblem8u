@@ -8,19 +8,19 @@ gUiFrameImage:  @ 0x085B65C0
 
 	.global gUiFramePaletteA
 gUiFramePaletteA:  @ 0x085B6BB4
-	.incbin "dump/data_5B65C0_5B6BB4.bin"
+	.incbin "dump/data_5B65C0_5B6BB4.gbapal"
 
 	.global gUiFramePaletteB
 gUiFramePaletteB:  @ 0x085B6BD4
-	.incbin "dump/data_5B65C0_5B6BD4.bin"
+	.incbin "dump/data_5B65C0_5B6BD4.gbapal"
 
 	.global gUiFramePaletteC
 gUiFramePaletteC:  @ 0x085B6BF4
-	.incbin "dump/data_5B65C0_5B6BF4.bin"
+	.incbin "dump/data_5B65C0_5B6BF4.gbapal"
 
 	.global gUiFramePaletteD
 gUiFramePaletteD:  @ 0x085B6C14
-	.incbin "dump/data_5B65C0_5B6C14.bin"
+	.incbin "dump/data_5B65C0_5B6C14.gbapal"
 
 	.global gLegacyUiFrameAImage
 gLegacyUiFrameAImage:  @ 0x085B6CB4
@@ -28,11 +28,11 @@ gLegacyUiFrameAImage:  @ 0x085B6CB4
 
 	.global gLegacyUiFrameAPalette
 gLegacyUiFrameAPalette:  @ 0x085B7560
-	.incbin "dump/data_5B65C0_5B7560.bin"
+	.incbin "dump/data_5B65C0_5B7560.gbapal"
 
 	.global gUiBarPaletteA
 gUiBarPaletteA:  @ 0x085B7580
-	.incbin "dump/data_5B65C0_5B7580.bin"
+	.incbin "dump/data_5B65C0_5B7580.gbapal"
 
 	.global gLegacyUiFrameBImage
 gLegacyUiFrameBImage:  @ 0x085B75A0
@@ -40,11 +40,11 @@ gLegacyUiFrameBImage:  @ 0x085B75A0
 
 	.global gLegacyUiFrameBPalette
 gLegacyUiFrameBPalette:  @ 0x085B7E54
-	.incbin "dump/data_5B65C0_5B7E54.bin"
+	.incbin "dump/data_5B65C0_5B7E54.gbapal"
 
 	.global gUiBarPaletteB
 gUiBarPaletteB:  @ 0x085B7E74
-	.incbin "dump/data_5B65C0_5B7E74.bin"
+	.incbin "dump/data_5B65C0_5B7E74.gbapal"
 
 	.global gLegacyUiFrameCImage
 gLegacyUiFrameCImage:  @ 0x085B7E94
@@ -52,11 +52,11 @@ gLegacyUiFrameCImage:  @ 0x085B7E94
 
 	.global gLegacyUiFrameCPalette
 gLegacyUiFrameCPalette:
-	.incbin "dump/data_5B65C0_5B8714.bin"
+	.incbin "dump/data_5B65C0_5B8714.gbapal"
 
 	.global gUiBarPaletteC
 gUiBarPaletteC:
-	.incbin "dump/data_5B65C0_5B8734.bin"
+	.incbin "dump/data_5B65C0_5B8734.gbapal"
 
 	.global gLegacyUiFrameDImage
 gLegacyUiFrameDImage:
@@ -64,11 +64,11 @@ gLegacyUiFrameDImage:
 
 	.global gLegacyUiFrameDPalette
 gLegacyUiFrameDPalette:
-	.incbin "dump/data_5B65C0_5B8F90.bin"
+	.incbin "dump/data_5B65C0_5B8F90.gbapal"
 
 	.global gUiBarPaletteD
 gUiBarPaletteD:
-	.incbin "dump/data_5B65C0_5B8FB0.bin"
+	.incbin "dump/data_5B65C0_5B8FB0.gbapal"
 
 	.global gUnkUiFrameImage
 gUnkUiFrameImage:  @ 0x085B8FF0
@@ -76,7 +76,7 @@ gUnkUiFrameImage:  @ 0x085B8FF0
 
 	.global gUnkUiFramePalettes
 gUnkUiFramePalettes:  @ 0x085B9244
-	.incbin "dump/data_5B65C0_5B9244.bin"
+	.incbin "dump/data_5B65C0_5B9244.gbapal"
 
 	.global Img_SysGrayBox
 Img_SysGrayBox:  @ 0x085B92C4

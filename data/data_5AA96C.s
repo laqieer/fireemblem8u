@@ -46,15 +46,15 @@ Img_LinkArenaPlayerBanners:  @ 0x085ADA38
 
 	.global Pal_LinkArenaMenu
 Pal_LinkArenaMenu:  @ 0x085ADBE8
-	.incbin "dump/data_5AA96C_5ADBE8.bin"
+	.incbin "dump/data_5AA96C_5ADBE8.gbapal"
 
 	.global Pal_TacticianSelObj
 Pal_TacticianSelObj:  @ 0x085ADC48
-	.incbin "dump/data_5AA96C_5ADC48.bin"
+	.incbin "dump/data_5AA96C_5ADC48.gbapal"
 
 	.global Pal_LinkArenaRankIcons
 Pal_LinkArenaRankIcons:  @ 0x085ADCC8
-	.incbin "dump/data_5AA96C_5ADCC8.bin"
+	.incbin "dump/data_5AA96C_5ADCC8.gbapal"
 
 	.global gUnknown_085ADDA8
 gUnknown_085ADDA8:  @ 0x085ADDA8
@@ -62,7 +62,7 @@ gUnknown_085ADDA8:  @ 0x085ADDA8
 
 	.global Pal_LinkArenaPlacementRanks
 Pal_LinkArenaPlacementRanks:  @ 0x085ADDC8
-	.incbin "dump/data_5AA96C_5ADDC8.bin"
+	.incbin "dump/data_5AA96C_5ADDC8.gbapal"
 
 	.global gUnknown_085ADDE8
 gUnknown_085ADDE8:  @ 0x085ADDE8
@@ -70,7 +70,7 @@ gUnknown_085ADDE8:  @ 0x085ADDE8
 
 	.global Pal_LinkArenaActiveBannerFx
 Pal_LinkArenaActiveBannerFx:  @ 0x085ADE08
-	.incbin "dump/data_5AA96C_5ADE08.bin"
+	.incbin "dump/data_5AA96C_5ADE08.gbapal"
 
 	.global gUnknown_085ADE28
 gUnknown_085ADE28:  @ 0x085ADE28
@@ -82,7 +82,7 @@ gUnknown_085ADE48:  @ 0x085ADE48
 
 	.global Pal_085ADE68
 Pal_085ADE68:  @ 0x085ADE68
-	.incbin "dump/data_5AA96C_5ADE68.bin"
+	.incbin "dump/data_5AA96C_5ADE68.gbapal"
 
 	.global gUnknown_085ADE88
 gUnknown_085ADE88:  @ 0x085ADE88
@@ -146,7 +146,7 @@ Img_LinkArenaPostBattleBg:  @ 0x085AF170
 
 	.global Pal_LinkArenaPostBattleBg
 Pal_LinkArenaPostBattleBg:  @ 0x085B081C
-	.incbin "dump/data_5AA96C_5B081C.bin"
+	.incbin "dump/data_5AA96C_5B081C.gbapal"
 
 	.global Tsa_LinkArenaPostBattleBg
 Tsa_LinkArenaPostBattleBg:  @ 0x085B089C

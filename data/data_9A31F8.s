@@ -43,7 +43,7 @@ ApHandle_GmapSoguSprites:  @ 0x089A8EF8
 
 	.global Pal_MapAnimManaketeMu
 Pal_MapAnimManaketeMu:  @ 0x089A8F74
-	.incbin "dump/data_9A31F8_9A8F74.bin"
+	.incbin "dump/data_9A31F8_9A8F74.gbapal"
 
 	.global gGfx_ArenaBuildingFront
 gGfx_ArenaBuildingFront:  @ 0x089A8F94
@@ -55,7 +55,7 @@ gTsa_ArenaBuildingFront:  @ 0x089ABB70
 
 	.global gPal_ArenaBuildingFront
 gPal_ArenaBuildingFront:  @ 0x089AC024
-	.incbin "dump/data_9A31F8_9AC024.bin"
+	.incbin "dump/data_9A31F8_9AC024.gbapal"
 
 	.global Img_MapAnimMISS
 Img_MapAnimMISS:  @ 0x089AC0A4
@@ -75,7 +75,7 @@ obj_MapAnimNODAMAGE:  @ 0x089AC440
 
 	.global Pal_ManimLevelUpStatGainCycling
 Pal_ManimLevelUpStatGainCycling:  @ 0x089AC5CC
-    .incbin "dump/data_9A31F8_9AC5CC.bin"
+    .incbin "dump/data_9A31F8_9AC5CC.gbapal"
 
 	.global Img_ManimLevelUpText
 Img_ManimLevelUpText:  @ 0x089AC794
@@ -83,7 +83,7 @@ Img_ManimLevelUpText:  @ 0x089AC794
 
 	.global Pal_ManimLevelUp
 Pal_ManimLevelUp:  @ 0x089AC9A8
-	.incbin "dump/data_9A31F8_9AC9A8.bin"
+	.incbin "dump/data_9A31F8_9AC9A8.gbapal"
 
 	.global Img_ManimLevelUpStatGain
 Img_ManimLevelUpStatGain:  @ 0x089ACA08
@@ -103,19 +103,19 @@ Img_MapBattleInfoBox:  @ 0x089AD500
 
 	.global Pal_MapBattleInfoBlue
 Pal_MapBattleInfoBlue:  @ 0x089AD648
-	.incbin "dump/data_9A31F8_9AD648.bin"
+	.incbin "dump/data_9A31F8_9AD648.gbapal"
 
 	.global Pal_MapBattleInfoRed
 Pal_MapBattleInfoRed:  @ 0x089AD668
-    .incbin "dump/data_9A31F8_9AD668.bin"
+    .incbin "dump/data_9A31F8_9AD668.gbapal"
 
 	.global Pal_MapBattleInfoGreen
 Pal_MapBattleInfoGreen:  @ 0x089AD688
-	.incbin "dump/data_9A31F8_9AD688.bin"
+	.incbin "dump/data_9A31F8_9AD688.gbapal"
 
 	.global Pal_MapBattleInfoPurple
 Pal_MapBattleInfoPurple:  @ 0x089AD6A8
-    .incbin "dump/data_9A31F8_9AD6A8.bin"
+    .incbin "dump/data_9A31F8_9AD6A8.gbapal"
 
     .global Tsa_MapBattleBoxGfx1
 Tsa_MapBattleBoxGfx1:   @ 0x089AD6C8
@@ -151,7 +151,7 @@ Img_WallBreakAnim:  @ 0x089ADA80
 
 	.global Pal_WallBreakAnim
 Pal_WallBreakAnim:  @ 0x089ADD0C
-	.incbin "dump/data_9A31F8_9ADD0C.bin"
+	.incbin "dump/data_9A31F8_9ADD0C.gbapal"
 
 	.global Img_GmapSoguSprites
 Img_GmapSoguSprites:  @ 0x089ADD4C
@@ -163,7 +163,7 @@ Img_PoisonAnim:  @ 0x089ADEB0
 
 	.global Pal_PoisonAnim
 Pal_PoisonAnim:  @ 0x089AE204
-	.incbin "dump/data_9A31F8_9AE204.bin"
+	.incbin "dump/data_9A31F8_9AE204.gbapal"
 
 	.global Img_LinkArenaWarpFx
 Img_LinkArenaWarpFx:  @ 0x089AE224
@@ -219,7 +219,7 @@ Pal_089AFF78:  @ 0x089AFF78
 
 	.global Pal_089AFFB8
 Pal_089AFFB8:  @ 0x089AFFB8
-	.incbin "dump/data_9A31F8_9AFFB8.bin"
+	.incbin "dump/data_9A31F8_9AFFB8.gbapal"
 
 	.global gUnknown_089AFFF8
 gUnknown_089AFFF8:  @ 0x089AFFF8
@@ -275,7 +275,7 @@ Img_MapAnimBerserkfx:  @ 0x089B1E10
 
 	.global Pal_MapAnimBerserkfx
 Pal_MapAnimBerserkfx:  @ 0x089B20E8
-	.incbin "dump/data_9A31F8_9B20E8.bin"
+	.incbin "dump/data_9A31F8_9B20E8.gbapal"
 
 	.global ApConf_MapAnimBerserkfx
 ApConf_MapAnimBerserkfx:  @ 0x089B2108
@@ -291,7 +291,7 @@ Img_ManimSilenceBgfx:  @ 0x089B2618
 
 	.global Pal_ManimSilencefx
 Pal_ManimSilencefx:  @ 0x089B2728
-	.incbin "dump/data_9A31F8_9B2728.bin"
+	.incbin "dump/data_9A31F8_9B2728.gbapal"
 
 	.global ApConf_ManimSilencefx
 ApConf_ManimSilencefx:  @ 0x089B2748
@@ -311,7 +311,7 @@ Img_NightMareMapAnimfx:  @ 0x089B35D0
 
 	.global Pal_NightMareMapAnimfx
 Pal_NightMareMapAnimfx:  @ 0x089B4BFC
-    .incbin "dump/data_9A31F8_9B4BFC.bin"
+    .incbin "dump/data_9A31F8_9B4BFC.gbapal"
 
 .global Tsa_NightMareMapAnimfx1
 Tsa_NightMareMapAnimfx1:
@@ -451,7 +451,7 @@ Img_MonsterStoneMapAnimfx:  @ 0x089B6AA0
 
 	.global Pal_MonsterStoneMapAnimfx
 Pal_MonsterStoneMapAnimfx:  @ 0x089B73D4
-	.incbin "dump/data_9A31F8_9B73D4.bin"
+	.incbin "dump/data_9A31F8_9B73D4.gbapal"
 
 	.global Tsa1_MonsterStoneMapAnimfx
 Tsa1_MonsterStoneMapAnimfx:
@@ -499,7 +499,7 @@ Img_GorgonHatchCloud:  @ 0x089B7610
 
 	.global Pal_GorgonHatchCloud
 Pal_GorgonHatchCloud:  @ 0x089B80C4
-	.incbin "dump/data_9A31F8_9B80C4.bin"
+	.incbin "dump/data_9A31F8_9B80C4.gbapal"
 
 	.global Tsa_GorgonHatchCloud_A
 Tsa_GorgonHatchCloud_A:  @ 0x089B80E4
@@ -1715,4 +1715,4 @@ Img_TalkBubbleOpening_A:  @ 0x089E8484
 
 	.global Pal_TalkBubble
 Pal_TalkBubble:  @ 0x089E84D4
-	.incbin "dump/data_9A31F8_9E84D4.bin"
+	.incbin "dump/data_9A31F8_9E84D4.gbapal"

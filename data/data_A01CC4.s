@@ -155,11 +155,11 @@ Tsa_ConfigUiFrame:  @ 0x08A079B4
 
 	.global Pal_ConfigUiSprites
 Pal_ConfigUiSprites:  @ 0x08A07A98
-	.incbin "dump/data_A01CC4_A07A98.bin"
+	.incbin "dump/data_A01CC4_A07A98.gbapal"
 
 	.global gPal_08A07AD8
 gPal_08A07AD8:  @ 0x08A07AD8
-	.incbin "dump/data_A01CC4_A07AD8.bin"
+	.incbin "dump/data_A01CC4_A07AD8.gbapal"
 
 	.global gUnknown_08A07AEA
 gUnknown_08A07AEA:  @ 0x08A07AEA
@@ -179,7 +179,7 @@ gUnknown_08A07C0A:  @ 0x08A07C0A
 
 	.global gPal_08A07C58
 gPal_08A07C58:  @ 0x08A07C58
-	.incbin "dump/data_A01CC4_A07C58.bin"
+	.incbin "dump/data_A01CC4_A07C58.gbapal"
 
 	.global Img_ChapterIntroFog
 Img_ChapterIntroFog:  @ 0x08A07DD8
@@ -207,11 +207,11 @@ Img_GameOverText:  @ 0x08A0AB0C
 
 	.global Pal_GameOverText2
 Pal_GameOverText2:  @ 0x08A0AE44
-    .incbin "dump/data_A01CC4_A0AE44.bin"
+    .incbin "dump/data_A01CC4_A0AE44.gbapal"
 
 	.global Pal_GameOverText1
 Pal_GameOverText1:  @ 0x08A0AE64
-	.incbin "dump/data_A01CC4_A0AE64.bin"
+	.incbin "dump/data_A01CC4_A0AE64.gbapal"
 
 	.global Tsa_GameOverFx
 Tsa_GameOverFx:  @ 0x08A0AE84

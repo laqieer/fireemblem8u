@@ -36,11 +36,11 @@ Tsa_EfxDracoZombie1:
 
 	.global Pal_EfxDracoZombie
 Pal_EfxDracoZombie:  @ 0x08791D5C
-	.incbin "dump/banim-ekrdragonfx_791D5C.bin"
+	.incbin "dump/banim-ekrdragonfx_791D5C.gbapal"
 
 	.global Pal_08791D7C
 Pal_08791D7C:  @ 0x08791D7C
-	.incbin "dump/banim-ekrdragonfx_791D7C.bin"
+	.incbin "dump/banim-ekrdragonfx_791D7C.gbapal"
 
 	.global Img_08791D9C
 Img_08791D9C:  @ 0x08791D9C
@@ -48,7 +48,7 @@ Img_08791D9C:  @ 0x08791D9C
 
 	.global Pal_08792194
 Pal_08792194:  @ 0x08792194
-	.incbin "dump/banim-ekrdragonfx_792194.bin"
+	.incbin "dump/banim-ekrdragonfx_792194.gbapal"
 
 .global AnimSprite_EfxClasschgObjDrop_1
 AnimSprite_EfxClasschgObjDrop_1:  @ 0x7921B4
@@ -353,7 +353,7 @@ Img_87929B8:
 
 	.global Pal_87932CC
 Pal_87932CC:
-	.incbin "dump/banim-ekrdragonfx_7932CC.bin"
+	.incbin "dump/banim-ekrdragonfx_7932CC.gbapal"
 
 	.global Tsa_87932EC
 Tsa_87932EC:
@@ -425,7 +425,7 @@ Img_8799228:
 
 	.global Pal_87997F8
 Pal_87997F8:
-	.incbin "dump/banim-ekrdragonfx_7997F8.bin"
+	.incbin "dump/banim-ekrdragonfx_7997F8.gbapal"
 
 	.global Tsa_8799818
 Tsa_8799818:
@@ -529,7 +529,7 @@ Img_87A13C0:
 
 	.global Pal_87A18D0
 Pal_87A18D0:
-	.incbin "dump/banim-ekrdragonfx_7A18D0.bin"
+	.incbin "dump/banim-ekrdragonfx_7A18D0.gbapal"
 
 	.global Tsa_87A18F0
 Tsa_87A18F0:
@@ -613,7 +613,7 @@ Img_87A44D8:
 
 	.global Pal_87A4A68
 Pal_87A4A68:
-	.incbin "dump/banim-ekrdragonfx_7A4A68.bin"
+	.incbin "dump/banim-ekrdragonfx_7A4A68.gbapal"
 
 	.global Tsa_87A4A88
 Tsa_87A4A88:
@@ -657,7 +657,7 @@ Img_DemonLightSprites:  @ 0x087A5390
 
 	.global Pal_DemonLightSprites
 Pal_DemonLightSprites:  @ 0x087A574C
-	.incbin "dump/banim-ekrdragonfx_7A574C.bin"
+	.incbin "dump/banim-ekrdragonfx_7A574C.gbapal"
 
 .global AnimSprite_EfxMaohFlashEye_1
 AnimSprite_EfxMaohFlashEye_1:  @ 0x7A576C
@@ -879,7 +879,7 @@ Img_DemonLightSprites_087A5E9C:  @ 0x087A5E9C
 
 	.global Pal_DemonLightSprites_087A61EC
 Pal_DemonLightSprites_087A61EC:  @ 0x087A61EC
-	.incbin "dump/banim-ekrdragonfx_7A61EC.bin"
+	.incbin "dump/banim-ekrdragonfx_7A61EC.gbapal"
 
 .global AnimSprite_EfxMaohFlashEyeFire1Obj_1
 AnimSprite_EfxMaohFlashEyeFire1Obj_1:  @ 0x7A620C
@@ -1777,35 +1777,35 @@ Img_087C8C80:  @ 0x087C8C80
 
 	.global Pal_087C9290
 Pal_087C9290:  @ 0x087C9290
-	.incbin "dump/banim-ekrdragonfx_7C9290.bin"@ 0x7C92B0 - 0x7C9290
+	.incbin "dump/banim-ekrdragonfx_7C9290.gbapal"@ 0x7C92B0 - 0x7C9290
 
 	.global Pal_087C92B0
 Pal_087C92B0:  @ 0x087C92B0
-	.incbin "dump/banim-ekrdragonfx_7C92B0.bin"@ 0x7C92D0 - 0x7C92B0
+	.incbin "dump/banim-ekrdragonfx_7C92B0.gbapal"@ 0x7C92D0 - 0x7C92B0
 
 	.global Pal_087C92D0
 Pal_087C92D0:  @ 0x087C92D0
-	.incbin "dump/banim-ekrdragonfx_7C92D0.bin"@ 0x7C92F0 - 0x7C92D0
+	.incbin "dump/banim-ekrdragonfx_7C92D0.gbapal"@ 0x7C92F0 - 0x7C92D0
 
 	.global Pal_087C92F0
 Pal_087C92F0:  @ 0x087C92F0
-	.incbin "dump/banim-ekrdragonfx_7C92F0.bin"@ 0x7C9310 - 0x7C92F0
+	.incbin "dump/banim-ekrdragonfx_7C92F0.gbapal"@ 0x7C9310 - 0x7C92F0
 
 	.global Pal_087C9310
 Pal_087C9310:  @ 0x087C9310
-	.incbin "dump/banim-ekrdragonfx_7C9310.bin"@ 0x7C9330 - 0x7C9310
+	.incbin "dump/banim-ekrdragonfx_7C9310.gbapal"@ 0x7C9330 - 0x7C9310
 
 	.global Pal_087C9330
 Pal_087C9330:  @ 0x087C9330
-	.incbin "dump/banim-ekrdragonfx_7C9330.bin"@ 0x7C9350 - 0x7C9330
+	.incbin "dump/banim-ekrdragonfx_7C9330.gbapal"@ 0x7C9350 - 0x7C9330
 
 	.global Pal_087C9350
 Pal_087C9350:  @ 0x087C9350
-	.incbin "dump/banim-ekrdragonfx_7C9350.bin"@ 0x7C9370 - 0x7C9350
+	.incbin "dump/banim-ekrdragonfx_7C9350.gbapal"@ 0x7C9370 - 0x7C9350
 
 	.global Pal_087C9370
 Pal_087C9370:  @ 0x087C9370
-	.incbin "dump/banim-ekrdragonfx_7C9370.bin"@ 0x7C9390 - 0x7C9370
+	.incbin "dump/banim-ekrdragonfx_7C9370.gbapal"@ 0x7C9390 - 0x7C9370
 
 	.global Tsa_087C9390
 Tsa_087C9390:  @ 0x087C9390
@@ -1861,23 +1861,23 @@ Img_087CBDF4:  @ 0x087CBDF4
 
 	.global Pal_087CC55C
 Pal_087CC55C:  @ 0x087CC55C
-	.incbin "dump/banim-ekrdragonfx_7CC55C.bin"@ 0x7CC57C - 0x7CC55C
+	.incbin "dump/banim-ekrdragonfx_7CC55C.gbapal"@ 0x7CC57C - 0x7CC55C
 
 	.global Pal_087CC57C
 Pal_087CC57C:  @ 0x087CC57C
-	.incbin "dump/banim-ekrdragonfx_7CC57C.bin"@ 0x7CC59C - 0x7CC57C
+	.incbin "dump/banim-ekrdragonfx_7CC57C.gbapal"@ 0x7CC59C - 0x7CC57C
 
 	.global Pal_087CC59C
 Pal_087CC59C:  @ 0x087CC59C
-	.incbin "dump/banim-ekrdragonfx_7CC59C.bin"@ 0x7CC5BC - 0x7CC59C
+	.incbin "dump/banim-ekrdragonfx_7CC59C.gbapal"@ 0x7CC5BC - 0x7CC59C
 
 	.global Pal_087CC5BC
 Pal_087CC5BC:  @ 0x087CC5BC
-	.incbin "dump/banim-ekrdragonfx_7CC5BC.bin"@ 0x7CC5DC - 0x7CC5BC
+	.incbin "dump/banim-ekrdragonfx_7CC5BC.gbapal"@ 0x7CC5DC - 0x7CC5BC
 
 	.global Pal_087CC5DC
 Pal_087CC5DC:  @ 0x087CC5DC
-	.incbin "dump/banim-ekrdragonfx_7CC5DC.bin"@ 0x7CC5FC - 0x7CC5DC
+	.incbin "dump/banim-ekrdragonfx_7CC5DC.gbapal"@ 0x7CC5FC - 0x7CC5DC
 
 	.global Tsa_087CC5FC
 Tsa_087CC5FC:  @ 0x087CC5FC
@@ -2317,35 +2317,35 @@ Img_087EDDC0:  @ 0x087EDDC0
 
 	.global Pal_087EE3A0
 Pal_087EE3A0:  @ 0x087EE3A0
-	.incbin "dump/banim-ekrdragonfx_7EE3A0.bin"@ 0x7EE3C0 - 0x7EE3A0
+	.incbin "dump/banim-ekrdragonfx_7EE3A0.gbapal"@ 0x7EE3C0 - 0x7EE3A0
 
 	.global Pal_087EE3C0
 Pal_087EE3C0:  @ 0x087EE3C0
-	.incbin "dump/banim-ekrdragonfx_7EE3C0.bin"@ 0x7EE3E0 - 0x7EE3C0
+	.incbin "dump/banim-ekrdragonfx_7EE3C0.gbapal"@ 0x7EE3E0 - 0x7EE3C0
 
 	.global Pal_087EE3E0
 Pal_087EE3E0:  @ 0x087EE3E0
-	.incbin "dump/banim-ekrdragonfx_7EE3E0.bin"@ 0x7EE400 - 0x7EE3E0
+	.incbin "dump/banim-ekrdragonfx_7EE3E0.gbapal"@ 0x7EE400 - 0x7EE3E0
 
 	.global Pal_087EE400
 Pal_087EE400:  @ 0x087EE400
-	.incbin "dump/banim-ekrdragonfx_7EE400.bin"@ 0x7EE420 - 0x7EE400
+	.incbin "dump/banim-ekrdragonfx_7EE400.gbapal"@ 0x7EE420 - 0x7EE400
 
 	.global Pal_087EE420
 Pal_087EE420:  @ 0x087EE420
-	.incbin "dump/banim-ekrdragonfx_7EE420.bin"@ 0x7EE440 - 0x7EE420
+	.incbin "dump/banim-ekrdragonfx_7EE420.gbapal"@ 0x7EE440 - 0x7EE420
 
 	.global Pal_087EE440
 Pal_087EE440:  @ 0x087EE440
-	.incbin "dump/banim-ekrdragonfx_7EE440.bin"@ 0x7EE460 - 0x7EE440
+	.incbin "dump/banim-ekrdragonfx_7EE440.gbapal"@ 0x7EE460 - 0x7EE440
 
 	.global Pal_087EE460
 Pal_087EE460:  @ 0x087EE460
-	.incbin "dump/banim-ekrdragonfx_7EE460.bin"@ 0x7EE480 - 0x7EE460
+	.incbin "dump/banim-ekrdragonfx_7EE460.gbapal"@ 0x7EE480 - 0x7EE460
 
 	.global Pal_087EE480
 Pal_087EE480:  @ 0x087EE480
-	.incbin "dump/banim-ekrdragonfx_7EE480.bin"@ 0x7EE4A0 - 0x7EE480
+	.incbin "dump/banim-ekrdragonfx_7EE480.gbapal"@ 0x7EE4A0 - 0x7EE480
 
 	.global Tsa_087EE4A0
 Tsa_087EE4A0:  @ 0x087EE4A0
@@ -2401,23 +2401,23 @@ Img_087F0E98:  @ 0x087F0E98
 
 	.global Pal_087F1600
 Pal_087F1600:  @ 0x087F1600
-	.incbin "dump/banim-ekrdragonfx_7F1600.bin"@ 0x7F1620 - 0x7F1600
+	.incbin "dump/banim-ekrdragonfx_7F1600.gbapal"@ 0x7F1620 - 0x7F1600
 
 	.global Pal_087F1620
 Pal_087F1620:  @ 0x087F1620
-	.incbin "dump/banim-ekrdragonfx_7F1620.bin"@ 0x7F1640 - 0x7F1620
+	.incbin "dump/banim-ekrdragonfx_7F1620.gbapal"@ 0x7F1640 - 0x7F1620
 
 	.global Pal_087F1640
 Pal_087F1640:  @ 0x087F1640
-	.incbin "dump/banim-ekrdragonfx_7F1640.bin"@ 0x7F1660 - 0x7F1640
+	.incbin "dump/banim-ekrdragonfx_7F1640.gbapal"@ 0x7F1660 - 0x7F1640
 
 	.global Pal_087F1660
 Pal_087F1660:  @ 0x087F1660
-	.incbin "dump/banim-ekrdragonfx_7F1660.bin"@ 0x7F1680 - 0x7F1660
+	.incbin "dump/banim-ekrdragonfx_7F1660.gbapal"@ 0x7F1680 - 0x7F1660
 
 	.global Pal_087F1680
 Pal_087F1680:  @ 0x087F1680
-	.incbin "dump/banim-ekrdragonfx_7F1680.bin"@ 0x7F16A0 - 0x7F1680
+	.incbin "dump/banim-ekrdragonfx_7F1680.gbapal"@ 0x7F16A0 - 0x7F1680
 
 	.global Tsa_087F16A0
 Tsa_087F16A0:  @ 0x087F16A0
@@ -2453,15 +2453,15 @@ Img_087F2E40:  @ 0x087F2E40
 
 	.global Pal_087F3C14
 Pal_087F3C14:  @ 0x087F3C14
-	.incbin "dump/banim-ekrdragonfx_7F3C14.bin"@ 0x7F3C34 - 0x7F3C14
+	.incbin "dump/banim-ekrdragonfx_7F3C14.gbapal"@ 0x7F3C34 - 0x7F3C14
 
 	.global Pal_087F3C34
 Pal_087F3C34:  @ 0x087F3C34
-	.incbin "dump/banim-ekrdragonfx_7F3C34.bin"@ 0x7F3C54 - 0x7F3C34
+	.incbin "dump/banim-ekrdragonfx_7F3C34.gbapal"@ 0x7F3C54 - 0x7F3C34
 
 	.global Pal_087F3C54
 Pal_087F3C54:  @ 0x087F3C54
-	.incbin "dump/banim-ekrdragonfx_7F3C54.bin"@ 0x7F3C74 - 0x7F3C54
+	.incbin "dump/banim-ekrdragonfx_7F3C54.gbapal"@ 0x7F3C74 - 0x7F3C54
 
 	.global Tsa_087F3C74
 Tsa_087F3C74:  @ 0x087F3C74

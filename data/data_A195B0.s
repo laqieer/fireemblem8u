@@ -10,7 +10,7 @@ Img_MenuScrollBar:  @ 0x08A19C0C
 
 	.global Pal_MenuScrollBar
 Pal_MenuScrollBar:  @ 0x08A19CAC
-	.incbin "dump/data_A195B0_A19CAC.bin"
+	.incbin "dump/data_A195B0_A19CAC.gbapal"
 
 	.global gUnknown_08A19CCC
 gUnknown_08A19CCC:  @ 0x08A19CCC
@@ -18,7 +18,7 @@ gUnknown_08A19CCC:  @ 0x08A19CCC
 
 	.global Pal_SpinningArrow
 Pal_SpinningArrow:  @ 0x08A1A084
-	.incbin "dump/data_A195B0_A1A084.bin"
+	.incbin "dump/data_A195B0_A1A084.gbapal"
 
 	.global gUnknown_08A1A0A4
 gUnknown_08A1A0A4:  @ 0x08A1A0A4
@@ -66,7 +66,7 @@ Pal_SysBrownBox:  @ 0x08A1B154
 
 	.global gPal_SupportScreenBanner
 gPal_SupportScreenBanner:  @ 0x08A1B174
-	.incbin "dump/data_A195B0_A1B174.bin"
+	.incbin "dump/data_A195B0_A1B174.gbapal"
 
 	.global gUnknown_08A1B194
 gUnknown_08A1B194:  @ 0x08A1B194
@@ -162,7 +162,7 @@ Img_UnitListBanner_Animation:  @ 0x08A1D288
 
 	.global Pal_08A1D448
 Pal_08A1D448:  @ 0x08A1D448
-	.incbin "dump/data_A195B0_A1D448.bin"
+	.incbin "dump/data_A195B0_A1D448.gbapal"
 
 	.global gUnknown_08A1D4C8
 gUnknown_08A1D4C8:  @ 0x08A1D4C8
@@ -178,7 +178,7 @@ gUnknown_08A1D510:  @ 0x08A1D510
 
 	.global Pal_MapBattleInfoNum
 Pal_MapBattleInfoNum:  @ 0x08A1D79C
-	.incbin "dump/data_A195B0_A1D79C.bin"
+	.incbin "dump/data_A195B0_A1D79C.gbapal"
 
 	.global Img_PrepPopupWindow
 Img_PrepPopupWindow:  @ 0x08A1D7DC
@@ -186,19 +186,19 @@ Img_PrepPopupWindow:  @ 0x08A1D7DC
 
 	.global Pal_08A1D850
 Pal_08A1D850:  @ 0x08A1D850
-	.incbin "dump/data_A195B0_A1D850.bin"
+	.incbin "dump/data_A195B0_A1D850.gbapal"
 
 	.global Pal_08A1D870
 Pal_08A1D870:  @ 0x08A1D870
-	.incbin "dump/data_A195B0_A1D870.bin"
+	.incbin "dump/data_A195B0_A1D870.gbapal"
 
 	.global Pal_08A1D890
 Pal_08A1D890:  @ 0x08A1D890
-	.incbin "dump/data_A195B0_A1D890.bin"
+	.incbin "dump/data_A195B0_A1D890.gbapal"
 
 	.global Pal_08A1D8B0
 Pal_08A1D8B0:  @ 0x08A1D8B0
-	.incbin "dump/data_A195B0_A1D8B0.bin"
+	.incbin "dump/data_A195B0_A1D8B0.gbapal"
 
 	.global Img_PrepWindow
 Img_PrepWindow:  @ 0x08A1D8D0
@@ -218,4 +218,4 @@ gGfx_SupportMenu:  @ 0x08A1DD0C
 
 	.global gPal_SupportMenu
 gPal_SupportMenu:  @ 0x08A1E0D8
-	.incbin "dump/data_A195B0_A1E0D8.bin"
+	.incbin "dump/data_A195B0_A1E0D8.gbapal"
