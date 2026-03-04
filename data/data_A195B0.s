@@ -82,11 +82,11 @@ gUnknown_08A1B638:  @ 0x08A1B638
 
 	.global gUnknown_08A1B658
 gUnknown_08A1B658:  @ 0x08A1B658
-	.incbin "dump/data_A195B0_A1B658.bin"
+	.incbin "dump/data_A195B0_A1B658.tsa.lz"
 
 	.global gUnknown_08A1B698
 gUnknown_08A1B698:  @ 0x08A1B698
-	.incbin "dump/data_A195B0_A1B698.bin"
+	.incbin "dump/data_A195B0_A1B698.tsa.lz"
 
 	.global gUnknown_08A1B730
 gUnknown_08A1B730:  @ 0x08A1B730
@@ -94,19 +94,19 @@ gUnknown_08A1B730:  @ 0x08A1B730
 
 	.global gUnknown_08A1B7C8
 gUnknown_08A1B7C8:  @ 0x08A1B7C8
-	.incbin "dump/data_A195B0_A1B7C8.bin"
+	.incbin "dump/data_A195B0_A1B7C8.tsa.lz"
 
 	.global gUnknown_08A1B8B8
 gUnknown_08A1B8B8:  @ 0x08A1B8B8
-	.incbin "dump/data_A195B0_A1B8B8.bin"
+	.incbin "dump/data_A195B0_A1B8B8.tsa.lz"
 
 	.global gUnknown_08A1B990
 gUnknown_08A1B990:  @ 0x08A1B990
-	.incbin "dump/data_A195B0_A1B990.bin"
+	.incbin "dump/data_A195B0_A1B990.tsa.lz"
 
 	.global gUnknown_08A1B9EC
 gUnknown_08A1B9EC:  @ 0x08A1B9EC
-	.incbin "dump/data_A195B0_A1B9EC.bin"
+	.incbin "dump/data_A195B0_A1B9EC.tsa.lz"
 
 	.global Img_PrepItemUseScreen
 Img_PrepItemUseScreen:  @ 0x08A1BAB8
@@ -114,15 +114,15 @@ Img_PrepItemUseScreen:  @ 0x08A1BAB8
 
 	.global Tsa_PrepItemUseScreen
 Tsa_PrepItemUseScreen:  @ 0x08A1BAE4
-	.incbin "dump/data_A195B0_A1BAE4.bin"
+	.incbin "dump/data_A195B0_A1BAE4.tsa.lz"
 
 	.global gUnknown_08A1BBD0
 gUnknown_08A1BBD0:  @ 0x08A1BBD0
-	.incbin "dump/data_A195B0_A1BBD0.bin"
+	.incbin "dump/data_A195B0_A1BBD0.tsa.lz"
 
 	.global gUnknown_08A1BCC0
 gUnknown_08A1BCC0:  @ 0x08A1BCC0
-	.incbin "dump/data_A195B0_A1BCC0.bin"
+	.incbin "dump/data_A195B0_A1BCC0.tsa.lz"
 
 	.global gUnknown_08A1BD00
 gUnknown_08A1BD00:  @ 0x08A1BD00
@@ -206,11 +206,11 @@ Img_PrepWindow:  @ 0x08A1D8D0
 
 	.global gUnknown_08A1DB80
 gUnknown_08A1DB80:  @ 0x08A1DB80
-	.incbin "dump/data_A195B0_A1DB80.bin"
+	.incbin "dump/data_A195B0_A1DB80.tsa.lz"
 
 	.global gTsa_SupportSubScreen
 gTsa_SupportSubScreen:  @ 0x08A1DC1C
-	.incbin "dump/data_A195B0_A1DC1C.bin"
+	.incbin "dump/data_A195B0_A1DC1C.tsa.lz"
 
 	.global gGfx_SupportMenu
 gGfx_SupportMenu:  @ 0x08A1DD0C

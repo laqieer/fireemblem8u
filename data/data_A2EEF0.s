@@ -34,7 +34,7 @@ gUnknown_08A35A3C:  @ 0x08A35A3C
 
 	.global gUnknown_08A35FD0
 gUnknown_08A35FD0:  @ 0x08A35FD0
-	.incbin "dump/data_A2EEF0_A35FD0.bin"
+	.incbin "dump/data_A2EEF0_A35FD0.tsa.lz"
 
 	.global gUnknown_08A360C8
 gUnknown_08A360C8:  @ 0x08A360C8

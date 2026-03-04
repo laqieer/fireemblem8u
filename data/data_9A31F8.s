@@ -119,15 +119,15 @@ Pal_MapBattleInfoPurple:  @ 0x089AD6A8
 
     .global Tsa_MapBattleBoxGfx1
 Tsa_MapBattleBoxGfx1:   @ 0x089AD6C8
-    .incbin "dump/data_9A31F8_9AD6C8.bin"
+    .incbin "dump/data_9A31F8_9AD6C8.tsa.lz"
 
     .global Tsa_MapBattleBoxGfx2
 Tsa_MapBattleBoxGfx2:   @ 0x089AD714
-    .incbin "dump/data_9A31F8_9AD714.bin"
+    .incbin "dump/data_9A31F8_9AD714.tsa.lz"
 
     .global Tsa_MapBattleBoxGfx3
 Tsa_MapBattleBoxGfx3:   @ 0x089AD74C
-    .incbin "dump/data_9A31F8_9AD74C.bin"
+    .incbin "dump/data_9A31F8_9AD74C.tsa.lz"
 
 	.global Img_MapBattleInfoHpBar
 Img_MapBattleInfoHpBar:  @ 0x089AD78C
@@ -139,7 +139,7 @@ Img_MapBattleInfoNum:  @ 0x089AD868
 
 	.global Tsa_ShopWindows
 Tsa_ShopWindows:  @ 0x089AD934
-	.incbin "dump/data_9A31F8_9AD934.bin"
+	.incbin "dump/data_9A31F8_9AD934.tsa.lz"
 
 	.global Img_ShopGoldBox
 Img_ShopGoldBox:  @ 0x089AD9F8
@@ -315,135 +315,135 @@ Pal_NightMareMapAnimfx:  @ 0x089B4BFC
 
 .global Tsa_NightMareMapAnimfx1
 Tsa_NightMareMapAnimfx1:
-	.incbin "dump/data_9A31F8_9B4C1C.bin"
+	.incbin "dump/data_9A31F8_9B4C1C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx2
 Tsa_NightMareMapAnimfx2:
-	.incbin "dump/data_9A31F8_9B4C80.bin"
+	.incbin "dump/data_9A31F8_9B4C80.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx3
 Tsa_NightMareMapAnimfx3:
-	.incbin "dump/data_9A31F8_9B4CE8.bin"
+	.incbin "dump/data_9A31F8_9B4CE8.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx4
 Tsa_NightMareMapAnimfx4:
-	.incbin "dump/data_9A31F8_9B4D64.bin"
+	.incbin "dump/data_9A31F8_9B4D64.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx5
 Tsa_NightMareMapAnimfx5:
-	.incbin "dump/data_9A31F8_9B4DDC.bin"
+	.incbin "dump/data_9A31F8_9B4DDC.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx6
 Tsa_NightMareMapAnimfx6:
-	.incbin "dump/data_9A31F8_9B4E4C.bin"
+	.incbin "dump/data_9A31F8_9B4E4C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx7
 Tsa_NightMareMapAnimfx7:
-	.incbin "dump/data_9A31F8_9B4EB8.bin"
+	.incbin "dump/data_9A31F8_9B4EB8.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx8
 Tsa_NightMareMapAnimfx8:
-	.incbin "dump/data_9A31F8_9B4F2C.bin"
+	.incbin "dump/data_9A31F8_9B4F2C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx9
 Tsa_NightMareMapAnimfx9:
-	.incbin "dump/data_9A31F8_9B4FA4.bin"
+	.incbin "dump/data_9A31F8_9B4FA4.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx10
 Tsa_NightMareMapAnimfx10:
-	.incbin "dump/data_9A31F8_9B501C.bin"
+	.incbin "dump/data_9A31F8_9B501C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx11
 Tsa_NightMareMapAnimfx11:
-	.incbin "dump/data_9A31F8_9B5094.bin"
+	.incbin "dump/data_9A31F8_9B5094.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx12
 Tsa_NightMareMapAnimfx12:
-	.incbin "dump/data_9A31F8_9B5118.bin"
+	.incbin "dump/data_9A31F8_9B5118.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx13
 Tsa_NightMareMapAnimfx13:
-	.incbin "dump/data_9A31F8_9B519C.bin"
+	.incbin "dump/data_9A31F8_9B519C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx14
 Tsa_NightMareMapAnimfx14:
-	.incbin "dump/data_9A31F8_9B5220.bin"
+	.incbin "dump/data_9A31F8_9B5220.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx15
 Tsa_NightMareMapAnimfx15:
-	.incbin "dump/data_9A31F8_9B52A4.bin"
+	.incbin "dump/data_9A31F8_9B52A4.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx16
 Tsa_NightMareMapAnimfx16:
-	.incbin "dump/data_9A31F8_9B5310.bin"
+	.incbin "dump/data_9A31F8_9B5310.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx17
 Tsa_NightMareMapAnimfx17:
-	.incbin "dump/data_9A31F8_9B5398.bin"
+	.incbin "dump/data_9A31F8_9B5398.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx18
 Tsa_NightMareMapAnimfx18:
-	.incbin "dump/data_9A31F8_9B5434.bin"
+	.incbin "dump/data_9A31F8_9B5434.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx19
 Tsa_NightMareMapAnimfx19:
-	.incbin "dump/data_9A31F8_9B54F0.bin"
+	.incbin "dump/data_9A31F8_9B54F0.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx20
 Tsa_NightMareMapAnimfx20:
-	.incbin "dump/data_9A31F8_9B55EC.bin"
+	.incbin "dump/data_9A31F8_9B55EC.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx21
 Tsa_NightMareMapAnimfx21:
-	.incbin "dump/data_9A31F8_9B5720.bin"
+	.incbin "dump/data_9A31F8_9B5720.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx22
 Tsa_NightMareMapAnimfx22:
-	.incbin "dump/data_9A31F8_9B58DC.bin"
+	.incbin "dump/data_9A31F8_9B58DC.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx23
 Tsa_NightMareMapAnimfx23:
-	.incbin "dump/data_9A31F8_9B5B38.bin"
+	.incbin "dump/data_9A31F8_9B5B38.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx24
 Tsa_NightMareMapAnimfx24:
-	.incbin "dump/data_9A31F8_9B5C6C.bin"
+	.incbin "dump/data_9A31F8_9B5C6C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx25
 Tsa_NightMareMapAnimfx25:
-	.incbin "dump/data_9A31F8_9B5E0C.bin"
+	.incbin "dump/data_9A31F8_9B5E0C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx26
 Tsa_NightMareMapAnimfx26:
-	.incbin "dump/data_9A31F8_9B6050.bin"
+	.incbin "dump/data_9A31F8_9B6050.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx27
 Tsa_NightMareMapAnimfx27:
-	.incbin "dump/data_9A31F8_9B6174.bin"
+	.incbin "dump/data_9A31F8_9B6174.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx28
 Tsa_NightMareMapAnimfx28:
-	.incbin "dump/data_9A31F8_9B630C.bin"
+	.incbin "dump/data_9A31F8_9B630C.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx29
 Tsa_NightMareMapAnimfx29:
-	.incbin "dump/data_9A31F8_9B6510.bin"
+	.incbin "dump/data_9A31F8_9B6510.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx30
 Tsa_NightMareMapAnimfx30:
-	.incbin "dump/data_9A31F8_9B65D4.bin"
+	.incbin "dump/data_9A31F8_9B65D4.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx31
 Tsa_NightMareMapAnimfx31:
-	.incbin "dump/data_9A31F8_9B66BC.bin"
+	.incbin "dump/data_9A31F8_9B66BC.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx32
 Tsa_NightMareMapAnimfx32:
-	.incbin "dump/data_9A31F8_9B6808.bin"
+	.incbin "dump/data_9A31F8_9B6808.tsa.lz"
 
 .global Tsa_NightMareMapAnimfx33
 Tsa_NightMareMapAnimfx33:
-	.incbin "dump/data_9A31F8_9B69BC.bin"
+	.incbin "dump/data_9A31F8_9B69BC.tsa.lz"
 
 	.global Img_MonsterStoneMapAnimfx
 Img_MonsterStoneMapAnimfx:  @ 0x089B6AA0
@@ -455,43 +455,43 @@ Pal_MonsterStoneMapAnimfx:  @ 0x089B73D4
 
 	.global Tsa1_MonsterStoneMapAnimfx
 Tsa1_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B73F4.bin"
+	.incbin "dump/data_9A31F8_9B73F4.tsa.lz"
 
 	.global Tsa2_MonsterStoneMapAnimfx
 Tsa2_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B7414.bin"
+	.incbin "dump/data_9A31F8_9B7414.tsa.lz"
 
 	.global Tsa3_MonsterStoneMapAnimfx
 Tsa3_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B743C.bin"
+	.incbin "dump/data_9A31F8_9B743C.tsa.lz"
 
 	.global Tsa4_MonsterStoneMapAnimfx
 Tsa4_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B7468.bin"
+	.incbin "dump/data_9A31F8_9B7468.tsa.lz"
 
 	.global Tsa5_MonsterStoneMapAnimfx
 Tsa5_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B749C.bin"
+	.incbin "dump/data_9A31F8_9B749C.tsa.lz"
 
 	.global Tsa6_MonsterStoneMapAnimfx
 Tsa6_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B74D4.bin"
+	.incbin "dump/data_9A31F8_9B74D4.tsa.lz"
 
 	.global Tsa7_MonsterStoneMapAnimfx
 Tsa7_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B7514.bin"
+	.incbin "dump/data_9A31F8_9B7514.tsa.lz"
 
 	.global Tsa8_MonsterStoneMapAnimfx
 Tsa8_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B7554.bin"
+	.incbin "dump/data_9A31F8_9B7554.tsa.lz"
 
 	.global Tsa9_MonsterStoneMapAnimfx
 Tsa9_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B759C.bin"
+	.incbin "dump/data_9A31F8_9B759C.tsa.lz"
 
 	.global Tsa10_MonsterStoneMapAnimfx
 Tsa10_MonsterStoneMapAnimfx:
-	.incbin "dump/data_9A31F8_9B75D8.bin"
+	.incbin "dump/data_9A31F8_9B75D8.tsa.lz"
 
 	.global Img_GorgonHatchCloud
 Img_GorgonHatchCloud:  @ 0x089B7610
@@ -503,31 +503,31 @@ Pal_GorgonHatchCloud:  @ 0x089B80C4
 
 	.global Tsa_GorgonHatchCloud_A
 Tsa_GorgonHatchCloud_A:  @ 0x089B80E4
-	.incbin "dump/data_9A31F8_9B80E4.bin"
+	.incbin "dump/data_9A31F8_9B80E4.tsa.lz"
 
 	.global Tsa_GorgonHatchCloud_B
 Tsa_GorgonHatchCloud_B:  @ 0x089B8140
-	.incbin "dump/data_9A31F8_9B8140.bin"
+	.incbin "dump/data_9A31F8_9B8140.tsa.lz"
 
 	.global Tsa_GorgonHatchCloud_C
 Tsa_GorgonHatchCloud_C:  @ 0x089B81A4
-	.incbin "dump/data_9A31F8_9B81A4.bin"
+	.incbin "dump/data_9A31F8_9B81A4.tsa.lz"
 
 	.global Tsa_GorgonHatchCloud_D
 Tsa_GorgonHatchCloud_D:  @ 0x089B8214
-	.incbin "dump/data_9A31F8_9B8214.bin"
+	.incbin "dump/data_9A31F8_9B8214.tsa.lz"
 
 	.global Tsa_GorgonHatchCloud_E
 Tsa_GorgonHatchCloud_E:  @ 0x089B828C
-	.incbin "dump/data_9A31F8_9B828C.bin"
+	.incbin "dump/data_9A31F8_9B828C.tsa.lz"
 
 	.global Tsa_GorgonHatchCloud_F
 Tsa_GorgonHatchCloud_F:  @ 0x089B82F0
-	.incbin "dump/data_9A31F8_9B82F0.bin"
+	.incbin "dump/data_9A31F8_9B82F0.tsa.lz"
 
 	.global Tsa_GorgonHatchCloud_G
 Tsa_GorgonHatchCloud_G:  @ 0x089B835C
-	.incbin "dump/data_9A31F8_9B835C.bin"@ 0x9B83C0 - 0x9B835C
+	.incbin "dump/data_9A31F8_9B835C.tsa.lz"@ 0x9B83C0 - 0x9B835C
 
 	.global gUnknown_089B83C0
 gUnknown_089B83C0:  @ 0x089B83C0
@@ -979,227 +979,227 @@ gUnknown_089D2AB8:  @ 0x089D2AB8
 
 	.global gUnknown_089D2AD8
 gUnknown_089D2AD8:  @ 0x089D2AD8
-	.incbin "dump/data_9A31F8_9D2AD8.bin"@ 0x9D2C30 - 0x9D2AD8
+	.incbin "dump/data_9A31F8_9D2AD8.tsa.lz"@ 0x9D2C30 - 0x9D2AD8
 
 	.global gUnknown_089D2C30
 gUnknown_089D2C30:  @ 0x089D2C30
-	.incbin "dump/data_9A31F8_9D2C30.bin"@ 0x9D2DC0 - 0x9D2C30
+	.incbin "dump/data_9A31F8_9D2C30.tsa.lz"@ 0x9D2DC0 - 0x9D2C30
 
 	.global gUnknown_089D2DC0
 gUnknown_089D2DC0:  @ 0x089D2DC0
-	.incbin "dump/data_9A31F8_9D2DC0.bin"@ 0x9D2F78 - 0x9D2DC0
+	.incbin "dump/data_9A31F8_9D2DC0.tsa.lz"@ 0x9D2F78 - 0x9D2DC0
 
 	.global gUnknown_089D2F78
 gUnknown_089D2F78:  @ 0x089D2F78
-	.incbin "dump/data_9A31F8_9D2F78.bin"@ 0x9D3130 - 0x9D2F78
+	.incbin "dump/data_9A31F8_9D2F78.tsa.lz"@ 0x9D3130 - 0x9D2F78
 
 	.global gUnknown_089D3130
 gUnknown_089D3130:  @ 0x089D3130
-	.incbin "dump/data_9A31F8_9D3130.bin"@ 0x9D32D8 - 0x9D3130
+	.incbin "dump/data_9A31F8_9D3130.tsa.lz"@ 0x9D32D8 - 0x9D3130
 
 	.global gUnknown_089D32D8
 gUnknown_089D32D8:  @ 0x089D32D8
-	.incbin "dump/data_9A31F8_9D32D8.bin"@ 0x9D34A0 - 0x9D32D8
+	.incbin "dump/data_9A31F8_9D32D8.tsa.lz"@ 0x9D34A0 - 0x9D32D8
 
 	.global gUnknown_089D34A0
 gUnknown_089D34A0:  @ 0x089D34A0
-	.incbin "dump/data_9A31F8_9D34A0.bin"@ 0x9D36B0 - 0x9D34A0
+	.incbin "dump/data_9A31F8_9D34A0.tsa.lz"@ 0x9D36B0 - 0x9D34A0
 
 	.global gUnknown_089D36B0
 gUnknown_089D36B0:  @ 0x089D36B0
-	.incbin "dump/data_9A31F8_9D36B0.bin"@ 0x9D38CC - 0x9D36B0
+	.incbin "dump/data_9A31F8_9D36B0.tsa.lz"@ 0x9D38CC - 0x9D36B0
 
 	.global gUnknown_089D38CC
 gUnknown_089D38CC:  @ 0x089D38CC
-	.incbin "dump/data_9A31F8_9D38CC.bin"@ 0x9D3AD4 - 0x9D38CC
+	.incbin "dump/data_9A31F8_9D38CC.tsa.lz"@ 0x9D3AD4 - 0x9D38CC
 
 	.global gUnknown_089D3AD4
 gUnknown_089D3AD4:  @ 0x089D3AD4
-	.incbin "dump/data_9A31F8_9D3AD4.bin"@ 0x9D3CF8 - 0x9D3AD4
+	.incbin "dump/data_9A31F8_9D3AD4.tsa.lz"@ 0x9D3CF8 - 0x9D3AD4
 
 	.global gUnknown_089D3CF8
 gUnknown_089D3CF8:  @ 0x089D3CF8
-	.incbin "dump/data_9A31F8_9D3CF8.bin"@ 0x9D3F20 - 0x9D3CF8
+	.incbin "dump/data_9A31F8_9D3CF8.tsa.lz"@ 0x9D3F20 - 0x9D3CF8
 
 	.global gUnknown_089D3F20
 gUnknown_089D3F20:  @ 0x089D3F20
-	.incbin "dump/data_9A31F8_9D3F20.bin"@ 0x9D4150 - 0x9D3F20
+	.incbin "dump/data_9A31F8_9D3F20.tsa.lz"@ 0x9D4150 - 0x9D3F20
 
 	.global gUnknown_089D4150
 gUnknown_089D4150:  @ 0x089D4150
-	.incbin "dump/data_9A31F8_9D4150.bin"@ 0x9D432C - 0x9D4150
+	.incbin "dump/data_9A31F8_9D4150.tsa.lz"@ 0x9D432C - 0x9D4150
 
 	.global gUnknown_089D432C
 gUnknown_089D432C:  @ 0x089D432C
-	.incbin "dump/data_9A31F8_9D432C.bin"@ 0x9D4500 - 0x9D432C
+	.incbin "dump/data_9A31F8_9D432C.tsa.lz"@ 0x9D4500 - 0x9D432C
 
 	.global gUnknown_089D4500
 gUnknown_089D4500:  @ 0x089D4500
-	.incbin "dump/data_9A31F8_9D4500.bin"@ 0x9D46C4 - 0x9D4500
+	.incbin "dump/data_9A31F8_9D4500.tsa.lz"@ 0x9D46C4 - 0x9D4500
 
 	.global gUnknown_089D46C4
 gUnknown_089D46C4:  @ 0x089D46C4
-	.incbin "dump/data_9A31F8_9D46C4.bin"@ 0x9D48AC - 0x9D46C4
+	.incbin "dump/data_9A31F8_9D46C4.tsa.lz"@ 0x9D48AC - 0x9D46C4
 
 	.global gUnknown_089D48AC
 gUnknown_089D48AC:  @ 0x089D48AC
-	.incbin "dump/data_9A31F8_9D48AC.bin"@ 0x9D4A60 - 0x9D48AC
+	.incbin "dump/data_9A31F8_9D48AC.tsa.lz"@ 0x9D4A60 - 0x9D48AC
 
 	.global gUnknown_089D4A60
 gUnknown_089D4A60:  @ 0x089D4A60
-	.incbin "dump/data_9A31F8_9D4A60.bin"@ 0x9D4BFC - 0x9D4A60
+	.incbin "dump/data_9A31F8_9D4A60.tsa.lz"@ 0x9D4BFC - 0x9D4A60
 
 	.global gUnknown_089D4BFC
 gUnknown_089D4BFC:  @ 0x089D4BFC
-	.incbin "dump/data_9A31F8_9D4BFC.bin"@ 0x9D4D74 - 0x9D4BFC
+	.incbin "dump/data_9A31F8_9D4BFC.tsa.lz"@ 0x9D4D74 - 0x9D4BFC
 
 	.global gUnknown_089D4D74
 gUnknown_089D4D74:  @ 0x089D4D74
-	.incbin "dump/data_9A31F8_9D4D74.bin"@ 0x9D4ECC - 0x9D4D74
+	.incbin "dump/data_9A31F8_9D4D74.tsa.lz"@ 0x9D4ECC - 0x9D4D74
 
 	.global gUnknown_089D4ECC
 gUnknown_089D4ECC:  @ 0x089D4ECC
-	.incbin "dump/data_9A31F8_9D4ECC.bin"@ 0x9D4FDC - 0x9D4ECC
+	.incbin "dump/data_9A31F8_9D4ECC.tsa.lz"@ 0x9D4FDC - 0x9D4ECC
 
 	.global gUnknown_089D4FDC
 gUnknown_089D4FDC:  @ 0x089D4FDC
-	.incbin "dump/data_9A31F8_9D4FDC.bin"@ 0x9D5100 - 0x9D4FDC
+	.incbin "dump/data_9A31F8_9D4FDC.tsa.lz"@ 0x9D5100 - 0x9D4FDC
 
 	.global gUnknown_089D5100
 gUnknown_089D5100:  @ 0x089D5100
-	.incbin "dump/data_9A31F8_9D5100.bin"@ 0x9D5214 - 0x9D5100
+	.incbin "dump/data_9A31F8_9D5100.tsa.lz"@ 0x9D5214 - 0x9D5100
 
 	.global gUnknown_089D5214
 gUnknown_089D5214:  @ 0x089D5214
-	.incbin "dump/data_9A31F8_9D5214.bin"@ 0x9D52D0 - 0x9D5214
+	.incbin "dump/data_9A31F8_9D5214.tsa.lz"@ 0x9D52D0 - 0x9D5214
 
 	.global gUnknown_089D52D0
 gUnknown_089D52D0:  @ 0x089D52D0
-	.incbin "dump/data_9A31F8_9D52D0.bin"@ 0x9D538C - 0x9D52D0
+	.incbin "dump/data_9A31F8_9D52D0.tsa.lz"@ 0x9D538C - 0x9D52D0
 
 	.global gUnknown_089D538C
 gUnknown_089D538C:  @ 0x089D538C
-	.incbin "dump/data_9A31F8_9D538C.bin"@ 0x9D5440 - 0x9D538C
+	.incbin "dump/data_9A31F8_9D538C.tsa.lz"@ 0x9D5440 - 0x9D538C
 
 	.global gUnknown_089D5440
 gUnknown_089D5440:  @ 0x089D5440
-	.incbin "dump/data_9A31F8_9D5440.bin"@ 0x9D5540 - 0x9D5440
+	.incbin "dump/data_9A31F8_9D5440.tsa.lz"@ 0x9D5540 - 0x9D5440
 
 	.global gUnknown_089D5540
 gUnknown_089D5540:  @ 0x089D5540
-	.incbin "dump/data_9A31F8_9D5540.bin"@ 0x9D5658 - 0x9D5540
+	.incbin "dump/data_9A31F8_9D5540.tsa.lz"@ 0x9D5658 - 0x9D5540
 
 	.global gUnknown_089D5658
 gUnknown_089D5658:  @ 0x089D5658
-	.incbin "dump/data_9A31F8_9D5658.bin"@ 0x9D5764 - 0x9D5658
+	.incbin "dump/data_9A31F8_9D5658.tsa.lz"@ 0x9D5764 - 0x9D5658
 
 	.global gUnknown_089D5764
 gUnknown_089D5764:  @ 0x089D5764
-	.incbin "dump/data_9A31F8_9D5764.bin"@ 0x9D5820 - 0x9D5764
+	.incbin "dump/data_9A31F8_9D5764.tsa.lz"@ 0x9D5820 - 0x9D5764
 
 	.global gUnknown_089D5820
 gUnknown_089D5820:  @ 0x089D5820
-	.incbin "dump/data_9A31F8_9D5820.bin"@ 0x9D58E0 - 0x9D5820
+	.incbin "dump/data_9A31F8_9D5820.tsa.lz"@ 0x9D58E0 - 0x9D5820
 
 	.global gUnknown_089D58E0
 gUnknown_089D58E0:  @ 0x089D58E0
-	.incbin "dump/data_9A31F8_9D58E0.bin"@ 0x9D5A20 - 0x9D58E0
+	.incbin "dump/data_9A31F8_9D58E0.tsa.lz"@ 0x9D5A20 - 0x9D58E0
 
 	.global gUnknown_089D5A20
 gUnknown_089D5A20:  @ 0x089D5A20
-	.incbin "dump/data_9A31F8_9D5A20.bin"@ 0x9D5B58 - 0x9D5A20
+	.incbin "dump/data_9A31F8_9D5A20.tsa.lz"@ 0x9D5B58 - 0x9D5A20
 
 	.global gUnknown_089D5B58
 gUnknown_089D5B58:  @ 0x089D5B58
-	.incbin "dump/data_9A31F8_9D5B58.bin"@ 0x9D5C90 - 0x9D5B58
+	.incbin "dump/data_9A31F8_9D5B58.tsa.lz"@ 0x9D5C90 - 0x9D5B58
 
 	.global gUnknown_089D5C90
 gUnknown_089D5C90:  @ 0x089D5C90
-	.incbin "dump/data_9A31F8_9D5C90.bin"@ 0x9D5D4C - 0x9D5C90
+	.incbin "dump/data_9A31F8_9D5C90.tsa.lz"@ 0x9D5D4C - 0x9D5C90
 
 	.global gUnknown_089D5D4C
 gUnknown_089D5D4C:  @ 0x089D5D4C
-	.incbin "dump/data_9A31F8_9D5D4C.bin"@ 0x9D5E9C - 0x9D5D4C
+	.incbin "dump/data_9A31F8_9D5D4C.tsa.lz"@ 0x9D5E9C - 0x9D5D4C
 
 	.global gUnknown_089D5E9C
 gUnknown_089D5E9C:  @ 0x089D5E9C
-	.incbin "dump/data_9A31F8_9D5E9C.bin"@ 0x9D5FF0 - 0x9D5E9C
+	.incbin "dump/data_9A31F8_9D5E9C.tsa.lz"@ 0x9D5FF0 - 0x9D5E9C
 
 	.global gUnknown_089D5FF0
 gUnknown_089D5FF0:  @ 0x089D5FF0
-	.incbin "dump/data_9A31F8_9D5FF0.bin"@ 0x9D6170 - 0x9D5FF0
+	.incbin "dump/data_9A31F8_9D5FF0.tsa.lz"@ 0x9D6170 - 0x9D5FF0
 
 	.global gUnknown_089D6170
 gUnknown_089D6170:  @ 0x089D6170
-	.incbin "dump/data_9A31F8_9D6170.bin"@ 0x9D62F8 - 0x9D6170
+	.incbin "dump/data_9A31F8_9D6170.tsa.lz"@ 0x9D62F8 - 0x9D6170
 
 	.global gUnknown_089D62F8
 gUnknown_089D62F8:  @ 0x089D62F8
-	.incbin "dump/data_9A31F8_9D62F8.bin"@ 0x9D64EC - 0x9D62F8
+	.incbin "dump/data_9A31F8_9D62F8.tsa.lz"@ 0x9D64EC - 0x9D62F8
 
 	.global gUnknown_089D64EC
 gUnknown_089D64EC:  @ 0x089D64EC
-	.incbin "dump/data_9A31F8_9D64EC.bin"@ 0x9D66D0 - 0x9D64EC
+	.incbin "dump/data_9A31F8_9D64EC.tsa.lz"@ 0x9D66D0 - 0x9D64EC
 
 	.global gUnknown_089D66D0
 gUnknown_089D66D0:  @ 0x089D66D0
-	.incbin "dump/data_9A31F8_9D66D0.bin"@ 0x9D67F4 - 0x9D66D0
+	.incbin "dump/data_9A31F8_9D66D0.tsa.lz"@ 0x9D67F4 - 0x9D66D0
 
 	.global gUnknown_089D67F4
 gUnknown_089D67F4:  @ 0x089D67F4
-	.incbin "dump/data_9A31F8_9D67F4.bin"@ 0x9D6AA4 - 0x9D67F4
+	.incbin "dump/data_9A31F8_9D67F4.tsa.lz"@ 0x9D6AA4 - 0x9D67F4
 
 	.global gUnknown_089D6AA4
 gUnknown_089D6AA4:  @ 0x089D6AA4
-	.incbin "dump/data_9A31F8_9D6AA4.bin"@ 0x9D6E1C - 0x9D6AA4
+	.incbin "dump/data_9A31F8_9D6AA4.tsa.lz"@ 0x9D6E1C - 0x9D6AA4
 
 	.global gUnknown_089D6E1C
 gUnknown_089D6E1C:  @ 0x089D6E1C
-	.incbin "dump/data_9A31F8_9D6E1C.bin"@ 0x9D6F0C - 0x9D6E1C
+	.incbin "dump/data_9A31F8_9D6E1C.tsa.lz"@ 0x9D6F0C - 0x9D6E1C
 
 	.global gUnknown_089D6F0C
 gUnknown_089D6F0C:  @ 0x089D6F0C
-	.incbin "dump/data_9A31F8_9D6F0C.bin"@ 0x9D704C - 0x9D6F0C
+	.incbin "dump/data_9A31F8_9D6F0C.tsa.lz"@ 0x9D704C - 0x9D6F0C
 
 	.global gUnknown_089D704C
 gUnknown_089D704C:  @ 0x089D704C
-	.incbin "dump/data_9A31F8_9D704C.bin"@ 0x9D71DC - 0x9D704C
+	.incbin "dump/data_9A31F8_9D704C.tsa.lz"@ 0x9D71DC - 0x9D704C
 
 	.global gUnknown_089D71DC
 gUnknown_089D71DC:  @ 0x089D71DC
-	.incbin "dump/data_9A31F8_9D71DC.bin"@ 0x9D73B4 - 0x9D71DC
+	.incbin "dump/data_9A31F8_9D71DC.tsa.lz"@ 0x9D73B4 - 0x9D71DC
 
 	.global gUnknown_089D73B4
 gUnknown_089D73B4:  @ 0x089D73B4
-	.incbin "dump/data_9A31F8_9D73B4.bin"@ 0x9D75BC - 0x9D73B4
+	.incbin "dump/data_9A31F8_9D73B4.tsa.lz"@ 0x9D75BC - 0x9D73B4
 
 	.global gUnknown_089D75BC
 gUnknown_089D75BC:  @ 0x089D75BC
-	.incbin "dump/data_9A31F8_9D75BC.bin"@ 0x9D77CC - 0x9D75BC
+	.incbin "dump/data_9A31F8_9D75BC.tsa.lz"@ 0x9D77CC - 0x9D75BC
 
 	.global gUnknown_089D77CC
 gUnknown_089D77CC:  @ 0x089D77CC
-	.incbin "dump/data_9A31F8_9D77CC.bin"@ 0x9D79B4 - 0x9D77CC
+	.incbin "dump/data_9A31F8_9D77CC.tsa.lz"@ 0x9D79B4 - 0x9D77CC
 
 	.global gUnknown_089D79B4
 gUnknown_089D79B4:  @ 0x089D79B4
-	.incbin "dump/data_9A31F8_9D79B4.bin"@ 0x9D7B78 - 0x9D79B4
+	.incbin "dump/data_9A31F8_9D79B4.tsa.lz"@ 0x9D7B78 - 0x9D79B4
 
 	.global gUnknown_089D7B78
 gUnknown_089D7B78:  @ 0x089D7B78
-	.incbin "dump/data_9A31F8_9D7B78.bin"@ 0x9D7D04 - 0x9D7B78
+	.incbin "dump/data_9A31F8_9D7B78.tsa.lz"@ 0x9D7D04 - 0x9D7B78
 
 	.global gUnknown_089D7D04
 gUnknown_089D7D04:  @ 0x089D7D04
-	.incbin "dump/data_9A31F8_9D7D04.bin"@ 0x9D7E48 - 0x9D7D04
+	.incbin "dump/data_9A31F8_9D7D04.tsa.lz"@ 0x9D7E48 - 0x9D7D04
 
 	.global gUnknown_089D7E48
 gUnknown_089D7E48:  @ 0x089D7E48
-	.incbin "dump/data_9A31F8_9D7E48.bin"@ 0x9D7F48 - 0x9D7E48
+	.incbin "dump/data_9A31F8_9D7E48.tsa.lz"@ 0x9D7F48 - 0x9D7E48
 
 	.global gUnknown_089D7F48
 gUnknown_089D7F48:  @ 0x089D7F48
-	.incbin "dump/data_9A31F8_9D7F48.bin"@ 0x9D8010 - 0x9D7F48
+	.incbin "dump/data_9A31F8_9D7F48.tsa.lz"@ 0x9D8010 - 0x9D7F48
 
 	.global gUnknown_089D8010
 gUnknown_089D8010:  @ 0x089D8010
@@ -1267,35 +1267,35 @@ gUnknown_089DCE28:  @ 0x089DCE28
 
 	.global gUnknown_089DCE48
 gUnknown_089DCE48:  @ 0x089DCE48
-	.incbin "dump/data_9A31F8_9DCE48.bin"@ 0x9DCF10 - 0x9DCE48
+	.incbin "dump/data_9A31F8_9DCE48.tsa.lz"@ 0x9DCF10 - 0x9DCE48
 
 	.global gUnknown_089DCF10
 gUnknown_089DCF10:  @ 0x089DCF10
-	.incbin "dump/data_9A31F8_9DCF10.bin"@ 0x9DCFFC - 0x9DCF10
+	.incbin "dump/data_9A31F8_9DCF10.tsa.lz"@ 0x9DCFFC - 0x9DCF10
 
 	.global gUnknown_089DCFFC
 gUnknown_089DCFFC:  @ 0x089DCFFC
-	.incbin "dump/data_9A31F8_9DCFFC.bin"@ 0x9DD114 - 0x9DCFFC
+	.incbin "dump/data_9A31F8_9DCFFC.tsa.lz"@ 0x9DD114 - 0x9DCFFC
 
 	.global gUnknown_089DD114
 gUnknown_089DD114:  @ 0x089DD114
-	.incbin "dump/data_9A31F8_9DD114.bin"@ 0x9DD284 - 0x9DD114
+	.incbin "dump/data_9A31F8_9DD114.tsa.lz"@ 0x9DD284 - 0x9DD114
 
 	.global gUnknown_089DD284
 gUnknown_089DD284:  @ 0x089DD284
-	.incbin "dump/data_9A31F8_9DD284.bin"@ 0x9DD4E8 - 0x9DD284
+	.incbin "dump/data_9A31F8_9DD284.tsa.lz"@ 0x9DD4E8 - 0x9DD284
 
 	.global gUnknown_089DD4E8
 gUnknown_089DD4E8:  @ 0x089DD4E8
-	.incbin "dump/data_9A31F8_9DD4E8.bin"@ 0x9DD790 - 0x9DD4E8
+	.incbin "dump/data_9A31F8_9DD4E8.tsa.lz"@ 0x9DD790 - 0x9DD4E8
 
 	.global gUnknown_089DD790
 gUnknown_089DD790:  @ 0x089DD790
-	.incbin "dump/data_9A31F8_9DD790.bin"@ 0x9DDA68 - 0x9DD790
+	.incbin "dump/data_9A31F8_9DD790.tsa.lz"@ 0x9DDA68 - 0x9DD790
 
 	.global gUnknown_089DDA68
 gUnknown_089DDA68:  @ 0x089DDA68
-	.incbin "dump/data_9A31F8_9DDA68.bin"@ 0x9DDE8C - 0x9DDA68
+	.incbin "dump/data_9A31F8_9DDA68.tsa.lz"@ 0x9DDE8C - 0x9DDA68
 
 	.global gUnknown_089DDE8C
 gUnknown_089DDE8C:  @ 0x089DDE8C
@@ -1507,107 +1507,107 @@ gUnknown_089E4F9C:  @ 0x089E4F9C
 
 	.global gUnknown_089E4FBC
 gUnknown_089E4FBC:  @ 0x089E4FBC
-	.incbin "dump/data_9A31F8_9E4FBC.bin"@ 0x9E5074 - 0x9E4FBC
+	.incbin "dump/data_9A31F8_9E4FBC.tsa.lz"@ 0x9E5074 - 0x9E4FBC
 
 	.global gUnknown_089E5074
 gUnknown_089E5074:  @ 0x089E5074
-	.incbin "dump/data_9A31F8_9E5074.bin"@ 0x9E5130 - 0x9E5074
+	.incbin "dump/data_9A31F8_9E5074.tsa.lz"@ 0x9E5130 - 0x9E5074
 
 	.global gUnknown_089E5130
 gUnknown_089E5130:  @ 0x089E5130
-	.incbin "dump/data_9A31F8_9E5130.bin"@ 0x9E51EC - 0x9E5130
+	.incbin "dump/data_9A31F8_9E5130.tsa.lz"@ 0x9E51EC - 0x9E5130
 
 	.global gUnknown_089E51EC
 gUnknown_089E51EC:  @ 0x089E51EC
-	.incbin "dump/data_9A31F8_9E51EC.bin"@ 0x9E52AC - 0x9E51EC
+	.incbin "dump/data_9A31F8_9E51EC.tsa.lz"@ 0x9E52AC - 0x9E51EC
 
 	.global gUnknown_089E52AC
 gUnknown_089E52AC:  @ 0x089E52AC
-	.incbin "dump/data_9A31F8_9E52AC.bin"@ 0x9E5364 - 0x9E52AC
+	.incbin "dump/data_9A31F8_9E52AC.tsa.lz"@ 0x9E5364 - 0x9E52AC
 
 	.global gUnknown_089E5364
 gUnknown_089E5364:  @ 0x089E5364
-	.incbin "dump/data_9A31F8_9E5364.bin"@ 0x9E541C - 0x9E5364
+	.incbin "dump/data_9A31F8_9E5364.tsa.lz"@ 0x9E541C - 0x9E5364
 
 	.global gUnknown_089E541C
 gUnknown_089E541C:  @ 0x089E541C
-	.incbin "dump/data_9A31F8_9E541C.bin"@ 0x9E5600 - 0x9E541C
+	.incbin "dump/data_9A31F8_9E541C.tsa.lz"@ 0x9E5600 - 0x9E541C
 
 	.global gUnknown_089E5600
 gUnknown_089E5600:  @ 0x089E5600
-	.incbin "dump/data_9A31F8_9E5600.bin"@ 0x9E5814 - 0x9E5600
+	.incbin "dump/data_9A31F8_9E5600.tsa.lz"@ 0x9E5814 - 0x9E5600
 
 	.global gUnknown_089E5814
 gUnknown_089E5814:  @ 0x089E5814
-	.incbin "dump/data_9A31F8_9E5814.bin"@ 0x9E5A58 - 0x9E5814
+	.incbin "dump/data_9A31F8_9E5814.tsa.lz"@ 0x9E5A58 - 0x9E5814
 
 	.global gUnknown_089E5A58
 gUnknown_089E5A58:  @ 0x089E5A58
-	.incbin "dump/data_9A31F8_9E5A58.bin"@ 0x9E5D08 - 0x9E5A58
+	.incbin "dump/data_9A31F8_9E5A58.tsa.lz"@ 0x9E5D08 - 0x9E5A58
 
 	.global gUnknown_089E5D08
 gUnknown_089E5D08:  @ 0x089E5D08
-	.incbin "dump/data_9A31F8_9E5D08.bin"@ 0x9E5FEC - 0x9E5D08
+	.incbin "dump/data_9A31F8_9E5D08.tsa.lz"@ 0x9E5FEC - 0x9E5D08
 
 	.global gUnknown_089E5FEC
 gUnknown_089E5FEC:  @ 0x089E5FEC
-	.incbin "dump/data_9A31F8_9E5FEC.bin"@ 0x9E6290 - 0x9E5FEC
+	.incbin "dump/data_9A31F8_9E5FEC.tsa.lz"@ 0x9E6290 - 0x9E5FEC
 
 	.global gUnknown_089E6290
 gUnknown_089E6290:  @ 0x089E6290
-	.incbin "dump/data_9A31F8_9E6290.bin"@ 0x9E64D0 - 0x9E6290
+	.incbin "dump/data_9A31F8_9E6290.tsa.lz"@ 0x9E64D0 - 0x9E6290
 
 	.global gUnknown_089E64D0
 gUnknown_089E64D0:  @ 0x089E64D0
-	.incbin "dump/data_9A31F8_9E64D0.bin"@ 0x9E66A0 - 0x9E64D0
+	.incbin "dump/data_9A31F8_9E64D0.tsa.lz"@ 0x9E66A0 - 0x9E64D0
 
 	.global gUnknown_089E66A0
 gUnknown_089E66A0:  @ 0x089E66A0
-	.incbin "dump/data_9A31F8_9E66A0.bin"@ 0x9E6808 - 0x9E66A0
+	.incbin "dump/data_9A31F8_9E66A0.tsa.lz"@ 0x9E6808 - 0x9E66A0
 
 	.global gUnknown_089E6808
 gUnknown_089E6808:  @ 0x089E6808
-	.incbin "dump/data_9A31F8_9E6808.bin"@ 0x9E6924 - 0x9E6808
+	.incbin "dump/data_9A31F8_9E6808.tsa.lz"@ 0x9E6924 - 0x9E6808
 
 	.global gUnknown_089E6924
 gUnknown_089E6924:  @ 0x089E6924
-	.incbin "dump/data_9A31F8_9E6924.bin"@ 0x9E6A14 - 0x9E6924
+	.incbin "dump/data_9A31F8_9E6924.tsa.lz"@ 0x9E6A14 - 0x9E6924
 
 	.global gUnknown_089E6A14
 gUnknown_089E6A14:  @ 0x089E6A14
-	.incbin "dump/data_9A31F8_9E6A14.bin"@ 0x9E6AE4 - 0x9E6A14
+	.incbin "dump/data_9A31F8_9E6A14.tsa.lz"@ 0x9E6AE4 - 0x9E6A14
 
 	.global gUnknown_089E6AE4
 gUnknown_089E6AE4:  @ 0x089E6AE4
-	.incbin "dump/data_9A31F8_9E6AE4.bin"@ 0x9E6BB0 - 0x9E6AE4
+	.incbin "dump/data_9A31F8_9E6AE4.tsa.lz"@ 0x9E6BB0 - 0x9E6AE4
 
 	.global gUnknown_089E6BB0
 gUnknown_089E6BB0:  @ 0x089E6BB0
-	.incbin "dump/data_9A31F8_9E6BB0.bin"@ 0x9E6C80 - 0x9E6BB0
+	.incbin "dump/data_9A31F8_9E6BB0.tsa.lz"@ 0x9E6C80 - 0x9E6BB0
 
 	.global gUnknown_089E6C80
 gUnknown_089E6C80:  @ 0x089E6C80
-	.incbin "dump/data_9A31F8_9E6C80.bin"@ 0x9E6D50 - 0x9E6C80
+	.incbin "dump/data_9A31F8_9E6C80.tsa.lz"@ 0x9E6D50 - 0x9E6C80
 
 	.global gUnknown_089E6D50
 gUnknown_089E6D50:  @ 0x089E6D50
-	.incbin "dump/data_9A31F8_9E6D50.bin"@ 0x9E6E1C - 0x9E6D50
+	.incbin "dump/data_9A31F8_9E6D50.tsa.lz"@ 0x9E6E1C - 0x9E6D50
 
 	.global gUnknown_089E6E1C
 gUnknown_089E6E1C:  @ 0x089E6E1C
-	.incbin "dump/data_9A31F8_9E6E1C.bin"@ 0x9E6EE8 - 0x9E6E1C
+	.incbin "dump/data_9A31F8_9E6E1C.tsa.lz"@ 0x9E6EE8 - 0x9E6E1C
 
 	.global gUnknown_089E6EE8
 gUnknown_089E6EE8:  @ 0x089E6EE8
-	.incbin "dump/data_9A31F8_9E6EE8.bin"@ 0x9E6FB4 - 0x9E6EE8
+	.incbin "dump/data_9A31F8_9E6EE8.tsa.lz"@ 0x9E6FB4 - 0x9E6EE8
 
 	.global gUnknown_089E6FB4
 gUnknown_089E6FB4:  @ 0x089E6FB4
-	.incbin "dump/data_9A31F8_9E6FB4.bin"@ 0x9E7080 - 0x9E6FB4
+	.incbin "dump/data_9A31F8_9E6FB4.tsa.lz"@ 0x9E7080 - 0x9E6FB4
 
 	.global gUnknown_089E7080
 gUnknown_089E7080:  @ 0x089E7080
-	.incbin "dump/data_9A31F8_9E7080.bin"@ 0x9E714C - 0x9E7080
+	.incbin "dump/data_9A31F8_9E7080.tsa.lz"@ 0x9E714C - 0x9E7080
 
 	.global gUnknown_089E714C
 gUnknown_089E714C:  @ 0x089E714C
@@ -1619,75 +1619,75 @@ gUnknown_089E7DEC:  @ 0x089E7DEC
 
 	.global Tsa_089E7E0C
 Tsa_089E7E0C:  @ 0x089E7E0C
-	.incbin "dump/data_9A31F8_9E7E0C.bin"@ 0x9E7E2C - 0x9E7E0C
+	.incbin "dump/data_9A31F8_9E7E0C.tsa.lz"@ 0x9E7E2C - 0x9E7E0C
 
 	.global Tsa_089E7E2C
 Tsa_089E7E2C:  @ 0x089E7E2C
-	.incbin "dump/data_9A31F8_9E7E2C.bin"@ 0x9E7E50 - 0x9E7E2C
+	.incbin "dump/data_9A31F8_9E7E2C.tsa.lz"@ 0x9E7E50 - 0x9E7E2C
 
 	.global Tsa_089E7E50
 Tsa_089E7E50:  @ 0x089E7E50
-	.incbin "dump/data_9A31F8_9E7E50.bin"@ 0x9E7E78 - 0x9E7E50
+	.incbin "dump/data_9A31F8_9E7E50.tsa.lz"@ 0x9E7E78 - 0x9E7E50
 
 	.global Tsa_089E7E78
 Tsa_089E7E78:  @ 0x089E7E78
-	.incbin "dump/data_9A31F8_9E7E78.bin"@ 0x9E7EA0 - 0x9E7E78
+	.incbin "dump/data_9A31F8_9E7E78.tsa.lz"@ 0x9E7EA0 - 0x9E7E78
 
 	.global Tsa_089E7EA0
 Tsa_089E7EA0:  @ 0x089E7EA0
-	.incbin "dump/data_9A31F8_9E7EA0.bin"@ 0x9E7ECC - 0x9E7EA0
+	.incbin "dump/data_9A31F8_9E7EA0.tsa.lz"@ 0x9E7ECC - 0x9E7EA0
 
 	.global Tsa_089E7ECC
 Tsa_089E7ECC:  @ 0x089E7ECC
-	.incbin "dump/data_9A31F8_9E7ECC.bin"@ 0x9E7EFC - 0x9E7ECC
+	.incbin "dump/data_9A31F8_9E7ECC.tsa.lz"@ 0x9E7EFC - 0x9E7ECC
 
 	.global Tsa_089E7EFC
 Tsa_089E7EFC:  @ 0x089E7EFC
-	.incbin "dump/data_9A31F8_9E7EFC.bin"@ 0x9E7F2C - 0x9E7EFC
+	.incbin "dump/data_9A31F8_9E7EFC.tsa.lz"@ 0x9E7F2C - 0x9E7EFC
 
 	.global Tsa_089E7F2C
 Tsa_089E7F2C:  @ 0x089E7F2C
-	.incbin "dump/data_9A31F8_9E7F2C.bin"@ 0x9E7F5C - 0x9E7F2C
+	.incbin "dump/data_9A31F8_9E7F2C.tsa.lz"@ 0x9E7F5C - 0x9E7F2C
 
 	.global Tsa_089E7F5C
 Tsa_089E7F5C:  @ 0x089E7F5C
-	.incbin "dump/data_9A31F8_9E7F5C.bin"@ 0x9E7F8C - 0x9E7F5C
+	.incbin "dump/data_9A31F8_9E7F5C.tsa.lz"@ 0x9E7F8C - 0x9E7F5C
 
 	.global Tsa_089E7F8C
 Tsa_089E7F8C:  @ 0x089E7F8C
-	.incbin "dump/data_9A31F8_9E7F8C.bin"@ 0x9E7FBC - 0x9E7F8C
+	.incbin "dump/data_9A31F8_9E7F8C.tsa.lz"@ 0x9E7FBC - 0x9E7F8C
 
 	.global Tsa_089E7FBC
 Tsa_089E7FBC:  @ 0x089E7FBC
-	.incbin "dump/data_9A31F8_9E7FBC.bin"@ 0x9E7FFC - 0x9E7FBC
+	.incbin "dump/data_9A31F8_9E7FBC.tsa.lz"@ 0x9E7FFC - 0x9E7FBC
 
 	.global Tsa_089E7FFC
 Tsa_089E7FFC:  @ 0x089E7FFC
-	.incbin "dump/data_9A31F8_9E7FFC.bin"@ 0x9E8040 - 0x9E7FFC
+	.incbin "dump/data_9A31F8_9E7FFC.tsa.lz"@ 0x9E8040 - 0x9E7FFC
 
 	.global Tsa_089E8040
 Tsa_089E8040:  @ 0x089E8040
-	.incbin "dump/data_9A31F8_9E8040.bin"@ 0x9E8090 - 0x9E8040
+	.incbin "dump/data_9A31F8_9E8040.tsa.lz"@ 0x9E8090 - 0x9E8040
 
 	.global Tsa_089E8090
 Tsa_089E8090:  @ 0x089E8090
-	.incbin "dump/data_9A31F8_9E8090.bin"@ 0x9E80EC - 0x9E8090
+	.incbin "dump/data_9A31F8_9E8090.tsa.lz"@ 0x9E80EC - 0x9E8090
 
 	.global Tsa_089E80EC
 Tsa_089E80EC:  @ 0x089E80EC
-	.incbin "dump/data_9A31F8_9E80EC.bin"@ 0x9E8148 - 0x9E80EC
+	.incbin "dump/data_9A31F8_9E80EC.tsa.lz"@ 0x9E8148 - 0x9E80EC
 
 	.global Tsa_089E8148
 Tsa_089E8148:  @ 0x089E8148
-	.incbin "dump/data_9A31F8_9E8148.bin"@ 0x9E81A4 - 0x9E8148
+	.incbin "dump/data_9A31F8_9E8148.tsa.lz"@ 0x9E81A4 - 0x9E8148
 
 	.global Tsa_089E81A4
 Tsa_089E81A4:  @ 0x089E81A4
-	.incbin "dump/data_9A31F8_9E81A4.bin"@ 0x9E8200 - 0x9E81A4
+	.incbin "dump/data_9A31F8_9E81A4.tsa.lz"@ 0x9E8200 - 0x9E81A4
 
 	.global Tsa_089E8200
 Tsa_089E8200:  @ 0x089E8200
-	.incbin "dump/data_9A31F8_9E8200.bin"@ 0x9E8238 - 0x9E8200
+	.incbin "dump/data_9A31F8_9E8200.tsa.lz"@ 0x9E8238 - 0x9E8200
 
 	.global Img_TalkBubble
 Img_TalkBubble:  @ 0x089E8238

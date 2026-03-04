@@ -138,4 +138,4 @@ Pal_EkrPopup:  @ 0x08803CB0
 
     .global Tsa_EkrPopup
 Tsa_EkrPopup:  @ 0x08803CD0
-    .incbin "dump/data-banimmisc_803CD0.bin"
+    .incbin "dump/data-banimmisc_803CD0.tsa.lz"

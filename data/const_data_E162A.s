@@ -14,27 +14,27 @@ Img_TriFalconKnightSwordBG:  @ 0x080E2B54
 
 	.global Tsa_EkrTriPegagusRightBG1
 Tsa_EkrTriPegagusRightBG1:  @ 0x080E3554
-	.incbin "dump/const_data_E162A_0E3554.bin"
+	.incbin "dump/const_data_E162A_0E3554.tsa.lz"
 
 	.global Tsa_EkrTriPegagusRightBG2
 Tsa_EkrTriPegagusRightBG2:  @ 0x080E3668
-	.incbin "dump/const_data_E162A_0E3668.bin"
+	.incbin "dump/const_data_E162A_0E3668.tsa.lz"
 
 	.global Tsa_EkrTriPegagusRightBG3
 Tsa_EkrTriPegagusRightBG3:  @ 0x080E378C
-	.incbin "dump/const_data_E162A_0E378C.bin"
+	.incbin "dump/const_data_E162A_0E378C.tsa.lz"
 
 	.global Tsa_EkrTriPegagusLeftBG1
 Tsa_EkrTriPegagusLeftBG1:  @ 0x080E3864
-	.incbin "dump/const_data_E162A_0E3864.bin"
+	.incbin "dump/const_data_E162A_0E3864.tsa.lz"
 
 	.global Tsa_EkrTriPegagusLeftBG2
 Tsa_EkrTriPegagusLeftBG2:  @ 0x080E3980
-	.incbin "dump/const_data_E162A_0E3980.bin"
+	.incbin "dump/const_data_E162A_0E3980.tsa.lz"
 
 	.global Tsa_EkrTriPegagusLeftBG3
 Tsa_EkrTriPegagusLeftBG3:  @ 0x080E3AA4
-	.incbin "dump/const_data_E162A_0E3AA4.bin"
+	.incbin "dump/const_data_E162A_0E3AA4.tsa.lz"
 
 	.global Img_TriPegasusKnightOBJ
 Img_TriPegasusKnightOBJ:  @ 0x080E3B78

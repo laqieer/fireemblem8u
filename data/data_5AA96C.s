@@ -102,7 +102,7 @@ Tsa_SioResultRankings:  @ 0x085AE464
 
 	.global gUnknown_085AE778
 gUnknown_085AE778:  @ 0x085AE778
-	.incbin "dump/data_5AA96C_5AE778.bin"
+	.incbin "dump/data_5AA96C_5AE778.tsa.lz"
 
 	.global gUnknown_085AE7EC
 gUnknown_085AE7EC:  @ 0x085AE7EC
@@ -150,7 +150,7 @@ Pal_LinkArenaPostBattleBg:  @ 0x085B081C
 
 	.global Tsa_LinkArenaPostBattleBg
 Tsa_LinkArenaPostBattleBg:  @ 0x085B089C
-	.incbin "dump/data_5AA96C_5B089C.bin"
+	.incbin "dump/data_5AA96C_5B089C.tsa.lz"
 
 	.global gUnknown_085B0DE8
 gUnknown_085B0DE8:  @ 0x085B0DE8

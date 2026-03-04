@@ -151,7 +151,7 @@ Img_ConfigUiIcons:  @ 0x08A0754C
 
 	.global Tsa_ConfigUiFrame
 Tsa_ConfigUiFrame:  @ 0x08A079B4
-	.incbin "dump/data_A01CC4_A079B4.bin"
+	.incbin "dump/data_A01CC4_A079B4.tsa.lz"
 
 	.global Pal_ConfigUiSprites
 Pal_ConfigUiSprites:  @ 0x08A07A98

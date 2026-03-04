@@ -14,7 +14,7 @@ Pal_08B1756C:  @ 0x08B1756C
 
 	.global Tsa_08B176CC
 Tsa_08B176CC:  @ 0x08B176CC
-	.incbin "dump/data_B12A60_B176CC.bin"
+	.incbin "dump/data_B12A60_B176CC.tsa.lz"
 
 	.global Img_08B177C0
 Img_08B177C0:  @ 0x08B177C0
@@ -46,7 +46,7 @@ Img_ChapterIntro_Fog:  @ 0x08B18F34
 
 	.global Tsa_ChapterIntro_Fog
 Tsa_ChapterIntro_Fog:  @ 0x08B196D8
-	.incbin "dump/data_B12A60_B196D8.bin"
+	.incbin "dump/data_B12A60_B196D8.tsa.lz"
 
 	.global Pal_ChapterIntro_Fog
 Pal_ChapterIntro_Fog:  @ 0x08B19854

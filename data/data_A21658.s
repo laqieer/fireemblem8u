@@ -22,7 +22,7 @@ Pal_MainMenuBgFog:  @ 0x08A268D8
 
 	.global Tsa_MainMenuBgFog
 Tsa_MainMenuBgFog:  @ 0x08A268F8
-	.incbin "dump/data_A21658_A268F8.bin"
+	.incbin "dump/data_A21658_A268F8.tsa.lz"
 
 	.global Img_SaveScreenSprits
 Img_SaveScreenSprits:  @ 0x08A26A74
@@ -58,7 +58,7 @@ gUnknown_08A29498:  @ 0x08A29498
 
 	.global gUnknown_08A29558
 gUnknown_08A29558:  @ 0x08A29558
-	.incbin "dump/data_A21658_A29558.bin"
+	.incbin "dump/data_A21658_A29558.tsa.lz"
 
 	.global Pal_08A295B4
 Pal_08A295B4:  @ 0x08A295B4
@@ -142,7 +142,7 @@ Pal_StatusScreenLabelSprites:  @ 0x08A2E4A4
 
 	.global Tsa_ChapterStatusUi
 Tsa_ChapterStatusUi:  @ 0x08A2E4C4
-	.incbin "dump/data_A21658_A2E4C4.bin"
+	.incbin "dump/data_A21658_A2E4C4.tsa.lz"
 
 	.global Img_08A2E5EC
 Img_08A2E5EC:  @ 0x08A2E5EC

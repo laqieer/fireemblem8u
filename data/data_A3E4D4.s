@@ -20,19 +20,19 @@ Tsa_CharacterEnding_BottomBorder:  @ 0x08A40068
 
 	.global gTsa_SoloEndingNameplate
 gTsa_SoloEndingNameplate:  @ 0x08A400E4
-	.incbin "dump/data_A3E4D4_A400E4.bin"
+	.incbin "dump/data_A3E4D4_A400E4.tsa.lz"
 
 	.global gTsa_SoloEndingWindow
 gTsa_SoloEndingWindow:  @ 0x08A40204
-	.incbin "dump/data_A3E4D4_A40204.bin"
+	.incbin "dump/data_A3E4D4_A40204.tsa.lz"
 
 	.global gTsa_PairedEndingNameplates
 gTsa_PairedEndingNameplates:  @ 0x08A4034C
-	.incbin "dump/data_A3E4D4_A4034C.bin"
+	.incbin "dump/data_A3E4D4_A4034C.tsa.lz"
 
 	.global gTsa_PairedEndingWindow
 gTsa_PairedEndingWindow:  @ 0x08A40470
-	.incbin "dump/data_A3E4D4_A40470.bin"
+	.incbin "dump/data_A3E4D4_A40470.tsa.lz"
 
 	.global Pal_FinScreen
 Pal_FinScreen:  @ 0x08A405B4
@@ -44,7 +44,7 @@ Img_FinScreen:  @ 0x08A405D4
 
 	.global Tsa_FinScreen
 Tsa_FinScreen:  @ 0x08A409D0
-	.incbin "dump/data_A3E4D4_A409D0.bin"
+	.incbin "dump/data_A3E4D4_A409D0.tsa.lz"
 
 	.global Pal_08A40AD4
 Pal_08A40AD4:  @ 0x08A40AD4
@@ -112,55 +112,55 @@ Img_StaffReelEnt_08A4A9D4:  @ 0x08A4A9D4
 
 	.global Tsa_StaffReelEnt_08A4AE08
 Tsa_StaffReelEnt_08A4AE08:  @ 0x08A4AE08
-	.incbin "dump/data_A3E4D4_A4AE08.bin"@ 0xA4B090 - 0xA4AE08
+	.incbin "dump/data_A3E4D4_A4AE08.tsa.lz"@ 0xA4B090 - 0xA4AE08
 
 	.global Tsa_StaffReelEnt_08A4B090
 Tsa_StaffReelEnt_08A4B090:  @ 0x08A4B090
-	.incbin "dump/data_A3E4D4_A4B090.bin"@ 0xA4B2F4 - 0xA4B090
+	.incbin "dump/data_A3E4D4_A4B090.tsa.lz"@ 0xA4B2F4 - 0xA4B090
 
 	.global Tsa_StaffReelEnt_08A4B2F4
 Tsa_StaffReelEnt_08A4B2F4:  @ 0x08A4B2F4
-	.incbin "dump/data_A3E4D4_A4B2F4.bin"@ 0xA4B558 - 0xA4B2F4
+	.incbin "dump/data_A3E4D4_A4B2F4.tsa.lz"@ 0xA4B558 - 0xA4B2F4
 
 	.global Tsa_StaffReelEnt_08A4B558
 Tsa_StaffReelEnt_08A4B558:  @ 0x08A4B558
-	.incbin "dump/data_A3E4D4_A4B558.bin"@ 0xA4B788 - 0xA4B558
+	.incbin "dump/data_A3E4D4_A4B558.tsa.lz"@ 0xA4B788 - 0xA4B558
 
 	.global Tsa_StaffReelEnt_08A4B788
 Tsa_StaffReelEnt_08A4B788:  @ 0x08A4B788
-	.incbin "dump/data_A3E4D4_A4B788.bin"@ 0xA4BB50 - 0xA4B788
+	.incbin "dump/data_A3E4D4_A4B788.tsa.lz"@ 0xA4BB50 - 0xA4B788
 
 	.global Tsa_StaffReelEnt_08A4BB50
 Tsa_StaffReelEnt_08A4BB50:  @ 0x08A4BB50
-	.incbin "dump/data_A3E4D4_A4BB50.bin"@ 0xA4BCC4 - 0xA4BB50
+	.incbin "dump/data_A3E4D4_A4BB50.tsa.lz"@ 0xA4BCC4 - 0xA4BB50
 
 	.global Tsa_StaffReelEnt_08A4BCC4
 Tsa_StaffReelEnt_08A4BCC4:  @ 0x08A4BCC4
-	.incbin "dump/data_A3E4D4_A4BCC4.bin"@ 0xA4BEC0 - 0xA4BCC4
+	.incbin "dump/data_A3E4D4_A4BCC4.tsa.lz"@ 0xA4BEC0 - 0xA4BCC4
 
 	.global Tsa_StaffReelEnt_08A4BEC0
 Tsa_StaffReelEnt_08A4BEC0:  @ 0x08A4BEC0
-	.incbin "dump/data_A3E4D4_A4BEC0.bin"@ 0xA4C0E4 - 0xA4BEC0
+	.incbin "dump/data_A3E4D4_A4BEC0.tsa.lz"@ 0xA4C0E4 - 0xA4BEC0
 
 	.global Tsa_StaffReelEnt_08A4C0E4
 Tsa_StaffReelEnt_08A4C0E4:  @ 0x08A4C0E4
-	.incbin "dump/data_A3E4D4_A4C0E4.bin"@ 0xA4C308 - 0xA4C0E4
+	.incbin "dump/data_A3E4D4_A4C0E4.tsa.lz"@ 0xA4C308 - 0xA4C0E4
 
 	.global Tsa_StaffReelEnt_08A4C308
 Tsa_StaffReelEnt_08A4C308:  @ 0x08A4C308
-	.incbin "dump/data_A3E4D4_A4C308.bin"@ 0xA4C6EC - 0xA4C308
+	.incbin "dump/data_A3E4D4_A4C308.tsa.lz"@ 0xA4C6EC - 0xA4C308
 
 	.global Tsa_StaffReelEnt_08A4C6EC
 Tsa_StaffReelEnt_08A4C6EC:  @ 0x08A4C6EC
-	.incbin "dump/data_A3E4D4_A4C6EC.bin"@ 0xA4C9F0 - 0xA4C6EC
+	.incbin "dump/data_A3E4D4_A4C6EC.tsa.lz"@ 0xA4C9F0 - 0xA4C6EC
 
 	.global Tsa_StaffReelEnt_08A4C9F0
 Tsa_StaffReelEnt_08A4C9F0:  @ 0x08A4C9F0
-	.incbin "dump/data_A3E4D4_A4C9F0.bin"@ 0xA4CD40 - 0xA4C9F0
+	.incbin "dump/data_A3E4D4_A4C9F0.tsa.lz"@ 0xA4CD40 - 0xA4C9F0
 
 	.global Tsa_StaffReelEnt_08A4CD40
 Tsa_StaffReelEnt_08A4CD40:  @ 0x08A4CD40
-	.incbin "dump/data_A3E4D4_A4CD40.bin"@ 0xA4CF2C - 0xA4CD40
+	.incbin "dump/data_A3E4D4_A4CD40.tsa.lz"@ 0xA4CF2C - 0xA4CD40
 
 	.global gGfx_BrownTextBox
 gGfx_BrownTextBox:  @ 0x08A4CF2C
@@ -968,7 +968,7 @@ gUnknown_08A986C0:  @ 0x08A986C0
 
 	.global gUnknown_08A98BF8
 gUnknown_08A98BF8:  @ 0x08A98BF8
-	.incbin "dump/data_A3E4D4_A98BF8.bin"
+	.incbin "dump/data_A3E4D4_A98BF8.tsa.lz"
 
 	.global gUnknown_08A98CFC
 gUnknown_08A98CFC:  @ 0x08A98CFC
@@ -1032,7 +1032,7 @@ Img_EventGmap:  @ 0x08A99140
 
 	.global Tsa_EventGmap
 Tsa_EventGmap:  @ 0x08A9DF74
-	.incbin "dump/data_A3E4D4_A9DF74.bin"
+	.incbin "dump/data_A3E4D4_A9DF74.tsa.lz"
 
 	.global Pal_EventGmap
 Pal_EventGmap:  @ 0x08A9E4C4
@@ -1048,7 +1048,7 @@ gPal_08A9E5BC:  @ 0x08A9E5BC
 
 	.global gTsa_08A9E5DC
 gTsa_08A9E5DC:  @ 0x08A9E5DC
-	.incbin "dump/data_A3E4D4_A9E5DC.bin"
+	.incbin "dump/data_A3E4D4_A9E5DC.tsa.lz"
 
 	.global Pal_WmHighLightNationMap
 Pal_WmHighLightNationMap:  @ 0x08A9E688
