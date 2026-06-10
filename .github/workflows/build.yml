@@ -13,38 +13,16 @@ jobs:
     container: laqieer/gba-disasm-decomp-tools:fireemblem8u
 
     steps:
-    # git must exist before checkout so the mgfembp submodule can be fetched
-    # (the base image does not ship git).
-    - name: Install git
-      run: apk add --no-cache git
-
     - uses: actions/checkout@v4
-      with:
-        submodules: recursive
 
     # Host tools (agbcc, gbagfx, scaninc, preproc, ...) come from the image.
-    # These are the extra runtime deps the ROM build needs: GNU libiconv for the
-    # CP932 text conversion, numpy/pillow for the TSA/graphics generators, and
-    # build-base so the mgfembp submodule can build its own agbcc (the FE6 SIO
-    # payload). perl is used by a few helper scripts.
+    # Extra runtime deps for the ROM build: GNU libiconv for the CP932 text
+    # conversion and numpy/pillow for the TSA/graphics generators. Some build
+    # scripts hardcode a #!/bin/python3 shebang, so provide /bin/python3.
     - name: Install dependencies
       run: |
-        apk add --no-cache python3 py3-numpy py3-pillow perl bash build-base libpng-dev gnu-libiconv
-        # Some build scripts hardcode a #!/bin/python3 shebang; Alpine installs
-        # python3 under /usr/bin, so provide /bin/python3.
+        apk add --no-cache python3 py3-numpy py3-pillow perl gnu-libiconv
         ln -sf /usr/bin/python3 /bin/python3
-        # The mgfembp sub-build calls `iconv` directly (not gnu-iconv); Alpine's
-        # gnu-libiconv ships it as gnu-iconv, so expose it under the plain name.
-        ln -sf "$(command -v gnu-iconv)" /usr/local/bin/iconv
-
-    # Cache the mgfembp submodule's agbcc variant (010110-ThumbPatch); the FE6 SIO
-    # payload sub-build installs it on a cache miss. `make compare` is the backstop
-    # if a stale cache ever produced a different payload.
-    - name: Cache mgfembp agbcc
-      uses: actions/cache@v4
-      with:
-        path: mgfembp/tools/agbcc
-        key: mgfembp-agbcc-${{ hashFiles('mgfembp/tools/install_agbcc.sh') }}
 
     - name: Build target ROM
       run: make fireemblem8.gba

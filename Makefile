@@ -267,27 +267,15 @@ graphics/misc/opinfo_letter/%.4bpp.lz: LZ_FLAGS := -mindist 2
 graphics/banim/misc/Tsa_080E1184.tsa.lz: LZ_FLAGS := -mindist 1
 # Orphaned PlayerRankFog fog image (was hidden after Pal_PlayerRankFog), min match distance 2.
 graphics/misc/Img_PlayerRankFog.4bpp.lz: LZ_FLAGS := -mindist 2
-# FE6 SIO multiboot image, built from source via the mgfembp submodule
-# (StanHash/mgfembp) instead of a committed blob, then LZ-compressed (the original
-# ROM used minimum match distance 1) for the incbin in asm/fe6sio.s. mgfembp
-# needs its own agbcc variant (010110-ThumbPatch, fetched by its installer) and
-# CPP=cpp because arm-none-eabi-cpp may be absent. C_INCLUDE_PATH is unset for the
-# sub-build: the build image exports it to point at agbcc's newlib headers for the
-# main ROM compile, but it leaks into the host-gcc build of mgfembp's own tools
-# (embed, gengenrtl), pulling newlib's <stdio.h> and breaking the link against the
-# host libc (undefined _impure_ptr). mgfembp supplies agbcc headers via -I itself.
-mgfembp/tools/agbcc/bin/agbcc:
-	cd mgfembp && env -u C_INCLUDE_PATH bash tools/install_agbcc.sh
-
-mgfembp/mgfembp.bin: mgfembp/tools/agbcc/bin/agbcc FORCE
-	env -u C_INCLUDE_PATH $(MAKE) -C mgfembp CPP=cpp PREFIX="$(PREFIX)" tools
-	env -u C_INCLUDE_PATH $(MAKE) -C mgfembp CPP=cpp PREFIX="$(PREFIX)" mgfembp.bin
-
-fe6sio_payload.bin.lz: mgfembp/mgfembp.bin
-	$(GBAGFX) $< $@ -mindist 1
-
-FORCE:
-.PHONY: FORCE
+# FE6 SIO multiboot image. Upstream/master builds this from source via the
+# mgfembp submodule (StanHash/mgfembp) with its own agbcc variant. That toolchain
+# does not build under this branch's Alpine/musl Docker image: Alpine's gcc
+# mis-generates the variant's debug-line emission, and -ffix-debug-line affects
+# the payload bytes so it cannot simply be disabled. To keep the Docker build
+# simple and self-contained, the prebuilt byte-identical payload is committed as
+# fe6sio_payload.bin and only LZ-compressed here (the original ROM used minimum
+# match distance 1) for the incbin in asm/fe6sio.s.
+fe6sio_payload.bin.lz: LZ_FLAGS := -mindist 1
 # Titlescreen dragon-foreground TSA was compressed with minimum LZ match distance 1.
 graphics/titlescreen/title_dragon_foreground.map.bin.lz: LZ_FLAGS := -mindist 1
 %.rl: % ; $(GBAGFX) $< $@
