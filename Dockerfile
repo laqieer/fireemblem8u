@@ -6,7 +6,10 @@ MAINTAINER laqieer <laqieer@126.com>
 # numpy/pillow (TSA & graphics generators), and git + build-base so the mgfembp
 # submodule can build its own agbcc for the FE6 SIO payload. perl is used by a
 # few helper scripts.
-RUN apk add --no-cache python3 py3-numpy py3-pillow perl git build-base gnu-libiconv
+# Some build scripts hardcode a #!/bin/python3 shebang; Alpine installs python3
+# under /usr/bin, so provide /bin/python3.
+RUN apk add --no-cache python3 py3-numpy py3-pillow perl git build-base gnu-libiconv \
+    && ln -sf /usr/bin/python3 /bin/python3
 
 COPY . .
 
