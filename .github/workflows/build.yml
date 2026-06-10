@@ -13,6 +13,11 @@ jobs:
     container: laqieer/gba-disasm-decomp-tools:fireemblem8u
 
     steps:
+    # git must exist before checkout so the mgfembp submodule can be fetched
+    # (the base image does not ship git).
+    - name: Install git
+      run: apk add --no-cache git
+
     - uses: actions/checkout@v4
       with:
         submodules: recursive
@@ -20,10 +25,10 @@ jobs:
     # Host tools (agbcc, gbagfx, scaninc, preproc, ...) come from the image.
     # These are the extra runtime deps the ROM build needs: GNU libiconv for the
     # CP932 text conversion, numpy/pillow for the TSA/graphics generators, and
-    # git + build-base so the mgfembp submodule can build its own agbcc (the FE6
-    # SIO payload). perl is used by a few helper scripts.
+    # build-base so the mgfembp submodule can build its own agbcc (the FE6 SIO
+    # payload). perl is used by a few helper scripts.
     - name: Install dependencies
-      run: apk add --no-cache python3 py3-numpy py3-pillow perl git build-base gnu-libiconv
+      run: apk add --no-cache python3 py3-numpy py3-pillow perl build-base gnu-libiconv
 
     # Cache the mgfembp submodule's agbcc variant (010110-ThumbPatch); the FE6 SIO
     # payload sub-build installs it on a cache miss. `make compare` is the backstop
