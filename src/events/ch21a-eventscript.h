@@ -1,11 +1,11 @@
 #include "gbafe.h"
 
-CONST_DATA EventListScr EventScr_Ch21a_BeginingScene[] = {
-    CALL(EventScr_089F9144)
+CONST_DATA EventListScr EventScr_Ch21a_BeginningScene[] = {
+    CALL(EventScr_Ch21A_8)
     CUMO_CHAR(CHARACTER_LYON_FINAL)
     STAL(60)
     CURE
-    MUSC(0x2d)
+    MUSC(SONG_LOST_HEART)
     TEXTSTART
     TEXTSHOW(0xbbd)
     TEXTEND
@@ -14,22 +14,22 @@ CONST_DATA EventListScr EventScr_Ch21a_BeginingScene[] = {
     CALL(EventScr_UnitWarpOUT)
     DISA(CHARACTER_LYON_FINAL)
     FADI(16)
-    LOAD1(0x1, UnitDef_088C1920)
+    LOAD1(0x1, UnitDef_Ch21AEnemy_0)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENUT(11)
     ENUT(12)
     ENUT(13)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F9144[] = {
+CONST_DATA EventListScr EventScr_Ch21A_8[] = {
     REMOVEPORTRAITS
-    BACG(0x35)
+    BACG(BG_BLANK)
     FAWI(2)
-    BACG(0x14)
+    BACG(BG_GARDEN_FLASHBACK)
     FAWU(2)
-    MUSCSLOW(0x2c)
+    MUSCSLOW(SONG_LYON)
     BROWNBOXTEXT(0x20f, 8, 8)
     CHECK_MODE
     SVAL(EVT_SLOT_1, 0x2)
@@ -42,13 +42,13 @@ LABEL(0x0)
     TEXTEND
 LABEL(0x1)
     REMA
-    EvtBgmFadeIn(0x7fff, 8) // ENOSUPP in EAstdlib
+    EvtBgmFadeIn(SONG_SILENT, 8) // ENOSUPP in EAstdlib
     FAWI(2)
     CLEAN
-    LOAD1(0x1, UnitDef_088C172C)
+    LOAD1(0x1, UnitDef_Ch21AEnemy)
     ENUN
     FAWU(2)
-    LOAD2(0x1, UnitDef_088C1DD0)
+    LOAD2(0x1, UnitDef_Ch21AAlly_1)
     ENUN
     MOVE(0x10, CHAR_EVT_PLAYER_LEADER, 11, 20)
     ENUN
@@ -58,7 +58,7 @@ LABEL(0x1)
     CHECK_MODE
     SVAL(EVT_SLOT_1, 0x2)
     BNE(0xa, EVT_SLOT_C, EVT_SLOT_1)
-    MUSC(0x44)
+    MUSC(SONG_LYON_ORGAN_ARRANGEMENT)
     TEXTSTART
     TEXTSHOW(0xbbc)
     TEXTEND
@@ -71,7 +71,7 @@ LABEL(0xa)
     REMA
 LABEL(0xb)
     STARTFADE
-    MUSCSLOW(0x7fff)
+    MUSCSLOW(SONG_SILENT)
     EvtColorFadeSetup(0x6, 0xa, 8, 128, 128, 128) // ENOSUPP in EAstdlib
     EvtColorFadeSetup(0x1d, 0x1, 4, 0, 0, 0) // ENOSUPP in EAstdlib
     SVAL(EVT_SLOT_2, 0x40)
@@ -87,18 +87,18 @@ LABEL(0xb)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F92A0[] = {
-    MUSCSLOW(0x7fff)
+CONST_DATA EventListScr EventScr_Ch21A_0[] = {
+    MUSCSLOW(SONG_SILENT)
     FADI(4)
     CLEA
     CLEE
     CLEN
     CAMERA2(11, 4)
     EvtSetLoadUnitNoREDA // ENOSUPP in EAstdlib
-    LOAD2(0x1, UnitDef_088C1E48)
+    LOAD2(0x1, UnitDef_Ch21AMixed)
     ENUN
     FADU(4)
-    LOAD2(0x1, UnitDef_088C1E48)
+    LOAD2(0x1, UnitDef_Ch21AMixed)
     ENUN
     CUMO_CHAR(CHARACTER_LYON)
     STAL(60)
@@ -106,17 +106,17 @@ CONST_DATA EventListScr EventScr_089F92A0[] = {
     TEXTSTART
     TEXTSHOW(0xbc5)
     TEXTEND
-    MUSCSLOW(0x44)
+    MUSCSLOW(SONG_LYON_ORGAN_ARRANGEMENT)
     TEXTCONT
     TEXTEND
     REMA
-    MUSCMID(0x7fff)
-    CALL(EventScr_089F9314)
+    MUSCMID(SONG_SILENT)
+    CALL(EventScr_Ch21A_9)
     MNC3(0x16)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F9314[] = {
+CONST_DATA EventListScr EventScr_Ch21A_9[] = {
     STARTFADE
     EvtColorFadeSetup(0x6, 0xa, 4, 0, 0, 0) // ENOSUPP in EAstdlib
     STAL(30)
@@ -138,7 +138,7 @@ CONST_DATA EventListScr EventScr_089F9314[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F9380[] = {
+CONST_DATA EventListScr EventScr_Ch21A_1[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     ENUF(11)
@@ -147,8 +147,8 @@ CONST_DATA EventListScr EventScr_089F9380[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F93A0[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C1C04)
+CONST_DATA EventListScr EventScr_Ch21A_2[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch21AEnemy_1)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x0)
     ENUF(11)
@@ -160,7 +160,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F93D4[] = {
+CONST_DATA EventListScr EventScr_Ch21A_3[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     ENUF(12)
@@ -169,8 +169,8 @@ CONST_DATA EventListScr EventScr_089F93D4[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F93F4[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C1C7C)
+CONST_DATA EventListScr EventScr_Ch21A_4[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch21AEnemy_2)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x1)
     ENUF(12)
@@ -182,7 +182,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F9428[] = {
+CONST_DATA EventListScr EventScr_Ch21A_5[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     ENUF(13)
@@ -191,8 +191,8 @@ CONST_DATA EventListScr EventScr_089F9428[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F9448[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C1CE0)
+CONST_DATA EventListScr EventScr_Ch21A_6[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch21AEnemy_3)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x2)
     ENUF(13)
@@ -204,7 +204,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F947C[] = {
+CONST_DATA EventListScr EventScr_Ch21A_7[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     SVAL(EVT_SLOT_1, 0x10000)

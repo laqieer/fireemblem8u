@@ -455,7 +455,7 @@ void WfxSandStorm_Init(void) {
 
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
 
-    Decompress(gUnknown_085A3964, gGenericBuffer);
+    Decompress(gParticlesFx_0, gGenericBuffer);
     Copy2dChr(gGenericBuffer, OBJ_VRAM0 + 0x1C * 0x20, 4, 4);
 
     for (i = 0; i < 0x40; ++i) {
@@ -495,7 +495,7 @@ void WfxSnowStorm_Init(void) {
 
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
 
-    Decompress(gUnknown_085A39EC, gGenericBuffer);
+    Decompress(gParticlesFx_1, gGenericBuffer);
     Copy2dChr(gGenericBuffer, OBJ_VRAM0 + 0x18 * 0x20, 8, 4);
 
     for (i = 0; i < 0x40; ++i) {
@@ -650,8 +650,8 @@ void WfxFlamesInitParticles(void) {
     int i;
 
     AllocWeatherParticles(gPlaySt.chapterWeatherId);
-    Decompress(gUnknown_085A3A84, OBJ_VRAM0 + 0x18 * 0x20);
-    ApplyPalette(gUnknown_085A3AC0, 0x1A);
+    Decompress(gParticlesFx_2, OBJ_VRAM0 + 0x18 * 0x20);
+    ApplyPalette(gParticlesFx_3, 0x1A);
 
     for (i = 0; i < 0x10; ++i) {
         sWeatherEffect.particles[i].xPosition = AdvanceGetLCGRNValue();
@@ -772,11 +772,11 @@ void WfxClouds_Init(void) {
     AllocWeatherParticles(WEATHER_FINE);
 
     Decompress(
-        gUnknown_085A3B00,
+        gParticlesFx_4,
         sWeatherEffect.gfxData
     );
 
-    ApplyPalette(gUnknown_085A401C, 0x10 + BM_OBJPAL_10);
+    ApplyPalette(gParticlesFx_5, 0x10 + BM_OBJPAL_10);
 }
 
 void WfxClouds_VSync(void) {
@@ -962,10 +962,10 @@ void InitPlayConfig(int isDifficult, s8 unk) {
 }
 
 void ClearBattleMapState(void) {
-    int logicLock = gBmSt.gameLogicSemaphore;
+    int logicLock = gBmSt.lock;
 
     CpuFill16(0, &gBmSt, sizeof(gBmSt));
-    gBmSt.gameLogicSemaphore = logicLock;
+    gBmSt.lock = logicLock;
 }
 
 void StartBattleMap(struct GameCtrlProc* gameCtrl) {
@@ -973,11 +973,11 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
 
     SetupBackgrounds(NULL);
 
-    SetMainUpdateRoutine(OnGameLoopMain);
+    SetMainUpdateRoutine(OnMain);
     SetInterrupt_LCDVBlank(OnVBlank);
 
     ClearBattleMapState();
-    sub_80156D4();
+    LoadGameCoreGfxLegacyFrame();
     ApplyUnitSpritePalettes();
     ResetChapterFlags();
     ResetUnitSprites();
@@ -987,8 +987,7 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
     gPlaySt.faction = FACTION_GREEN; // TODO: PHASE/ALLEGIANCE DEFINITIONS
     gPlaySt.chapterTurnNumber = 0;
 
-    // TODO: BATTLE MAP/CHAPTER/OBJECTIVE TYPE DEFINITION (STORY/TOWER/SKIRMISH)
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         if (!(gPlaySt.chapterStateBits & PLAY_FLAG_PREPSCREEN))
             gPlaySt.chapterVisionRange = 3 * (NextRN_100() & 1);
     } else {
@@ -1041,10 +1040,10 @@ void StartBattleMap(struct GameCtrlProc* gameCtrl) {
 void RestartBattleMap(void) {
     SetupBackgrounds(NULL);
 
-    SetMainUpdateRoutine(OnGameLoopMain);
+    SetMainUpdateRoutine(OnMain);
     SetInterrupt_LCDVBlank(OnVBlank);
 
-    sub_80156D4();
+    LoadGameCoreGfxLegacyFrame();
     ApplyUnitSpritePalettes();
     ResetUnitSprites();
 
@@ -1087,7 +1086,7 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
 
     SetupBackgrounds(NULL);
 
-    SetMainUpdateRoutine(OnGameLoopMain);
+    SetMainUpdateRoutine(OnMain);
     SetInterrupt_LCDVBlank(OnVBlank);
 
     ClearBattleMapState();
@@ -1142,7 +1141,7 @@ void GameCtrl_StartResumedGame(struct GameCtrlProc* gameCtrl) {
 }
 
 void RefreshBMapDisplay_FromBattle(void) {
-    SetMainUpdateRoutine(OnGameLoopMain);
+    SetMainUpdateRoutine(OnMain);
     SetInterrupt_LCDVBlank(OnVBlank);
 
     ReadGameSaveCoreGfx();

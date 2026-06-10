@@ -14,8 +14,8 @@ int AddItemToConvoy(int);
 void RemoveItemFromConvoy(int);
 int GetConvoyItemSlot(int);
 bool8 HasConvoyAccess(void);
-bool8 sub_8031660(void);
-struct Unit* GetSupplyUnit(void);
+bool8 ChapterHasMerchant(void);
+struct Unit * GetSupplyUnit(void);
 
 extern EWRAM_DATA u8 gConvoyItemCount;
 extern const struct MenuDef gSendToConvoyMenuDef;

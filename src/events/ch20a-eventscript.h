@@ -1,16 +1,16 @@
 #include "gbafe.h"
 
-CONST_DATA EventListScr EventScr_Ch20a_BeginingScene[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C0EF0)
-    CALL(EventScr_089F8AC8)
-    LOAD1(0x1, UnitDef_088C0EF0)
+CONST_DATA EventListScr EventScr_Ch20a_BeginningScene[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_0)
+    CALL(EventScr_Ch19A_12)
+    LOAD1(0x1, UnitDef_Ch20AEnemy_0)
     ENUN
-    LOAD1(0x1, UnitDef_088C129C)
+    LOAD1(0x1, UnitDef_Ch20AEnemy_1)
     ENUN
-    SVAL(EVT_SLOT_2, UnitDef_088C12C4)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_2)
     SVAL(EVT_SLOT_3, 0x1)
     CALL(EventScr_LoadUnitForTutorial)
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENUT(10)
     ENUT(12)
     ENUT(14)
@@ -18,17 +18,16 @@ CONST_DATA EventListScr EventScr_Ch20a_BeginingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8AC8[] = {
+CONST_DATA EventListScr EventScr_Ch19A_12[] = {
     SADD(EVT_SLOT_A, EVT_SLOT_2, EVT_SLOT_0)
-    LOAD1(0x1, UnitDef_088C1634)
+    LOAD1(0x1, UnitDef_Ch20AEnemy_16)
     ENUN
     FADU(16)
-    MUSC(0x2d)
+    MUSC(SONG_LOST_HEART)
     CUMO_CHAR(CHARACTER_LYON)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x31)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_DARKLING_WOODS)
     CHECK_MODE
     SVAL(EVT_SLOT_1, 0x2)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -40,32 +39,31 @@ LABEL(0x0)
     TEXTEND
 LABEL(0x1)
     REMA
-    MUSCSLOW(0x7fff)
+    MUSCSLOW(SONG_SILENT)
     FADI(4)
     CLEAN
     CAMERA(29, 20)
-    MUSC(0x4d)
+    MUSC(SONG_4D)
     FADU(4)
-    LOAD2(0x1, UnitDef_088C165C)
+    LOAD2(0x1, UnitDef_Ch20AAlly_1)
     ENUN
     CUMO_CHAR(CHARACTER_EPHRAIM)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x31)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_DARKLING_WOODS)
     CHECK_MODE
     SVAL(EVT_SLOT_1, 0x2)
     BNE(0x2, EVT_SLOT_C, EVT_SLOT_1)
     TEXTSHOW(0xbab)
     TEXTEND
-    MUSC(0x26)
+    MUSC(SONG_RAID)
     TEXTCONT
     TEXTEND
     GOTO(0x3)
 LABEL(0x2)
     TEXTSHOW(0xbac)
     TEXTEND
-    MUSC(0x26)
+    MUSC(SONG_RAID)
     TEXTCONT
     TEXTEND
 LABEL(0x3)
@@ -76,7 +74,7 @@ LABEL(0x3)
     SADD(EVT_SLOT_2, EVT_SLOT_A, EVT_SLOT_0)
     LOAD1(0x1, 0xffffffff)
     ENUN
-    LOAD1(0x1, UnitDef_088C129C)
+    LOAD1(0x1, UnitDef_Ch20AEnemy_1)
     ENUN
     REMU(CHARACTER_MORVA)
     FADU(16)
@@ -88,9 +86,7 @@ LABEL(0x3)
     CUMO_CHAR(CHARACTER_LYON)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x31)
-    SVAL(EVT_SLOT_3, 0xbad)
-    CALL(Event_TextWithBG)
+    Text_BG(BG_DARKLING_WOODS, 0xbad)
     MOVE(0x10, CHARACTER_LYON, 11, 11)
     ENUN
     DISA(CHARACTER_LYON)
@@ -101,9 +97,9 @@ LABEL(0x3)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8C60[] = {
+CONST_DATA EventListScr EventScr_Ch20A_13[] = {
     CAMERA2_CAHR(CHARACTER_RIEV)
-    MUSC(0x15)
+    MUSC(SONG_FROM_THE_DARKNESS)
     CUMO_CHAR(CHARACTER_RIEV)
     STAL(60)
     CURE
@@ -115,14 +111,13 @@ CONST_DATA EventListScr EventScr_089F8C60[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8C8C[] = {
-    CALL(EventScr_089F8CCC)
-    MUSC(0x2d)
+CONST_DATA EventListScr EventScr_Ch20A_0[] = {
+    CALL(EventScr_Ch20A_14)
+    MUSC(SONG_LOST_HEART)
     CUMO_CHAR(CHARACTER_LYON)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x34)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_BLACK_TEMPLE_INSIDE)
     TEXTSHOW(0xbb6)
     TEXTEND
     FADI(16)
@@ -131,10 +126,9 @@ CONST_DATA EventListScr EventScr_089F8C8C[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8CCC[] = {
-    MUSCFAST(0x7fff)
-    SVAL(EVT_SLOT_2, 0x33)
-    CALL(EventScr_SetBackground)
+CONST_DATA EventListScr EventScr_Ch20A_14[] = {
+    MUSCFAST(SONG_SILENT)
+    SetBackground(BG_BLACK_TEMPLE_OUTSIDE)
     TEXTSHOW(0xbb3)
     TEXTEND
     REMA
@@ -143,16 +137,15 @@ CONST_DATA EventListScr EventScr_089F8CCC[] = {
     CLEE
     CLEN
     CLEAN
-    LOAD2(0x1, UnitDef_088C16E8)
+    LOAD2(0x1, UnitDef_Ch20AAlly_2)
     ENUN
     CAMERA2_CAHR(CHARACTER_MYRRH)
-    EvtBgmFadeIn(0x29, 8) // ENOSUPP in EAstdlib
+    EvtBgmFadeIn(SONG_SORROW, 8) // ENOSUPP in EAstdlib
     FADU(4)
     CUMO_CHAR(CHARACTER_MYRRH)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x31)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_DARKLING_WOODS)
     CHECK_MODE
     SVAL(EVT_SLOT_1, 0x2)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -164,48 +157,48 @@ LABEL(0x0)
     TEXTEND
 LABEL(0x1)
     REMA
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     FADI(16)
     CLEA
     CLEE
     CLEN
     SVAL(EVT_SLOT_B, 0x12000c)
-    LOMA(0x15)
+    LOMA(CHAPTER_E_21)
     FADU(16)
-    LOAD1(0x1, UnitDef_088C172C)
+    LOAD1(0x1, UnitDef_Ch21AEnemy)
     ENUN
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8D9C[] = {
+CONST_DATA EventListScr EventScr_Ch20A_1[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x1)
     SAND(EVT_SLOT_C, EVT_SLOT_C, EVT_SLOT_1)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_0)
-    SVAL(EVT_SLOT_2, UnitDef_088C1314)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_3)
     CALL(EventScr_LoadReinforce)
-    SVAL(EVT_SLOT_2, UnitDef_088C1350)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_4)
     CALL(EventScr_LoadReinforceHardMode)
 LABEL(0x0)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8DE0[] = {
+CONST_DATA EventListScr EventScr_Ch20A_2[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x1)
     SAND(EVT_SLOT_C, EVT_SLOT_C, EVT_SLOT_1)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_0)
-    SVAL(EVT_SLOT_2, UnitDef_088C1378)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_5)
     CALL(EventScr_LoadReinforce)
-    SVAL(EVT_SLOT_2, UnitDef_088C13B4)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_6)
     CALL(EventScr_LoadReinforceHardMode)
 LABEL(0x0)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8E24[] = {
+CONST_DATA EventListScr EventScr_Ch20A_3[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x0, 3)
@@ -214,8 +207,8 @@ CONST_DATA EventListScr EventScr_089F8E24[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8E44[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C13DC)
+CONST_DATA EventListScr EventScr_Ch20A_4[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_7)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x0)
     ENUF(10)
@@ -227,7 +220,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8E78[] = {
+CONST_DATA EventListScr EventScr_Ch20A_5[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     ENUF(12)
@@ -236,7 +229,7 @@ CONST_DATA EventListScr EventScr_089F8E78[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8E98[] = {
+CONST_DATA EventListScr EventScr_Ch20A_6[] = {
     ENUF(12)
     COUNTER_CHECK(0x1)
     SVAL(EVT_SLOT_7, 0x5)
@@ -245,7 +238,7 @@ CONST_DATA EventListScr EventScr_089F8E98[] = {
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_7)
     SVAL(EVT_SLOT_7, 0x1)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_7)
-    SVAL(EVT_SLOT_2, UnitDef_088C1418)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_8)
     CALL(EventScr_LoadReinforce)
     COUNTER_CHECK(0x1)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_0)
@@ -256,7 +249,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8F00[] = {
+CONST_DATA EventListScr EventScr_Ch20A_7[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     ENUF(14)
@@ -265,7 +258,7 @@ CONST_DATA EventListScr EventScr_089F8F00[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8F20[] = {
+CONST_DATA EventListScr EventScr_Ch20A_8[] = {
     ENUF(14)
     COUNTER_CHECK(0x2)
     SVAL(EVT_SLOT_7, 0x5)
@@ -274,7 +267,7 @@ CONST_DATA EventListScr EventScr_089F8F20[] = {
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_7)
     SVAL(EVT_SLOT_7, 0x1)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_7)
-    SVAL(EVT_SLOT_2, UnitDef_088C1468)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_9)
     CALL(EventScr_LoadReinforce)
     COUNTER_CHECK(0x2)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_0)
@@ -285,7 +278,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8F88[] = {
+CONST_DATA EventListScr EventScr_Ch20A_9[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     ENUF(16)
@@ -294,7 +287,7 @@ CONST_DATA EventListScr EventScr_089F8F88[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F8FA8[] = {
+CONST_DATA EventListScr EventScr_Ch20A_10[] = {
     ENUF(16)
     COUNTER_CHECK(0x3)
     SVAL(EVT_SLOT_7, 0xb)
@@ -314,7 +307,7 @@ CONST_DATA EventListScr EventScr_089F8FA8[] = {
     SVAL(EVT_SLOT_7, 0x1)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_7)
     CAMERA2(11, 11)
-    SVAL(EVT_SLOT_2, UnitDef_088C14B8)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_10)
     CALL(EventScr_LoadReinforce)
     COUNTER_CHECK(0x3)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_0)
@@ -325,26 +318,26 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F9064[] = {
+CONST_DATA EventListScr EventScr_Ch20A_11[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x1)
     SAND(EVT_SLOT_C, EVT_SLOT_C, EVT_SLOT_1)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_0)
-    SVAL(EVT_SLOT_2, UnitDef_088C1508)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_11)
     CALL(EventScr_LoadReinforce)
-    SVAL(EVT_SLOT_2, UnitDef_088C1558)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_12)
     CALL(EventScr_LoadReinforceHardMode)
-    SVAL(EVT_SLOT_2, UnitDef_088C1594)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_13)
     CALL(EventScr_LoadReinforceHardMode)
-    SVAL(EVT_SLOT_2, UnitDef_088C15BC)
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_14)
     CALL(EventScr_LoadReinforceHardMode)
 LABEL(0x0)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089F90C8[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C15E4)
+CONST_DATA EventListScr EventScr_Ch20A_12[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch20AEnemy_15)
     CALL(EventScr_LoadReinforceHardMode)
     EVBIT_T(7)
     ENDA

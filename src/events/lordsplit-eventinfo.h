@@ -45,11 +45,11 @@ CONST_DATA struct ChapterEventGroup LordsSplitEvents = {
     .specialEventsAfterUnitMoved   = EventListScr_LordSplit_UnitMove,
     .tutorialEvents                = EventListScr_LordSplit_Tutorial,
 
-    .traps            = TrapData_Event_089EDE76,
-    .extraTrapsInHard = TrapData_Event_089EDF6B,
+    .traps            = TrapData_Event_LordSplit_0,
+    .extraTrapsInHard = TrapData_Event_LordSplit_1,
 
-    .playerUnitsInNormal = UnitDef_088CFBD4,
-    .playerUnitsInHard   = UnitDef_088CFBD4,
+    .playerUnitsInNormal = UnitDef_LordSplitUnits,
+    .playerUnitsInHard   = UnitDef_LordSplitUnits,
 
     .playerUnitsChoice1InEncounter = NULL,
     .playerUnitsChoice2InEncounter = NULL,
@@ -59,6 +59,6 @@ CONST_DATA struct ChapterEventGroup LordsSplitEvents = {
     .enemyUnitsChoice2InEncounter = NULL,
     .enemyUnitsChoice3InEncounter = NULL,
 
-    .beginningSceneEvents = EventScr_CastleFelia_BeginingScene,
+    .beginningSceneEvents = EventScr_CastleFelia_BeginningScene,
     .endingSceneEvents    = EventScr_CastleFelia_EndingScene,
 };

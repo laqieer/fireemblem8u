@@ -27,7 +27,7 @@
 #include "constants/items.h"
 
 static u16 ItemBackupEvtBattle;
-extern struct Unknown03000600 gUnknown_03000600[0x40];
+extern struct Unknown03000600 gUnk_38[0x40];
 
 //! FE8U = 0x08011CCC
 void ChangeUnitAi(struct Unit * unit, u8 ai1, u8 ai2, u8 unused)
@@ -180,7 +180,7 @@ void StartScriptBattleAnim(s8 useMapAnims)
 
     RenderBmMap();
 
-    banimEnabled = sub_8055BC4();
+    banimEnabled = EkrBattleStarting_CheckBattleAnimEnabled();
     if (useMapAnims)
     {
         banimEnabled = 0;
@@ -206,7 +206,7 @@ void StartEventBattle(struct Unit * unitA, struct Unit * unitB, u8 isBallista, s
     int sp04;
     int tmp;
 
-    SetBattleScriptted();
+    SetBattleScripted();
 
     sp04 = 0;
     if (hits == NULL)
@@ -247,7 +247,7 @@ void StartEventBattle(struct Unit * unitA, struct Unit * unitB, u8 isBallista, s
             case ITYPE_ANIMA:
             case ITYPE_LIGHT:
             case ITYPE_DARK:
-            case ITYPE_11:
+            case ITYPE_MONSTER:
                 ItemBackupEvtBattle = unitA->items[0];
                 unitA->items[0] = MakeNewItem(item);
 
@@ -269,7 +269,7 @@ void StartEventBattle(struct Unit * unitA, struct Unit * unitB, u8 isBallista, s
             case ITYPE_STAFF:
             case ITYPE_ITEM:
             case ITYPE_DRAGN:
-            case ITYPE_12:
+            case ITYPE_DANCE:
             case 0xFF:
                 gBattleActor.weaponBefore = gBattleActor.weapon = item + 0x100;
 
@@ -315,7 +315,7 @@ void StartEventBattle(struct Unit * unitA, struct Unit * unitB, u8 isBallista, s
         unitA->curHP = gBattleActor.unit.curHP;
         unitB->curHP = gBattleTarget.unit.curHP;
 
-        SetBattleUnscriptted();
+        SetBattleUnscripted();
 
         gActionData.scriptedBattleHits = NULL;
 
@@ -413,17 +413,17 @@ void EventPromoteUnitExt(struct Unit * unit, u8 jid, u8 item)
 }
 
 //! FE8U = 0x08012324
-void sub_8012324(void)
+void RestoreScreenAfterPromotion(void)
 {
     EndCgText();
 
     ResetDialogueScreen();
     SetupBackgrounds(NULL);
 
-    sub_80141B0();
+    ForceScreenToBlack();
 
     InitSystemTextFont();
-    sub_80156D4();
+    LoadGameCoreGfxLegacyFrame();
 
     return;
 }
@@ -490,10 +490,9 @@ void InitPlayerUnitPositionsForPrepScreen(void)
 }
 
 //! FE8U = 0x0801240C
-void sub_801240C(void)
+void SyncUnitDeploymentState(void)
 {
-    int i = 1;
-    int r5 = -1;
+    int i;
 
     for (i = FACTION_BLUE + 1; i < FACTION_GREEN; i++)
     {
@@ -518,9 +517,9 @@ void sub_801240C(void)
 
         unit->state &= ~(US_HIDDEN);
 
-        if (!(gBmSt.gameStateBits & BM_FLAG_LINKARENA) && unit->xPos == r5)
+        if (!(gBmSt.gameStateBits & BM_FLAG_LINKARENA) && unit->xPos == -1)
         {
-            sub_801247C(unit);
+            AssignUnitToFreeDeploySlot(unit);
         }
     }
 
@@ -528,7 +527,7 @@ void sub_801240C(void)
 }
 
 //! FE8U = 0x0801247C
-void sub_801247C(struct Unit * unit)
+void AssignUnitToFreeDeploySlot(struct Unit * unit)
 {
     int i;
     s8 x;
@@ -545,7 +544,7 @@ void sub_801247C(struct Unit * unit)
 
     while (uDef->charIndex != 0)
     {
-        s8 found = 0;
+        bool found = false;
 
         for (i = FACTION_BLUE + 1; i < FACTION_GREEN; i++)
         {
@@ -561,21 +560,21 @@ void sub_801247C(struct Unit * unit)
                 continue;
             }
 
-            GenUnitDefinitionFinalPosition(uDef, &x, &y, 0);
+            GenUnitDefinitionFinalPosition(uDef, &x, &y, false);
 
             if (unit->xPos != x || unit->yPos != y)
             {
                 continue;
             }
 
-            found = 1;
+            found = true;
 
             break;
         }
 
         if (!found)
         {
-            GenUnitDefinitionFinalPosition(uDef, &x, &y, 0);
+            GenUnitDefinitionFinalPosition(uDef, &x, &y, false);
             unit->xPos = x;
             unit->yPos = y;
             return;
@@ -588,7 +587,7 @@ void sub_801247C(struct Unit * unit)
 }
 
 //! FE8U = 0x08012578
-int sub_8012578(int index)
+int GetNextDeployedPlayerUnitId(int index)
 {
     for (; index < FACTION_GREEN; index++)
     {
@@ -599,7 +598,7 @@ int sub_8012578(int index)
             continue;
         }
 
-        if (unit->pCharacterData->number == GetPlayerLeaderUnitId())
+        if (unit->pCharacterData->number == GetPlayerLeaderPid())
         {
             continue;
         }
@@ -616,9 +615,9 @@ int sub_8012578(int index)
 }
 
 //! FE8U = 0x080125C0
-void sub_80125C0(struct UnitDefinition * uDef)
+void BuildDeployedUnitDefinitionList(struct UnitDefinition * uDef)
 {
-    int pid = GetPlayerLeaderUnitId();
+    int pid = GetPlayerLeaderPid();
     struct Unit * unit = GetUnitFromCharId(pid);
 
     if (unit)
@@ -637,7 +636,7 @@ void sub_80125C0(struct UnitDefinition * uDef)
 
     while (uDef->charIndex != 0)
     {
-        pid = sub_8012578(pid);
+        pid = GetNextDeployedPlayerUnitId(pid);
 
         if (pid == 0)
         {
@@ -664,7 +663,7 @@ void sub_80125C0(struct UnitDefinition * uDef)
 void StoreUnitWordStructs(void)
 {
     int i;
-    struct Unknown03000600 * it = gUnknown_03000600;
+    struct Unknown03000600 * it = gUnk_38;
 
     for (i = FACTION_BLUE + 1; i < FACTION_GREEN; i++)
     {
@@ -692,7 +691,7 @@ void LoadUnitWordStructs(void)
 {
     struct Unknown03000600 * it;
 
-    for (it = gUnknown_03000600; it->pid != 0; it++)
+    for (it = gUnk_38; it->pid != 0; it++)
     {
         struct Unit * unit = GetUnitFromCharId(it->pid);
         unit->xPos = it->x;

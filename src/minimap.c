@@ -14,6 +14,7 @@
 #include "ctc.h"
 
 #include "minimap.h"
+#include "constants/songs.h"
 
 struct MinimapProc {
     /* 00 */ PROC_HEADER;
@@ -31,13 +32,13 @@ struct MinimapProc {
 
 extern u8 gGfx_MinimapTiles[];
 extern u16 gPal_MinimapTiles[];
-extern u16 gPal_08A1FFD0[];
+extern u16 gPal_Minimap_0[];
 
-extern s16 gMinimapWinBuf[320 * 2];
-
-extern s16* gMinimapFrontWinBuf;
-extern s16* gMinimapBackWinBuf;
-extern s16* gMinimapDisplayedWinBuf;
+EWRAM_OVERLAY(0) s16 gMinimapWinBuf[2][320] = {};
+EWRAM_OVERLAY(0) s16 * gMinimapFrontWinBuf = NULL;
+EWRAM_OVERLAY(0) s16 * gMinimapBackWinBuf = NULL;
+EWRAM_OVERLAY(0) s16 * gMinimapDisplayedWinBuf = NULL;
+EWRAM_OVERLAY(0) u16 * gMinimapObjectFlashPal = NULL;
 
 void ApplyMinimapGraphics(int);
 void Minimap_InitProcVars(struct MinimapProc*);
@@ -122,7 +123,7 @@ int NormalizeSeaMinimapTerrain(int terrainId) {
     switch (terrainId) {
         case TERRAIN_DEEPS:
         case TERRAIN_GUNNELS:
-        case TERRAIN_TILE_00:
+        case TERRAIN_NONE:
             return TERRAIN_SEA;
         default:
             return terrainId;
@@ -173,10 +174,10 @@ int GetMinimapSeaKindAt(int x, int y) {
 //! FE8U = 0x080A767C
 int NormalizeWaterMinimapTerrain(int terrainId) {
     switch (terrainId) {
-        case TERRAIN_FLOOR_17:
-        case TERRAIN_WALL_1A:
+        case TERRAIN_FLOOR_REGULAR:
+        case TERRAIN_WALL_REGULAR:
         case TERRAIN_BRACE:
-        case TERRAIN_TILE_00:
+        case TERRAIN_NONE:
             return TERRAIN_WATER;
         default:
             return terrainId;
@@ -236,7 +237,7 @@ int GetMinimapRiverKindAt(int x, int y) {
         (terrainId == TERRAIN_SEA) ||
         (terrainId == TERRAIN_DEEPS) ||
         (terrainId == TERRAIN_LAKE) ||
-        (terrainId == TERRAIN_BRIDGE_13)) {
+        (terrainId == TERRAIN_BRIDGE_REGULAR)) {
         index += 1;
     }
 
@@ -248,7 +249,7 @@ int GetMinimapRiverKindAt(int x, int y) {
         (terrainId == TERRAIN_SEA) ||
         (terrainId == TERRAIN_DEEPS) ||
         (terrainId == TERRAIN_LAKE) ||
-        (terrainId == TERRAIN_BRIDGE_13)) {
+        (terrainId == TERRAIN_BRIDGE_REGULAR)) {
         index += 1;
     }
 
@@ -260,7 +261,7 @@ int GetMinimapRiverKindAt(int x, int y) {
         (terrainId == TERRAIN_SEA) ||
         (terrainId == TERRAIN_DEEPS) ||
         (terrainId == TERRAIN_LAKE) ||
-        (terrainId == TERRAIN_BRIDGE_13)) {
+        (terrainId == TERRAIN_BRIDGE_REGULAR)) {
         index += 1;
     }
 
@@ -272,7 +273,7 @@ int GetMinimapRiverKindAt(int x, int y) {
         (terrainId == TERRAIN_SEA) ||
         (terrainId == TERRAIN_DEEPS) ||
         (terrainId == TERRAIN_LAKE) ||
-        (terrainId == TERRAIN_BRIDGE_13)) {
+        (terrainId == TERRAIN_BRIDGE_REGULAR)) {
         index += 1;
     }
 
@@ -413,13 +414,13 @@ int GetMinimapDoorTileAt(int x, int y) {
 
 //! FE8U = 0x080A7970
 int GetMinimapBridgeKindAt(int x, int y) {
-    if ((gBmMapTerrain[y][x + 1] == TERRAIN_BRIDGE_13) ||
-        (gBmMapTerrain[y][x - 1] == TERRAIN_BRIDGE_13)) {
+    if ((gBmMapTerrain[y][x + 1] == TERRAIN_BRIDGE_REGULAR) ||
+        (gBmMapTerrain[y][x - 1] == TERRAIN_BRIDGE_REGULAR)) {
         return 0x10;
     }
 
-    if ((gBmMapTerrain[y + 1][x] == TERRAIN_BRIDGE_13) ||
-        (gBmMapTerrain[y - 1][x] == TERRAIN_BRIDGE_13)) {
+    if ((gBmMapTerrain[y + 1][x] == TERRAIN_BRIDGE_REGULAR) ||
+        (gBmMapTerrain[y - 1][x] == TERRAIN_BRIDGE_REGULAR)) {
         return 0x18;
     }
 
@@ -465,10 +466,10 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_ROAD:
             return GetMinimapConnectKindAt(x, y) + 0x40;
 
-        case TERRAIN_VILLAGE_03:
-        case TERRAIN_VILLAGE_04:
-        case TERRIAN_HOUSE:
-        case TERRAIN_GATE_23:
+        case TERRAIN_VILLAGE_REGULAR:
+        case TERRAIN_VILLAGE_CLOSED:
+        case TERRAIN_HOUSE:
+        case TERRAIN_GATE_REGULAR:
         case TERRAIN_INN:
             return 2;
 
@@ -476,14 +477,14 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_VENDOR:
             return 3;
 
-        case TERRAIN_ARENA_08:
+        case TERRAIN_ARENA_REGULAR:
             return 4;
 
         case TERRAIN_FORT:
             return 5;
 
-        case TERRAIN_GATE_0B:
-        case TERRAIN_RUINS_37:
+        case TERRAIN_GATE_CASTLE:
+        case TERRAIN_RUINS_VILLAGE:
             return 6;
 
         case TERRAIN_FOREST:
@@ -506,8 +507,8 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_PEAK:
             return 0x14;
 
-        case TERRAIN_BRIDGE_13:
-        case TERRAIN_BRIDGE_34:
+        case TERRAIN_BRIDGE_REGULAR:
+        case TERRAIN_BRIDGE_SNAG:
             return GetMinimapBridgeKindAt(x, y);
 
         case TERRAIN_WATER:
@@ -520,8 +521,8 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_DEEPS:
             return GetMinimapSeaKindAt(x, y) + 0x30;
 
-        case TERRAIN_FLOOR_17:
-        case TERRAIN_FLOOR_18:
+        case TERRAIN_FLOOR_REGULAR:
+        case TERRAIN_FLOOR_MAGIC:
         case TERRAIN_DECK:
             return 0xC;
 
@@ -534,11 +535,11 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_THRONE:
             return 0xE;
 
-        case TERRAIN_CHEST_20:
-        case TERRAIN_CHEST_21:
+        case TERRAIN_CHEST_EMPTY:
+        case TERRAIN_CHEST_FULL:
             return 0xF;
 
-        case TERRAIN_RUINS_25:
+        case TERRAIN_RUINS_REGULAR:
             return 0x1A;
 
         case TERRAIN_DARK:
@@ -559,9 +560,9 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_STAIRS:
             return GetMinimapStairTileAt(x, y);
 
-        case TERRAIN_FENCE_19:
-        case TERRAIN_WALL_1A:
-        case TERRAIN_WALL_1B:
+        case TERRAIN_FENCE_REGULAR:
+        case TERRAIN_WALL_REGULAR:
+        case TERRAIN_WALL_DAMAGED:
         case TERRAIN_RUBBLE:
         case TERRAIN_ROOF:
         case TERRAIN_SHIP_WRECK:
@@ -576,7 +577,7 @@ int GetMinimapTileAt(int x, int y) {
         case TERRAIN_VALLEY:
             return 0x19;
 
-        case TERRAIN_TILE_00:
+        case TERRAIN_NONE:
         case TERRAIN_C_ROOM_09:
         case TERRAIN_BRIDGE_14:
         case TERRAIN_CHURCH:
@@ -729,7 +730,7 @@ void DrawMinimapInternal(u16* vram, int palId) {
 
 //! FE8U = 0x080A7E84
 void Minimap_Init(ProcPtr proc) {
-    PlaySoundEffect(0x78);
+    PlaySoundEffect(SONG_78);
 
     Minimap_InitProcVars(proc);
     ApplyMinimapGraphics(-1);
@@ -765,9 +766,9 @@ void InitMinimapWindowBuffers() {
 
 //! FE8U = 0x080A7F1C
 void Minimap_InitOpenAnim(struct MinimapProc* proc) {
-    gMinimapFrontWinBuf = gMinimapWinBuf;
-    gMinimapBackWinBuf = gMinimapWinBuf - 320;
-    gMinimapDisplayedWinBuf = gMinimapWinBuf;
+    gMinimapFrontWinBuf = gMinimapWinBuf[1];
+    gMinimapBackWinBuf = gMinimapWinBuf[0];
+    gMinimapDisplayedWinBuf = gMinimapWinBuf[1];
 
     SetWinEnable(1, 0, 0);
 
@@ -829,12 +830,12 @@ void Minimap_OpenAnim(struct MinimapProc* proc) {
         arr[i].y = ((a2 * unk) >> 20) + 80;
     }
 
-    sub_80131D0(gMinimapBackWinBuf);
+    InitWindowScanlineBounds(gMinimapBackWinBuf);
 
-    sub_80131F0(gMinimapBackWinBuf, arr[0].x, arr[0].y, arr[1].x, arr[1].y);
-    sub_80131F0(gMinimapBackWinBuf, arr[1].x, arr[1].y, arr[2].x, arr[2].y);
-    sub_80131F0(gMinimapBackWinBuf, arr[2].x, arr[2].y, arr[3].x, arr[3].y);
-    sub_80131F0(gMinimapBackWinBuf, arr[3].x, arr[3].y, arr[0].x, arr[0].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[0].x, arr[0].y, arr[1].x, arr[1].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[1].x, arr[1].y, arr[2].x, arr[2].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[2].x, arr[2].y, arr[3].x, arr[3].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[3].x, arr[3].y, arr[0].x, arr[0].y);
 
     InitMinimapWindowBuffers();
 
@@ -849,16 +850,16 @@ void Minimap_OpenAnim(struct MinimapProc* proc) {
 
 //! FE8U = 0x080A81B8
 void Minimap_InitCloseAnim(struct MinimapProc* proc) {
-    PlaySoundEffect(0x79);
+    PlaySoundEffect(SONG_79);
 
     SetBlendTargetA(0, 0, 1, 1, 0);
     SetBlendTargetB(1, 1, 1, 1, 1);
 
     SetBlendConfig(3, 16, 0, 4);
 
-    gMinimapFrontWinBuf = gMinimapWinBuf;
-    gMinimapBackWinBuf = gMinimapWinBuf - 320;
-    gMinimapDisplayedWinBuf = gMinimapWinBuf;
+    gMinimapFrontWinBuf = gMinimapWinBuf[1];
+    gMinimapBackWinBuf = gMinimapWinBuf[0];
+    gMinimapDisplayedWinBuf = gMinimapWinBuf[1];
 
     proc->animClock = 0;
 
@@ -900,12 +901,12 @@ void Minimap_CloseAnim(struct MinimapProc* proc) {
         arr[i].y = ((a2 * unk) >> 20) + 80;
     }
 
-    sub_80131D0(gMinimapBackWinBuf);
+    InitWindowScanlineBounds(gMinimapBackWinBuf);
 
-    sub_80131F0(gMinimapBackWinBuf, arr[0].x, arr[0].y, arr[1].x, arr[1].y);
-    sub_80131F0(gMinimapBackWinBuf, arr[1].x, arr[1].y, arr[2].x, arr[2].y);
-    sub_80131F0(gMinimapBackWinBuf, arr[2].x, arr[2].y, arr[3].x, arr[3].y);
-    sub_80131F0(gMinimapBackWinBuf, arr[3].x, arr[3].y, arr[0].x, arr[0].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[0].x, arr[0].y, arr[1].x, arr[1].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[1].x, arr[1].y, arr[2].x, arr[2].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[2].x, arr[2].y, arr[3].x, arr[3].y);
+    RasterizeWindowEdge(gMinimapBackWinBuf, arr[3].x, arr[3].y, arr[0].x, arr[0].y);
 
     InitMinimapWindowBuffers();
 
@@ -927,7 +928,7 @@ void ApplyMinimapGraphics(int palId) {
     Decompress(gGfx_MinimapTiles, gGenericBuffer);
 
     ApplyPalette(gPal_MinimapTiles, palId);
-    ApplyPalette(gPal_08A1FFD0, palId + 1);
+    ApplyPalette(gPal_Minimap_0, palId + 1);
 
     return;
 }

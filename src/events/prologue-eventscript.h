@@ -8,9 +8,12 @@
 #include "eventcall.h"
 #include "EAstdlib.h"
 #include "constants/characters.h"
+#include "constants/backgrounds.h"
 #include "constants/items.h"
+#include "constants/songs.h"
+#include "constants/chapters.h"
 
-CONST_DATA EventListScr EventScr_Prologue_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Prologue_BeginningScene[] = {
     CALL(EventScr_Prologue_RenaisThroneCutscene)
     SVAL(EVT_SLOT_2, EventScr_Prologue_EirikaAttacked)
     CALL(EventScr_CallOnTutorialMode)
@@ -26,7 +29,7 @@ LABEL(0x0)
     SET_HP(CHARACTER_SETH)
     FlashCursor(CHARACTER_EIRIKA, 60)
     MUSI
-    Text_BG(0x1D, 0x90D)
+    Text_BG(BG_PLAIN_2, 0x90D)
     MUNO
     MOVE(0x18, CHARACTER_SETH, 4, 4)
     ENUN
@@ -46,11 +49,11 @@ LABEL(0x0)
 
 CONST_DATA EventListScr EventScr_Prologue_RenaisThroneCutscene[] = {
     SVAL(EVT_SLOT_B, 0x000A000E)
-    LOMA(0x10) /* todo: chapter index */
+    LOMA(CHAPTER_E_16)
     LOAD2(1, UnitDef_Event_PrologueThroneRoomUnits)
     ENUN
     FADU(16)
-    MUSC(0x26) /* todo: BGM index */
+    MUSC(SONG_RAID)
     BROWNBOXTEXT(0x664, 8, 8)
 
     /* WTF we load Ephraim as the messager... */
@@ -118,13 +121,13 @@ CONST_DATA EventListScr EventScr_Prologue_RenaisThroneCutscene[] = {
     EVBIT_F(0x2)
     CLEA CLEE CLEN
     SVAL(EVT_SLOT_B, 0x00000000)
-    LOMA(0x40)
+    LOMA(CHAPTER_40)
     FADU(16)
 
     LOAD2(1, UnitDef_Event_PrologueEscapees)
     ENUN
     FlashCursor(CHARACTER_SETH, 60)
-    Text_BG(0x1D, 0x907)
+    Text_BG(BG_PLAIN_2, 0x907)
 
     /* Franz run */
     SVAL(EVT_SLOT_D, 0)
@@ -145,7 +148,7 @@ CONST_DATA EventListScr EventScr_Prologue_RenaisThroneCutscene[] = {
     DISA(CHARACTER_FRANZ)
 
     FlashCursor(CHARACTER_SETH, 60)
-    Text_BG(0x1D, 0x908) /* behind me */
+    Text_BG(BG_PLAIN_2, 0x908) /* behind me */
 
     LOAD1(1, UnitDef_Event_PrologueValterGroup)
     ENUN
@@ -155,7 +158,7 @@ CONST_DATA EventListScr EventScr_Prologue_RenaisThroneCutscene[] = {
     ENUN
 
     FlashCursor(CHARACTER_VALTER_PROLOGUE, 60)
-    Text_BG(0x1D, 0x909)
+    Text_BG(BG_PLAIN_2, 0x909)
     MOVE_1STEP(0, CHARACTER_VALTER_PROLOGUE, FACING_LEFT)
     ENUN
 
@@ -198,7 +201,7 @@ CONST_DATA EventListScr EventScr_Prologue_RenaisThroneCutscene[] = {
     EVBIT_F(0x2)
     CLEA CLEE CLEN
     SVAL(EVT_SLOT_B, 0x00000000)
-    LOMA(0x0)
+    LOMA(CHAPTER_L_PROLOGUE)
     FADU(16)
 
     ENDA
@@ -222,13 +225,13 @@ CONST_DATA EventListScr EventScr_Prologue_ONeillSpawn[] = {
     LOAD1(1, UnitDef_Event_PrologueEnemy)
     ENUN
     FlashCursor(CHARACTER_ONEILL, 60)
-    MUSC(0x13)
+    MUSC(SONG_SHADOW_OF_THE_ENEMY)
     Text(0x910)
     ENUF(EVFLAG_BGM_CHANGE)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Prologue_OneEmimyLeft[] = {
+CONST_DATA EventListScr EventScr_Prologue_OneEnemyLeft[] = {
     CHECK_ENEMIES
     SVAL(EVT_SLOT_7, 1)
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_7)
@@ -255,7 +258,7 @@ LABEL(0x1)
 };
 
 CONST_DATA EventListScr EventScr_Prologue_ONeillAttack[] = {
-    MUSC(0x13)
+    MUSC(SONG_SHADOW_OF_THE_ENEMY)
     Text(0x914)
     CHECK_TUTORIAL
     BNE(0x0, EVT_SLOT_C, EVT_SLOT_0)
@@ -270,8 +273,8 @@ LABEL(0x0)
 };
 
 CONST_DATA EventListScr EventScr_Prologue_EndingScene[] = {
-    MUSC(0x31)
-    SetBackground(0x1D)
+    MUSC(SONG_VICTORY)
+    SetBackground(BG_PLAIN_2)
     TEXTSHOW(0x918)
     TEXTEND
     FADI(16)

@@ -32,6 +32,7 @@
 #include "constants/terrains.h"
 
 #include "bmitemuse.h"
+#include "constants/songs.h"
 
 extern struct Unit gStatGainSimUnit;
 
@@ -43,10 +44,10 @@ struct ProcCmd CONST_DATA gProcScr_SquareSelectWarp[] =
 
     PROC_CALL(LockGame),
 
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
 
     PROC_CALL(WarpSelect_OnInit),
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
 
     PROC_REPEAT(WarpSelect_OnIdle),
 
@@ -72,7 +73,7 @@ struct ProcCmd CONST_DATA gProcScr_SquareSelectTorch[] =
     PROC_CALL(LockGame),
 
     PROC_CALL(TorchSelect_OnInit),
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
 
     PROC_REPEAT(TorchSelect_OnIdle),
 
@@ -388,7 +389,7 @@ s8 CanUnitUseHealItem(struct Unit* unit)
     return TRUE;
 }
 
-s8 sub_802909C(struct Unit* unit)
+s8 CanUnitUseUnusedItem(struct Unit* unit)
 {
     return FALSE;
 }
@@ -419,7 +420,7 @@ s8 CanUnitUseAntitoxinItem(struct Unit* unit)
 
 s8 CanUnitUseChestKeyItem(struct Unit* unit)
 {
-    if (gBmMapTerrain[unit->yPos][unit->xPos] != TERRAIN_CHEST_21)
+    if (gBmMapTerrain[unit->yPos][unit->xPos] != TERRAIN_CHEST_FULL)
         return FALSE;
 
     if (!IsThereClosedChestAt(unit->xPos, unit->yPos))
@@ -667,7 +668,7 @@ void WarpSelect_OnInit(struct WarpSelectProc* proc)
         GetUnit(gActionData.targetIndex)->xPos,
         GetUnit(gActionData.targetIndex)->yPos);
 
-    ap = AP_Create(gUnknown_085A0EA0, 0);
+    ap = AP_Create(gUnkData_2, 0);
 
     ap->tileBase = OAM2_CHR(0) + OAM2_PAL(0);
     AP_SwitchAnimation(ap, 0);
@@ -696,13 +697,13 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
             BG_Fill(gBG2TilemapBuffer, 0);
             BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-            PlaySoundEffect(0x6A); // TODO: song ids
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 
             return;
         }
         else
         {
-            PlaySoundEffect(0x6C); // TODO: song ids
+            PlaySoundEffect(SONG_6C);
         }
     }
 
@@ -713,7 +714,7 @@ void WarpSelect_OnIdle(struct WarpSelectProc* proc)
         BG_Fill(gBG2TilemapBuffer, 0);
         BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-        PlaySoundEffect(0x6B); // TODO: song ids
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
     }
 
     if (warpAllowed != proc->prevWarpAllowed)
@@ -783,7 +784,7 @@ void DoUseWarpStaff(struct Unit* unit)
         NewTargetSelection_Specialized(&gSelectInfo_WarpUnit, WarpOnSelectTarget),
         GetStringFromIndex(0x875)); // TODO: msgid "Select character to warp."
 
-    PlaySoundEffect(0x6A); // TODO: song ids
+    PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 }
 
 u8 OnSelectPutTrap(ProcPtr proc, struct SelectTarget* target)
@@ -806,7 +807,7 @@ void DoUsePutTrap(struct Unit* unit, void(*func)(struct Unit*), int msgHelp)
         NewTargetSelection_Specialized(&gSelectInfo_PutTrap, OnSelectPutTrap),
         GetStringFromIndex(msgHelp));
 
-    PlaySoundEffect(0x6A); // TODO: song ids
+    PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 }
 
 u8 RepairSelectOnSelect(ProcPtr proc, struct SelectTarget* target)
@@ -840,7 +841,7 @@ void DoUseRepairStaff(struct Unit* unit)
         NewTargetSelection(&gSelectInfo_Repair),
         GetStringFromIndex(0x878)); // TODO: msgid "Select the character whose weapon needs repair."
 
-    PlaySoundEffect(0x6A); // TODO: song ids
+    PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 }
 
 u8 RepairSelectOnChange(ProcPtr proc, struct SelectTarget* target)
@@ -1003,7 +1004,7 @@ void SubtitleMapSelect_End(ProcPtr proc)
     ClearBg0Bg1();
 }
 
-int sub_8029D38(struct Unit* unit)
+int CanAssassinPlaceTrapHere(struct Unit* unit)
 {
     if ((UNIT_CATTRIBUTES(unit) & CA_ASSASSIN) && GetTrapAt(unit->xPos, unit->yPos) == NULL)
         return TRUE;
@@ -1011,7 +1012,7 @@ int sub_8029D38(struct Unit* unit)
     return FALSE;
 }
 
-void sub_8029D6C(void)
+void StartRescueStaffSelection(void)
 {
     StartSubtitleHelp(
         NewTargetSelection_Specialized(&gSelectInfo_WarpUnit, StaffSelectOnSelect),
@@ -1042,7 +1043,7 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
     {
         if (canTorch)
         {
-            PlaySoundEffect(0x6A); // TODO: song ids
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 
             Proc_Break(proc);
 
@@ -1055,7 +1056,7 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
         }
         else
         {
-            PlaySoundEffect(0x6C); // TODO: song ids
+            PlaySoundEffect(SONG_6C);
         }
     }
 
@@ -1066,7 +1067,7 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
 
         Proc_Goto(proc, 99);
 
-        PlaySoundEffect(0x6B); // TODO: song ids
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
     }
 
     PutMapCursor(
@@ -1078,7 +1079,7 @@ void TorchSelect_OnIdle(struct WarpSelectProc* proc)
 void DoUseTorchStaff(struct Unit* unit)
 {
     Proc_Start(gProcScr_SquareSelectTorch, PROC_TREE_3);
-    PlaySoundEffect(0x6A); // TODO: song ids
+    PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 }
 
 s8 CanUnitUseItemPrepScreen(struct Unit* unit, int item)
@@ -1128,7 +1129,7 @@ s8 CanUnitUseItemPrepScreen(struct Unit* unit, int item)
     }
 }
 
-s8 sub_802A108(struct Unit* unit)
+s8 DoesUnitHoldItemCC(struct Unit* unit)
 {
     int i, count = GetUnitItemCount(unit);
 

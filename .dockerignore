@@ -70,6 +70,17 @@ Temporary Items
 *.map
 *.o
 src/*.s
+src/data/*.s
+src/data/*/*.s
+# Keep committed (hand-written) data asm and the top-level hand-written asm;
+# only the build-generated *.s intermediates above are excluded.
+!src/data/*/anim_*.s
+!src/data/*/data_*.s
+!src/data/*/const_data_*.s
+!src/rom_header.s
+!src/crt0.s
+!src/m4a_1.s
+!src/libagbsyscall.s
 *.dump
 tools
 *.exe
@@ -81,7 +92,13 @@ tools
 *.8bpp.h
 *.lz
 *.fk
+banim/*.bin
 data/banim/*.bin
+graphics/map/layout/*.bin
+graphics/map/*TileConfiguration*.bin
+graphics/statscreen/*.bin
+*.feimg*.bin
+*.fetsa*.bin
 
 # =========================
 # Dump Scripts Output

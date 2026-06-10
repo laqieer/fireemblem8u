@@ -24,6 +24,7 @@
 #include "cp_perform.h"
 
 #include "constants/terrains.h"
+#include "constants/songs.h"
 
 struct UnkProcA {
     /* 00 */ PROC_HEADER;
@@ -50,7 +51,7 @@ void AiTargetCursor_Main(struct UnkProcA* proc);
 struct ProcCmd CONST_DATA gProcScr_AiTargetCursor[] = {
     PROC_SLEEP(0),
 
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
     PROC_REPEAT(AiTargetCursor_Main),
 
     PROC_END,
@@ -253,7 +254,7 @@ void AiStartStealAction(struct CpPerformProc* proc) {
     return;
 }
 
-struct PopupInstruction CONST_DATA PopupScr_085A80A4[] = {
+struct PopupInstruction CONST_DATA PopupScr_CpPerform_0[] = {
     POPUP_SOUND(0x5C),
     POPUP_MSG(0x12), // TODO: msgid "The village was destroyed."
     POPUP_END
@@ -264,7 +265,7 @@ s8 AiPillageAction(struct CpPerformProc* proc) {
     int x = gAiDecision.xMove;
     int y = gAiDecision.yMove;
 
-    if (gBmMapTerrain[y][x] == TERRAIN_CHEST_21) {
+    if (gBmMapTerrain[y][x] == TERRAIN_CHEST_FULL) {
         gActiveUnit->xPos = gAiDecision.xMove;
         gActiveUnit->yPos = gAiDecision.yMove;
 
@@ -277,9 +278,9 @@ s8 AiPillageAction(struct CpPerformProc* proc) {
         s8 y2 = y - 1;
         StartAvailableTileEvent((s8)x, y2);
 
-        PlaySoundEffect(0xAB);
+        PlaySoundEffect(SONG_AB);
 
-        NewPopup_Simple(PopupScr_085A80A4, 0x60, 0, proc);
+        NewPopup_Simple(PopupScr_CpPerform_0, 0x60, 0, proc);
     }
 
     return 1;

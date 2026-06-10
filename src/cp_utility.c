@@ -527,7 +527,7 @@ s8 AiFindClosestUnlockPosition(int flags, struct Vec2* outA, struct Vec2* outB) 
 
                     break;
 
-                case TERRAIN_CHEST_21:
+                case TERRAIN_CHEST_FULL:
                     count++;
 
                     if (flags & AI_FLAG_BERSERKED) {
@@ -833,7 +833,7 @@ void AiMakeMoveRangeUnitPowerMaps(struct Unit* unit) {
 }
 
 //! FE8U = 0x0803B678
-void sub_803B678(struct Unit* unit, u16 item) {
+void AiMakeMoveRangeItemRangeMaps(struct Unit* unit, u16 item) {
     int ix;
     int iy;
 
@@ -982,9 +982,9 @@ s8 AiFindSafestReachableLocation(struct Unit* unit, struct Vec2* out) {
     return 0;
 }
 
-u8 CONST_DATA gTerrainList_LootableVillages[] = { TERRAIN_VILLAGE_03, TERRAIN_CHURCH, TERRAIN_RUINS_37, 0, };
+u8 CONST_DATA gTerrainList_LootableVillages[] = { TERRAIN_VILLAGE_REGULAR, TERRAIN_CHURCH, TERRAIN_RUINS_VILLAGE, 0, };
 
-u8 CONST_DATA gTerrainList_LootableVillagesAndChests[] = { TERRAIN_VILLAGE_03, TERRAIN_CHURCH, TERRAIN_RUINS_37, TERRAIN_CHEST_21, 0, };
+u8 CONST_DATA gTerrainList_LootableVillagesAndChests[] = { TERRAIN_VILLAGE_REGULAR, TERRAIN_CHURCH, TERRAIN_RUINS_VILLAGE, TERRAIN_CHEST_FULL, 0, };
 
 //! FE8U = 0x0803B8FC
 s8 AiFindPillageLocation(struct Vec2* out, u8* outItemSlot) {
@@ -1064,7 +1064,7 @@ void AiTryMoveTowards(s16 x, s16 y, u8 action, u8 maxDanger, u8 unk) {
     if (unk) {
         GenerateExtendedMovementMapOnRange(x, y, GetUnitMovementCost(gActiveUnit));
     } else {
-        sub_80410C4(x, y, gActiveUnit);
+        GenerateUnitExtendedMovementMapOnRangeAt(x, y, gActiveUnit);
     }
 
     GenerateUnitMovementMap(gActiveUnit);
@@ -1127,7 +1127,7 @@ void AiTryMoveTowardsNeglectWall(s16 x, s16 y, u8 action, u8 maxDanger, u8 unk) 
     if (unk) {
         GenerateExtendedMovementMapOnRangeNeglectWall(x, y, GetUnitMovementCost(gActiveUnit));
     } else {
-        sub_8040F54(x, y, gActiveUnit);
+        GenerateUnitExtendedMovementMapOnRangeNeglectWall(x, y, gActiveUnit);
     }
 
     GenerateUnitMovementMap(gActiveUnit);
@@ -1287,16 +1287,16 @@ s8 AiLocationIsPillageTarget(u8 x, u8 y) {
     u8 tmp;
 
     switch (gBmMapTerrain[y][x]) {
-        case TERRAIN_VILLAGE_03:
+        case TERRAIN_VILLAGE_REGULAR:
             return 1;
 
         case TERRAIN_CHURCH:
             return 1;
 
-        case TERRAIN_RUINS_37:
+        case TERRAIN_RUINS_VILLAGE:
             return 1;
 
-        case TERRAIN_CHEST_21:
+        case TERRAIN_CHEST_FULL:
             if (AiGetChestUnlockItemSlot(&tmp) == 1) {
                 return 1;
             }
@@ -1460,7 +1460,7 @@ void CharStoreAI(struct Unit* unit, const struct UnitDefinition* uDef) {
 }
 
 //! FE8U = 0x0803C284
-s8 sub_803C284(struct Vec2* out) {
+s8 GetAiBestSafeStaffTargetPosition(struct Vec2* out) {
     int ix;
     int iy;
 
@@ -1502,7 +1502,7 @@ s8 sub_803C284(struct Vec2* out) {
 }
 
 //! FE8U = 0x0803C364
-int sub_803C364(void) {
+int AiCountCurrentPhaseFlaggedUnits(void) {
     int count = 0;
     int i, alliance = GetCurrentPhase();
 
@@ -1526,7 +1526,7 @@ int sub_803C364(void) {
 }
 
 //! FE8U = 0x0803C3B0
-int sub_803C3B0(void) {
+int AiCountAlliedFlaggedUnitsInRange(void) {
     int ix;
     int iy;
 
@@ -1557,7 +1557,7 @@ int sub_803C3B0(void) {
 }
 
 //! FE8U = 0x0803C44C
-s8 sub_803C44C(struct Unit* unit) {
+s8 AiCanUnitUseAnyStaff(struct Unit* unit) {
     int i;
 
     for (i = 0; i < UNIT_ITEM_COUNT; i++) {
@@ -1578,7 +1578,7 @@ s8 sub_803C44C(struct Unit* unit) {
 }
 
 //! FE8U = 0x0803C490
-void sub_803C490(struct Unit* unit) {
+void AiGenerateUnitMovementMapRespectStay(struct Unit* unit) {
 
     if (gAiState.flags & AI_FLAG_STAY) {
         GenerateUnitMovementMapExt(unit, 0);

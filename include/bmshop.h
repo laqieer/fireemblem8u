@@ -8,7 +8,8 @@
 enum {
     SHOP_TYPE_ARMORY        = 0,
     SHOP_TYPE_VENDOR        = 1,
-    SHOP_TYPE_SECRET_SHOP   = 2
+    SHOP_TYPE_SECRET_SHOP   = 2,
+    SHOP_TYPE_MANAGE_ITEMS  = 3, // used in "GMap Base Menu"
 };
 
 enum {
@@ -114,7 +115,7 @@ void StartShopScreen(struct Unit * unit, const u16 * inventory, u8 shopType, Pro
 void UpdateShopItemCounts(struct ProcShop*);
 void TalkChoice_OnBuy(void);
 void TalkChoice_OnSell(void);
-// ??? Shop_null_80B4328(???);
+// ??? Shop_null_0(???);
 void Shop_EntryDialogue(struct ProcShop * proc);
 void Shop_HandleEntryDialoguePrompt(struct ProcShop * proc);
 void Shop_BuyDialogue(struct ProcShop * proc);

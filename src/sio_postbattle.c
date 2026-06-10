@@ -8,9 +8,12 @@
 #include "soundwrapper.h"
 #include "m4a.h"
 #include "bmio.h"
+#include "prepscreen.h"
 
 #include "sio_core.h"
 #include "sio.h"
+
+#include "constants/songs.h"
 
 /**
  * Battle result screen for the Link Arena.
@@ -18,58 +21,25 @@
  * "Battle Data" UI.
  */
 
-struct SioPostBattleProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ ProcPtr unk_2c[4];
-    /* 3C */ STRUCT_PAD(0x3c, 0x40);
-    /* 40 */ u8 unk_40;
-    /* 41 */ u8 unk_41;
-    /* 42 */ u8 playerId;
-    /* 43 */ u8 unk_43;
-    /* 44 */ struct SioProc85A971C_Unk44 unk_44[4];
-    /* 64 */ int unk_64;
-};
-
-struct SioPostBattleSpritesProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ struct SioPostBattleProc * unk_2c;
-    /* 30 */ int x;
-    /* 34 */ int y;
-    /* 38 */ int delayMaybe;
-    /* 3C */ int timer;
-    /* 40 */ u16 fid;
-    /* 42 */ u8 oam2;
-    /* 43 */ u8 ranking;
-};
-
-struct SioPostBattleMusicProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 29 */ STRUCT_PAD(0x29, 0x58);
-    /* 58 */ int isPlayerWinner;
-};
-
 // clang-format off
 
-u16 const * CONST_DATA SpriteArray_085A96D4[] =
+u16 const * CONST_DATA SpriteArray_SioPostbattle_0[] =
 {
-    Sprite_080D9D6E,
-    Sprite_080D9D76,
-    Sprite_080D9D7E,
-    Sprite_080D9D86,
+    Sprite_SioMain2_0,
+    Sprite_SioMain2_1,
+    Sprite_SioMain2_2,
+    Sprite_SioMain2_3,
 };
 
-u16 const * CONST_DATA SpriteArray_085A96E4[] =
+u16 const * CONST_DATA SpriteArray_SioPostbattle_1[] =
 {
-    Sprite_080D9D8E,
-    Sprite_080D9DA2,
-    Sprite_080D9DC2,
-    Sprite_080D9DD6,
+    Sprite_SioMain2_4,
+    Sprite_SioMain2_5,
+    Sprite_SioMain2_6,
+    Sprite_SioMain2_7,
 };
 
-s16 const gUnknown_080D9E1C[5][4] =
+s16 const gSioPostbattle_0[5][4] =
 {
     { -1, -1, -1, -1, },
 
@@ -81,6 +51,8 @@ s16 const gUnknown_080D9E1C[5][4] =
 
     { 2, 7, 12, 17, },
 };
+
+u8 const gSioPostbattle_1[3] = { 3, 7, 15 };
 
 // clang-format on
 
@@ -127,14 +99,14 @@ void SioPostBattleSprites_Loop_DrawSlideIn(struct SioPostBattleSpritesProc * pro
 
         proc->timer++;
 
-        PutSprite(4, proc->x, proc->y - 16, SpriteArray_085A96E4[proc->ranking], 0);
-        PutSprite(4, proc->x + 72, proc->y - 6, SpriteArray_085A96D4[proc->oam2], 0);
-        PutSprite(4, proc->x + 96, proc->y + 8, Sprite_080D9DE4, 0);
-        PutSprite(4, proc->x + 64, proc->y + 8, Sprite_080D9E06, proc->ranking * 4 + 0x50);
+        PutSprite(4, proc->x, proc->y - 16, SpriteArray_SioPostbattle_1[proc->ranking], 0);
+        PutSprite(4, proc->x + 72, proc->y - 6, SpriteArray_SioPostbattle_0[proc->oam2], 0);
+        PutSprite(4, proc->x + 96, proc->y + 8, Sprite_SioMain2_8, 0);
+        PutSprite(4, proc->x + 64, proc->y + 8, Sprite_SioMain2_10, proc->ranking * 4 + 0x50);
         PutSprite(4, -proc->x + 112, proc->y - 8, Sprite_LinkArena_NameBanner, OAM2_PAL(proc->oam2) + 0x400);
-        PutSprite(4, -proc->x + 124, proc->y, Sprite_080D9DF2, proc->oam2 == 3 ? 0x40 : proc->oam2 * 9);
+        PutSprite(4, -proc->x + 124, proc->y, Sprite_SioMain2_9, proc->oam2 == 3 ? 0x40 : proc->oam2 * 9);
         PutSprite(
-            5, -proc->x + 208, proc->y - 8, Sprite_080D9E0E, OAM2_PAL(proc->oam2 + 10) + 0x180 + (proc->oam2 << 3));
+            5, -proc->x + 208, proc->y - 8, Sprite_SioMain2_11, OAM2_PAL(proc->oam2 + 10) + 0x180 + (proc->oam2 << 3));
     }
 
     return;
@@ -143,13 +115,13 @@ void SioPostBattleSprites_Loop_DrawSlideIn(struct SioPostBattleSpritesProc * pro
 //! FE8U = 0x0804538C
 void SioPostBattleSprites_Loop_DrawStatic(struct SioPostBattleSpritesProc * proc)
 {
-    PutSprite(4, proc->x, proc->y - 16, SpriteArray_085A96E4[proc->ranking], 0);
-    PutSprite(4, proc->x + 72, proc->y - 6, SpriteArray_085A96D4[proc->oam2], 0);
-    PutSprite(4, proc->x + 96, proc->y + 8, Sprite_080D9DE4, 0);
-    PutSprite(4, proc->x + 64, proc->y + 8, Sprite_080D9E06, proc->ranking * 4 + 0x50);
+    PutSprite(4, proc->x, proc->y - 16, SpriteArray_SioPostbattle_1[proc->ranking], 0);
+    PutSprite(4, proc->x + 72, proc->y - 6, SpriteArray_SioPostbattle_0[proc->oam2], 0);
+    PutSprite(4, proc->x + 96, proc->y + 8, Sprite_SioMain2_8, 0);
+    PutSprite(4, proc->x + 64, proc->y + 8, Sprite_SioMain2_10, proc->ranking * 4 + 0x50);
     PutSprite(4, -proc->x + 112, proc->y - 8, Sprite_LinkArena_NameBanner, OAM2_PAL(proc->oam2) + 0x400);
-    PutSprite(4, -proc->x + 124, proc->y, Sprite_080D9DF2, proc->oam2 == 3 ? 0x40 : proc->oam2 * 9);
-    PutSprite(5, -proc->x + 208, proc->y - 8, Sprite_080D9E0E, OAM2_PAL(proc->oam2 + 10) + 0x180 + (proc->oam2 << 3));
+    PutSprite(4, -proc->x + 124, proc->y, Sprite_SioMain2_9, proc->oam2 == 3 ? 0x40 : proc->oam2 * 9);
+    PutSprite(5, -proc->x + 208, proc->y - 8, Sprite_SioMain2_11, OAM2_PAL(proc->oam2 + 10) + 0x180 + (proc->oam2 << 3));
 
     return;
 }
@@ -185,7 +157,7 @@ ProcPtr StartDrawLinkArenaRankSprites(struct SioPostBattleProc * parent, int del
 }
 
 //! FE8U = 0x080454E4
-void sub_80454E4(struct SioPostBattleProc * proc)
+void SioPostBattle_DrawRankingRowBar(struct SioPostBattleProc * proc)
 {
     int i;
 
@@ -195,13 +167,13 @@ void sub_80454E4(struct SioPostBattleProc * proc)
     if (proc->playerId == proc->unk_44[(proc->unk_41 - 1)].playerId)
     {
         CallARM_FillTileRect(
-            tm + TILEMAP_INDEX(0, gUnknown_080D9E1C[unk_40][(proc->unk_41 - 1)]), gUnknown_085ADE88, 0x2078);
+            tm + TILEMAP_INDEX(0, gSioPostbattle_0[unk_40][(proc->unk_41 - 1)]), gUnkData_13, 0x2078);
     }
     else
     {
         for (i = 0; i < 0x60; i++)
         {
-            tm[TILEMAP_INDEX(i, gUnknown_080D9E1C[unk_40][(proc->unk_41 - 1)])] = 0x1034;
+            tm[TILEMAP_INDEX(i, gSioPostbattle_0[unk_40][(proc->unk_41 - 1)])] = 0x1034;
         }
     }
 
@@ -209,30 +181,30 @@ void sub_80454E4(struct SioPostBattleProc * proc)
 }
 
 //! FE8U = 0x0804556C
-void sub_804556C(struct SioPostBattleProc * proc)
+void SioPostBattle_DrawRankingText(struct SioPostBattleProc * proc)
 {
     int i;
 
     int unk_40 = proc->unk_40;
-    SetTextFont(&Font_Sio_02000C60);
+    SetTextFont(&Font_Sio_0);
 
     for (i = 0; i < unk_40; i++)
     {
-        char * str = gUnk_Sio_0203DAC5[i];
+        char * str = gUnk_Sio_9[i];
 
         int len = GetStringTextLen(str);
         len = (72 - len) / 2;
 
         if (i < 3)
         {
-            Text_InsertDrawString(Texts_0203DB14, 72 * i + len, 0, str);
+            Text_InsertDrawString(Texts_1, 72 * i + len, 0, str);
         }
         else
         {
-            Text_InsertDrawString(gUnk_Sio_0203DB1C, len, 0, str);
+            Text_InsertDrawString(gUnk_Sio_10, len, 0, str);
         }
 
-        SioDrawNumber(gUnk_Sio_0203DB1C, i * 32 + 152, 2, proc->unk_44[i].points);
+        SioDrawNumber(gUnk_Sio_10, i * 32 + 152, 2, proc->unk_44[i].points);
     }
 
     return;
@@ -275,20 +247,20 @@ void SioPostBattle_Init(struct SioPostBattleProc * proc)
     Decompress(Img_LinkArenaActiveBannerFx, (void *)(0x06000F00));
     ApplyPalette(Pal_LinkArenaActiveBannerFx, 2);
 
-    Decompress(Img_LinkArenaPostBattleBg, (void *)(0x6000000 + GetBackgroundTileDataOffset(3)));
+    Decompress(Img_LinkArenaPostBattleBg, (void *)(VRAM + GetBackgroundTileDataOffset(3)));
     ApplyPalettes(Pal_LinkArenaPostBattleBg, 10, 4);
     Decompress(Tsa_LinkArenaPostBattleBg, gGenericBuffer);
     CallARM_FillTileRect(gBG3TilemapBuffer, gGenericBuffer, 0xa000);
 
-    InitSpriteTextFont(&Font_Sio_02000C60, (void *)(0x06012000), 0xe);
+    InitSpriteTextFont(&Font_Sio_0, (void *)(0x06012000), 0xe);
     ApplyPalette(Pal_Text, 0x1E);
     SetTextFontGlyphs(TEXT_GLYPHS_SYSTEM);
     ResetTextFont();
 
     for (i = 0; i < 2; i++)
     {
-        InitSpriteText(&Texts_0203DB14[i]);
-        SpriteText_DrawBackgroundExt(&Texts_0203DB14[i], 0);
+        InitSpriteText(&Texts_1[i]);
+        SpriteText_DrawBackgroundExt(&Texts_1[i], 0);
     }
 
     proc->unk_40 = gSioSt->unk_007;
@@ -296,9 +268,9 @@ void SioPostBattle_Init(struct SioPostBattleProc * proc)
     proc->playerId = gSioSt->selfId;
 
     CpuFill16(0, proc->unk_44, sizeof(proc->unk_44));
-    sub_8048884(proc->unk_44);
+    Sio_SortPlayersByScore(proc->unk_44);
 
-    sub_804556C(proc);
+    SioPostBattle_DrawRankingText(proc);
 
     proc->unk_64 = 176;
 
@@ -327,16 +299,16 @@ void SioPostBattle_Loop_Main(struct SioPostBattleProc * proc)
     proc->unk_64--;
     BG_SetPosition(2, 0, proc->unk_64);
 
-    sub_804D6D4();
+    UpdateLinkArenaActiveBannerBgGlow();
 
     if (proc->unk_41 != 0)
     {
-        if ((proc->unk_64 >> 3) == (gUnknown_080D9E1C[unk_40][(proc->unk_41 - 1)] + 4))
+        if ((proc->unk_64 >> 3) == (gSioPostbattle_0[unk_40][(proc->unk_41 - 1)] + 4))
         {
-            sub_80454E4(proc);
+            SioPostBattle_DrawRankingRowBar(proc);
             BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-            fid = gUnk_Sio_0203DD90.unk_24[proc->unk_44[(proc->unk_41 - 1)].playerId];
+            fid = gUnk_Sio_16.unk_24[proc->unk_44[(proc->unk_41 - 1)].playerId];
             proc->unk_2c[(proc->unk_41 - 1)] =
                 StartDrawLinkArenaRankSprites(proc, 40, fid, proc->unk_44[(proc->unk_41 - 1)].playerId, (proc->unk_41 - 1));
 
@@ -355,7 +327,7 @@ void SioPostBattle_Loop_Main(struct SioPostBattleProc * proc)
 //! FE8U = 0x0804589C
 void SioPostBattle_AwaitAPress(ProcPtr proc)
 {
-    sub_804D6D4();
+    UpdateLinkArenaActiveBannerBgGlow();
 
     if ((gKeyStatusPtr->newKeys & A_BUTTON) != 0)
     {
@@ -375,14 +347,14 @@ struct ProcCmd CONST_DATA ProcScr_SioPostBattle[] =
     PROC_CALL(FadeInBlackSpeed20),
     PROC_YIELD,
 
-    PROC_CALL(Clear_0203DDDC),
+    PROC_CALL(Clear_UnkData_0),
 
     PROC_REPEAT(SioPostBattle_Loop_Main),
     PROC_REPEAT(SioPostBattle_AwaitAPress),
 
-    PROC_CALL(Set_0203DDDC),
+    PROC_CALL(Set_UnkData_0),
 
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_YIELD,
 
     PROC_CALL(BMapVSync_Start),
@@ -397,14 +369,14 @@ void SioPostBattleMusic_PlayFanfare(struct SioPostBattleMusicProc * proc)
 {
     if (proc->isPlayerWinner != 0)
     {
-        StartBgmExt(0x3a, 0, 0);
+        StartBgmExt(SONG_COLOSSEUM_VICTORY, 0, 0);
     }
     else
     {
-        StartBgmExt(0x3b, 0, 0);
+        StartBgmExt(SONG_COLOSSEUM_DEFEAT, 0, 0);
     }
 
-    PlaySoundEffect(0x81);
+    PlaySoundEffect(SONG_81);
 
     return;
 }
@@ -412,7 +384,7 @@ void SioPostBattleMusic_PlayFanfare(struct SioPostBattleMusicProc * proc)
 //! FE8U = 0x08045920
 void SioPostBattleMusic_PlayStandardBgm(void)
 {
-    StartBgmExt(0x3b, 0, 0);
+    StartBgmExt(SONG_COLOSSEUM_DEFEAT, 0, 0);
     return;
 }
 
@@ -431,4 +403,202 @@ struct ProcCmd CONST_DATA ProcScr_SioPostBattle_PlayMusic[] =
     PROC_END,
 };
 
-// clang-format on
+struct ProcCmd CONST_DATA ProcScr_SIOPRA[] = {
+    PROC_NAME("SIOPRA"),
+    PROC_YIELD,
+    PROC_CALL(StartLinkArenaTeamList),
+    PROC_YIELD,
+    PROC_CALL(LinkArenaTeamBuild_GotoExitIfNoCursor),
+    PROC_CALL(SioBat_LoadAllTeamUnits),
+    PROC_CALL(Nop_SioUiutils_0),
+    PROC_CALL(EndLinkArenaTitleBanner),
+    PROC_CALL(ResetLinkArenaUiBlend),
+    PROC_YIELD,
+    PROC_CALL(New6C_SIOMAIN2),
+    PROC_YIELD,
+    PROC_REPEAT(SioMain2_WaitEndAndRoute),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_START_CHILD_BLOCKING(ProcScr_SioPostBattle),
+    PROC_YIELD,
+    PROC_CALL(SetSioSaveConfigFlag3),
+PROC_LABEL(4),
+PROC_LABEL(1),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_END,
+};
+
+/* Apparently these should belongs to sio_bat? */
+const struct LinkArenaRuleInfo gLinkArenaRuleData[] = {
+    { 0x776, 14, 17, 0x77B, 0x77C },
+    { 0x777, 16, 22, 0x779, 0x77A },
+    { 0x778, 14, 17, 0x77B, 0x77C },
+};
+
+CONST_DATA struct FaceVramEntry gSioPostbattle_2[] = {
+    { 0x7000, 1 },
+    { 0x7000, 1 },
+    { 0x7000, 1 },
+    { 0x7000, 1 },
+};
+
+CONST_DATA struct MultiArenaSaveTeam * gSioPostbattle_3 = (void *)gGenericBuffer;
+
+struct ProcCmd CONST_DATA ProcScr_SIOBAT[] = {
+    PROC_NAME("SIOBAT"),
+PROC_LABEL(0),
+    PROC_CALL(StartLinkArenaTeamList),
+    PROC_YIELD,
+    PROC_CALL(LinkArenaTeamBuild_GotoExitIfNoCursor),
+    PROC_CALL(Nop_SioUiutils_0),
+    PROC_CALL(EndLinkArenaTitleBanner),
+    PROC_CALL(ResetLinkArenaUiBlend),
+    PROC_CALL(SioBat_InitSetupScreen),
+    PROC_CALL(FadeInBlackSpeed20),
+    PROC_YIELD,
+    PROC_CALL(Clear_UnkData_0),
+    PROC_CALL(StartSioProcs),
+PROC_LABEL(3),
+    PROC_REPEAT(SioBat_SetupLoop),
+    PROC_CALL(EnableSioLinkTimeoutCheck),
+    PROC_REPEAT(SioBat_WaitSetupAck),
+    PROC_CALL(Sio_Msg89Barrier_Init),
+    PROC_REPEAT(Sio_Msg89Barrier_Loop),
+    PROC_CALL(SioBat_DecideFirstMover),
+    PROC_REPEAT(SioBat_ReceiveFirstMover),
+    PROC_CALL(Sio_Msg89Barrier_Init),
+    PROC_REPEAT(Sio_Msg89Barrier_Loop),
+    PROC_REPEAT(SioBat_FirstMoverRoulette),
+    PROC_SLEEP(10),
+    PROC_CALL(SioBat_PlayFirstMoverSound),
+    PROC_SLEEP(80),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(EndLinkArenaVersusSpriteDraw),
+    PROC_CALL(EndMuralBackground),
+    PROC_CALL(DrawLinkArenaRuleScreen),
+    PROC_CALL(FadeInBlackSpeed20),
+    PROC_YIELD,
+    PROC_CALL(Clear_UnkData_0),
+    PROC_SLEEP(180),
+    PROC_CALL(Sio_Msg89Barrier_Init),
+    PROC_REPEAT(Sio_Msg89Barrier_Loop),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_END_EACH(ProcScr_RuleSettingSpriteDraw_Static),
+    PROC_CALL(Nop_SioUiutils_0),
+    PROC_CALL(EndLinkArenaTitleBanner),
+    PROC_CALL(ResetLinkArenaUiBlend),
+    PROC_CALL(DrawLinkArenaLoadingScreen),
+    PROC_CALL(FadeInBlackSpeed20),
+    PROC_YIELD,
+    PROC_CALL(Clear_UnkData_0),
+    PROC_CALL(SioBat_InitTeamTransfer),
+    PROC_REPEAT(SioBat_TeamTransferLoop),
+    PROC_REPEAT(SioBat_WaitTeamTransferDone),
+    PROC_CALL(Sio_Msg89Barrier_Init),
+    PROC_REPEAT(Sio_Msg89Barrier_Loop),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(EndLinkArenaVersusSpriteDraw),
+    PROC_CALL(EndMuralBackground),
+    PROC_CALL(Nop_SioUiutils_0),
+    PROC_SLEEP(1),
+    PROC_CALL(New6C_SIOMAIN2),
+    PROC_YIELD,
+    PROC_REPEAT(SioMain2_WaitEndAndRoute),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(DisableSioLinkTimeoutCheck),
+    PROC_CALL(EndSioProcs),
+    PROC_START_CHILD_BLOCKING(ProcScr_SioPostBattle),
+    PROC_YIELD,
+    PROC_CALL(SioBat_ReleaseIrq),
+    PROC_CALL(SioBat_RegisterHighScore),
+    PROC_YIELD,
+    PROC_CALL(SetSioSaveConfigFlag3),
+    PROC_CALL(Nop_SioUiutils_0),
+    PROC_GOTO(1),
+PROC_LABEL(2),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(ResetFaces),
+    PROC_CALL(EndLinkArenaVersusSpriteDraw),
+    PROC_CALL(EndMuralBackground),
+    PROC_GOTO(0),
+PROC_LABEL(4),
+    PROC_CALL(Sio_Msg89Barrier_Init),
+    PROC_REPEAT(Sio_Msg89Barrier_Loop),
+    PROC_SLEEP(1),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(DisableSioLinkTimeoutCheck),
+    PROC_CALL(EndSioProcs),
+    PROC_CALL(SioBat_ReleaseIrq),
+PROC_LABEL(1),
+    PROC_CALL(Sio_ResetState),
+    PROC_END,
+};
+
+struct ProcCmd CONST_DATA ProcScr_SIOTERM[] = {
+    PROC_NAME("SIOTERM"),
+PROC_LABEL(0),
+    PROC_CALL(StartLinkArenaTeamList),
+    PROC_YIELD,
+    PROC_CALL(LinkArenaTeamBuild_GotoExitIfNoCursor),
+PROC_LABEL(3),
+    PROC_CALL(LinkArenaTeamBuild_Init),
+    PROC_CALL(FadeInBlackSpeed20),
+    PROC_YIELD,
+    PROC_CALL(Clear_UnkData_0),
+    PROC_REPEAT(LinkArenaTeamBuild_Loop),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(ClearSioBGFull),
+    PROC_CALL(LinkArenaTeamBuild_LoadSelectedSave),
+    PROC_CALL(Nop_SioUiutils_0),
+    PROC_CALL(EndLinkArenaTitleBanner),
+    PROC_CALL(ResetLinkArenaUiBlend),
+    PROC_CALL(EndLinkArenaButtonSpriteDraw),
+    PROC_CALL(EndMuralBackground),
+    PROC_CALL(BMapVSync_End),
+    PROC_YIELD,
+    PROC_CALL(StartPrepAtMenuWithConfig),
+PROC_LABEL(5),
+    PROC_REPEAT(LinkArenaTeamBuild_WaitAtMenu),
+    PROC_CALL(BMapVSync_Start),
+    PROC_CALL(LinkArenaTeamBuild_GotoIfNoSelection),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(StartTacticianNameEntry),
+    PROC_YIELD,
+    PROC_CALL(LinkArenaTeamBuild_OnTacticianDone),
+    PROC_YIELD,
+    PROC_GOTO(0),
+PROC_LABEL(2),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_GOTO(3),
+PROC_LABEL(4),
+    PROC_CALL(Set_UnkData_0),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
+    PROC_YIELD,
+    PROC_CALL(LinkArenaTeamBuild_ResetBg1Position),
+    PROC_CALL(EndLinkArenaButtonSpriteDraw),
+    PROC_CALL(EndMuralBackground),
+    PROC_GOTO(0),
+PROC_LABEL(1),
+    PROC_END,
+};

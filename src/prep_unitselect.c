@@ -18,10 +18,12 @@
 #include "constants/video-global.h"
 #include "bmlib.h"
 #include "sysutil.h"
+#include "sio.h"
 #include "unitlistscreen.h"
 #include "prepscreen.h"
+#include "constants/songs.h"
 
-s8 CheckInLinkArena();
+EWRAM_OVERLAY(0) struct Text gPrepUnitTexts[0x16] = {};
 
 void PrepUnit_DrawUnitListNames(struct ProcPrepUnit *proc, int line)
 {
@@ -104,13 +106,13 @@ void PrepUnit_DrawSMSAndObjs(struct ProcPrepUnit *proc)
     /* "Start" button */
     if (0 == ((proc->button_blank >> 2) & 1) && proc->cur_counter) {
         if (CheckInLinkArena())
-            PutSpriteExt(4, 0x80, 0x82,obj_08A18E62, 0x40);
+            PutSpriteExt(4, 0x80, 0x82,obj_PrepUnitselect_1, 0x40);
         else
-            PutSpriteExt(4, 0x80, 0x82,obj_08A18E4E, 0x40);
+            PutSpriteExt(4, 0x80, 0x82,Sprite_PrepStartButton, 0x40);
     }
 
     /* "Select" button */
-    PutSpriteExt(4, 0x80, 0x8F, obj_08A18E34, 0x40);
+    PutSpriteExt(4, 0x80, 0x8F, obj_PrepUnitselect_0, 0x40);
 
     SyncUnitSpriteSheet();
 }
@@ -142,13 +144,13 @@ void PrepUnit_InitGfx()
     LoadIconPalettes(BGPAL_ICONS);
 
     Prep_DrawChapterGoal(0x6000, 8);
-    sub_80950E8(0x6000, 0xF);
+    Prep_LoadWindowGfx(0x6000, 0xF);
 
-    Decompress(gUnknown_08A1B730, (void*)0x06000440);
-    Decompress(gUnknown_08A1B7C8, gGenericBuffer);
+    Decompress(gUnkData_69, (void*)0x06000440);
+    Decompress(gUnkData_70, gGenericBuffer);
     CallARM_FillTileRect(gBG1TilemapBuffer, gGenericBuffer, 0x1000);
 
-    Decompress(gUnknown_08A1D510, (void*)0x6010800);
+    Decompress(gUnkData_79, (void*)0x6010800);
     ApplyPalette(Pal_MapBattleInfoNum, 0x19);
     EnablePaletteSync();
 }
@@ -287,11 +289,11 @@ s8 PrepCheckCanSelectUnit(struct ProcPrepUnit *proc, struct Unit *unit)
         proc->cur_counter++;
         unit->state &= ~(US_UNSELECTABLE | US_NOT_DEPLOYED);
         RegisterSioPid(unit->pCharacterData->number);
-        PlaySoundEffect(0x6A);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
         PrepUnit_DrawUnitListNames(proc, proc->list_num_cur / 2);
         return 1;
     } else {
-        PlaySoundEffect(0x6C);
+        PlaySoundEffect(SONG_6C);
         return 0;
     }
 }
@@ -302,11 +304,11 @@ s8 PrepCheckCanUnselectUnit(struct ProcPrepUnit *proc, struct Unit *unit)
         proc->cur_counter--;
         unit->state |= US_UNSELECTABLE | US_NOT_DEPLOYED;
         RemoveSioPid(unit->pCharacterData->number);
-        PlaySoundEffect(0x6B);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
         PrepUnit_DrawUnitListNames(proc, proc->list_num_cur / 2);
         return 1;
     } else {
-        PlaySoundEffect(0x6C);
+        PlaySoundEffect(SONG_6C);
         return 0;
     }
 }
@@ -338,7 +340,7 @@ s8 PrepUnit_HandlePressA(struct ProcPrepUnit *proc)
             return 0;
         }
 
-        if (CheckInLinkArena() && !sub_8097E38(unit)) {
+        if (CheckInLinkArena() && !CanUnitJoinLinkArena(unit)) {
             u32 ilist = proc->list_num_cur;
             StartPrepErrorHelpbox(
                 (ilist & 1) * 56 + 0x70,
@@ -378,7 +380,7 @@ s8 ShouldPrepUnitMenuScroll(struct ProcPrepUnit *proc)
     return 0;
 }
 
-void sub_809ADC8(struct ProcPrepUnit *proc)
+void PrepUnit_AdjustScrollToCursor(struct ProcPrepUnit *proc)
 {
     if (ShouldPrepUnitMenuScroll(proc)) {
         int lst = proc->list_num_cur / 2;
@@ -402,7 +404,7 @@ void sub_809ADC8(struct ProcPrepUnit *proc)
     }
 }
 
-void sub_809AE10(struct ProcPrepUnit *proc)
+void PrepUnit_UpdateScrollArrows(struct ProcPrepUnit *proc)
 {
     int msk = 0;
     int dif = proc->yDiff_cur / 16;
@@ -433,7 +435,7 @@ void ProcPrepUnit_InitScreen(struct ProcPrepUnit *proc)
     int i;
     SetupBackgrounds(gBgConfig_ItemUseScreen);
     SetDispEnable(0, 0, 0, 0, 0);
-    sub_809ADC8(proc);
+    PrepUnit_AdjustScrollToCursor(proc);
     BG_Fill(gBG0TilemapBuffer, 0);
     BG_Fill(gBG1TilemapBuffer, 0);
     BG_Fill(gBG2TilemapBuffer, 0);
@@ -478,7 +480,7 @@ void ProcPrepUnit_InitScreen(struct ProcPrepUnit *proc)
     RestartMuralBackground();
 }
 
-void sub_809B014()
+void PrepUnit_EndScreenGfx()
 {
     EndMenuScrollBar();
     EndAllParallelWorkers();
@@ -504,16 +506,16 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
 
         if (START_BUTTON & gKeyStatusPtr->newKeys) {
             if (0 == proc->cur_counter) {
-                PlaySoundEffect(0x6C);
+                PlaySoundEffect(SONG_6C);
             } else {
-                PlaySoundEffect(0x6A);
+                PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
                 Proc_Goto(proc, PROC_LABEL_PREPUNIT_GAME_START);
             }
             return;
         }
 
         if (SELECT_BUTTON & gKeyStatusPtr->newKeys) {
-            PlaySoundEffect(0x6A);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
             Proc_Goto(proc, PROC_LABEL_PREPUNIT_PRESS_SELECT);
             return;
         }
@@ -531,7 +533,7 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
         }
 
         if (B_BUTTON & gKeyStatusPtr->newKeys) {
-            PlaySoundEffect(0x6B);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
             Proc_Goto(proc, PROC_LABEL_PREPUNIT_PRESS_B);
             return;
         }
@@ -561,7 +563,7 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
 
         PrepUnit_DrawUnitItems(GetUnitFromPrepList(proc->list_num_cur));
         StartParallelFiniteLoop(PrepUnit_DrawLeftUnitNameCur, 1, proc);
-        PlaySoundEffect(0x65);
+        PlaySoundEffect(SONG_65);
     
         if (ShouldPrepUnitMenuScroll(proc)) {
             if (proc->list_num_cur < proc->list_num_pre)
@@ -592,7 +594,7 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
     if (0 == proc->yDiff_cur % 0x10) {
         PrepUpdateMenuTsaScroll(proc->yDiff_cur / 16 - 1);
         PrepUpdateMenuTsaScroll(proc->yDiff_cur / 16 + 6);
-        sub_809AE10(proc);
+        PrepUnit_UpdateScrollArrows(proc);
         proc->list_num_pre = proc->list_num_cur;
     }
 
@@ -600,7 +602,7 @@ void ProcPrepUnit_Idle(struct ProcPrepUnit *proc)
     UpdateMenuScrollBarConfig(0xA, proc->yDiff_cur, (PrepGetUnitAmount() - 1) / 2 + 1, 6);
 }
 
-void sub_809B2DC(struct ProcPrepUnit *proc)
+void PrepUnit_ScrollDownLoop(struct ProcPrepUnit *proc)
 {
     proc->unk34 += 4;
     proc->yDiff_cur += 4;
@@ -614,7 +616,7 @@ void sub_809B2DC(struct ProcPrepUnit *proc)
         PrepUpdateMenuTsaScroll(proc->yDiff_cur / 0x10 - 1);
 }
 
-void sub_809B324(struct ProcPrepUnit *proc)
+void PrepUnit_ScrollUpLoop(struct ProcPrepUnit *proc)
 {
     if (0 == proc->yDiff_cur % 0x10)
         PrepUnit_DrawUnitListNames(proc, proc->yDiff_cur / 0x10 - 1);
@@ -628,18 +630,18 @@ void sub_809B324(struct ProcPrepUnit *proc)
     BG_SetPosition(BG_2, 0, proc->yDiff_cur - 0x18);
 }
 
-void nullsub_21()
+void Nop_PrepUnitselect_0()
 {
     return;
 }
 
-void sub_809B370(struct ProcPrepUnit *proc)
+void PrepUnit_ParkCursorOffList(struct ProcPrepUnit *proc)
 {
-    nullsub_21();
+    Nop_PrepUnitselect_0();
     ShowSysHandCursor(0xD0, 0x68, 0, 0x800);
 }
 
-void sub_809B388(struct ProcPrepUnit *proc)
+void PrepUnit_RestoreCursorToList(struct ProcPrepUnit *proc)
 {
     ShowSysHandCursor(
         (proc->list_num_cur % 2) * 56 + 0x70,
@@ -647,13 +649,13 @@ void sub_809B388(struct ProcPrepUnit *proc)
         0x7, 0x800);
 }
 
-void sub_809B3B4(struct ProcPrepUnit *proc)
+void PrepUnit_WaitDpadUpLoop(struct ProcPrepUnit *proc)
 {
     if (A_BUTTON & gKeyStatusPtr->newKeys)
-        PlaySoundEffect(0x6C);
+        PlaySoundEffect(SONG_6C);
 
     if (DPAD_UP & gKeyStatusPtr->repeatedKeys) {
-        PlaySoundEffect(0x65);
+        PlaySoundEffect(SONG_65);
         Proc_Break(proc);
     }
 }
@@ -674,7 +676,7 @@ void ProcPrepUnit_OnGameStart(struct ProcPrepUnit *proc)
     proc->button_blank = 1;
 }
 
-void sub_809B458(struct ProcPrepUnit *proc)
+void PrepUnit_StartUnitListScreen(struct ProcPrepUnit *proc)
 {
     PrepSetLatestCharId(
         GetUnitFromPrepList(proc->list_num_cur)->pCharacterData->number);
@@ -682,7 +684,7 @@ void sub_809B458(struct ProcPrepUnit *proc)
     StartUnitListScreenPrepMenu(proc);
 }
 
-void sub_809B478(struct ProcPrepUnit *proc)
+void PrepUnit_RecountSelectedUnits(struct ProcPrepUnit *proc)
 {
     int i, list_index = PrepGetLatestUnitIndex();
     proc->list_num_pre = list_index;
@@ -710,13 +712,13 @@ void PrepUnitEnableDisp()
     SetDispEnable(1, 1, 1, 1, 1);
 }
 
-void sub_809B504(struct ProcPrepUnit *proc)
+void PrepUnit_StartStatScreen(struct ProcPrepUnit *proc)
 {
     SetStatScreenConfig(0x11);
     StartStatScreen(GetUnitFromPrepList(proc->list_num_cur), proc);
 }
 
-void sub_809B520(struct ProcPrepUnit *proc)
+void PrepUnit_RestoreListAfterStatScreen(struct ProcPrepUnit *proc)
 {
     int list_num;
     MakePrepUnitList();
@@ -726,7 +728,7 @@ void sub_809B520(struct ProcPrepUnit *proc)
     proc->list_num_cur = list_num;
 }
 
-CONST_DATA u16 obj_08A18E34[] = {
+CONST_DATA u16 obj_PrepUnitselect_0[] = {
     4,
     0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x000 / 0x20),
     0x4000, 0x8020, OAM2_PAL(9) + OAM2_CHR(0x080 / 0x20),
@@ -734,21 +736,21 @@ CONST_DATA u16 obj_08A18E34[] = {
     0x8000, 0x0050, OAM2_PAL(9) + OAM2_CHR(0x140 / 0x20)
 };
 
-CONST_DATA u16 obj_08A18E4E[] = {
+CONST_DATA u16 Sprite_PrepStartButton[] = {
     3,
     0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x160 / 0x20),
     0x4000, 0x8020, OAM2_PAL(9) + OAM2_CHR(0x1E0 / 0x20),
     0x8000, 0x0040, OAM2_PAL(9) + OAM2_CHR(0x260 / 0x20)
 };
 
-CONST_DATA u16 obj_08A18E62[] = {
+CONST_DATA u16 obj_PrepUnitselect_1[] = {
     3,
     0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x160 / 0x20),
     0x4000, 0x8020, OAM2_PAL(9) + OAM2_CHR(0x280 / 0x20),
     0x8000, 0x0040, OAM2_PAL(9) + OAM2_CHR(0x300 / 0x20)
 };
 
-CONST_DATA u16 obj_08A18E76[] = {
+CONST_DATA u16 Sprite_PrepBButton[] = {
     3,
     0x4000, 0x8000, OAM2_PAL(9) + OAM2_CHR(0x320 / 0x20),
     0x0000, 0x4020, OAM2_PAL(9) + OAM2_CHR(0x3A0 / 0x20),
@@ -769,20 +771,20 @@ PROC_LABEL(PROC_LABEL_PREPUNIT_IDLE),
     PROC_REPEAT(ProcPrepUnit_Idle),
 
 PROC_LABEL(PROC_LABEL_PREPUNIT_2),
-    PROC_CALL(sub_809B370),
-    PROC_REPEAT(sub_809B2DC),
-    PROC_REPEAT(sub_809B3B4),
-    PROC_REPEAT(sub_809B324),
-    PROC_CALL(sub_809B388),
+    PROC_CALL(PrepUnit_ParkCursorOffList),
+    PROC_REPEAT(PrepUnit_ScrollDownLoop),
+    PROC_REPEAT(PrepUnit_WaitDpadUpLoop),
+    PROC_REPEAT(PrepUnit_ScrollUpLoop),
+    PROC_CALL(PrepUnit_RestoreCursorToList),
     PROC_GOTO(PROC_LABEL_PREPUNIT_IDLE),
 
 PROC_LABEL(PROC_LABEL_PREPUNIT_PRESS_SELECT),
     PROC_CALL_ARG(NewFadeOut, 0x10),
     PROC_WHILE(FadeOutExists),
-    PROC_CALL(sub_809B014),
-    PROC_CALL(sub_809B458),
+    PROC_CALL(PrepUnit_EndScreenGfx),
+    PROC_CALL(PrepUnit_StartUnitListScreen),
     PROC_YIELD,
-    PROC_CALL(sub_809B478),
+    PROC_CALL(PrepUnit_RecountSelectedUnits),
     PROC_CALL(ProcPrepUnit_InitScreen),
     PROC_YIELD,
     PROC_CALL_ARG(NewFadeIn, 0x10),
@@ -792,10 +794,10 @@ PROC_LABEL(PROC_LABEL_PREPUNIT_PRESS_SELECT),
 PROC_LABEL(PROC_LABEL_PREPUNIT_PRESS_R),
     PROC_CALL(PrepUnitDisableDisp),
     PROC_SLEEP(0x2),
-    PROC_CALL(sub_809B014),
-    PROC_CALL(sub_809B504),
+    PROC_CALL(PrepUnit_EndScreenGfx),
+    PROC_CALL(PrepUnit_StartStatScreen),
     PROC_YIELD,
-    PROC_CALL(sub_809B520),
+    PROC_CALL(PrepUnit_RestoreListAfterStatScreen),
     PROC_CALL(ProcPrepUnit_InitScreen),
     PROC_SLEEP(0x2),
     PROC_CALL(PrepUnitEnableDisp),

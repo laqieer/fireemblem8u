@@ -1,20 +1,19 @@
 #include "gbafe.h"
 
-CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
-    MUSC(0x2e)
+CONST_DATA EventListScr EventScr_Ch9b_BeginningScene[] = {
+    MUSC(SONG_SOLVE_THE_RIDDLE)
     SVAL(EVT_SLOT_2, 0xa9e)
     SVAL(EVT_SLOT_3, 0xa9f)
     SVAL(EVT_SLOT_4, 0xaa0)
-    CALL(EventScr_089F3C34)
+    CALL(EventScr_Ch8_11)
     CAMERA2(19, 9)
     FADU(16)
-    LOAD1(0x1, UnitDef_088C2980)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_9)
     ENUN
     CUMO_CHAR(CHARACTER_DUESSEL)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0xc)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_GRADO_CHAMBER)
     TEXTSHOW(0xaa1)
     TEXTEND
     REMA
@@ -23,23 +22,22 @@ CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
     CLEE
     CLEN
     SVAL(EVT_SLOT_B, 0xa0012)
-    LOMA(0x17)
-    LOAD1(0x1, UnitDef_088C23B8)
+    LOMA(CHAPTER_I_9)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_0)
     ENUN
-    LOAD1(0x1, UnitDef_088C2890)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_8)
     ENUN
     SVAL(EVT_SLOT_B, 0x3000c)
     TILECHANGE(0xffff)
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     FADU(16)
-    LOAD2(0x1, UnitDef_088C282C)
+    LOAD2(0x1, UnitDef_Ch9BMixed_1)
     ENUN
     CUMO_CHAR(CHARACTER_GHEB)
     STAL(60)
     CURE
-    MUSC(0x25)
-    SVAL(EVT_SLOT_2, 0x27)
-    CALL(EventScr_SetBackground)
+    MUSC(SONG_TENSION)
+    SetBackground(BG_INTERIOR_BROWN)
     TEXTSHOW(0xaa2)
     TEXTEND
     REMA
@@ -47,52 +45,47 @@ CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
     CLEA
     CLEE
     CLEN
-    SVAL(EVT_SLOT_2, 0x25)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_CASTLE_BACK)
     TEXTSHOW(0xaa3)
     TEXTEND
     REMA
     FADI(16)
     CLEAN
     CAMERA(0, 0)
-    LOAD1(0x1, UnitDef_088C23B8)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_0)
     ENUN
     EvtSetLoadUnitNoREDA // ENOSUPP in EAstdlib
-    LOAD1(0x1, UnitDef_088C2868)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_7)
     ENUN
     FADU(16)
     SVAL(EVT_SLOT_1, 0x1)
     SET_STATE(CHARACTER_EPHRAIM)
-    LOAD3(0x0, UnitDef_088C22C8)
+    LOAD3(0x0, UnitDef_Ch9BAlly)
     ENUN
     DISA(CHARACTER_SOLDIER_83)
-    LOAD1(0x1, UnitDef_088C2868)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_7)
     ENUN
     FADI(16)
     CLEA
     CLEE
     CLEN
-    LOAD1(0x1, UnitDef_088C23B8)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_0)
     ENUN
-    LOAD1(0x1, UnitDef_088C2890)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_8)
     ENUN
     CAMERA2(17, 10)
     FADU(16)
     CUMO_CHAR(CHARACTER_SOLDIER_83)
     STAL(60)
     CURE
-    MUSC(0x2e)
-    SVAL(EVT_SLOT_2, 0x27)
-    SVAL(EVT_SLOT_3, 0xaa4)
-    CALL(Event_TextWithBG)
+    MUSC(SONG_SOLVE_THE_RIDDLE)
+    Text_BG(BG_INTERIOR_BROWN, 0xaa4)
     MOVE_1STEP(0x10, CHARACTER_GHEB, FACING_DOWN)
     ENUN
     CUMO_CHAR(CHARACTER_GHEB)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x27)
-    SVAL(EVT_SLOT_3, 0xaa5)
-    CALL(Event_TextWithBG)
+    Text_BG(BG_INTERIOR_BROWN, 0xaa5)
     MOVE_1STEP(0x10, CHARACTER_GHEB, FACING_UP)
     SVAL(EVT_SLOT_D, 0x0)
     SVAL(EVT_SLOT_1, 0x256)
@@ -108,9 +101,7 @@ CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
     CUMO_CHAR(CHARACTER_AMELIA)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x27)
-    SVAL(EVT_SLOT_3, 0xaa6)
-    CALL(Event_TextWithBG)
+    Text_BG(BG_INTERIOR_BROWN, 0xaa6)
     MOVE_1STEP(0x8, CHARACTER_AMELIA, FACING_DOWN)
     ENUN
     SVAL(EVT_SLOT_D, 0x0)
@@ -131,29 +122,27 @@ CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
     CUMO_CHAR(CHARACTER_AMELIA)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x27)
-    SVAL(EVT_SLOT_3, 0xaa7)
-    CALL(Event_TextWithBG)
+    Text_BG(BG_INTERIOR_BROWN, 0xaa7)
     MOVE(0x10, CHARACTER_SOLDIER_83, 23, 15)
     MOVE(0x10, CHARACTER_AMELIA, 23, 15)
-    LOAD1(0x1, UnitDef_088C2610)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_1)
     STAL2(30)
     FADI(16)
     ENUN
     CLEA
     CLEE
     CLEN
-    LOAD1(0x1, UnitDef_088C23B8)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_0)
     ENUN
-    LOAD1(0x1, UnitDef_088C2610)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_1)
     ENUN
-    LOAD1(0x1, UnitDef_088C269C)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_2)
     ENUN
-    CALL(EventScr_08591FD8)
-    MUSC(0xc)
+    CALL(EventScr_CommonPrep)
+    MUSC(SONG_DETERMINATION)
     CAMERA2(8, 4)
     FADU(16)
-    LOAD1(0x1, UnitDef_088C26D8)
+    LOAD1(0x1, UnitDef_Ch9BMixed_0)
     ENUN
     SVAL(EVT_SLOT_B, 0x3000c)
     TILEREVERT(0xffff)
@@ -161,9 +150,7 @@ CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
     STAL(60)
     CURE
     MUSI
-    SVAL(EVT_SLOT_2, 0x17)
-    SVAL(EVT_SLOT_3, 0xaa8)
-    CALL(Event_TextWithBG)
+    Text_BG(BG_CELL, 0xaa8)
     MUNO
     ENUT(18)
     ENUT(12)
@@ -174,63 +161,59 @@ CONST_DATA EventListScr EventScr_Ch9b_BeginingScene[] = {
 };
 
 CONST_DATA EventListScr EventScr_Ch9b_EndingScene[] = {
-    MUSC(0x31)
-    SVAL(EVT_SLOT_2, 0x27)
-    CALL(EventScr_SetBackground)
+    MUSC(SONG_VICTORY)
+    SetBackground(BG_INTERIOR_BROWN)
     TEXTSHOW(0xaac)
     TEXTEND
     REMA
     FADI(16)
-    SVAL(EVT_SLOT_2, 0x12)
-    CALL(EventScr_9EE5BC)
+    SVAL(EVT_SLOT_2, CHARACTER_AMELIA)
+    CALL(EventScr_StrictLoadUniqueAlly)
     CLEAN
     CAMERA2(17, 9)
     CLEA
     CLEE
     CLEN
     EvtSetLoadUnitNoREDA // ENOSUPP in EAstdlib
-    LOAD2(0x1, UnitDef_088C28CC)
+    LOAD2(0x1, UnitDef_Ch9BMixed_2)
     ENUN
     FADU(16)
-    LOAD2(0x1, UnitDef_088C28CC)
+    LOAD2(0x1, UnitDef_Ch9BMixed_2)
     ENUN
     MOVE_1STEP(0x10, CHARACTER_EPHRAIM, FACING_DOWN)
     ENUN
     CUMO_CHAR(CHARACTER_EPHRAIM)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x27)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_INTERIOR_BROWN)
     TEXTSHOW(0xaad)
     TEXTEND
-    MUSCFAST(0x7fff)
+    MUSCFAST(SONG_SILENT)
     TEXTCONT
     TEXTEND
-    MUSC(0x32)
+    MUSC(SONG_INTO_THE_SHADOW_OF_VICTORY)
     TEXTCONT
     TEXTEND
     REMA
     FADI(4)
-    SVAL(EVT_SLOT_2, 0x25)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_CASTLE_BACK)
     TEXTSHOW(0xaae)
     TEXTEND
     REMA
-    SVAL(EVT_SLOT_2, 0x18)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_PLAIN_1)
     MUSI
     TEXTSHOW(0xaaf)
     TEXTEND
     REMA
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     SVAL(EVT_SLOT_2, 0x2000f)
     CALL(EventScr_9EEA58)
-    LOAD1(0x1, UnitDef_088C2A00)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_10)
     ENUN
-    MUSC(0x2e)
+    MUSC(SONG_SOLVE_THE_RIDDLE)
     FADU(16)
     TILECHANGE(0x0)
-    LOAD1(0x1, UnitDef_088C2A3C)
+    LOAD1(0x1, UnitDef_Ch9BEnemy_11)
     ENUN
     CUMO_CHAR(CHARACTER_VIGARDE)
     STAL(60)
@@ -244,7 +227,7 @@ CONST_DATA EventListScr EventScr_Ch9b_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA634[] = {
+CONST_DATA EventListScr EventScr_Ch9B_0[] = {
     MUSS(0x30)
     STAL(33)
     TEXTSTART
@@ -257,13 +240,13 @@ CONST_DATA EventListScr EventScr_089FA634[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA65C[] = {
+CONST_DATA EventListScr EventScr_Ch9B_1[] = {
     MUSS(0x30)
     STAL(33)
     TEXTSTART
     TEXTSHOW(0xab1)
     TEXTEND
-    SOUN(0x2d9)
+    SOUN(SONG_2D9)
     TEXTCONT
     TEXTEND
     REMA
@@ -273,7 +256,7 @@ CONST_DATA EventListScr EventScr_089FA65C[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA690[] = {
+CONST_DATA EventListScr EventScr_Ch9B_2[] = {
     MUSS(0x30)
     STAL(33)
     TEXTSTART
@@ -285,7 +268,7 @@ CONST_DATA EventListScr EventScr_089FA690[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA6B4[] = {
+CONST_DATA EventListScr EventScr_Ch9B_3[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     SVAL(EVT_SLOT_1, 0x10000)
@@ -296,8 +279,8 @@ CONST_DATA EventListScr EventScr_089FA6B4[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA6E0[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C2714)
+CONST_DATA EventListScr EventScr_Ch9B_4[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch9BEnemy_3)
     CALL(EventScr_LoadReinforceHardMode)
     COUNTER_DEC(0x0)
     ENUF(18)
@@ -309,7 +292,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA714[] = {
+CONST_DATA EventListScr EventScr_Ch9B_5[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x1, 2)
@@ -318,8 +301,8 @@ CONST_DATA EventListScr EventScr_089FA714[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA734[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C2764)
+CONST_DATA EventListScr EventScr_Ch9B_6[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch9BEnemy_4)
     CALL(EventScr_LoadReinforceHardMode)
     COUNTER_DEC(0x1)
     ENUF(12)
@@ -331,15 +314,15 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA768[] = {
+CONST_DATA EventListScr EventScr_Ch9B_7[] = {
     COUNTER_SET(0x2, 2)
     ENUF(16)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA778[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C278C)
+CONST_DATA EventListScr EventScr_Ch9B_8[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch9BEnemy_5)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x2)
     ENUF(16)
@@ -351,7 +334,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA7AC[] = {
+CONST_DATA EventListScr EventScr_Ch9B_9[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x3, 1)
@@ -366,8 +349,8 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FA7EC[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088C27C8)
+CONST_DATA EventListScr EventScr_Ch9B_10[] = {
+    SVAL(EVT_SLOT_2, UnitDef_Ch9BEnemy_6)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x3)
     ENUF(14)

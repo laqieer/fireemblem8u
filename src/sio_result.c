@@ -6,31 +6,9 @@
 #include "bmlib.h"
 #include "bmsave.h"
 
+#include "constants/msg.h"
+
 #include "sio.h"
-
-struct SioResultProcUnk2C
-{
-    /* 00 */ PROC_HEADER;
-    /* 29 */ STRUCT_PAD(0x29, 0x30);
-    /* 30 */ int unk_30;
-};
-
-struct SioResultProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ struct SioResultProcUnk2C * unk_2c;
-    /* 30 */ int unk_30;
-    /* 34 */ u8 unk_34;
-    /* 35 */ u8 unk_35;
-    /* 36 */ u16 unk_36;
-    /* 38 */ s8 unk_38;
-    /* 39 */ u8 unk_39;
-    /* 3A */ STRUCT_PAD(0x3A, 0x3C);
-    /* 3C */ int unk_3c;
-    /* 40 */ int unk_40;
-};
-
-extern struct MultiArenaRankingEnt gSioResultRankings[];
 
 //! FE8U = 0x08046E5C
 void DrawLinkArenaRankIcon(u16 * tm, u32 base)
@@ -67,30 +45,30 @@ void DrawLinkArenaRankingRow(struct Text * th, char * nameStr, u8 rank, u16 poin
     u16 rankMsgLut[] =
     {
         0,
-        0x0782, // TODO: msgid "1st"
-        0x0783, // TODO: msgid "2nd"
-        0x0784, // TODO: msgid "3rd"
-        0x0785, // TODO: msgid "4th"
+        MSG_782, // "1st"
+        MSG_783, // "2nd"
+        MSG_784, // "3rd"
+        MSG_785, // "4th"
     };
 
     u16 playerMsgLut[] =
     {
         0,
-        0x0786, // TODO: msgid "P1"
-        0x0787, // TODO: msgid "P2"
-        0x0788, // TODO: msgid "P3"
-        0x0789, // TODO: msgid "P4"
-        0x078A, // TODO: msgid "P5"
+        MSG_786, // "P1"
+        MSG_787, // "P2"
+        MSG_788, // "P3"
+        MSG_789, // "P4"
+        MSG_78A, // "P5"
     };
     // clang-format on
 
-    Text_InsertDrawString(th, 4, 0, nameStr);
+    Text_InsertDrawString(th, 4, TEXT_COLOR_SYSTEM_WHITE, nameStr);
 
     SioDrawNumber(th, 84, 2, points);
 
-    Text_InsertDrawString(th, 93, 0, GetStringFromIndex(0x77F)); // TODO: msgid "Pts."
-    Text_InsertDrawString(th, 128, 2, GetStringFromIndex(rankMsgLut[rank & 0xff]));
-    Text_InsertDrawString(th, 154, 0, GetStringFromIndex(playerMsgLut[playerCount & 0xff]));
+    Text_InsertDrawString(th, 93, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_77F)); // "Pts."
+    Text_InsertDrawString(th, 128, TEXT_COLOR_SYSTEM_BLUE, GetStringFromIndex(rankMsgLut[rank & 0xff]));
+    Text_InsertDrawString(th, 154, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(playerMsgLut[playerCount & 0xff]));
 
     return;
 }
@@ -102,12 +80,12 @@ void DrawLinkArenaRankings(void)
 
     for (i = 0; i < 10; i++)
     {
-        ClearText(&Texts_0203DB14[i]);
+        ClearText(&Texts_1[i]);
         DrawLinkArenaRankingRow(
-            &Texts_0203DB14[i], gSioResultRankings[i].name, gSioResultRankings[i].ranking + 1,
+            &Texts_1[i], gSioResultRankings[i].name, gSioResultRankings[i].ranking + 1,
             gSioResultRankings[i].points, gSioResultRankings[i].player_count + 1);
         DrawLinkArenaRankIcon(TILEMAP_LOCATED(gBG1TilemapBuffer, 3, i * 2), i);
-        PutText(&Texts_0203DB14[i], TILEMAP_LOCATED(gBG1TilemapBuffer, 6, i * 2));
+        PutText(&Texts_1[i], TILEMAP_LOCATED(gBG1TilemapBuffer, 6, i * 2));
         DrawLinkArenaModeIcon(TILEMAP_LOCATED(gBG1TilemapBuffer, 20, i * 2), gSioResultRankings[i].mode);
     }
 
@@ -124,15 +102,15 @@ void SioResult_Init(struct SioResultProc * proc)
 
     StartMuralBackgroundExt(proc, 0, 0x12, 2, 0);
 
-    Decompress(Img_LinkArenaRankIcons, (void *)(0x06000F00 + GetBackgroundTileDataOffset(1)));
+    Decompress(Img_LinkArenaRankIcons, GetBackgroundTileDataOffset(BG_1) + BG_CHR_ADDR(0x78));
     ApplyPalette(Pal_LinkArenaRankIcons, 6);
 
-    Decompress(Img_TacticianSelObj, (void *)(0x06014800));
+    Decompress(Img_TacticianSelObj, OBJ_CHR_ADDR(0x240));
     ApplyPalettes(Pal_TacticianSelObj, 0x13, 4);
 
-    CallARM_FillTileRect(TILEMAP_LOCATED(gBG2TilemapBuffer, 1, 4), Tsa_SioResultRankings, 0x1000);
+    CallARM_FillTileRect(TILEMAP_LOCATED(gBG2TilemapBuffer, 1, 4), Tsa_SioResultRankings, TILEREF(0x0, 1));
 
-    SetTextFont(&Font_0203DB64);
+    SetTextFont(&Font_0);
     InitSystemTextFont();
     ResetTextFont();
 
@@ -145,7 +123,7 @@ void SioResult_Init(struct SioResultProc * proc)
 
     for (i = 0; i < 10; i++)
     {
-        InitText(&Texts_0203DB14[i], 0x16);
+        InitText(&Texts_1[i], 22);
     }
 
     InitText(&gSioTexts[0], 24);
@@ -153,14 +131,14 @@ void SioResult_Init(struct SioResultProc * proc)
 
     ClearText(&gSioTexts[0]);
 
-    Text_InsertDrawString(&gSioTexts[0], 12, 0, GetStringFromIndex(0x772)); // TODO: msgid "Name"
-    Text_InsertDrawString(&gSioTexts[0], 84, 0, GetStringFromIndex(0x773)); // TODO: msgid "Points"
-    Text_InsertDrawString(&gSioTexts[0], 120, 0, GetStringFromIndex(0x774)); // TODO: msgid "Rank"
-    Text_InsertDrawString(&gSioTexts[0], 150, 0, GetStringFromIndex(0x775)); // TODO: msgid "Players"
+    Text_InsertDrawString(&gSioTexts[0], 12, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_772)); // "Name"
+    Text_InsertDrawString(&gSioTexts[0], 84, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_773)); // "Points"
+    Text_InsertDrawString(&gSioTexts[0], 120, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_774)); // "Rank"
+    Text_InsertDrawString(&gSioTexts[0], 150, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_775)); // "Players"
 
     PutText(&gSioTexts[0], TILEMAP_LOCATED(gBG0TilemapBuffer, 5, 5));
 
-    sub_8043100(0x744, 1);
+    PutSioText(MSG_744, 1); // "+Control Pad: move/B Button: back."
 
     ReadMultiArenaSaveRankings(gSioResultRankings);
     DrawLinkArenaRankings();
@@ -174,8 +152,8 @@ void SioResult_Init(struct SioResultProc * proc)
 
     StartLinkArenaMenuScrollBar(217, 57, 10, 5, proc->unk_36 + 56, proc);
     StartLinkArenaTitleBanner(proc, 5, 0);
-    sub_804C558();
-    StartLinkArenaButtonSpriteDraw(0xc0, 0x10, proc);
+    SetLinkArenaUiBlend();
+    StartLinkArenaButtonSpriteDraw(192, 16, proc);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT | BG2_SYNC_BIT | BG3_SYNC_BIT);
 
@@ -243,7 +221,7 @@ void SioResult_Loop_Main(struct SioResultProc * proc)
 }
 
 //! FE8U = 0x08047308
-u8 sub_8047308(int var)
+u8 SioResult_GetNewHSScrollTarget(int var)
 {
     int i;
 
@@ -272,16 +250,16 @@ void SioResult_NewHS_Init(struct SioResultProc * proc)
 
     StartMuralBackgroundExt(proc, 0, 0, 0, 0);
 
-    Decompress(Img_LinkArenaRankIcons, (void *)(0x06000F00 + GetBackgroundTileDataOffset(1)));
+    Decompress(Img_LinkArenaRankIcons, GetBackgroundTileDataOffset(BG_1) + BG_CHR_ADDR(0x78));
     ApplyPalette(Pal_LinkArenaRankIcons, 6);
 
-    Decompress(Img_TacticianSelObj, (void *)(0x06014800));
-    Decompress(gUnknown_085ACEFC, (void *)(0x06016000));
+    Decompress(Img_TacticianSelObj, OBJ_CHR_ADDR(0x240));
+    Decompress(gUnkData_7, OBJ_CHR_ADDR(0x300));
     ApplyPalette(Pal_LinkArenaActiveBannerFx, 0x13);
 
-    CallARM_FillTileRect(TILEMAP_LOCATED(gBG2TilemapBuffer, 1, 4), Tsa_SioResultRankings, 0x1000);
+    CallARM_FillTileRect(TILEMAP_LOCATED(gBG2TilemapBuffer, 1, 4), Tsa_SioResultRankings, TILEREF(0x0, 1));
 
-    SetTextFont(&Font_0203DB64);
+    SetTextFont(&Font_0);
     InitSystemTextFont();
     ResetTextFont();
 
@@ -289,14 +267,14 @@ void SioResult_NewHS_Init(struct SioResultProc * proc)
     proc->unk_36 = 280;
     proc->unk_39 = 0;
     proc->unk_38 = 0;
-    proc->unk_35 = sub_8047308(proc->unk_3c);
+    proc->unk_35 = SioResult_GetNewHSScrollTarget(proc->unk_3c);
     proc->unk_40 = 0;
 
     BG_SetPosition(BG_1, 0, proc->unk_36);
 
     for (i = 0; i < 10; i++)
     {
-        InitText(&Texts_0203DB14[i], 24);
+        InitText(&Texts_1[i], 24);
     }
 
     InitText(&gSioTexts[0], 24);
@@ -304,10 +282,10 @@ void SioResult_NewHS_Init(struct SioResultProc * proc)
 
     ClearText(&gSioTexts[0]);
 
-    Text_InsertDrawString(&gSioTexts[0], 12, 0, GetStringFromIndex(0x772)); // TODO: msgid "Name"
-    Text_InsertDrawString(&gSioTexts[0], 84, 0, GetStringFromIndex(0x773)); // TODO: msgid "Points"
-    Text_InsertDrawString(&gSioTexts[0], 120, 0, GetStringFromIndex(0x774)); // TODO: msgid "Rank"
-    Text_InsertDrawString(&gSioTexts[0], 150, 0, GetStringFromIndex(0x775)); // TODO: msgid "Players"
+    Text_InsertDrawString(&gSioTexts[0], 12, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_772)); // "Name"
+    Text_InsertDrawString(&gSioTexts[0], 84, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_773)); // "Points"
+    Text_InsertDrawString(&gSioTexts[0], 120, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_774)); // "Rank"
+    Text_InsertDrawString(&gSioTexts[0], 150, TEXT_COLOR_SYSTEM_WHITE, GetStringFromIndex(MSG_775)); // "Players"
 
     PutText(&gSioTexts[0], TILEMAP_LOCATED(gBG0TilemapBuffer, 5, 5));
 
@@ -324,9 +302,9 @@ void SioResult_NewHS_Init(struct SioResultProc * proc)
 
     SetWOutLayers(1, 0, 1, 1, 1);
 
-    sub_804C558();
+    SetLinkArenaUiBlend();
 
-    proc->unk_2c = sub_804D7DC(14, proc->unk_3c * 16 - 24, proc);
+    proc->unk_2c = StartLinkArenaResultBanner(14, proc->unk_3c * 16 - 24, proc);
 
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT | BG2_SYNC_BIT | BG3_SYNC_BIT);
 
@@ -408,13 +386,13 @@ struct ProcCmd CONST_DATA ProcScr_SIORESULT[] =
     PROC_CALL(FadeInBlackSpeed20),
     PROC_YIELD,
 
-    PROC_CALL(Clear_0203DDDC),
+    PROC_CALL(Clear_UnkData_0),
 
     PROC_REPEAT(SioResult_Loop_Main),
 
-    PROC_CALL(Set_0203DDDC),
+    PROC_CALL(Set_UnkData_0),
 
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_YIELD,
 
     PROC_CALL(EndMuralBackground),
@@ -431,14 +409,14 @@ struct ProcCmd CONST_DATA ProcScr_SIORESULT_NewHighScore[] =
     PROC_CALL(FadeInBlackSpeed20),
     PROC_YIELD,
 
-    PROC_CALL(Clear_0203DDDC),
+    PROC_CALL(Clear_UnkData_0),
 
     PROC_REPEAT(SioResult_NewHS_LoopScroll),
     PROC_REPEAT(SioResult_NewHS_AwaitAPress),
 
-    PROC_CALL(Set_0203DDDC),
+    PROC_CALL(Set_UnkData_0),
 
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_YIELD,
 
     PROC_CALL(EndMuralBackground),

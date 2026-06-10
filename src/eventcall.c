@@ -41,6 +41,7 @@
 #include "sysutil.h"
 
 #include "eventcall.h"
+#include "constants/songs.h"
 
 CONST_DATA struct ProcCmd ProcScr_BmGameOver[] = {
     PROC_SLEEP(0x1E),
@@ -112,7 +113,7 @@ void NewForceAsyncButtonB(ProcPtr proc)
 
 void HideAllAlliesExceptLeader(void)
 {
-    struct Unit * leader = GetUnitFromCharId(GetPlayerLeaderUnitId());
+    struct Unit * leader = GetUnitFromCharId(GetPlayerLeaderPid());
     int i;
 
     int x = leader->xPos;
@@ -192,17 +193,17 @@ void SwapUnitStatsChar100(void)
     SwapUnitStats(GetUnitFromCharId(0x100), GetUnitFromCharId(0x100));
 }
 
-void sub_8085550(ProcPtr proc)
+void StartScreenFlashingWhite(ProcPtr proc)
 {
     StartScreenFlashing(-1, 2, 0x20, 4, 0x180, 0x180, 0x180, proc);
 }
 
-void sub_8085578(ProcPtr proc)
+void StartScreenFlashingRed(ProcPtr proc)
 {
     StartScreenFlashing(-1, 2, 0x20, 4, 0x200, 0x140, 0x140, proc);
 }
 
-void sub_80855A0(struct UnkProc80855A0 * proc)
+void BlackOutScreenWithBlend(struct UnkProc80855A0 * proc)
 {
     proc->unk4D = 1;
     SetBlendConfig(3, 0, 0, 16);
@@ -210,12 +211,12 @@ void sub_80855A0(struct UnkProc80855A0 * proc)
     SetBlendBackdropA(1);
 }
 
-void sub_80855D4(void)
+void DisableAllDisplay(void)
 {
     SetDispEnable(0, 0, 0, 0, 0);
 }
 
-void sub_80855F8(void)
+void EnableAllDisplay(void)
 {
     SetDispEnable(1, 1, 1, 1, 1);
 }
@@ -297,14 +298,14 @@ void StartEventVeriticalQuakefx(ProcPtr parent)
         proc = Proc_Start(ProcScr_EventVerticalQuakefx, parent);
 
     Proc_Goto(proc, 0);
-    PlaySoundEffect(0x26A);
+    PlaySoundEffect(SONG_26A);
 }
 
 void StartEventHorizontalQuakefxViolently(ProcPtr parent)
 {
     ProcPtr proc = Proc_Find(ProcScr_EventHorizontalQuakefx);
     if (!proc) {
-        PlaySoundEffect(0x26A);
+        PlaySoundEffect(SONG_26A);
         proc = Proc_Start(ProcScr_EventHorizontalQuakefx, parent);
     }
     Proc_Goto(proc, 0);
@@ -314,7 +315,7 @@ void StartEventHorizontalQuakefxSlightly(ProcPtr parent)
 {
     ProcPtr proc = Proc_Find(ProcScr_EventHorizontalQuakefx);
     if (!proc) {
-        PlaySoundEffect(0x26A);
+        PlaySoundEffect(SONG_26A);
         proc = Proc_Start(ProcScr_EventHorizontalQuakefx, parent);
     }
     Proc_Goto(proc, 1);
@@ -390,7 +391,7 @@ void EventQuakefx_Loop(struct Proc * proc)
 void StartEventQuakefx(ProcPtr proc)
 {
     Proc_Start(ProcScr_EventQuakefx, proc);
-    PlaySoundEffect(0x26A);
+    PlaySoundEffect(SONG_26A);
 }
 
 void EndEventQuakefx(ProcPtr proc)
@@ -445,7 +446,7 @@ void StartUnitTornOut(struct Unit * unit, ProcPtr parent)
     proc->unit = unit;
 }
 
-void nullsub_20(ProcPtr proc)
+void Nop_Eventcall_0(ProcPtr proc)
 {
     return;
 }
@@ -469,7 +470,7 @@ void WorldFlushInit(struct ProcWorldFlush * proc)
 
     SetBlendConfig(2, 0, 0, 0);
     SetPrimaryHBlankHandler(WorldFlushHBlank);
-    PlaySoundEffect(0x269);
+    PlaySoundEffect(SONG_269);
 }
 
 void WorldFlushOut(struct ProcWorldFlush * proc)
@@ -489,7 +490,7 @@ void WorldFlushOut(struct ProcWorldFlush * proc)
     val2 = (0x10 * val2 * val2) / val0;
     val3 = 0x10 - val2;
 
-    sub_8082730(0x78, 0x68, val1);
+    UpdateMapAnimDitheredCircleScanline(0x78, 0x68, val1);
     SetBlendConfig(2, 0, 0, val3);
 
     count = proc->count;
@@ -531,7 +532,7 @@ void WorldFlushIn(struct ProcWorldFlush * proc)
     val3 = (int)((proc->count *  0x10) * proc->count) / val4;
     val0 = 0x10 - val3;
 
-    sub_8082730(0x78, 0x30, val2);
+    UpdateMapAnimDitheredCircleScanline(0x78, 0x30, val2);
     SetBlendConfig(2, 0, 0, val0);
 
     count = proc->count;

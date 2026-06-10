@@ -8,6 +8,9 @@
 #include "EAstdlib.h"
 #include "constants/worldmap.h"
 #include "constants/characters.h"
+#include "constants/backgrounds.h"
+#include "constants/songs.h"
+#include "constants/chapters.h"
 
 void HandleCh5xUnits_Start(void)
 {
@@ -32,11 +35,11 @@ void HandleCh5xUnits_Start(void)
     }
 }
 
-CONST_DATA EventListScr EventScr_Ch5x_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ch5x_BeginningScene[] = {
     ASMC(HandleCh5xUnits_Start)
-    MUSC(0x2e)
+    MUSC(SONG_SOLVE_THE_RIDDLE)
     SVAL(EVT_SLOT_B, 0x4000a)
-    LOMA(0x8)
+    LOMA(CHAPTER_L_7)
     FADU(16)
     BROWNBOXTEXT(0x657, 8, 8)
     CUMO_AT(9, 4)
@@ -44,8 +47,8 @@ CONST_DATA EventListScr EventScr_Ch5x_BeginingScene[] = {
     CURE
     FADI(16)
     SVAL(EVT_SLOT_B, 0x4000b)
-    LOMA(0x9)
-    LOAD1(0x1, UnitDef_088B5DAC)
+    LOMA(CHAPTER_L_8)
+    LOAD1(0x1, UnitDef_Ch5xEnemy_1)
     ENUN
     FADU(16)
     SPAWN_ENEMY(CHARACTER_VALTER, 10, 10)
@@ -65,21 +68,20 @@ CONST_DATA EventListScr EventScr_Ch5x_BeginingScene[] = {
     TEXTEND
     REMA
     FADI(16)
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     CLEA
     CLEE
     CLEN
     SVAL(EVT_SLOT_B, 0xc0014)
-    LOMA(0x7)
-    LOAD2(0x1, UnitDef_088B5DFC)
+    LOMA(CHAPTER_L_6)
+    LOAD2(0x1, UnitDef_Ch5xAlly_1)
     ENUN
     FADU(16)
     CUMO_CHAR(CHARACTER_EPHRAIM)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x22)
-    CALL(EventScr_SetBackground)
-    MUSC(0x25)
+    SetBackground(BG_TREES)
+    MUSC(SONG_TENSION)
     TEXTSHOW(0x9d8)
     TEXTEND
     REMA
@@ -88,16 +90,14 @@ CONST_DATA EventListScr EventScr_Ch5x_BeginingScene[] = {
     CLEE
     CLEN
     SVAL(EVT_SLOT_B, 0x70009)
-    LOMA(0x8)
+    LOMA(CHAPTER_L_7)
     FADU(16)
-    LOAD2(0x1, UnitDef_088B5E94)
+    LOAD2(0x1, UnitDef_Ch5xAlly_2)
     ENUN
     CUMO_CHAR(CHARACTER_EPHRAIM)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x21)
-    SVAL(EVT_SLOT_3, 0x9d9)
-    CALL(Event_TextWithBG)
+    Text_BG(BG_STREAM, 0x9d9)
     MOVE(0x0, CHARACTER_EPHRAIM, 9, 4)
     STAL2(8)
     MOVE(0x0, CHARACTER_FORDE, 9, 5)
@@ -110,8 +110,8 @@ CONST_DATA EventListScr EventScr_Ch5x_BeginingScene[] = {
     CLEE
     CLEN
     SVAL(EVT_SLOT_B, 0x7000e)
-    LOMA(0x5)
-    LOAD1(0x1, UnitDef_088B5AC8)
+    LOMA(CHAPTER_L_5X)
+    LOAD1(0x1, UnitDef_Ch5xEnemy_0)
     ENUN
     FADU(16)
     CUMO_CHAR(CHARACTER_ZONTA)
@@ -126,12 +126,11 @@ CONST_DATA EventListScr EventScr_Ch5x_BeginingScene[] = {
     CUMO_CHAR(CHARACTER_EPHRAIM)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x10)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_CASTLE_BRIGHT)
     TEXTSHOW(0x9db)
     TEXTEND
     REMA
-    MUSCFAST(0x7fff)
+    MUSCFAST(SONG_SILENT)
     ENDA
 };
 
@@ -165,24 +164,23 @@ void HandleCh5xUnits_End(void)
 
 CONST_DATA EventListScr EventScr_Ch5x_EndingScene[] = {
     ASMC(HandleCh5xUnits_End)
-    MUSC(0x31)
-    SVAL(EVT_SLOT_2, 0x10)
-    CALL(EventScr_SetBackground)
+    MUSC(SONG_VICTORY)
+    SetBackground(BG_CASTLE_BRIGHT)
     TEXTSHOW(0x9e1)
     TEXTEND
     REMA
     FADI(16)
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     CLEA
     CLEE
     CLEN
     CLEAN
     CAMERA2(13, 9)
     EvtSetLoadUnitNoREDA // ENOSUPP in EAstdlib
-    LOAD2(0x1, UnitDef_088B5D48)
+    LOAD2(0x1, UnitDef_Ch5xAlly_0)
     ENUN
     FADU(16)
-    LOAD1(0x1, UnitDef_088B5D48)
+    LOAD1(0x1, UnitDef_Ch5xAlly_0)
     ENUN
     CUMO_CHAR(CHARACTER_FORDE)
     STAL(60)
@@ -196,29 +194,28 @@ CONST_DATA EventListScr EventScr_Ch5x_EndingScene[] = {
     CLEE
     CLEN
     SVAL(EVT_SLOT_B, 0x4000a)
-    LOMA(0x8)
-    LOAD1(0x1, UnitDef_088B5FCC)
+    LOMA(CHAPTER_L_7)
+    LOAD1(0x1, UnitDef_Ch5xEnemy_2)
     ENUN
     FADU(16)
     EVBIT_T(9)
-    LOAD2(0x1, UnitDef_088B5F7C)
+    LOAD2(0x1, UnitDef_Ch5xAlly_3)
     ENUN
     EVBIT_F(9)
-    MUSC(0x26)
-    LOAD1(0x1, UnitDef_088B60A8)
+    MUSC(SONG_RAID)
+    LOAD1(0x1, UnitDef_Ch5xEnemy_3)
     ENUN
-    LOAD1(0x1, UnitDef_088B6120)
+    LOAD1(0x1, UnitDef_Ch5xEnemy_4)
     ENUN
     CUMO_CHAR(CHARACTER_VALTER)
     STAL(60)
     CURE
-    SVAL(EVT_SLOT_2, 0x21)
-    CALL(EventScr_SetBackground)
+    SetBackground(BG_STREAM)
     TEXTSHOW(0x9e3)
     TEXTEND
     REMA
     FADI(16)
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
 
     WmEvtSetUnitOnNode(WM_MU_0, WM_NODE_Serafew) // ENOSUPP in EAstdlib
 

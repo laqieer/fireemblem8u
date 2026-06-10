@@ -277,19 +277,8 @@ void DisplayExtendedSysHand(struct SysHandCursorProc * proc)
 {
     int i;
 
-#if !NONMATCHING
-    u32 clk;
-    u16 * src, * dst, * _dst;
-
-    clk = GetGameClock();
-    dst = gPaletteBuffer;
-    _dst = dst + (proc->pal_bank * 0x10  + 0x10E);
-    src = &PAL_BUF_COLOR(Pal_08A1D448, gPlaySt.config.windowColor, (clk / 4) % 0x10);
-    *_dst = *src;
-#else
     gPaletteBuffer[proc->pal_bank * 0x10  + 0x10E] =
-        Pal_08A1D448[gPlaySt.config.windowColor * 0x10 + ((GetGameClock() / 5) % 0x10)];
-#endif
+        ((gPlaySt.config.windowColor << 4) + ((GetGameClock() / 4) % 0x10))[Pal_UnkData_1];
 
     EnablePaletteSync();
     PutSpriteExt(4, proc->x, proc->y + 8, gObject_8x8,
@@ -889,7 +878,7 @@ void EndAllProcChildren(ProcPtr p)
     }
 }
 
-void nop_80ADDF8(void)
+void nop_4(void)
 {
     return;
 }
@@ -1009,7 +998,7 @@ void BgAffinAnchoringHighPrecision(u8 bg, int q0_x, int q0_y, int p0_x, int p0_y
     affin->dy = ((affin->pc * (-q0_x) + affin->pd * (-q0_y)) >> 8) + p0_y;
 }
 
-void sub_80AE044(int a, u16 * buf, int c, int d, int e, int f, int g, int h)
+void Mode4BlitRect(int a, u16 * buf, int c, int d, int e, int f, int g, int h)
 {
     int i, ip, r4;
     u16 * r5, * r6;
@@ -1051,7 +1040,7 @@ void sub_80AE044(int a, u16 * buf, int c, int d, int e, int f, int g, int h)
     }
 }
 
-void sub_80AE0F0(int a, int b, int c, int d, int e, u16 f) 
+void Mode4FillRect(int a, int b, int c, int d, int e, u16 f) 
 {
     int i, r8 = 0x78;
     u16 * r5 = (void *)BG_VRAM + a * 0xA000;
@@ -1385,23 +1374,11 @@ void BmBgfx_Loop(struct ProcBmBgfx * proc)
         if (conf->type == BMFX_CONFT_BLOCKING)
             break;
 
-#if NONMATCHING
-        switch (conf->type) {
-        case BMFX_CONFT_BREAK:
-        case BMFX_CONFT_END:
-            Proc_Break(proc);
-            return;
-
-        default:
-            break;
-        }
-#else
         if (conf->type < 11 && conf->type > 8)
         {
             Proc_Break(proc);
             break;
         }
-#endif
 
         if (proc->timer == 0)
         {
@@ -1417,7 +1394,7 @@ void BmBgfx_Loop(struct ProcBmBgfx * proc)
             case BMFX_CONFT_IMG:
                 CpuFastCopy(
                     conf->data,
-                    (void *)(0x6000000 + proc->vram_base + proc->vram_base_offset + proc->vram_free_space + proc->flip * proc->size_per_fx),
+                    (void *)(VRAM + proc->vram_base + proc->vram_base_offset + proc->vram_free_space + proc->flip * proc->size_per_fx),
                     conf->size);
 
                 proc->vram_free_space = proc->vram_free_space + conf->size;
@@ -1426,7 +1403,7 @@ void BmBgfx_Loop(struct ProcBmBgfx * proc)
             case BMFX_CONFT_ZIMG:
                 Decompress(
                     conf->data,
-                    (void *)(0x6000000 + proc->vram_base + proc->vram_base_offset + proc->vram_free_space + proc->flip * proc->size_per_fx));
+                    (void *)(VRAM + proc->vram_base + proc->vram_base_offset + proc->vram_free_space + proc->flip * proc->size_per_fx));
 
                 proc->vram_free_space = proc->vram_free_space + conf->size;
 

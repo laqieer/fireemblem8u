@@ -11,11 +11,12 @@
 #include "statscreen.h"
 #include "uiutils.h"
 #include "sysutil.h"
+#include "constants/songs.h"
 
 int PromoMain_SetupTraineeEvent_(struct ProcPromoMain *proc);
 bool PromoTraineeEventExists(struct ProcPromoMain *proc);
 bool StartAndWaitPromoSelect(ProcPtr proc);
-bool sub_80CD330(struct ProcPromoMain *proc);
+bool PromoMain_WaitSelectDone(struct ProcPromoMain *proc);
 
 CONST_DATA struct ProcCmd ProcScr_PromoMain[] = {
 	PROC_NAME("ccramify"),
@@ -35,7 +36,7 @@ PROC_LABEL(PROMOMAIN_LABEL_TRAINEE),
 PROC_LABEL(PROMOMAIN_LABEL_SEL_EN),
     PROC_WHILE(StartAndWaitPromoSelect),
     PROC_SLEEP(5),
-    PROC_REPEAT(sub_80CD330),
+    PROC_REPEAT(PromoMain_WaitSelectDone),
 
 PROC_LABEL(PROMOMAIN_LABEL_POST_SEL),
     PROC_CALL(ExecClassChgReal),
@@ -97,7 +98,7 @@ void PromoMain_InitScreen(struct ProcPromoMain *proc)
         EndSysBrownBox();
         EndAllParallelWorkers();
         EndFaceById(0);
-        sub_80ACA84(0);
+        ClearUiCursorHandConfig(0);
         ResetFaces();
         ResetText();
         LoadUiFrameGraphics();
@@ -185,7 +186,7 @@ void PromoMain_OnEnd(struct ProcPromoMain *proc)
     if (parent->bmtype == PROMO_HANDLER_TYPE_TRANINEE) {
         RestoreBgm();
         Sound_SetSEVolume(0x100);
-        OverrideBgm(0x34);
+        OverrideBgm(SONG_COMBAT_PREPARATION);
     }
     parent->stat = 2;
     EndAllProcChildren(proc);

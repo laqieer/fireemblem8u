@@ -8,26 +8,17 @@
 #include "bmio.h"
 #include "prepscreen.h"
 
+#include "constants/msg.h"
+
 #include "sio.h"
 #include "sio_core.h"
 
-struct SioTermProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int unk_2c[3];
-    /* 38 */ int unk_38[3];
-    /* 44 */ STRUCT_PAD(0x44, 0x48);
-    /* 48 */ int unk_48;
-    /* 4C */ int unk_4c;
-    /* 50 */ int unk_50;
-};
-
-extern struct Font Font_0203DB64;
+extern struct Font Font_0;
 extern struct Text gSioTexts[];
 
 /* https://decomp.me/scratch/lXFC6 */
 //! FE8U = 0x080469C4
-void sub_80469C4(struct SioTermProc * proc)
+void LinkArenaTeamBuild_Init(struct SioTermProc * proc)
 {
     int permuter, permuter2;
     int i;
@@ -43,19 +34,19 @@ void sub_80469C4(struct SioTermProc * proc)
 
     StartMuralBackgroundExt(proc, 0, 0x10, 4, 0);
 
-    Decompress(Img_TacticianSelObj, (void *)0x06014800);
+    Decompress(Img_TacticianSelObj, OBJ_CHR_ADDR(0x240));
 
-    SetTextFont(&Font_0203DB64);
+    SetTextFont(&Font_0);
     InitSystemTextFont();
     ResetTextFont();
 
-    StartLinkArenaButtonSpriteDraw(0xc0, 0x10, proc);
+    StartLinkArenaButtonSpriteDraw(192, 16, proc);
 
-    InitText(&gSioTexts[0], 0x18);
-    InitText(&gSioTexts[1], 0x18);
+    InitText(&gSioTexts[0], 24);
+    InitText(&gSioTexts[1], 24);
 
-    sub_8043100(0x0000074C, 0);
-    sub_8043100(0x0000074D, 1);
+    PutSioText(MSG_74C, 0); // "Select data to build a team with."
+    PutSioText(MSG_74D, 1); // "Saved data will not be changed."
 
     proc->unk_4c = -1;
 
@@ -155,25 +146,25 @@ void sub_80469C4(struct SioTermProc * proc)
             flags[i] |= 2;
         }
 
-        sub_80895B4(flags[i] | 1, i + 4);
-        sub_80895B4(flags[i], i + 7);
-        sub_8089720(TILEMAP_LOCATED(gBG1TilemapBuffer, 3, (3 + i * permuter) + 1), i + 4);
+        ApplyChapterTitlePal(flags[i] | 1, i + 4);
+        ApplyChapterTitlePal(flags[i], i + 7);
+        DrawChapterTitleBG(TILEMAP_LOCATED(gBG1TilemapBuffer, 3, (3 + i * permuter) + 1), i + 4);
         PutChapterTitleGfx(((0x800 * (u32)i + 0x4400) & 0x1FFFF) / 0x20, proc->unk_2c[i]);
-        sub_80896D8(TILEMAP_LOCATED(gBG0TilemapBuffer, 3, (3 + i * permuter) + 2), i + 7);
+        DrawChapterTitleStr(TILEMAP_LOCATED(gBG0TilemapBuffer, 3, (3 + i * permuter) + 2), i + 7);
     }
 
     SetWinEnable(0, 0, 0);
 
     StartLinkArenaTitleBanner(proc, 1, 0);
-    sub_804C508();
+    SetLinkArenaUiBlendAndWindowOff();
 
-    BG_EnableSyncByMask(0xf);
+    BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT | BG2_SYNC_BIT | BG3_SYNC_BIT);
 
     return;
 }
 
 //! FE8U = 0x08046C64
-void sub_8046C64(int * cur, u8 bottom, u8 top, int * buf, u8 total)
+void MoveMenuCursorSkippingInvalid(int * cur, u8 bottom, u8 top, int * buf, u8 total)
 {
     if (((gKeyStatusPtr->repeatedKeys & DPAD_UP) != 0) &&
         (*cur > top || gKeyStatusPtr->repeatedKeys == gKeyStatusPtr->newKeys))
@@ -203,12 +194,12 @@ void sub_8046C64(int * cur, u8 bottom, u8 top, int * buf, u8 total)
 }
 
 //! FE8U = 0x08046CF0
-void sub_8046CF0(struct SioTermProc * proc)
+void LinkArenaTeamBuild_Loop(struct SioTermProc * proc)
 {
     int current = proc->unk_48;
 
-    sub_8046C64(&proc->unk_48, proc->unk_50, proc->unk_4c, proc->unk_38, 3);
-    DisplayUiHand(0x1c, proc->unk_48 * 0x20 + 0x28);
+    MoveMenuCursorSkippingInvalid(&proc->unk_48, proc->unk_50, proc->unk_4c, proc->unk_38, 3);
+    DisplayUiHand(28, 40 + proc->unk_48 * 32);
 
     if (current != proc->unk_48)
     {
@@ -231,7 +222,7 @@ void sub_8046CF0(struct SioTermProc * proc)
 }
 
 //! FE8U = 0x08046D6C
-void sub_8046D6C(struct SioTermProc * proc)
+void LinkArenaTeamBuild_LoadSelectedSave(struct SioTermProc * proc)
 {
     ReadGameSave(proc->unk_48);
 
@@ -240,7 +231,7 @@ void sub_8046D6C(struct SioTermProc * proc)
     gLinkArenaSt.unk_04 = proc->unk_48;
 
     ApplyUnitSpritePalettes();
-    sub_80496A4();
+    LinkArenaBattleMap_InitChapter();
 
     BG_SetPosition(BG_1, 0, 0);
 
@@ -248,7 +239,7 @@ void sub_8046D6C(struct SioTermProc * proc)
 }
 
 //! FE8U = 0x08046DB4
-void sub_8046DB4(ProcPtr proc)
+void LinkArenaTeamBuild_GotoExitIfNoCursor(ProcPtr proc)
 {
     if (gLinkArenaSt.unk_03 == 0xFF)
     {
@@ -259,7 +250,7 @@ void sub_8046DB4(ProcPtr proc)
 }
 
 //! FE8U = 0x08046DD0
-void sub_8046DD0(ProcPtr proc)
+void LinkArenaTeamBuild_GotoIfNoSelection(ProcPtr proc)
 {
     if (gLinkArenaSt.unk_04 == 0xFF)
     {
@@ -270,7 +261,7 @@ void sub_8046DD0(ProcPtr proc)
 }
 
 //! FE8U = 0x08046DEC
-void sub_8046DEC(ProcPtr proc)
+void LinkArenaTeamBuild_WaitAtMenu(ProcPtr proc)
 {
     if (Proc_Find(ProcScr_AtMenu) == NULL)
     {
@@ -281,17 +272,17 @@ void sub_8046DEC(ProcPtr proc)
 }
 
 //! FE8U = 0x08046E0C
-void sub_8046E0C(ProcPtr proc)
+void LinkArenaTeamBuild_OnTacticianDone(ProcPtr proc)
 {
-    if (gUnk_Sio_0203DD24 == 0)
+    if (gUnk_Sio_12 == 0)
     {
         return;
     }
 
-    sub_804309C();
-    nullsub_13();
-    sub_804C4F8();
-    sub_804C590();
+    ClearSioBGFull();
+    Nop_SioUiutils_0();
+    EndLinkArenaTitleBanner();
+    ResetLinkArenaUiBlend();
     EndLinkArenaButtonSpriteDraw();
 
     BMapVSync_End();
@@ -303,8 +294,8 @@ void sub_8046E0C(ProcPtr proc)
 }
 
 //! FE8U = 0x08046E4C
-void sub_8046E4C(void)
+void LinkArenaTeamBuild_ResetBg1Position(void)
 {
-    BG_SetPosition(1, 0, 0);
+    BG_SetPosition(BG_1, 0, 0);
     return;
 }

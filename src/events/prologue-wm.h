@@ -10,15 +10,16 @@
 #include "constants/characters.h"
 #include "constants/classes.h"
 #include "constants/worldmap.h"
+#include "constants/songs.h"
 
 CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     EVBIT_MODIFY(0x1)
     WmEvtNoFade // ENOSUPP in EAstdlib
     WM_SPAWNLORD(WM_MU_0, CHARACTER_EIRIKA, WM_NODE_BorderMulan)
     WM_CENTERCAMONLORD(WM_MU_0)
-    MUSCFAST(0x7fff)
+    MUSCFAST(SONG_SILENT)
     STAL(32)
-    MUSC(0x4)
+    MUSC(SONG_THE_BEGINNING)
     WM_SHOWDRAWNMAP(0, 0, 0x10)
     STAL(2)
     WM_FADEOUT(0)
@@ -29,6 +30,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     WM_WAITFORTEXT
     WM_TEXTSTART
     WM_TEXT(0x08DB, 0)
+
+    // wait for talk locked
     TEXTEND
     WM_MOVECAM2(0, 0, 0, 24, 60, 0)
     STAL(60)
@@ -37,6 +40,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     STAL(26)
     WM_HIGHLIGHT(WM_NATION_Renais)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_HIGHLIGHTCLEAR1(WM_NATION_Renais)
@@ -50,6 +55,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     STAL(26)
     WM_HIGHLIGHT(WM_NATION_Frelia)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_HIGHLIGHTCLEAR1(WM_NATION_Frelia)
@@ -63,6 +70,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     STAL(26)
     WM_HIGHLIGHT(WM_NATION_Jehanna)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_HIGHLIGHTCLEAR1(WM_NATION_Jehanna)
@@ -76,6 +85,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     STAL(26)
     WM_HIGHLIGHT(WM_NATION_Rausten)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_HIGHLIGHTCLEAR1(WM_NATION_Rausten)
@@ -89,6 +100,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     STAL(26)
     WM_HIGHLIGHT(WM_NATION_Grado)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_HIGHLIGHTCLEAR1(WM_NATION_Grado)
@@ -96,6 +109,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     WM_CLEARPORTRAIT(0, 0x0100, 0)
     STAL(32)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_MOVECAM2(0, 48, 0, 0, 60, 0)
@@ -105,6 +120,8 @@ CONST_DATA EventScr EventScrWM_Prologue_Beginning[] = {
     STAL(26)
     WM_HIGHLIGHT(WM_NATION_Carcino)
     TEXTCONT
+
+    // wait for talk locked
     TEXTEND
     STAL(30)
     WM_HIGHLIGHTCLEAR1(WM_NATION_Carcino)

@@ -1,7 +1,5 @@
 #include "global.h"
 
-#include "constants/terrains.h"
-
 #include "hardware.h"
 #include "chapterdata.h"
 #include "proc.h"
@@ -12,6 +10,8 @@
 #include "bmtrick.h"
 #include "bmlib.h"
 
+#include "constants/terrains.h"
+#include "constants/chapters.h"
 static void BmMapInit(void* buffer, u8*** outHandle, int width, int height);
 
 static void RenderBmMapColumn(u16 xOffset);
@@ -21,10 +21,12 @@ static void RefreshUnitsOnBmMap(void);
 static void RefreshTorchlightsOnBmMap(void);
 static void RefreshMinesOnBmMap(void);
 
+EWRAM_OVERLAY(bmstart) u16 gBmMapBuffer[0x800 / 2] = {};
+
 enum { MAP_POOL_SIZE = 0x7B8 };
 
 // TODO: figure out what's up with this (overlaps with a lot of other objects?)
-extern u16 gBmMapBuffer[];
+
 
 EWRAM_DATA struct Vec2 gBmMapSize = {};
 
@@ -73,10 +75,9 @@ void InitChapterMap(int chapterId) {
     InitBaseTilesBmMap();
     ApplyEnabledMapChanges();
     RefreshTerrainBmMap();
-
-    // TODO: chapter id definitions
-    if (gPlaySt.chapterIndex == 0x75)
-        sub_8019624();
+    
+    if (gPlaySt.chapterIndex == CHAPTER_75)
+        ApplyWaterShadowsBmMap();
 }
 
 void InitMapForMinimap(int chapterId) {
@@ -92,7 +93,7 @@ void InitMapForMinimap(int chapterId) {
     RefreshTerrainBmMap();
 }
 
-void sub_8019624(void) {
+void ApplyWaterShadowsBmMap(void) {
     int ix, iy;
 
     // Automatic water shadows?
@@ -107,37 +108,37 @@ void sub_8019624(void) {
             connexion = 0;
 
             if (ix > 0) {
-                if (gBmMapTerrain[iy][ix - 1] == TERRAIN_FLOOR_17)
+                if (gBmMapTerrain[iy][ix - 1] == TERRAIN_FLOOR_REGULAR)
                     connexion = 1;
 
                 if (gBmMapTerrain[iy][ix - 1] == TERRAIN_STAIRS)
                     connexion = 1;
 
-                if (gBmMapTerrain[iy][ix - 1] == TERRAIN_CHEST_20)
+                if (gBmMapTerrain[iy][ix - 1] == TERRAIN_CHEST_EMPTY)
                     connexion = 1;
 
-                if (gBmMapTerrain[iy][ix - 1] == TERRAIN_CHEST_21)
+                if (gBmMapTerrain[iy][ix - 1] == TERRAIN_CHEST_FULL)
                     connexion = 1;
             }
 
             if (iy > 0) {
-                if (gBmMapTerrain[iy - 1][ix] == TERRAIN_FLOOR_17)
+                if (gBmMapTerrain[iy - 1][ix] == TERRAIN_FLOOR_REGULAR)
                     connexion += 2;
 
                 if (gBmMapTerrain[iy - 1][ix] == TERRAIN_STAIRS)
                     connexion += 2;
 
-                if (gBmMapTerrain[iy - 1][ix] == TERRAIN_CHEST_20)
+                if (gBmMapTerrain[iy - 1][ix] == TERRAIN_CHEST_EMPTY)
                     connexion += 2;
 
-                if (gBmMapTerrain[iy - 1][ix] == TERRAIN_CHEST_21)
+                if (gBmMapTerrain[iy - 1][ix] == TERRAIN_CHEST_FULL)
                     connexion += 2;
             }
 
             if (ix > 0 && iy > 0)
-                if ((gBmMapTerrain[iy]    [ix - 1] == TERRAIN_FLOOR_17) &&
+                if ((gBmMapTerrain[iy]    [ix - 1] == TERRAIN_FLOOR_REGULAR) &&
                     (gBmMapTerrain[iy + 1][ix - 1] == TERRAIN_WATER) &&
-                    (gBmMapTerrain[iy - 1][ix]     != TERRAIN_FLOOR_17))
+                    (gBmMapTerrain[iy - 1][ix]     != TERRAIN_FLOOR_REGULAR))
                     connexion = 4;
 
             switch (connexion) {
@@ -163,13 +164,13 @@ void sub_8019624(void) {
     }
 }
 
-void sub_8019778(void) {
+void RefreshChapterMap(void) {
     UnpackChapterMap(gBmMapBuffer, gPlaySt.chapterIndex);
 
     InitBaseTilesBmMap();
     ApplyEnabledMapChanges();
     RefreshTerrainBmMap();
-    sub_8019624();
+    ApplyWaterShadowsBmMap();
 }
 
 void BmMapInit(void* buffer, u8*** outHandle, int x, int y) {
@@ -334,13 +335,13 @@ void DisplayBmTile(u16* bg, int xTileMap, int yTileMap, int xBmMap, int yBmMap) 
     out[0x20 + 1] = base + *tile++;
 }
 
-void nullsub_8(void) {}
+void Nop_Bmmap_0(void) {}
 
 void DisplayMovementViewTile(u16* bg, int xBmMap, int yBmMap, int xTileMap, int yTileMap) {
     bg = bg + 2*(yTileMap * 0x20 + xTileMap);
 
     if (!bg)
-        nullsub_8();
+        Nop_Bmmap_0();
 
     // TODO: tile macros?
     // TODO: are the movement and range maps s8[][]?
@@ -658,22 +659,22 @@ void RefreshEntityBmMaps(void) {
 }
 
 char* GetTerrainName(int terrainId) {
-    return GetStringFromIndex(gUnknown_0880D374[terrainId]);
+    return GetStringFromIndex(gTerrains_0[terrainId]);
 }
 
 int GetTerrainHealAmount(int terrainId) {
-    return Unk_TerrainTable_0880C744[terrainId];
+    return TerrainTable_HealAmount[terrainId];
 }
 
 s8 GetTerrainHealsStatus(int terrainId) {
-    return Unk_TerrainTable_0880C785[terrainId];
+    return TerrainTable_HealsStatus[terrainId];
 }
 
-void sub_801A278(void) {
+void BlankTilesetConfigTiles(void) {
     const u16* tile = sTilesetConfig;
 
     // TODO: game state bits constants
-    if (!sub_800D208() || (gBmSt.gameStateBits & 0x10)) {
+    if (!IsActiveEventTextTypeOnMap() || (gBmSt.gameStateBits & 0x10)) {
         // TODO: macros?
         RegisterBlankTile(0x400 + (*tile++ & 0x3FF));
         RegisterBlankTile(0x400 + (*tile++ & 0x3FF));

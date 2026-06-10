@@ -27,6 +27,7 @@
 #include "constants/classes.h"
 
 #include "statscreen.h"
+#include "constants/songs.h"
 
 struct StatScreenInfo EWRAM_DATA sStatScreenInfo = {};
 struct HelpBoxInfo EWRAM_DATA sMutableHbi = {};
@@ -707,12 +708,12 @@ void DisplayPage1(void)
     const char* str;
 
     Decompress(
-        gUnknown_08A02204,
+        Tsa_StatscreenEquipmentBG,
         gGenericBuffer);
 
     CallARM_FillTileRect(
         gUiTmScratchC + TILEMAP_INDEX(1, 11),
-        gGenericBuffer, TILEREF(0x40, STATSCREEN_BGPAL_3));
+        gGenericBuffer, TILEREF(0x40, STATSCREEN_BGPAL_EQUIPMENT_FRAME_AND_HIGHLIGHT));
 
     DisplayTexts(sPage1TextInfo);
 
@@ -749,7 +750,7 @@ void DisplayPage1(void)
 
             CallARM_FillTileRect(
                 gUiTmScratchC + TILEMAP_INDEX(1, 2 + i*2),
-                gUnknown_08A02250, TILEREF(0x40, STATSCREEN_BGPAL_3));
+                Tsa_StatscreenEquipedWeaponHighlight, TILEREF(0x40, STATSCREEN_BGPAL_EQUIPMENT_FRAME_AND_HIGHLIGHT));
 
             item = gStatScreen.unit->items[i];
         }
@@ -804,8 +805,8 @@ void DisplayPage1(void)
 
     for (i = 0; i < 8; ++i)
     {
-        gUiTmScratchA[TILEMAP_INDEX(1 + i, 11)] = TILEREF(0x60 + i, STATSCREEN_BGPAL_7);
-        gUiTmScratchA[TILEMAP_INDEX(1 + i, 12)] = TILEREF(0x68 + i, STATSCREEN_BGPAL_7);
+        gUiTmScratchA[TILEMAP_INDEX(1 + i, 11)] = TILEREF(0x60 + i, STATSCREEN_BGPAL_EQUIPMENT_LABEL);
+        gUiTmScratchA[TILEMAP_INDEX(1 + i, 12)] = TILEREF(0x68 + i, STATSCREEN_BGPAL_EQUIPMENT_LABEL);
     }
 }
 
@@ -1044,7 +1045,7 @@ void StartPageSlide(u16 key, int newPage, struct Proc* parent)
     if (Proc_Find(gProcScr_SSPageSlide))
         return;
 
-    PlaySoundEffect(0x6F); // TODO: song ids
+    PlaySoundEffect(SONG_6F);
 
     proc = (void*) Proc_StartBlocking(gProcScr_SSPageSlide, parent);
 
@@ -1219,7 +1220,7 @@ void StartUnitSlide(struct Unit* unit, int direction, struct Proc* parent)
     proc->newItem = unit->index;
     proc->direction = direction;
 
-    PlaySoundEffect(0xC8); // TODO: song ids
+    PlaySoundEffect(SONG_C8);
 }
 
 enum
@@ -1263,7 +1264,7 @@ void DisplayPageNameSprite(int pageid)
     colorid = (GetGameClock()/4) % 16;
 
     CpuCopy16(
-        gUnknown_08A027FC[pageid] + colorid,
+        gUnkData_33[pageid] + colorid,
         PAL_OBJ(3) + 0xE,
         sizeof(u16));
 
@@ -1506,13 +1507,13 @@ void StatScreen_InitDisplay(struct Proc* proc)
 
     SetupBackgrounds(bgConfig);
 
-    UnpackUiFramePalette(STATSCREEN_BGPAL_3);
+    UnpackUiFramePalette(STATSCREEN_BGPAL_EQUIPMENT_FRAME_AND_HIGHLIGHT);
     RegisterBlankTile(0x400);
 
     BG_Fill(gBG2TilemapBuffer, 0);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
-    sub_80156D4();
+    LoadGameCoreGfxLegacyFrame();
     ApplyUnitSpritePalettes();
 
     // TODO: port the macros from mapanim wip
@@ -1545,12 +1546,12 @@ void StatScreen_InitDisplay(struct Proc* proc)
     // Load and display Halo
 
     Decompress(
-        gUnknown_08A064E0, (void*)(VRAM + 0x220 * 0x20));
+        Img_StatscreenHalo, (void*)(VRAM + 0x220 * 0x20));
 
-    ApplyPalette(gUnknown_08A0731C, STATSCREEN_BGPAL_HALO);
+    ApplyPalette(Pal_StatscreenHalo, STATSCREEN_BGPAL_HALO);
 
     Decompress(
-        gUnknown_08A071FC, gGenericBuffer);
+        Tsa_StatscreenHalo, gGenericBuffer);
 
     CallARM_FillTileRect(gBG1TilemapBuffer + TILEMAP_INDEX(12, 0),
         gGenericBuffer, TILEREF(0x220, STATSCREEN_BGPAL_HALO));
@@ -1558,11 +1559,11 @@ void StatScreen_InitDisplay(struct Proc* proc)
     // Load and display Background
 
     Decompress(
-        gUnknown_08A03368, (void*)(VRAM + 0x580 * 0x20));
+        Img_StatscreenBG, (void*)(VRAM + 0x580 * 0x20));
 
-    ApplyPalettes(gUnknown_08A06460, STATSCREEN_BGPAL_BACKGROUND, 4);
+    ApplyPalettes(Pal_StatscreenBG, STATSCREEN_BGPAL_BACKGROUND, 4);
 
-    Decompress(gUnknown_08A05F10, gGenericBuffer);
+    Decompress(Tsa_StatscreenBG, gGenericBuffer);
 
     CallARM_FillTileRect(gBG3TilemapBuffer, gGenericBuffer,
         TILEREF(0x180, 12));
@@ -1570,7 +1571,7 @@ void StatScreen_InitDisplay(struct Proc* proc)
     // Load object graphics
 
     Decompress(
-        gUnknown_08A02274, (void*)(VRAM + 0x10000 + 0x240 * 0x20));
+        Img_StatscreenObjs, (void*)(VRAM + 0x10000 + 0x240 * 0x20));
 
     LoadIconPalettes(STATSCREEN_BGPAL_ITEMICONS);
 
@@ -1579,14 +1580,14 @@ void StatScreen_InitDisplay(struct Proc* proc)
     LoadIconPalette(1, 0x13);
 
     Decompress(
-        gUnknown_08A01F24, (void*)(VRAM + 0x440 * 0x20));
+        gUnkData_32, (void*)(VRAM + 0x440 * 0x20));
 
-    ApplyPalette(gUnknown_08A021E4, STATSCREEN_BGPAL_7);
+    ApplyPalette(Pal_StatscreenEquipmentText, STATSCREEN_BGPAL_EQUIPMENT_LABEL);
 
     LoadIconPalette(1, 0x14);
 
     Decompress(
-        gUnknown_08A020F0, (void*)(VRAM + 0x60 * 0x20));
+        Img_StatscreenEquipmentText, (void*)(VRAM + 0x60 * 0x20));
 
     gStatScreen.mu = NULL;
 
@@ -1618,9 +1619,9 @@ void StatScreen_Display(struct Proc* proc)
         0x4E0, STATSCREEN_BGPAL_FACE);
 
     if (GetPortraitData(fid)->img)
-        ApplyPalette(gUnknown_08A01EE4, STATSCREEN_BGPAL_2);
+        ApplyPalette(gUnkData_30, STATSCREEN_BGPAL_2);
     else
-        ApplyPalette(gUnknown_08A01F04, STATSCREEN_BGPAL_2);
+        ApplyPalette(gUnkData_31, STATSCREEN_BGPAL_2);
 
     // Display Map Sprite
 
@@ -1664,7 +1665,7 @@ void StatScreen_OnIdle(struct Proc* proc)
 
         Proc_Break(proc);
 
-        PlaySoundEffect(0x6B); // TODO: song ids
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1); // TODO: song ids
     }
 
     else if (gKeyStatusPtr->repeatedKeys & DPAD_LEFT)
@@ -1744,7 +1745,7 @@ void StartStatScreen(struct Unit* unit, ProcPtr parent)
 
     PidStatsAddStatViewAmt(unit->pCharacterData->number);
 
-    PlaySoundEffect(0x6A); // TODO: song ids
+    PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1); // TODO: song ids
 
     Proc_StartBlocking(gProcScr_StatScreen, parent);
 }
@@ -1914,7 +1915,7 @@ void HelpBox_OnOpen(struct HelpBoxProc* proc)
         found->proc_lockCnt = 1; // lock (disabled) proc
 
     if (proc->unk52 == 0)
-        PlaySoundEffect(0x70); // TODO: song ids
+        PlaySoundEffect(SONG_70);
 }
 
 void HelpBox_OnLoop(struct HelpBoxProc* proc)
@@ -1934,7 +1935,7 @@ void HelpBox_OnClose(struct HelpBoxProc* proc)
 
     if (proc->unk52 == 0)
     {
-        PlaySoundEffect(0x71); // TODO: song ids
+        PlaySoundEffect(SONG_71);
 
         ResetHelpBoxInitSize(proc);
         SetHelpBoxInitPosition(proc, proc->info->xDisplay, proc->info->yDisplay);
@@ -2164,7 +2165,7 @@ void HbMoveCtrl_OnIdle(struct HelpBoxProc* proc)
 
     if (boxMoved)
     {
-        PlaySoundEffect(0x67);
+        PlaySoundEffect(SONG_SE_SYS_CURSOR_LR1);
         Proc_Goto((void*) proc, 0); // TODO: label constants?
     }
 }
@@ -2563,181 +2564,181 @@ DECL_INFO sHelpInfo_Ss0Status =
 // Stat Screen Page 1 (Items & battle stats) (Ss1)
 
 extern DECL_INFO gHelpInfo_Ss1CharName;
-static DECL_INFO sHelpInfo_08A00D30;
-static DECL_INFO sHelpInfo_08A00D4C;
-static DECL_INFO sHelpInfo_08A00D68;
-static DECL_INFO sHelpInfo_08A00D84;
+static DECL_INFO sHelpInfo_Statscreen_0;
+static DECL_INFO sHelpInfo_Statscreen_1;
+static DECL_INFO sHelpInfo_Statscreen_2;
+static DECL_INFO sHelpInfo_Statscreen_3;
 extern DECL_INFO gHelpInfo_Ss1Item0;
-static DECL_INFO sHelpInfo_08A00DBC;
-static DECL_INFO sHelpInfo_08A00DD8;
-static DECL_INFO sHelpInfo_08A00DF4;
-static DECL_INFO sHelpInfo_08A00E10;
-static DECL_INFO sHelpInfo_08A00E2C;
-static DECL_INFO sHelpInfo_08A00E48;
-static DECL_INFO sHelpInfo_08A00E64;
-static DECL_INFO sHelpInfo_08A00E80;
-static DECL_INFO sHelpInfo_08A00E9C;
+static DECL_INFO sHelpInfo_Statscreen_4;
+static DECL_INFO sHelpInfo_Statscreen_5;
+static DECL_INFO sHelpInfo_Statscreen_6;
+static DECL_INFO sHelpInfo_Statscreen_7;
+static DECL_INFO sHelpInfo_Statscreen_8;
+static DECL_INFO sHelpInfo_Statscreen_9;
+static DECL_INFO sHelpInfo_Statscreen_10;
+static DECL_INFO sHelpInfo_Statscreen_11;
+static DECL_INFO sHelpInfo_Statscreen_12;
 
 DECL_INFO gHelpInfo_Ss1CharName =
 {
-    NULL, &sHelpInfo_08A00D30, NULL, &sHelpInfo_08A00DF4,
+    NULL, &sHelpInfo_Statscreen_0, NULL, &sHelpInfo_Statscreen_6,
     24, 80, 0, NULL, HbPopulate_SSCharacter,
 };
 
-static DECL_INFO sHelpInfo_08A00D30 =
+static DECL_INFO sHelpInfo_Statscreen_0 =
 {
-    &gHelpInfo_Ss1CharName, &sHelpInfo_08A00D4C, NULL, &sHelpInfo_08A00E2C,
+    &gHelpInfo_Ss1CharName, &sHelpInfo_Statscreen_1, NULL, &sHelpInfo_Statscreen_8,
     6, 104, 0x6E8, NULL, HbPopulate_SSClass,
 };
 
-static DECL_INFO sHelpInfo_08A00D4C =
+static DECL_INFO sHelpInfo_Statscreen_1 =
 {
-    &sHelpInfo_08A00D30, &sHelpInfo_08A00D84, NULL, &sHelpInfo_08A00D68,
+    &sHelpInfo_Statscreen_0, &sHelpInfo_Statscreen_3, NULL, &sHelpInfo_Statscreen_2,
     6, 120, 0x542,
 };
 
-static DECL_INFO sHelpInfo_08A00D68 =
+static DECL_INFO sHelpInfo_Statscreen_2 =
 {
-    &sHelpInfo_08A00D30, &sHelpInfo_08A00D84, &sHelpInfo_08A00D4C, &sHelpInfo_08A00E2C,
+    &sHelpInfo_Statscreen_0, &sHelpInfo_Statscreen_3, &sHelpInfo_Statscreen_1, &sHelpInfo_Statscreen_8,
     38, 120, 0x543,
 };
 
-static DECL_INFO sHelpInfo_08A00D84 =
+static DECL_INFO sHelpInfo_Statscreen_3 =
 {
-    &sHelpInfo_08A00D4C, NULL, NULL, &sHelpInfo_08A00E48,
+    &sHelpInfo_Statscreen_1, NULL, NULL, &sHelpInfo_Statscreen_9,
     6, 136, 0x544,
 };
 
 DECL_INFO gHelpInfo_Ss1Item0 =
 {
-    NULL, &sHelpInfo_08A00DBC, &gHelpInfo_Ss1CharName, NULL,
+    NULL, &sHelpInfo_Statscreen_4, &gHelpInfo_Ss1CharName, NULL,
     104, 24, 0, HbRedirect_SSItem, HbPopulate_SSItem,
 };
 
-static DECL_INFO sHelpInfo_08A00DBC =
+static DECL_INFO sHelpInfo_Statscreen_4 =
 {
-    &gHelpInfo_Ss1Item0, &sHelpInfo_08A00DD8, &gHelpInfo_Ss1CharName, NULL,
+    &gHelpInfo_Ss1Item0, &sHelpInfo_Statscreen_5, &gHelpInfo_Ss1CharName, NULL,
     104, 40, 1, HbRedirect_SSItem, HbPopulate_SSItem,
 };
 
-static DECL_INFO sHelpInfo_08A00DD8 =
+static DECL_INFO sHelpInfo_Statscreen_5 =
 {
-    &sHelpInfo_08A00DBC, &sHelpInfo_08A00DF4, &gHelpInfo_Ss1CharName, NULL,
+    &sHelpInfo_Statscreen_4, &sHelpInfo_Statscreen_6, &gHelpInfo_Ss1CharName, NULL,
     104, 56, 2, HbRedirect_SSItem, HbPopulate_SSItem,
 };
 
-static DECL_INFO sHelpInfo_08A00DF4 =
+static DECL_INFO sHelpInfo_Statscreen_6 =
 {
-    &sHelpInfo_08A00DD8, &sHelpInfo_08A00E10, &gHelpInfo_Ss1CharName, NULL,
+    &sHelpInfo_Statscreen_5, &sHelpInfo_Statscreen_7, &gHelpInfo_Ss1CharName, NULL,
     104, 72, 3, HbRedirect_SSItem, HbPopulate_SSItem,
 };
 
-static DECL_INFO sHelpInfo_08A00E10 =
+static DECL_INFO sHelpInfo_Statscreen_7 =
 {
-    &sHelpInfo_08A00DF4, &sHelpInfo_08A00E2C, &gHelpInfo_Ss1CharName, &sHelpInfo_08A00E64,
+    &sHelpInfo_Statscreen_6, &sHelpInfo_Statscreen_8, &gHelpInfo_Ss1CharName, &sHelpInfo_Statscreen_10,
     104, 88, 4, HbRedirect_SSItem, HbPopulate_SSItem,
 };
 
-static DECL_INFO sHelpInfo_08A00E2C =
+static DECL_INFO sHelpInfo_Statscreen_8 =
 {
-    &sHelpInfo_08A00E10, &sHelpInfo_08A00E48, &sHelpInfo_08A00D68, &sHelpInfo_08A00E80,
+    &sHelpInfo_Statscreen_7, &sHelpInfo_Statscreen_9, &sHelpInfo_Statscreen_2, &sHelpInfo_Statscreen_11,
     118, 120, 0x55C,
 };
 
-static DECL_INFO sHelpInfo_08A00E48 =
+static DECL_INFO sHelpInfo_Statscreen_9 =
 {
-    &sHelpInfo_08A00E2C, NULL, &sHelpInfo_08A00D84, &sHelpInfo_08A00E9C,
+    &sHelpInfo_Statscreen_8, NULL, &sHelpInfo_Statscreen_3, &sHelpInfo_Statscreen_12,
     118, 136, 0x55D,
 };
 
-static DECL_INFO sHelpInfo_08A00E64 =
+static DECL_INFO sHelpInfo_Statscreen_10 =
 {
-    &sHelpInfo_08A00E10, &sHelpInfo_08A00E80, &sHelpInfo_08A00E2C, NULL,
+    &sHelpInfo_Statscreen_7, &sHelpInfo_Statscreen_11, &sHelpInfo_Statscreen_8, NULL,
     174, 104, 0x55E,
 };
 
-static DECL_INFO sHelpInfo_08A00E80 =
+static DECL_INFO sHelpInfo_Statscreen_11 =
 {
-    &sHelpInfo_08A00E64, &sHelpInfo_08A00E9C, &sHelpInfo_08A00E2C, NULL,
+    &sHelpInfo_Statscreen_10, &sHelpInfo_Statscreen_12, &sHelpInfo_Statscreen_8, NULL,
     174, 120, 0x55F,
 };
 
-static DECL_INFO sHelpInfo_08A00E9C =
+static DECL_INFO sHelpInfo_Statscreen_12 =
 {
-    &sHelpInfo_08A00E80, NULL, &sHelpInfo_08A00E48, NULL,
+    &sHelpInfo_Statscreen_11, NULL, &sHelpInfo_Statscreen_9, NULL,
     174, 136, 0x560,
 };
 
 // Stat Screen Page 2 (Weapon ranks & supports) (Ss2)
 
-static DECL_INFO sHelpInfo_08A00EB8;
-static DECL_INFO sHelpInfo_08A00ED4;
-static DECL_INFO sHelpInfo_08A00EF0;
-static DECL_INFO sHelpInfo_08A00F0C;
-static DECL_INFO sHelpInfo_08A00F28;
+static DECL_INFO sHelpInfo_Statscreen_13;
+static DECL_INFO sHelpInfo_Statscreen_14;
+static DECL_INFO sHelpInfo_Statscreen_15;
+static DECL_INFO sHelpInfo_Statscreen_16;
+static DECL_INFO sHelpInfo_Statscreen_17;
 extern DECL_INFO gHelpInfo_Ss2Rank0;
-static DECL_INFO sHelpInfo_08A00F60;
-static DECL_INFO sHelpInfo_08A00F7C;
-static DECL_INFO sHelpInfo_08A00F98;
-static DECL_INFO sHelpInfo_08A00FB4;
+static DECL_INFO sHelpInfo_Statscreen_18;
+static DECL_INFO sHelpInfo_Statscreen_19;
+static DECL_INFO sHelpInfo_Statscreen_20;
+static DECL_INFO sHelpInfo_Statscreen_21;
 
-static DECL_INFO sHelpInfo_08A00EB8 =
+static DECL_INFO sHelpInfo_Statscreen_13 =
 {
-    NULL, &sHelpInfo_08A00ED4, NULL, &sHelpInfo_08A00FB4,
+    NULL, &sHelpInfo_Statscreen_14, NULL, &sHelpInfo_Statscreen_21,
     24, 80, 0, NULL, HbPopulate_SSCharacter,
 };
 
-static DECL_INFO sHelpInfo_08A00ED4 =
+static DECL_INFO sHelpInfo_Statscreen_14 =
 {
-    &sHelpInfo_08A00EB8, &sHelpInfo_08A00EF0, NULL, &sHelpInfo_08A00FB4,
+    &sHelpInfo_Statscreen_13, &sHelpInfo_Statscreen_15, NULL, &sHelpInfo_Statscreen_21,
     6, 104, 0x6E8, NULL, HbPopulate_SSClass,
 };
 
-static DECL_INFO sHelpInfo_08A00EF0 =
+static DECL_INFO sHelpInfo_Statscreen_15 =
 {
-    &sHelpInfo_08A00ED4, &sHelpInfo_08A00F28, NULL, &sHelpInfo_08A00F0C,
+    &sHelpInfo_Statscreen_14, &sHelpInfo_Statscreen_17, NULL, &sHelpInfo_Statscreen_16,
     6, 120, 0x542,
 };
 
-static DECL_INFO sHelpInfo_08A00F0C =
+static DECL_INFO sHelpInfo_Statscreen_16 =
 {
-    &sHelpInfo_08A00ED4, &sHelpInfo_08A00F28, &sHelpInfo_08A00EF0, &sHelpInfo_08A00FB4,
+    &sHelpInfo_Statscreen_14, &sHelpInfo_Statscreen_17, &sHelpInfo_Statscreen_15, &sHelpInfo_Statscreen_21,
     38, 120, 0x543,
 };
 
-static DECL_INFO sHelpInfo_08A00F28 =
+static DECL_INFO sHelpInfo_Statscreen_17 =
 {
-    &sHelpInfo_08A00EF0, NULL, NULL, &sHelpInfo_08A00FB4,
+    &sHelpInfo_Statscreen_15, NULL, NULL, &sHelpInfo_Statscreen_21,
     6, 136, 0x544,
 };
 
 DECL_INFO gHelpInfo_Ss2Rank0 =
 {
-    NULL, &sHelpInfo_08A00F60, &sHelpInfo_08A00EB8, &sHelpInfo_08A00F7C,
+    NULL, &sHelpInfo_Statscreen_18, &sHelpInfo_Statscreen_13, &sHelpInfo_Statscreen_19,
     104, 24, 0, NULL, HbPopulate_SSWExp,
 };
 
-static DECL_INFO sHelpInfo_08A00F60 =
+static DECL_INFO sHelpInfo_Statscreen_18 =
 {
-    &gHelpInfo_Ss2Rank0, &sHelpInfo_08A00FB4, &sHelpInfo_08A00EB8, &sHelpInfo_08A00F98,
+    &gHelpInfo_Ss2Rank0, &sHelpInfo_Statscreen_21, &sHelpInfo_Statscreen_13, &sHelpInfo_Statscreen_20,
     104, 40, 1, NULL, HbPopulate_SSWExp,
 };
 
-static DECL_INFO sHelpInfo_08A00F7C =
+static DECL_INFO sHelpInfo_Statscreen_19 =
 {
-    NULL, &sHelpInfo_08A00F98, &gHelpInfo_Ss2Rank0, NULL,
+    NULL, &sHelpInfo_Statscreen_20, &gHelpInfo_Ss2Rank0, NULL,
     168, 24, 2, NULL, HbPopulate_SSWExp,
 };
 
-static DECL_INFO sHelpInfo_08A00F98 =
+static DECL_INFO sHelpInfo_Statscreen_20 =
 {
-    &sHelpInfo_08A00F7C, &sHelpInfo_08A00FB4, &sHelpInfo_08A00F60, NULL,
+    &sHelpInfo_Statscreen_19, &sHelpInfo_Statscreen_21, &sHelpInfo_Statscreen_18, NULL,
     168, 40, 3, NULL, HbPopulate_SSWExp,
 };
 
-static DECL_INFO sHelpInfo_08A00FB4 =
+static DECL_INFO sHelpInfo_Statscreen_21 =
 {
-    &sHelpInfo_08A00F60, &sHelpInfo_08A00EB8, &sHelpInfo_08A00EB8, NULL,
+    &sHelpInfo_Statscreen_18, &sHelpInfo_Statscreen_13, &sHelpInfo_Statscreen_13, NULL,
     128, 64, 0x569, HbRedirect_SSSupports, NULL,
 };
 
@@ -2748,13 +2749,13 @@ void HbPopulate_BkselWTriEffB(struct HelpBoxProc* proc);
 
 // Simple/Modern mode (Mbp)
 
-static DECL_INFO sHelpInfo_08A00FD0;
-static DECL_INFO sHelpInfo_08A01008;
-static DECL_INFO sHelpInfo_08A01024;
-static DECL_INFO sHelpInfo_08A01040;
-static DECL_INFO sHelpInfo_08A0105C;
+static DECL_INFO sHelpInfo_Statscreen_22;
+static DECL_INFO sHelpInfo_Statscreen_23;
+static DECL_INFO sHelpInfo_Statscreen_24;
+static DECL_INFO sHelpInfo_Statscreen_25;
+static DECL_INFO sHelpInfo_Statscreen_26;
 
-static DECL_INFO sHelpInfo_08A00FD0 =
+static DECL_INFO sHelpInfo_Statscreen_22 =
 {
     NULL, &gHelpInfo_MbpHp, NULL, NULL,
     8, 8, 0, NULL, HbPopulate_BkselWTriEffA,
@@ -2762,45 +2763,45 @@ static DECL_INFO sHelpInfo_08A00FD0 =
 
 DECL_INFO gHelpInfo_MbpHp =
 {
-    &sHelpInfo_08A00FD0, &sHelpInfo_08A01008, NULL, NULL,
+    &sHelpInfo_Statscreen_22, &sHelpInfo_Statscreen_23, NULL, NULL,
     28, 24, 0x544,
 };
 
-static DECL_INFO sHelpInfo_08A01008 =
+static DECL_INFO sHelpInfo_Statscreen_23 =
 {
-    &gHelpInfo_MbpHp, &sHelpInfo_08A01024, NULL, NULL,
+    &gHelpInfo_MbpHp, &sHelpInfo_Statscreen_24, NULL, NULL,
     28, 40, 0x571,
 };
 
-static DECL_INFO sHelpInfo_08A01024 =
+static DECL_INFO sHelpInfo_Statscreen_24 =
 {
-    &sHelpInfo_08A01008, &sHelpInfo_08A01040, NULL, NULL,
+    &sHelpInfo_Statscreen_23, &sHelpInfo_Statscreen_25, NULL, NULL,
     28, 56, 0x55D,
 };
 
-static DECL_INFO sHelpInfo_08A01040 =
+static DECL_INFO sHelpInfo_Statscreen_25 =
 {
-    &sHelpInfo_08A01024, &sHelpInfo_08A0105C, NULL, NULL,
+    &sHelpInfo_Statscreen_24, &sHelpInfo_Statscreen_26, NULL, NULL,
     28, 72, 0x55F,
 };
 
-static DECL_INFO sHelpInfo_08A0105C =
+static DECL_INFO sHelpInfo_Statscreen_26 =
 {
-    &sHelpInfo_08A01040, NULL, NULL, NULL,
+    &sHelpInfo_Statscreen_25, NULL, NULL, NULL,
     56, 88, 0, NULL, HbPopulate_BkselWTriEffB,
 };
 
 // Detailed/Classic mode (Cbp)
 
-static DECL_INFO sHelpInfo_08A01078;
-static DECL_INFO sHelpInfo_08A010B0;
-static DECL_INFO sHelpInfo_08A010CC;
-static DECL_INFO sHelpInfo_08A010E8;
-static DECL_INFO sHelpInfo_08A01104;
-static DECL_INFO sHelpInfo_08A01120;
-static DECL_INFO sHelpInfo_08A0113C;
+static DECL_INFO sHelpInfo_Statscreen_27;
+static DECL_INFO sHelpInfo_Statscreen_28;
+static DECL_INFO sHelpInfo_Statscreen_29;
+static DECL_INFO sHelpInfo_Statscreen_30;
+static DECL_INFO sHelpInfo_Statscreen_31;
+static DECL_INFO sHelpInfo_Statscreen_32;
+static DECL_INFO sHelpInfo_Statscreen_33;
 
-static DECL_INFO sHelpInfo_08A01078 =
+static DECL_INFO sHelpInfo_Statscreen_27 =
 {
     NULL, &gHelpInfo_CbpHp, NULL, NULL,
     8, 8, 0, NULL, HbPopulate_BkselWTriEffA,
@@ -2808,43 +2809,43 @@ static DECL_INFO sHelpInfo_08A01078 =
 
 DECL_INFO gHelpInfo_CbpHp =
 {
-    &sHelpInfo_08A01078, &sHelpInfo_08A010B0, NULL, NULL,
+    &sHelpInfo_Statscreen_27, &sHelpInfo_Statscreen_28, NULL, NULL,
     28, 24, 0x544,
 };
 
-static DECL_INFO sHelpInfo_08A010B0 =
+static DECL_INFO sHelpInfo_Statscreen_28 =
 {
-    &gHelpInfo_CbpHp, &sHelpInfo_08A010CC, NULL, NULL,
+    &gHelpInfo_CbpHp, &sHelpInfo_Statscreen_29, NULL, NULL,
     28, 40, 0x55C,
 };
 
-static DECL_INFO sHelpInfo_08A010CC =
+static DECL_INFO sHelpInfo_Statscreen_29 =
 {
-    &sHelpInfo_08A010B0, &sHelpInfo_08A010E8, NULL, NULL,
+    &sHelpInfo_Statscreen_28, &sHelpInfo_Statscreen_30, NULL, NULL,
     28, 56, 0x573,
 };
 
-static DECL_INFO sHelpInfo_08A010E8 =
+static DECL_INFO sHelpInfo_Statscreen_30 =
 {
-    &sHelpInfo_08A010CC, &sHelpInfo_08A01104, NULL, NULL,
+    &sHelpInfo_Statscreen_29, &sHelpInfo_Statscreen_31, NULL, NULL,
     28, 72, 0x55D,
 };
 
-static DECL_INFO sHelpInfo_08A01104 =
+static DECL_INFO sHelpInfo_Statscreen_31 =
 {
-    &sHelpInfo_08A010E8, &sHelpInfo_08A01120, NULL, NULL,
+    &sHelpInfo_Statscreen_30, &sHelpInfo_Statscreen_32, NULL, NULL,
     28, 88, 0x55F,
 };
 
-static DECL_INFO sHelpInfo_08A01120 =
+static DECL_INFO sHelpInfo_Statscreen_32 =
 {
-    &sHelpInfo_08A01104, &sHelpInfo_08A0113C, NULL, NULL,
+    &sHelpInfo_Statscreen_31, &sHelpInfo_Statscreen_33, NULL, NULL,
     28, 104, 0x572,
 };
 
-static DECL_INFO sHelpInfo_08A0113C =
+static DECL_INFO sHelpInfo_Statscreen_33 =
 {
-    &sHelpInfo_08A01120, NULL, NULL, NULL,
+    &sHelpInfo_Statscreen_32, NULL, NULL, NULL,
     56, 120, 0, NULL, HbPopulate_BkselWTriEffB,
 };
 

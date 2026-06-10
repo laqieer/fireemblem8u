@@ -84,13 +84,13 @@
 #define TEXTSTART EvtTextStart
 #define REMOVEPORTRAITS EvtTextStartType1
 #define _1A22 EvtTextStartType2
-#define TUTORIALTEXTBOXSTART EvtTextTuorialStart
+#define TUTORIALTEXTBOXSTART EvtTextTutorialStart
 #define SOLOTEXTBOXSTART EvtTextStartType4
 #define _1A25 EvtTextStartType5
 #define TEXTSHOW EvtTextShow
 #define REMA EvtTextRemoveAll
 #define TEXTCONT EvtContinueText
-#define TEXTEND EvtTextEnd
+#define TEXTEND EvtTextWaitLock
 #define BACG EvtDisplayTextBg
 #define FACE_SHOW EvtDisplayFace
 #define CLEAN EvtClearScreen
@@ -113,7 +113,7 @@
 #define LOAD4 EvtLoadUnit4
 #define UNIT_COLORS EvtChangePalSMS
 #define CHECK_AT EvtGetPidAt
-#define CHECK_ACTIVE EvrGetActiveUnitPid
+#define CHECK_ACTIVE EvtGetActiveUnitPid
 #define MOVE(speed, pid, x, y) EvtMoveUnit(false, speed, pid, x, y)
 #define MOVEONTO(speed, pid, pid_target) EvtMoveUnitToTarget(false, speed, pid, pid_target)
 #define MOVE_1STEP(speed, pid, direction) EvtMoveUnitOneStep(false, speed, pid, direction)

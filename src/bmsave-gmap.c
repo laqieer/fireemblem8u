@@ -274,13 +274,13 @@ void ReadWorldMapStuff(const void* sram_src, void* dst) {
 }
 
 //! FE8U = 0x080A71E4
-void sub_80A71E4(void* rngState) {
-    sub_80BD260(&gGMData, rngState);
+void StoreGMMonsterRnState(void* rngState) {
+    GetGmRNState(&gGMData, rngState);
     return;
 }
 
 //! FE8U = 0x080A71F8
-void sub_80A71F8(void* rngState) {
-    sub_80BD270(&gGMData, rngState);
+void LoadGMMonsterRnState(void* rngState) {
+    SetGmRNState(&gGMData, rngState);
     return;
 }

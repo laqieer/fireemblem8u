@@ -6,6 +6,7 @@
 #include "bmunit.h"
 #include "mapanim.h"
 #include "hardware.h"
+#include "constants/songs.h"
 
 /**
  * a shinning stone anime effect
@@ -34,7 +35,7 @@ void Eventfx_SetScreenConfig(void)
 
 void ShinningStonefx_InitGfx(struct ProcShinningStonefx * proc)
 {
-    PlaySeSpacial(0x8D, proc->x);
+    PlaySeSpacial(SONG_8D, proc->x);
     Decompress(Img_MapAnimUnlockObjfx, OBJ_VRAM0 + 0x3800);
     ApplyPalette(Pal_MapAnimUnlockObjfx, 0x14);
     proc->timer = 1;
@@ -47,8 +48,8 @@ void ShinningStonefx_CreateSpriteAnim(struct ProcShinningStonefx * proc)
         proc->timer = 0;
         Proc_Break(proc);
 
-        APProc_Create(ApConf_089A6254, proc->x, proc->y, 0x41C0, 0, 2);
-        APProc_Create(ApConf_089A6254, proc->x, proc->y, 0x41C0, 1, 2);
+        APProc_Create(ApConf_MapanimTorchAnim_0, proc->x, proc->y, 0x41C0, 0, 2);
+        APProc_Create(ApConf_MapanimTorchAnim_0, proc->x, proc->y, 0x41C0, 1, 2);
     }
 }
 

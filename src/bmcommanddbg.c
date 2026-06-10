@@ -34,8 +34,8 @@ bool CanUnitUseVisit(void)
             if (gBmMapMovement[iy][ix] > MAP_MOVEMENT_MAX)
                 continue;
 
-            if (gBmMapTerrain[iy][ix] != TERRAIN_VILLAGE_03 && gBmMapTerrain[iy][ix] != TERRIAN_HOUSE &&
-                gBmMapTerrain[iy][ix] != TERRAIN_INN && gBmMapTerrain[iy][ix] != TERRAIN_RUINS_37)
+            if (gBmMapTerrain[iy][ix] != TERRAIN_VILLAGE_REGULAR && gBmMapTerrain[iy][ix] != TERRAIN_HOUSE &&
+                gBmMapTerrain[iy][ix] != TERRAIN_INN && gBmMapTerrain[iy][ix] != TERRAIN_RUINS_VILLAGE)
                 continue;
 
             if (GetAvailableTileEventCommand(ix, iy) == TILE_COMMAND_VISIT)
@@ -120,14 +120,14 @@ int GetUnitCommandUseFlags(void)
 }
 
 //! FE8U = 0x080344E8
-int sub_80344E8(void)
+int GetActiveUnitCommandUseFlags(void)
 {
     GenerateUnitMovementMapExt(gActiveUnit, UNIT_MOV(gActiveUnit) - gActionData.moveCount);
     return GetUnitCommandUseFlags();
 }
 
 //! FE8U = 0x08034514
-int sub_8034514(void)
+int GetActiveUnitCommandUseFlagsStationary(void)
 {
     BmMapFill(gBmMapMovement, -1);
     gBmMapMovement[gActiveUnit->yPos][gActiveUnit->xPos] = 0;
@@ -136,7 +136,7 @@ int sub_8034514(void)
 }
 
 //! FE8U = 0x08034550
-void sub_8034550(struct Unit * unit)
+void MakeEnemyThreatTargetList(struct Unit * unit)
 {
     int i;
     int ix;

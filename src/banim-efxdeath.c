@@ -7,14 +7,15 @@
 #include "efxbattle.h"
 #include "ekrdragon.h"
 #include "eventinfo.h"
+#include "constants/songs.h"
 
 CONST_DATA struct ProcCmd ProcScr_efxDeadEvent[] = {
     PROC_NAME("efxDeadEVTENT"),
-    PROC_REPEAT(sub_8052DFC),
-    PROC_REPEAT(sub_8052E7C),
-    PROC_REPEAT(sub_8052EAC),
-    PROC_REPEAT(sub_8052F24),
-    PROC_REPEAT(sub_8052F84),
+    PROC_REPEAT(efxDeadEvent_Loop_A),
+    PROC_REPEAT(efxDeadEvent_Loop_B),
+    PROC_REPEAT(efxDeadEvent_Loop_C),
+    PROC_REPEAT(efxDeadEvent_Loop_D),
+    PROC_REPEAT(efxDeadEvent_Loop_E),
     PROC_END
 };
 
@@ -28,7 +29,7 @@ void NewEfxDeadEvent(struct Anim *anim1, struct Anim *anim2)
     gEkrDeadEventExist = true;
 }
 
-void sub_8052DFC(struct ProcEfxDead *proc)
+void efxDeadEvent_Loop_A(struct ProcEfxDead *proc)
 {
     struct Anim *ais_core1 = GetAnimAnotherSide(proc->anim1);
     int ret = false;
@@ -51,7 +52,7 @@ void sub_8052DFC(struct ProcEfxDead *proc)
     Proc_Break(proc);
 }
 
-void sub_8052E7C(struct ProcEfxDead *proc)
+void efxDeadEvent_Loop_B(struct ProcEfxDead *proc)
 {
     if (++proc->timer == 8) {
         NewEkrWindowAppear(1, 7);
@@ -60,7 +61,7 @@ void sub_8052E7C(struct ProcEfxDead *proc)
     }
 }
 
-void sub_8052EAC(struct ProcEfxDead *proc)
+void efxDeadEvent_Loop_C(struct ProcEfxDead *proc)
 {
     if (CheckEkrWindowAppearUnexist() == true) {
         EnableEkrGauge();
@@ -79,7 +80,7 @@ void sub_8052EAC(struct ProcEfxDead *proc)
     }
 }
 
-void sub_8052F24(struct ProcEfxDead *proc)
+void efxDeadEvent_Loop_D(struct ProcEfxDead *proc)
 {
     if (BattleEventEngineExists() == false) {
         PlayDeathSoundForArena();
@@ -97,7 +98,7 @@ void sub_8052F24(struct ProcEfxDead *proc)
     }
 }
 
-void sub_8052F84(struct ProcEfxDead *proc)
+void efxDeadEvent_Loop_E(struct ProcEfxDead *proc)
 {
     if (CheckEkrWindowAppearUnexist() == true) {
         gEkrDeadEventExist = false;
@@ -107,8 +108,8 @@ void sub_8052F84(struct ProcEfxDead *proc)
 
 CONST_DATA struct ProcCmd ProcScr_efxDead[] = {
     PROC_NAME("efxDead"),
-    PROC_REPEAT(sub_8052FEC),
-    PROC_REPEAT(sub_8053080),
+    PROC_REPEAT(efxDead_Loop_A),
+    PROC_REPEAT(efxDead_Loop_B),
     PROC_END
 };
 
@@ -126,7 +127,7 @@ void NewEfxDead(struct Anim *anim1, struct Anim *anim2)
     DisableEfxStatusUnits(anim1);
 }
 
-void sub_8052FEC(struct ProcEfxDead *proc)
+void efxDead_Loop_A(struct ProcEfxDead *proc)
 {
     int hp;
 
@@ -148,7 +149,7 @@ void sub_8052FEC(struct ProcEfxDead *proc)
     }
 }
 
-void sub_8053080(struct ProcEfxDead *proc)
+void efxDead_Loop_B(struct ProcEfxDead *proc)
 {
     struct Anim *anim = proc->anim1;
     s16 time = ++proc->timer;
@@ -159,15 +160,15 @@ void sub_8053080(struct ProcEfxDead *proc)
         
         if (CheckEkrDragonSkipTransfer(proc->anim1) != false) {
             NewEfxDeadDragonAlpha(proc->anim1, proc->anim2);
-            EfxPlaySE(0xD6, 0x100);
-            M4aPlayWithPostionCtrl(0xD6, anim->xPosition, 1);
+            EfxPlaySE(SONG_D6, 0x100);
+            M4aPlayWithPostionCtrl(SONG_D6, anim->xPosition, 1);
             proc->terminator = 0x64;
             return;
         }
 
         NewEfxDeadAlpha(proc->anim1, proc->anim2);
-        EfxPlaySE(0xD6, 0x100);
-        M4aPlayWithPostionCtrl(0xD6, anim->xPosition, 1);
+        EfxPlaySE(SONG_D6, 0x100);
+        M4aPlayWithPostionCtrl(SONG_D6, anim->xPosition, 1);
         proc->terminator = 0x32;
         return;
     }

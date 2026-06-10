@@ -29,13 +29,13 @@ void GetPlayerStartCursorPosition(int *px, int *py)
 {
     struct Unit *unit;
     if (1 == gPlaySt.chapterTurnNumber) {
-        unit = GetUnitFromCharId(GetPlayerLeaderUnitId());
+        unit = GetUnitFromCharId(GetPlayerLeaderPid());
         gPlaySt.xCursor = unit->xPos;
         gPlaySt.yCursor = unit->yPos;
     }
 
     if (1 != gPlaySt.config.autoCursor) {
-        unit = GetUnitFromCharId(GetPlayerLeaderUnitId());
+        unit = GetUnitFromCharId(GetPlayerLeaderPid());
         *px = unit->xPos;
         *py = unit->yPos;
     } else {

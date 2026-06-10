@@ -1,31 +1,30 @@
 #include "gbafe.h"
 
-CONST_DATA EventListScr EventScr_CastleFelia_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_CastleFelia_BeginningScene[] = {
     CHECK_EVENTID(136)
     BEQ(0x801c, EVT_SLOT_C, EVT_SLOT_0)
     CALL(EventScr_SplitMenu)
 LABEL(0x801c)
-    MUSC(0x31)
-    SVAL(EVT_SLOT_2, 0xe)
-    CALL(EventScr_SetBackground)
+    MUSC(SONG_VICTORY)
+    SetBackground(BG_THRONE_NORMAL)
     CHECK_ALIVE(CHARACTER_GILLIAM)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_0)
     TEXTSHOW(0xbff)
     TEXTEND
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     TEXTCONT
     TEXTEND
-    MUSC(0x32)
+    MUSC(SONG_INTO_THE_SHADOW_OF_VICTORY)
     TEXTCONT
     TEXTEND
     GOTO(0x1)
 LABEL(0x0)
     TEXTSHOW(0xc00)
     TEXTEND
-    MUSCMID(0x7fff)
+    MUSCMID(SONG_SILENT)
     TEXTCONT
     TEXTEND
-    MUSC(0x32)
+    MUSC(SONG_INTO_THE_SHADOW_OF_VICTORY)
     TEXTCONT
     TEXTEND
 LABEL(0x1)
@@ -35,14 +34,14 @@ LABEL(0x1)
     GIVEITEMTOMAIN(CHAR_EVT_PLAYER_LEADER)
     FADI(4)
     REMOVEPORTRAITS
-    BACG(0x10)
-    MUSC(0x32)
+    BACG(BG_CASTLE_BRIGHT)
+    MUSC(SONG_INTO_THE_SHADOW_OF_VICTORY)
     FADU(4)
     TEXTSHOW(0xc01)
     TEXTEND
     REMA
     FADI(16)
-    LOAD1(0x1, UnitDef_088B43D0)
+    LOAD1(0x1, UnitDef_LordSplitAlly)
     ENUN
     ENUT(138)
     MNCH(0x2)

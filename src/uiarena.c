@@ -20,6 +20,7 @@
 #include "bmlib.h"
 #include "scene.h"
 #include "mapanim.h"
+#include "constants/songs.h"
 
 extern struct ProcCmd gProcScr_ArenaUiMain[];
 extern struct ProcCmd gProcScr_ArenaUiResults[];
@@ -29,7 +30,7 @@ void StartArenaDialogue(int, ProcPtr);
 void DrawArenaOpponentDetailsText(ProcPtr);
 
 //! FE8U = 0x080B5730
-s8 sub_80B5730(void) {
+s8 ArenaUi_IsBgmActive(void) {
     if (!(gMPlayTable[gSongTable[0x38].ms].info->status & 0x8000FFFF)) {
         return 0;
     }
@@ -115,7 +116,7 @@ void ArenaUi_Init(ProcPtr proc) {
     SetBlendTargetA(0, 0, 0, 1, 0);
     SetBlendTargetB(0, 0, 0, 0, 0);
 
-    Decompress(gGfx_ArenaBuildingFront, (void*)(GetBackgroundTileDataOffset(3) + 0x6000000));
+    Decompress(gGfx_ArenaBuildingFront, (void*)(GetBackgroundTileDataOffset(3) + VRAM));
     CallARM_FillTileRect(gBG3TilemapBuffer, gTsa_ArenaBuildingFront, 0xc000);
     ApplyPalettes(gPal_ArenaBuildingFront, 0xC, 4);
 
@@ -125,7 +126,7 @@ void ArenaUi_Init(ProcPtr proc) {
 }
 
 //! FE8U = 0x080B5970
-void sub_80B5970(void) {
+void ArenaUi_UpdatePlayerUnitAfterBattle(void) {
     UpdateUnitFromBattle(gArenaState.playerUnit, &gBattleActor);
     StartMu(gActiveUnit);
     SetAutoMuDefaultFacing();
@@ -174,7 +175,7 @@ void ArenaUi_CheckConfirmation(ProcPtr proc) {
 //! FE8U = 0x080B5A38
 void ArenaUi_ConfirmWager(ProcPtr proc) {
     SetPartyGoldAmount(GetPartyGoldAmount() - ArenaGetMatchupGoldValue());
-    PlaySoundEffect(0xb9);
+    PlaySoundEffect(SONG_SE_MONEY);
     DisplayGoldBoxText(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1B, 0x6));
     DrawArenaOpponentDetailsText(proc);
 
@@ -226,13 +227,13 @@ void ArenaUi_StartArenaBattle(ProcPtr proc) {
 }
 
 //! FE8U = 0x080B5B00
-void sub_80B5B00(ProcPtr proc) {
+void ArenaUi_StartPartialLock(ProcPtr proc) {
     StartPartialGameLock(proc);
     return;
 }
 
 //! FE8U = 0x080B5B0C
-void sub_80B5B0C(ProcPtr proc) {
+void ArenaUi_InitWrapper(ProcPtr proc) {
     ArenaUi_Init(proc);
     return;
 }
@@ -281,7 +282,7 @@ void ArenaUi_ShowGoldBoxOnVictoryOrDraw(ProcPtr proc) {
         case 1:
         case 3:
             DisplayGoldBoxText(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x1B, 0x6));
-            PlaySoundEffect(0xb9);
+            PlaySoundEffect(SONG_SE_MONEY);
             StartTemporaryLock(proc, 60);
 
             break;
@@ -339,14 +340,14 @@ void Arena_PlayResultSong(ProcPtr proc) {
     switch (ArenaGetResult()) {
         case 1:
             if (!gPlaySt.config.disableBgm) {
-                StartBgmCore(0x3a, 0);
+                StartBgmCore(SONG_COLOSSEUM_VICTORY, 0);
             }
 
             break;
 
         default:
             if (!gPlaySt.config.disableBgm) {
-                StartBgmCore(0x38, 0);
+                StartBgmCore(SONG_COLOSSEUM_ENTRANCE, 0);
             }
 
             Proc_End(proc);
@@ -359,18 +360,18 @@ void Arena_PlayResultSong(ProcPtr proc) {
 
 //! FE8U = 0x080B5D2C
 void Arena_PlayArenaSong(void) {
-    StartBgmExt(0x38, 0, 0);
+    StartBgmExt(SONG_COLOSSEUM_ENTRANCE, 0, 0);
     return;
 }
 
 //! FE8U = 0x080B5D3C
-void sub_80B5D3C(void) {
+void StartSuspendPrompt(void) {
     CallSuspendPromptEvent();
     return;
 }
 
 //! FE8U = 0x080B5D48
-s8 sub_80B5D48(void) {
+s8 ArenaUi_IsTalkChoiceYes(void) {
 
     if (GetTalkChoiceResult() != 1) {
         return 0;
@@ -380,7 +381,7 @@ s8 sub_80B5D48(void) {
 }
 
 //! FE8U = 0x080B5D5C
-void WriteSuspandPlaterIdle(void) {
+void WriteSuspendPlayerIdle(void) {
     gActionData.suspendPointType = SUSPEND_POINT_PLAYERIDLE;
     WriteSuspendSave(SAVE_ID_SUSPEND);
     return;
@@ -422,7 +423,7 @@ struct ProcCmd CONST_DATA gProcScr_ArenaUiMain[] = {
 
 PROC_LABEL(0),
     PROC_CALL_ARG(_FadeBgmOut, 2),
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_SLEEP(1),
 
     PROC_CALL(ArenaUi_StartArenaBattle),
@@ -436,7 +437,7 @@ PROC_LABEL(0),
 PROC_LABEL(2),
     PROC_SLEEP(1),
 
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_SLEEP(1),
 
     PROC_CALL(ArenaUi_OnEnd),
@@ -457,7 +458,7 @@ PROC_LABEL(2),
 
 struct ProcCmd CONST_DATA gProcScr_ArenaUiResults[] = {
 PROC_LABEL(1),
-    PROC_CALL(sub_80B5B00),
+    PROC_CALL(ArenaUi_StartPartialLock),
 
     PROC_CALL(LockGame),
     PROC_CALL(BMapDispSuspend),
@@ -483,10 +484,10 @@ PROC_LABEL(2),
     PROC_SLEEP(0),
 
     PROC_CALL_ARG(_FadeBgmOut, 2),
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_SLEEP(0),
 
-    PROC_CALL(sub_80B5970),
+    PROC_CALL(ArenaUi_UpdatePlayerUnitAfterBattle),
 
     PROC_CALL(ArenaUi_OnEnd),
 

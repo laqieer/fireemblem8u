@@ -6,7 +6,7 @@
 #include "bmitem.h"
 #include "constants/items.h"
 
-EWRAM_DATA int gBattleScriptted = 0;
+EWRAM_DATA int gBattleScripted = 0;
 
 u16 GetBattleAnimationId(struct Unit * unit, const struct BattleAnimDef * anim_def, u16 wpn, u32 * out)
 {
@@ -73,11 +73,11 @@ struct UnkStruct2_sub_805893C {
     struct UnkStruct1_sub_805893C * unk2;
 };
 
-int sub_805893C(struct UnkStruct2_sub_805893C * arg)
+int GetBanimSheetSelectByte(struct UnkStruct2_sub_805893C * arg)
 {
     u32 val;
     u32 val1;
-    u16 * buf = gUnknown_030018F0;
+    u16 * buf = gUnk_51;
     val = ((arg->unk1->unk28 | arg->unk2->unk28) >> 0x8) & 0x1;
     *buf = val = arg->unk1->unk23[val];
     return val - 1;
@@ -94,13 +94,13 @@ u16 * FilterBattleAnimCharacterPalette(s16 index, u16 item)
         switch (GetItemIndex(item))
         {
         case ITEM_BALLISTA_REGULAR:
-            return Pal_085BA300;
+            return Pal_Efxbattle_1;
 
         case ITEM_BALLISTA_LONG:
-            return Pal_085BA2E0;
+            return Pal_Efxbattle_0;
 
         case ITEM_BALLISTA_KILLER:
-            return Pal_085BA320;
+            return Pal_Efxbattle_2;
 
         default:
             return NULL;
@@ -159,9 +159,7 @@ s16 GetBattleAnimRoundTypeFlags(int index)
 
 s16 GetEfxHp(int index)
 {
-    u16 * _buf = gEfxHpLut;
-    u8 * buf = (u8 *)&_buf[index];
-    return *buf;
+    return (u8)gEfxHpLut[index];
 }
 
 s16 GetEfxHpModMaybe(int index)
@@ -245,19 +243,19 @@ bool EkrCheckAttackRound(u16 round)
     return false;
 }
 
-void SetBattleScriptted(void)
+void SetBattleScripted(void)
 {
-    gBattleScriptted = true;
+    gBattleScripted = true;
 }
 
-void SetBattleUnscriptted(void)
+void SetBattleUnscripted(void)
 {
-    gBattleScriptted = false;
+    gBattleScripted = false;
 }
 
-bool CheckBattleScriptted(void)
+bool CheckBattleScripted(void)
 {
-    if (gBattleScriptted == false)
+    if (gBattleScripted == false)
         return false;
     else
         return true;

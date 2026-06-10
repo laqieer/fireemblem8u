@@ -1,29 +1,31 @@
 #include "global.h"
-#include "functions.h"
-#include "variables.h"
-#include "hardware.h"
-#include "bmcontainer.h"
+
 #include "ap.h"
-#include "bmunit.h"
-#include "bmbattle.h"
-#include "bmusemind.h"
-#include "soundwrapper.h"
-#include "ctc.h"
-#include "chapterdata.h"
-#include "fontgrp.h"
-#include "statscreen.h"
-#include "uiutils.h"
-#include "bmudisp.h"
 #include "bm.h"
-#include "worldmap.h"
+#include "bmbattle.h"
+#include "bmcontainer.h"
+#include "bmudisp.h"
+#include "bmunit.h"
+#include "bmusemind.h"
 #include "cgtext.h"
-#include "prepscreen.h"
+#include "chapterdata.h"
 #include "classchg.h"
+#include "ctc.h"
+#include "fontgrp.h"
+#include "hardware.h"
+#include "prepscreen.h"
+#include "soundwrapper.h"
+#include "statscreen.h"
 #include "sysutil.h"
+#include "uiutils.h"
+#include "worldmap.h"
 
-s8 CheckInLinkArena();
+#include "constants/chapters.h"
+#include "constants/songs.h"
 
-s8 HasConvoyAccess_()
+s8 CheckInLinkArena(void);
+
+s8 HasConvoyAccess_(void)
 {
     return HasConvoyAccess();
 }
@@ -38,32 +40,33 @@ void TraineePromo_ResetScreenEffect()
     gLCDControlBuffer.bg1cnt.priority = 1;
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 3;
-    SetBlendConfig(3, 0, 0, 0x10);
+    SetBlendDarken(16);
     SetBlendTargetA(1, 1, 1, 1, 1);
 }
 
 void DoPromoteAnimForChar100(struct Proc08A184B4 * proc)
 {
-    struct Unit *unit;
+    struct Unit * unit;
 
     unit = GetUnitFromCharId(0x100);
 
-    if (!unit) {
+    if (!unit)
+    {
         Proc_End(proc);
         return;
     }
 
     proc->game_lock = GetGameLock();
     SetWinEnable(0, 0, 0);
-    
-    sub_802F598(unit, -1, 0);
+
+    ExecUnitDefaultPromotion(unit, -1, 0);
     gBattleStats.config = BATTLE_CONFIG_PROMOTION | BATTLE_CONFIG_PROMOTION_PREP;
     gBattleActor.weaponBefore = 0;
     gBattleTarget.weaponBefore = 0;
     BeginBattleAnimations();
 }
 
-void IsGameLockLevelReserved(struct Proc08A184B4 *proc)
+void IsGameLockLevelReserved(struct Proc08A184B4 * proc)
 {
     if (proc->game_lock == GetGameLock())
         Proc_Break(proc);
@@ -71,16 +74,16 @@ void IsGameLockLevelReserved(struct Proc08A184B4 *proc)
 
 void NullExpForChar100AndResetScreen()
 {
-    struct Unit *unit = GetUnitFromCharId(0x100);
+    struct Unit * unit = GetUnitFromCharId(0x100);
     if (unit)
         unit->exp = -1;
 
-    SetBlendConfig(3, 0, 0, 0x10);
+    SetBlendDarken(16);
     SetDispEnable(0, 0, 0, 0, 0);
-    CallSomeSoundMaybe(0x34, 0x100, 0x100, 0x20, NULL);
+    ChangeBgm(SONG_COMBAT_PREPARATION, 0x100, 0x100, 0x20, NULL);
 }
 
-void PrepPromoteDebugMaybe(struct Proc08A184B4 *proc)
+void PrepPromoteDebugMaybe(struct Proc08A184B4 * proc)
 {
     EndCgText();
     ResetDialogueScreen();
@@ -91,15 +94,15 @@ void PrepPromoteDebugMaybe(struct Proc08A184B4 *proc)
     gLCDControlBuffer.bg2cnt.priority = 2;
     gLCDControlBuffer.bg3cnt.priority = 3;
 
-    SetBlendConfig(3, 0, 0, 0x10);
+    SetBlendDarken(16);
     SetBlendTargetA(1, 1, 1, 1, 1);
     EndAllProcChildren(proc);
     Proc_StartBlocking(ProcScr_PrepPromoteDebug, proc);
 }
 
-void sub_8096668()
+void FadeOutPrepBgm()
 {
-    CallSomeSoundMaybe(0, 0x100, 0, 0x20, NULL);
+    ChangeBgm(SONG_NONE, 0x100, 0, 0x20, NULL);
 }
 
 void NewPrepScreenTraineePromotionManager()
@@ -109,203 +112,226 @@ void NewPrepScreenTraineePromotionManager()
 
 int PrepScreenTraineePromotionManagerExists(ProcPtr proc)
 {
-    return Proc_Find(ProcScr_PrepTraineePromo) ? 1 : 0;
+    return Proc_Find(ProcScr_PrepTraineePromo) ? true : false;
 }
 
 int PrepAtMenuExists(ProcPtr proc)
 {
-    return Proc_Find(ProcScr_AtMenu) ? 1 : 0;
+    return Proc_Find(ProcScr_AtMenu) ? true : false;
 }
 
-void PutObj8A1856E(int xOam1, int yOam0, u16 oam2)
+void PutPrepInformationSprite(int xOam1, int yOam0, u16 oam2)
 {
-    PutSpriteExt(4, xOam1, yOam0, obj_8A1856E, oam2);
+    PutSpriteExt(4, xOam1, yOam0, Sprite_PrepInformation, oam2);
 }
 
-void PutObj8A18582_WithConfigs(int xOam1, int yOam0, int a3, u16 oam2)
+void PutPrepChapterSprite_Default(int xOam1, int yOam0, int prepChapterNum, u16 oam2)
 {
-    int val;
-    if (1 & a3) {
+    int chapterNum;
+
+    // If this is a Gaiden chapter (odd prepChapterNum), display "X"
+    if (prepChapterNum & 1)
+    {
         xOam1 -= 4;
-        PutSpriteExt(4, xOam1 + 0x40, yOam0, objs_8A18614[0xA], oam2);
+        PutSpriteExt(4, xOam1 + 64, yOam0, SpriteArray_PrepChapterNumbers[10], oam2);
     }
-    PutSpriteExt(4, xOam1, yOam0, obj_8A18582, oam2);
 
-    val = a3 >> 1;
-    if (val < 10)
-        PutSpriteExt(4, xOam1 + 0x30, yOam0, objs_8A18614[0xB], oam2);
+    PutSpriteExt(4, xOam1, yOam0, Sprite_PrepChapter, oam2);
+
+    // Remove Gaiden bit and extract actual chapter number
+    chapterNum = prepChapterNum >> 1;
+
+    if (chapterNum < 10)
+        PutSpriteExt(4, xOam1 + 48, yOam0, SpriteArray_PrepChapterNumbers[11], oam2);
     else
-        PutSpriteExt(4, xOam1 + 0x30, yOam0, objs_8A18614[val / 10], oam2);
+        PutSpriteExt(4, xOam1 + 48, yOam0, SpriteArray_PrepChapterNumbers[chapterNum / 10], oam2);
 
-    PutSpriteExt(4, xOam1 + 0x38, yOam0, objs_8A18614[val % 10], oam2);
+    PutSpriteExt(4, xOam1 + 56, yOam0, SpriteArray_PrepChapterNumbers[chapterNum % 10], oam2);
 }
 
-void PutObj8A18590_WithConfigs(int xOam1, int yOam0, int a3, u16 oam2)
+void PutPrepChapterSprite_Tower(int xOam1, int yOam0, int prepChapterNum, u16 oam2)
 {
-    int val;
-    if (1 & a3) {
+    int chapterNum;
+
+    // If this is a Gaiden chapter (odd prepChapterNum), display "X"
+    if (prepChapterNum & 1)
+    {
         xOam1 -= 4;
-        PutSpriteExt(4, xOam1 + 0x40, yOam0, objs_8A18614[0xA], oam2);
+        PutSpriteExt(4, xOam1 + 64, yOam0, SpriteArray_PrepChapterNumbers[10], oam2);
     }
-    PutSpriteExt(4, xOam1, yOam0, obj_8A18590, oam2);
 
-    val = a3 >> 1;
-    if (val < 10)
-        PutSpriteExt(4, xOam1 + 0x30, yOam0, objs_8A18614[0xB], oam2);
+    PutSpriteExt(4, xOam1, yOam0, Sprite_PrepTower, oam2);
+
+    // Remove Gaiden bit and extract actual chapter number
+    chapterNum = prepChapterNum >> 1;
+
+    if (chapterNum < 10)
+        PutSpriteExt(4, xOam1 + 48, yOam0, SpriteArray_PrepChapterNumbers[11], oam2);
     else
-        PutSpriteExt(4, xOam1 + 0x30, yOam0, objs_8A18614[val / 10], oam2);
+        PutSpriteExt(4, xOam1 + 48, yOam0, SpriteArray_PrepChapterNumbers[chapterNum / 10], oam2);
 
-    PutSpriteExt(4, xOam1 + 0x38, yOam0, objs_8A18614[val % 10], oam2);
+    PutSpriteExt(4, xOam1 + 56, yOam0, SpriteArray_PrepChapterNumbers[chapterNum % 10], oam2);
 }
 
-void PutObj8A1859E_WithConfigs(int xOam1, int yOam0, int a3, u16 oam2)
+void PutPrepChapterSprite_Ruins(int xOam1, int yOam0, int prepChapterNum, u16 oam2)
 {
-    int val;
-    if (1 & a3) {
+    int chapterNum;
+
+    // If this is a Gaiden chapter (odd prepChapterNum), display "X"
+    if (prepChapterNum & 1)
+    {
         xOam1 -= 4;
-        PutSpriteExt(4, xOam1 + 0x3C, yOam0, objs_8A18614[0xA], oam2);
+        PutSpriteExt(4, xOam1 + 60, yOam0, SpriteArray_PrepChapterNumbers[10], oam2);
     }
-    PutSpriteExt(4, xOam1 + 4, yOam0, obj_8A1859E, oam2);
 
-    val = a3 >> 1;
-    if (val < 10)
-        PutSpriteExt(4, xOam1 + 0x2C, yOam0, objs_8A18614[0xB], oam2);
+    PutSpriteExt(4, xOam1 + 4, yOam0, Sprite_PrepRuins, oam2);
+
+    // Remove Gaiden bit and extract actual chapter number
+    chapterNum = prepChapterNum >> 1;
+
+    if (chapterNum < 10)
+        PutSpriteExt(4, xOam1 + 44, yOam0, SpriteArray_PrepChapterNumbers[11], oam2);
     else
-        PutSpriteExt(4, xOam1 + 0x2C, yOam0, objs_8A18614[val / 10], oam2);
+        PutSpriteExt(4, xOam1 + 44, yOam0, SpriteArray_PrepChapterNumbers[chapterNum / 10], oam2);
 
-    PutSpriteExt(4, xOam1 + 0x34, yOam0, objs_8A18614[val % 10], oam2);
+    PutSpriteExt(4, xOam1 + 52, yOam0, SpriteArray_PrepChapterNumbers[chapterNum % 10], oam2);
 }
 
-void PutObj8A185AC(int xOam1, int yOam0, u16 oam2)
+void PutPrepChapterSprite_Skirmish(int xOam1, int yOam0, u16 oam2)
 {
-    PutSpriteExt(4, xOam1, yOam0, obj_8A185AC, oam2);
+    PutSpriteExt(4, xOam1, yOam0, Sprite_PrepExMap, oam2);
 }
 
-
-void sub_8096958(struct ProcPrepSpecialChar *proc)
+void DrawPrepScreenSprites(struct PrepSpriteDrawProc * proc)
 {
     int i;
 
-    int xOam1 = 0xA0;
+    int xOam1 = 160;
     int yOam0 = 8;
 
-    if (0 == CheckInLinkArena()) {
-        switch (proc->unk30) {
-        case 1:
-            PutObj8A18582_WithConfigs(xOam1, yOam0, proc->unk2F, 0x6380);
+    if (!CheckInLinkArena())
+    {
+        switch (proc->kind)
+        {
+        case PREP_KIND_STANDARD:
+            PutPrepChapterSprite_Default(xOam1, yOam0, proc->prepChapterNum, OAM2_CHR(0x380) + OAM2_PAL(6));
             break;
-    
-        case 2:
-            PutObj8A18590_WithConfigs(xOam1, yOam0, proc->unk2F, 0x6380);
+
+        case PREP_KIND_TOWER:
+            PutPrepChapterSprite_Tower(xOam1, yOam0, proc->prepChapterNum, OAM2_CHR(0x380) + OAM2_PAL(6));
             break;
-    
-        case 3:
-            PutObj8A1859E_WithConfigs(xOam1, yOam0, proc->unk2F, 0x6380);
+
+        case PREP_KIND_RUINS:
+            PutPrepChapterSprite_Ruins(xOam1, yOam0, proc->prepChapterNum, OAM2_CHR(0x380) + OAM2_PAL(6));
             break;
-    
-        case 4:
-            PutObj8A185AC(xOam1, yOam0, 0x6380);
+
+        case PREP_KIND_SKIRMISH:
+            PutPrepChapterSprite_Skirmish(xOam1, yOam0, OAM2_CHR(0x380) + OAM2_PAL(6));
             break;
-    
-        case 0:
+
+        case PREP_KIND_FINAL_MAP:
         default:
             break;
         }
-    
+
         for (i = 0; i < 3; i++)
-            PutSpriteExt(4, 0x80 + i * 0x20, 0x18, gObject_32x16, 0xB6C0 + 4 * i);
-    
-        if (proc->blink_Start || (1 & (proc->unk36 >> 2)))
-                PutSpriteExt(4, 0x14, 0x8C, obj_08A18E4E, 0x300);
-    
-        if (proc->blink_B || (1 & (proc->unk36 >> 2)))
-            PutSpriteExt(4, 0x64, 0x8C, obj_08A18E76, 0x300);
-    
-        PutObj8A1856E(0x74, 0x28, 0x9380);
+            PutSpriteExt(4, 128 + i * 32, 24, gObject_32x16, OAM2_CHR(0x2C0) + OAM2_LAYER(1) + OAM2_PAL(11) + 4 * i);
 
-    } else {
-        if (0 != Prep_HasUnitDeployed())
-            PutSpriteExt(4, 0x14, 0x8C, obj_08A18E62, 0x300);
+        if (proc->buttonStartSolid || (1 & (proc->timer >> 2)))
+            PutSpriteExt(4, 20, 140, Sprite_PrepStartButton, OAM2_CHR(0x300));
 
-        PutObj8A1856E(0x74, 0x20, 0x9380);
+        if (proc->buttonBSolid || (1 & (proc->timer >> 2)))
+            PutSpriteExt(4, 100, 140, Sprite_PrepBButton, OAM2_CHR(0x300));
+
+        PutPrepInformationSprite(116, 40, OAM2_CHR(0x380) + OAM2_PAL(9));
+    }
+    else
+    {
+        if (Prep_HasUnitDeployed())
+            PutSpriteExt(4, 20, 140, obj_PrepUnitselect_1, OAM2_CHR(0x300));
+
+        PutPrepInformationSprite(116, 32, OAM2_CHR(0x380) + OAM2_PAL(9));
     }
 }
 
-void ProcPrepSpChar_OnInit(struct ProcPrepSpecialChar *proc)
+void PrepSpriteDraw_Init(struct PrepSpriteDrawProc * proc)
 {
     u32 chIndex;
 
     proc->unk2A = 0;
-    proc->unk36 = 0;
+    proc->timer = 0;
 
     ForceSyncUnitSpriteSheet();
 
-    if (CheckInLinkArena()) {
-        proc->apProc = APProc_Create(gUnknown_08A1B194, 0x3C, 0x10, 0x9E40, 1, 0xD);
-    } else {
-        proc->apProc = APProc_Create(gUnknown_08A1B194, 0x3C, 0x10, 0x9E40, 0, 0xD);
+    if (CheckInLinkArena())
+    {
+        proc->apProc =
+            APProc_Create(AP_DrawPreparationsBanner, 60, 16, OAM2_CHR(0x240) + OAM2_LAYER(3) + OAM2_PAL(9), 1, 13);
+    }
+    else
+    {
+        proc->apProc =
+            APProc_Create(AP_DrawPreparationsBanner, 60, 16, OAM2_CHR(0x240) + OAM2_LAYER(3) + OAM2_PAL(9), 0, 13);
 
         chIndex = gPlaySt.chapterIndex;
-        if ((chIndex - 0x24) < 10)
-            proc->unk30 = 2;
-        else if ((chIndex - 0x2E) < 10)
-            proc->unk30 = 3;
-        else if (sub_80C0960(chIndex))
-            proc->unk30 = 4;
-        else if (chIndex - 0x15 <= 1 || chIndex == 0x22 || chIndex == 0x23)
-            proc->unk30 = 0;
+        if ((chIndex - CHAPTER_T_01) < 10)
+            proc->kind = PREP_KIND_TOWER;
+        else if ((chIndex - CHAPTER_R_01) < 10)
+            proc->kind = PREP_KIND_RUINS;
+        else if (IsChapterMonsterSpawnActive(chIndex))
+            proc->kind = PREP_KIND_SKIRMISH;
+        else if (chIndex == CHAPTER_E_21 || chIndex == CHAPTER_E_21X || chIndex == CHAPTER_I_21 || chIndex == CHAPTER_I_21X)
+            proc->kind = PREP_KIND_FINAL_MAP;
         else
-            proc->unk30 = 1;
+            proc->kind = PREP_KIND_STANDARD;
 
-        proc->unk2F = GetROMChapterStruct(chIndex)->prepScreenNumber;
+        proc->prepChapterNum = GetROMChapterStruct(chIndex)->prepScreenNumber;
     }
 
     proc->unk2B = 0;
-    proc->blink_Start = 1;
-    proc->blink_B = 1;
+    proc->buttonStartSolid = true;
+    proc->buttonBSolid = true;
 }
 
-void ProcPrepSpChar_Idle(struct ProcPrepSpecialChar *proc)
+void PrepSpriteDraw_Loop(struct PrepSpriteDrawProc * proc)
 {
-    sub_8096958(proc);
-    proc->unk36++;
+    DrawPrepScreenSprites(proc);
+    proc->timer++;
 }
 
-void ProcPrepSpChar_OnEnd(struct ProcPrepSpecialChar *proc)
+void PrepSpriteDraw_OnEnd(struct PrepSpriteDrawProc * proc)
 {
     APProc_Delete(proc->apProc);
 }
 
-void PrepSpecialChar_BlinkButtonStart()
+void PrepSpriteDraw_BlinkButtonStart(void)
 {
-    struct ProcPrepSpecialChar *proc;
-    proc = Proc_Find(ProcScr_PrepSpecialCharEff);
+    struct PrepSpriteDrawProc * proc = Proc_Find(ProcScr_PrepScreenSpriteDraw);
 
-    if (proc)
-        proc->blink_Start = 0;
+    if (proc != NULL)
+        proc->buttonStartSolid = false;
 }
 
-void PrepSpecialChar_BlinkButtonB()
+void PrepSpriteDraw_BlinkButtonB(void)
 {
-    struct ProcPrepSpecialChar *proc;
-    proc = Proc_Find(ProcScr_PrepSpecialCharEff);
+    struct PrepSpriteDrawProc * proc = Proc_Find(ProcScr_PrepScreenSpriteDraw);
 
-    if (proc)
-        proc->blink_B = 0;
+    if (proc != NULL)
+        proc->buttonBSolid = false;
 }
 
-ProcPtr StartPrepSpecialCharEffect(ProcPtr parent)
+ProcPtr StartPrepScreenSpriteDraw(ProcPtr parent)
 {
-    Proc_End(Proc_Find(ProcScr_PrepSpecialCharEff));
-    Proc_Start(ProcScr_PrepSpecialCharEff, parent);
+    Proc_End(Proc_Find(ProcScr_PrepScreenSpriteDraw));
+    return Proc_Start(ProcScr_PrepScreenSpriteDraw, parent);
 }
 
-void EndPrepSpecialCharEffect()
+void EndPrepScreenSpriteDraw(void)
 {
-    Proc_End(Proc_Find(ProcScr_PrepSpecialCharEff));
+    Proc_End(Proc_Find(ProcScr_PrepScreenSpriteDraw));
 }
 
-void sub_8096C34(int a1, int a2)
+void PrepDebugDrawWindowPosition(int a1, int a2)
 {
     int val1, val2, val4, r5, r6, _r8;
     int r7;
@@ -313,25 +339,34 @@ void sub_8096C34(int a1, int a2)
     int val3;
 
     val1 = a1 - 56;
-    if (val1 < 0) {
+    if (val1 < 0)
+    {
         r7 = 0;
         r6 = a1;
-    } else {
+    }
+    else
+    {
         val2 = a1 + 56;
-        if (val2 > 240) {
+        if (val2 > 240)
+        {
             r7 = 0xF;
             r6 = a1 - 120;
-        } else {
+        }
+        else
+        {
             r7 = val1 >> 3;
             r6 = a1 - ((val1 >> 3) << 3);
         }
     }
 
     val3 = a2 - 40;
-    if ( a2 + 48 > 160 ) {
+    if (a2 + 48 > 160)
+    {
         r5 = 8;
         _r8 = a2 - 0x40;
-    } else {
+    }
+    else
+    {
         val4 = val3;
         if (val4 < 0)
             val4 = a2 - 0x21;
@@ -341,11 +376,12 @@ void sub_8096C34(int a1, int a2)
     }
     r8 = _r8;
 
-    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x0), 2, r7);
-    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x2), 2, r5);
-    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x4), 2, r6);
-    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 0x4, 0x6), 2, r8);
-    BG_EnableSyncByMask(1);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 4, 0), TEXT_COLOR_SYSTEM_BLUE, r7);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 4, 2), TEXT_COLOR_SYSTEM_BLUE, r5);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 4, 4), TEXT_COLOR_SYSTEM_BLUE, r6);
+    PutNumberOrBlank(TILEMAP_LOCATED(gBG0TilemapBuffer, 4, 6), TEXT_COLOR_SYSTEM_BLUE, r8);
+
+    BG_EnableSyncByMask(BG0_SYNC_BIT);
 }
 
 void PrepMenu_OnInit(struct ProcPrepMenu * proc)
@@ -360,118 +396,135 @@ void PrepMenu_OnInit(struct ProcPrepMenu * proc)
     ResetSysHandCursor(proc);
     DisplaySysHandCursorTextShadow(0x600, 1);
 
-    proc->on_PressB = 0;
-    proc->on_PressStart = 0;
-    proc->on_End = 0;
-    proc->do_help = 0;
+    proc->on_PressB = NULL;
+    proc->on_PressStart = NULL;
+    proc->on_End = NULL;
+    proc->do_help = false;
 }
 
-void PrepMenu_CtrlLoop(struct ProcPrepMenu *proc)
+void PrepMenu_CtrlLoop(struct ProcPrepMenu * proc)
 {
-    struct ProcPrepMenuItem* cmd;
+    struct ProcPrepMenuItem * cmd;
     int index = proc->cur_index;
     int xPos = (proc->xPos + 1) * 8 + 4;
     int yPos = (proc->yPos + 1) * 8 + proc->cur_index * 16;
 
-    ShowSysHandCursor(xPos, yPos, 0x6, 0x400);
+    ShowSysHandCursor(xPos, yPos, 6, 0x400);
 
     cmd = proc->cmds[proc->cur_index];
 
-    if (proc->do_help) {
-        if ((R_BUTTON | B_BUTTON) & gKeyStatusPtr->newKeys) {
+    if (proc->do_help)
+    {
+        if ((R_BUTTON | B_BUTTON) & gKeyStatusPtr->newKeys)
+        {
             CloseHelpBox();
-            proc->do_help = 0;
+            proc->do_help = false;
             return;
         }
-    } else {
-        if (R_BUTTON & gKeyStatusPtr->newKeys) {
-            if (cmd->msg_rtext) {
+    }
+    else
+    {
+        if (R_BUTTON & gKeyStatusPtr->newKeys)
+        {
+            if (cmd->msg_rtext)
+            {
                 StartHelpBox(xPos, yPos, cmd->msg_rtext);
-                proc->do_help = 1;
+                proc->do_help = true;
             }
             return;
         }
 
-        if (A_BUTTON & gKeyStatusPtr->newKeys) {
-            if ((1 & cmd->color) || (NULL == cmd->effect)) {
-                PlaySoundEffect(0x6C);
+        if (A_BUTTON & gKeyStatusPtr->newKeys)
+        {
+            if ((1 & cmd->color) || (NULL == cmd->effect))
+            {
+                PlaySoundEffect(SONG_6C);
                 return;
-            } else {
-                Proc_Goto(proc, 0x0);
+            }
+            else
+            {
+                Proc_Goto(proc, 0);
                 cmd->effect(proc->proc_parent);
-                PlaySoundEffect(0x6A);
+                PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
                 return;
             }
         }
 
-        if (B_BUTTON & gKeyStatusPtr->newKeys) {
-            if (proc->on_PressB) {
-                if (proc->on_PressB(proc->proc_parent)) {
-                    Proc_Goto(proc, 0x0);
-                    PlaySoundEffect(0x6B);
-                    return;
-                } else {
-                    PlaySoundEffect(0x6C);
-                    return;
+        if (B_BUTTON & gKeyStatusPtr->newKeys)
+        {
+            if (proc->on_PressB != NULL)
+            {
+                if (proc->on_PressB(proc->proc_parent))
+                {
+                    Proc_Goto(proc, 0);
+                    PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
+                }
+                else
+                {
+                    PlaySoundEffect(SONG_6C);
                 }
             }
             return;
         }
 
-        if (START_BUTTON & gKeyStatusPtr->newKeys) {
-            if (proc->on_PressStart) {
-                if (proc->on_PressStart(proc->proc_parent)) {
-                    PlaySoundEffect(0x6A);
-                    Proc_Goto(proc, 0x0);
-                    return;
-                } else {
-                    PlaySoundEffect(0x6C);
-                    return;
+        if (START_BUTTON & gKeyStatusPtr->newKeys)
+        {
+            if (proc->on_PressStart != NULL)
+            {
+                if (proc->on_PressStart(proc->proc_parent))
+                {
+                    PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
+                    Proc_Goto(proc, 0);
+                }
+                else
+                {
+                    PlaySoundEffect(SONG_6C);
                 }
             }
             return;
         }
     }
 
-    if (DPAD_UP & gKeyStatusPtr->repeatedKeys) {
+    if (DPAD_UP & gKeyStatusPtr->repeatedKeys)
+    {
         if (proc->cur_index)
             proc->cur_index = proc->cur_index - 1;
         else if (DPAD_UP & gKeyStatusPtr->newKeys)
             proc->cur_index = proc->max_index - 1;
     }
 
-    if (DPAD_DOWN & gKeyStatusPtr->repeatedKeys) {
+    if (DPAD_DOWN & gKeyStatusPtr->repeatedKeys)
+    {
         if (proc->cur_index < (proc->max_index - 1))
             proc->cur_index = proc->cur_index + 1;
         else if (DPAD_DOWN & gKeyStatusPtr->newKeys)
             proc->cur_index = 0;
     }
 
-    if (index != proc->cur_index) {
-        PlaySoundEffect(0x66);
+    if (index != proc->cur_index)
+    {
+        PlaySoundEffect(SONG_SE_SYS_CURSOR_UD1);
 
-        if (proc->do_help) {
-            StartHelpBox((proc->xPos + 1) * 8 + 4,
-                         (proc->yPos + 1) * 8 + proc->cur_index * 16,
-                         (cmd = proc->cmds[proc->cur_index])->msg_rtext);
+        if (proc->do_help)
+        {
+            StartHelpBox(
+                (proc->xPos + 1) * 8 + 4, (proc->yPos + 1) * 8 + proc->cur_index * 16,
+                (cmd = proc->cmds[proc->cur_index])->msg_rtext);
         }
     }
 }
 
-void PrepMenu_ShowFrozenHand(struct ProcPrepMenu *proc)
+void PrepMenu_ShowFrozenHand(struct ProcPrepMenu * proc)
 {
-    DisplayFrozenUiHand((proc->xPos + 1) * 8 + 4,
-                        (proc->yPos + 1) * 8 + proc->cur_index * 16);
+    DisplayFrozenUiHand((proc->xPos + 1) * 8 + 4, (proc->yPos + 1) * 8 + proc->cur_index * 16);
 }
 
-void PrepMenu_ShowActiveHand(struct ProcPrepMenu *proc)
+void PrepMenu_ShowActiveHand(struct ProcPrepMenu * proc)
 {
-    ShowSysHandCursor((proc->xPos + 1) * 8 + 4,
-                             (proc->yPos + 1) * 8 + proc->cur_index * 16,
-                             6, 0x400);
+    ShowSysHandCursor((proc->xPos + 1) * 8 + 4, (proc->yPos + 1) * 8 + proc->cur_index * 16, 6, 0x400);
 }
 
-void PrepMenu_OnEnd(struct ProcPrepMenu *proc)
+void PrepMenu_OnEnd(struct ProcPrepMenu * proc)
 {
     if (proc->on_End)
         proc->on_End(proc->proc_parent);
@@ -483,46 +536,46 @@ void StartPrepScreenMenu(ProcPtr proc)
     Proc_Start(ProcScr_PrepMenu, proc);
 }
 
-void SetPrepScreenMenuOnBPress(const void* func)
+void SetPrepScreenMenuOnBPress(const void * func)
 {
-    struct ProcPrepMenu *proc;
+    struct ProcPrepMenu * proc;
     proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
+    if (proc != NULL)
         proc->on_PressB = func;
 }
 
-void SetPrepScreenMenuOnStartPress(const void* func)
+void SetPrepScreenMenuOnStartPress(const void * func)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
+    if (proc != NULL)
         proc->on_PressStart = func;
 }
 
 void SetPrepScreenMenuOnEnd(const void * func)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
+    if (proc != NULL)
         proc->on_End = func;
 }
 
-void SetPrepScreenMenuItem(int index, const void* func, int color, int msg, int msg_rtext)
+void SetPrepScreenMenuItem(int index, const void * func, int color, int msg, int msg_rtext)
 {
-    int i, max_index;
-    struct ProcPrepMenuItem* cmd;
-    struct ProcPrepMenu *proc;
+    int i;
+    struct ProcPrepMenu * proc;
     proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc) {
-        for (i = 0; i < 8; i++) {
+    if (proc != NULL)
+    {
+        for (i = 0; i < 8; i++)
+        {
             if (!proc->cmds[i])
                 continue;
 
-            if (proc->cmds[i]->index == index) {
+            if (proc->cmds[i]->index == index)
+            {
                 proc->cmds[i]->effect = func;
                 proc->cmds[i]->color = color;
                 proc->cmds[i]->msg = msg;
@@ -534,10 +587,10 @@ void SetPrepScreenMenuItem(int index, const void* func, int color, int msg, int 
         i = proc->max_index;
         proc->cmds[i] = Proc_Start(ProcScr_PrepScreenMenuDummyItem, proc);
         proc->cmds[i]->index = index;
-    	proc->cmds[i]->effect = func;
-    	proc->cmds[i]->color = color;
-    	proc->cmds[i]->msg = msg;
-    	proc->cmds[i]->msg_rtext = msg_rtext;
+        proc->cmds[i]->effect = func;
+        proc->cmds[i]->color = color;
+        proc->cmds[i]->msg = msg;
+        proc->cmds[i]->msg_rtext = msg_rtext;
         InitText(&proc->cmds[i]->text, 7);
         proc->max_index++;
     }
@@ -546,15 +599,18 @@ void SetPrepScreenMenuItem(int index, const void* func, int color, int msg, int 
 void SetPrepScreenMenuSelectedItem(int index)
 {
     int i, cur = 0;
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc) {
-        for (i = 0; i < 8; i++) {
-            if (!proc->cmds[i])
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
+
+    if (proc != NULL)
+    {
+        for (i = 0; i < 8; i++)
+        {
+            if (proc->cmds[i] == NULL)
                 continue;
 
-            if (proc->cmds[i]->index == index) {
+            if (proc->cmds[i]->index == index)
+            {
                 proc->cur_index = cur;
                 return;
             }
@@ -566,15 +622,18 @@ void SetPrepScreenMenuSelectedItem(int index)
 int GetActivePrepMenuItemIndex()
 {
     int i, cur = 0;
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc) {
-        for (i = 0; i < 8; i++) {
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
+
+    if (proc != NULL)
+    {
+        for (i = 0; i < 8; i++)
+        {
             if (!proc->cmds[i])
-                    continue;
-    
-            if (proc->cur_index == cur) {
+                continue;
+
+            if (proc->cur_index == cur)
+            {
                 return proc->cmds[i]->index;
             }
             cur++;
@@ -586,278 +645,396 @@ int GetActivePrepMenuItemIndex()
 void DrawPrepScreenMenuFrameAt(int x, int y)
 {
     int i;
-    struct ProcPrepMenu *proc;
-    struct ProcPrepMenuItem *cmd;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenuItem * cmd;
 
-    if (proc) {
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
+
+    if (proc != NULL)
+    {
         proc->xPos = x;
         proc->yPos = y;
 
-        DrawUiFrame2(x, y, 0xA, proc->max_index * 2 + 2, 0);
+        DrawUiFrame2(x, y, 10, proc->max_index * 2 + 2, 0);
 
-        if (proc->max_index > 1) {
-            for (i = 0; i < proc->max_index; i++) {
+        if (proc->max_index > 1)
+        {
+            for (i = 0; i < proc->max_index; i++)
+            {
                 cmd = proc->cmds[i];
                 ClearText(&cmd->text);
-    
+
                 PutDrawText(
-    				&cmd->text,
-    				TILEMAP_LOCATED(gBG0TilemapBuffer, x + 2, y + 2 * i + 1),
-    				1 & cmd->color,
-    				0, 0,
-    				GetStringFromIndex(cmd->msg) );
+                    &cmd->text, TILEMAP_LOCATED(gBG0TilemapBuffer, x + 2, y + 2 * i + 1), 1 & cmd->color, 0, 0,
+                    GetStringFromIndex(cmd->msg));
             }
         }
 
-        BG_EnableSyncByMask(0x3);
+        BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
     }
 }
 
 void SetPrepScreenMenuPosition(int x, int y)
 {
     int i;
-    struct ProcPrepMenu *proc;
-    struct ProcPrepMenuItem *cmd;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenuItem * cmd;
 
-    if (proc) {
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
+
+    if (proc != NULL)
+    {
         proc->xPos = x;
         proc->yPos = y;
 
-        if (proc->max_index > 1) {
-            for (i = 0; i < proc->max_index; i++) {
+        if (proc->max_index > 1)
+        {
+            for (i = 0; i < proc->max_index; i++)
+            {
                 cmd = proc->cmds[i];
                 ClearText(&cmd->text);
-    
+
                 PutDrawText(
-    				&cmd->text,
-    				TILEMAP_LOCATED(gBG0TilemapBuffer, x + 2, y + 2 * i + 1),
-    				1 & cmd->color,
-    				0, 0,
-    				GetStringFromIndex(cmd->msg) );
+                    &cmd->text, TILEMAP_LOCATED(gBG0TilemapBuffer, x + 2, y + 2 * i + 1), 1 & cmd->color, 0, 0,
+                    GetStringFromIndex(cmd->msg));
             }
         }
 
-        BG_EnableSyncByMask(0x1);
+        BG_EnableSyncByMask(BG0_SYNC_BIT);
     }
 }
 
 int GetPrepMenuItemAmt(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
+    if (proc != NULL)
         return proc->max_index;
     else
         return 0;
 }
 
-void EndPrepScreenMenu()
+void EndPrepScreenMenu(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc) {
+    if (proc != NULL)
+    {
         ResetPrepMenuScreen();
-        Proc_Goto(proc, 0xA);
+        Proc_Goto(proc, 10);
     }
 }
 
-void ResetPrepMenuScreen()
+void ResetPrepMenuScreen(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc) {
-        TileMap_FillRect(TILEMAP_LOCATED(gBG0TilemapBuffer, proc->xPos, proc->yPos),
-                         0x9, proc->max_index * 2 + 2, 0);
+    if (proc != NULL)
+    {
+        TileMap_FillRect(TILEMAP_LOCATED(gBG0TilemapBuffer, proc->xPos, proc->yPos), 9, proc->max_index * 2 + 2, 0);
 
-        TileMap_FillRect(TILEMAP_LOCATED(gBG1TilemapBuffer, proc->xPos, proc->yPos),
-                         0x9, proc->max_index * 2 + 2, 0);
+        TileMap_FillRect(TILEMAP_LOCATED(gBG1TilemapBuffer, proc->xPos, proc->yPos), 9, proc->max_index * 2 + 2, 0);
 
-        BG_EnableSyncByMask(0x3);
+        BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
     }
 }
 
-int PrepScreenMenuExists()
+int PrepScreenMenuExists(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
-        return 1;
+    if (proc != NULL)
+        return true;
     else
-        return 0;
+        return false;
 }
 
-void ShowPrepScreenMenuFrozenHand()
+void ShowPrepScreenMenuFrozenHand(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
-        Proc_Goto(proc, 0x2);
+    if (proc != NULL)
+        Proc_Goto(proc, 2);
 }
 
-void ShowPrepScreenMenuActiveHand()
+void ShowPrepScreenMenuActiveHand(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
-        Proc_Goto(proc, 0x0);
+    if (proc != NULL)
+        Proc_Goto(proc, 0);
 }
 
-void EnablePrepScreenMenu()
+void EnablePrepScreenMenu(void)
 {
-    struct ProcPrepMenu *proc;
-    proc = Proc_Find(ProcScr_PrepMenu);
+    struct ProcPrepMenu * proc = Proc_Find(ProcScr_PrepMenu);
 
-    if (proc)
-        Proc_Goto(proc, 0x1);
+    if (proc != NULL)
+        Proc_Goto(proc, 1);
 }
-
-
 
 /* section.data */
-CONST_DATA struct ProcCmd ProcScr_PrepPromoteDebug[] = {
+
+// clang-format off
+
+CONST_DATA struct ProcCmd ProcScr_PrepPromoteDebug[] =
+{
     PROC_WHILE(MusicProc4Exists),
     PROC_CALL(DoPromoteAnimForChar100),
     PROC_REPEAT(IsGameLockLevelReserved),
-    PROC_SLEEP(0x8),
+    PROC_SLEEP(8),
     PROC_CALL(NullExpForChar100AndResetScreen),
-    PROC_SLEEP(0x1E),
+    PROC_SLEEP(30),
     PROC_WHILE(MusicProc4Exists),
     PROC_END
 };
 
-CONST_DATA struct ProcCmd ProcScr_PrepTraineePromo[] = {
+CONST_DATA struct ProcCmd ProcScr_PrepTraineePromo[] =
+{
     PROC_CALL(AtMenu_LockGame),
     PROC_CALL(StartTraineePromoScreen),
     PROC_YIELD,
 
-PROC_LABEL(0xC8),
+PROC_LABEL(200),
     PROC_CALL(TraineePromo_ResetScreenEffect),
     PROC_CALL(AtMenu_UnlockGame),
     PROC_END
 };
 
-/* UNK */
-CONST_DATA u16 gUnknown_08A1852C[] = {
-    0x0001, 0x4000, 0x8000, 0x7780,
-    0x0002, 0x4000, 0x8000, 0x77C0,
-    0x4000, 0x8020,
-
-    0x77C4, 0x0002, 0x4000, 0x6000,
-    0x6798, 0x4000, 0xA020, 0x679C,
-    0x0002, 0x4000,
-
-    0x5020, 0x6798, 0x4000, 0x9000,
-    0x679C, 0x0001, 0x4000, 0x8000,
-    0x6798, 0x0001,
-
-    0x4000, 0x8000, 0x679C
+CONST_DATA u16 gPrepMenuproc_0[] =
+{
+    1,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x380) + OAM2_LAYER(1) + OAM2_PAL(7),
 };
 
-CONST_DATA u16 obj_8A1856E[] = {
-    0x0003, 0x4000, 0x8000, 0x0412,
-    0x4000, 0x8020, 0x0416, 0x0000,
-    0x4040, 0x041A,
+CONST_DATA u16 gPrepMenuproc_1[] =
+{
+    2,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x3C0) + OAM2_LAYER(1) + OAM2_PAL(7),
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16 + OAM1_X(+32), OAM2_CHR(0x3C4) + OAM2_LAYER(1) + OAM2_PAL(7),
 };
 
-CONST_DATA u16 obj_8A18582[] = {
-    0x0002, 0x4000, 0x8000, 0x0400,
-    0x0000, 0x4020, 0x0404
+CONST_DATA u16 gPrepMenuproc_2[] =
+{
+    2,
+    OAM0_SHAPE_32x8, OAM1_SIZE_32x8 + OAM1_VFLIP, OAM2_CHR(0x398) + OAM2_LAYER(1) + OAM2_PAL(6),
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16 + OAM1_X(+32) + OAM1_VFLIP, OAM2_CHR(0x39C) + OAM2_LAYER(1) + OAM2_PAL(6),
 };
 
-CONST_DATA u16 obj_8A18590[] = {
-    0x0002, 0x4000, 0x8000, 0x0440,
-    0x0000, 0x4020, 0x0444
+CONST_DATA u16 gPrepMenuproc_3[] =
+{
+    2,
+    OAM0_SHAPE_32x8, OAM1_SIZE_32x8 + OAM1_X(+32) + OAM1_HFLIP, OAM2_CHR(0x398) + OAM2_LAYER(1) + OAM2_PAL(6),
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16 + OAM1_HFLIP, OAM2_CHR(0x39C) + OAM2_LAYER(1) + OAM2_PAL(6),
 };
 
-CONST_DATA u16 obj_8A1859E[] = {
-    0x0002, 0x4000, 0x8000, 0x0446,
-    0x8000, 0x0020, 0x044A
+CONST_DATA u16 gPrepMenuproc_4[] =
+{
+    1,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x398) + OAM2_LAYER(1) + OAM2_PAL(6),
 };
 
-CONST_DATA u16 obj_8A185AC[] = {
-    0x0002, 0x4000, 0x8000, 0x044B,
-    0x4000, 0x8020, 0x044F
+CONST_DATA u16 gPrepMenuproc_5[] =
+{
+    1,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x39C) + OAM2_LAYER(1) + OAM2_PAL(6),
 };
 
-static CONST_DATA u16 objs_8A18614_1[] = {0x0001, 0x8000, 0x0000, 0x0406};
-static CONST_DATA u16 objs_8A18614_2[] = {0x0001, 0x8000, 0x0000, 0x0407};
-static CONST_DATA u16 objs_8A18614_3[] = {0x0001, 0x8000, 0x0000, 0x0408};
-static CONST_DATA u16 objs_8A18614_4[] = {0x0001, 0x8000, 0x0000, 0x0409};
-static CONST_DATA u16 objs_8A18614_5[] = {0x0001, 0x8000, 0x0000, 0x040A};
-static CONST_DATA u16 objs_8A18614_6[] = {0x0001, 0x8000, 0x0000, 0x040B};
-static CONST_DATA u16 objs_8A18614_7[] = {0x0001, 0x8000, 0x0000, 0x040C};
-static CONST_DATA u16 objs_8A18614_8[] = {0x0001, 0x8000, 0x0000, 0x040D};
-static CONST_DATA u16 objs_8A18614_9[] = {0x0001, 0x8000, 0x0000, 0x040E};
-static CONST_DATA u16 objs_8A18614_A[] = {0x0001, 0x8000, 0x0000, 0x040F};
-static CONST_DATA u16 objs_8A18614_B[] = {0x0001, 0x8000, 0x0000, 0x0410};
-
-CONST_DATA u16 *objs_8A18614[] = {
-    objs_8A18614_1,
-    objs_8A18614_2,
-    objs_8A18614_3,
-    objs_8A18614_4,
-    objs_8A18614_5,
-    objs_8A18614_6,
-    objs_8A18614_7,
-    objs_8A18614_8,
-    objs_8A18614_9,
-    objs_8A18614_A,
-    objs_8A18614_B,
-    objs_8A18614_1
+CONST_DATA u16 Sprite_PrepInformation[] =
+{
+    3,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x12) + OAM2_LAYER(1),
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16 + OAM1_X(+32), OAM2_CHR(0x16) + OAM2_LAYER(1),
+    OAM0_SHAPE_16x16, OAM1_SIZE_16x16 + OAM1_X(+64), OAM2_CHR(0x1A) + OAM2_LAYER(1),
 };
 
-static CONST_DATA u16 obj_8A18644[] = {
-    0x0001, 0x0400, 0x8000, 0x0C80
+CONST_DATA u16 Sprite_PrepChapter[] =
+{
+    2,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_LAYER(1),
+    OAM0_SHAPE_16x16, OAM1_SIZE_16x16 + OAM1_X(+32), OAM2_CHR(0x4) + OAM2_LAYER(1),
 };
 
-static CONST_DATA u16 objs_8A1864C_1[] = {0x0003, 0x4400, 0x8020, 0x0C94, 0x4400, 0x8048, 0x0C98, 0x0400, 0x4068, 0x0C9C};
-static CONST_DATA u16 objs_8A1864C_2[] = {0x0004, 0x4400, 0x8008, 0x0C94, 0x4400, 0x8030, 0x0CC4, 0x4400, 0x8050, 0x0CC8, 0x0400, 0x4070, 0x0CCC};
-static CONST_DATA u16 objs_8A1864C_3[] = {0x0004, 0x4400, 0x8000, 0x0C84, 0x4400, 0x8020, 0x0C88, 0x4400, 0x8040, 0x0C8C, 0x4400, 0x8060, 0x0C90};
-static CONST_DATA u16 objs_8A1864C_4[] = {0x0002, 0x4400, 0x8030, 0x0C94, 0x4400, 0x8058, 0x0CCE, 0x0000};
-
-CONST_DATA u16 *objs_8A1864C[] = {
-    objs_8A1864C_1,
-    objs_8A1864C_2,
-    objs_8A1864C_3,
-    objs_8A1864C_4
+CONST_DATA u16 Sprite_PrepTower[] =
+{
+    2,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x40) + OAM2_LAYER(1),
+    OAM0_SHAPE_16x16, OAM1_SIZE_16x16 + OAM1_X(+32), OAM2_CHR(0x44) + OAM2_LAYER(1),
 };
 
-CONST_DATA struct ProcCmd ProcScr_PrepSpecialCharEff[] = {
+CONST_DATA u16 Sprite_PrepRuins[] =
+{
+    2,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x46) + OAM2_LAYER(1),
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16 + OAM1_X(+32), OAM2_CHR(0x4A) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepExMap[] =
+{
+    2,
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x4B) + OAM2_LAYER(1),
+    OAM0_SHAPE_32x16, OAM1_SIZE_32x16 + OAM1_X(+32), OAM2_CHR(0x4F) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_0[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0x6) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_1[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0x7) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_2[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0x8) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_3[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0x9) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_4[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0xA) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_5[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0xB) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_6[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0xC) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_7[] = {
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0xD) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_8[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0xE) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_9[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0xF) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 Sprite_PrepChapterNum_X[] =
+{
+    1,
+    OAM0_SHAPE_8x16, OAM1_SIZE_8x16, OAM2_CHR(0x10) + OAM2_LAYER(1),
+};
+
+CONST_DATA u16 * SpriteArray_PrepChapterNumbers[] =
+{
+    Sprite_PrepChapterNum_0,
+    Sprite_PrepChapterNum_1,
+    Sprite_PrepChapterNum_2,
+    Sprite_PrepChapterNum_3,
+    Sprite_PrepChapterNum_4,
+    Sprite_PrepChapterNum_5,
+    Sprite_PrepChapterNum_6,
+    Sprite_PrepChapterNum_7,
+    Sprite_PrepChapterNum_8,
+    Sprite_PrepChapterNum_9,
+    Sprite_PrepChapterNum_X,
+    Sprite_PrepChapterNum_0
+};
+
+CONST_DATA u16 Sprite_Unused_0[] =
+{
+    1,
+    OAM0_SHAPE_32x32 + OAM0_BLEND, OAM1_SIZE_32x32, OAM2_CHR(0x80) + OAM2_LAYER(3),
+};
+
+CONST_DATA u16 objs_PrepMenuproc_1[] =
+{
+    3,
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+32), OAM2_CHR(0x94) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+72), OAM2_CHR(0x98) + OAM2_LAYER(3),
+    OAM0_SHAPE_16x16 + OAM0_BLEND, OAM1_SIZE_16x16 + OAM1_X(+104), OAM2_CHR(0x9C) + OAM2_LAYER(3),
+};
+
+CONST_DATA u16 objs_PrepMenuproc_2[] =
+{
+    4,
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+8), OAM2_CHR(0x94) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+48), OAM2_CHR(0xC4) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+80), OAM2_CHR(0xC8) + OAM2_LAYER(3),
+    OAM0_SHAPE_16x16 + OAM0_BLEND, OAM1_SIZE_16x16 + OAM1_X(+112), OAM2_CHR(0xCC) + OAM2_LAYER(3),
+};
+
+CONST_DATA u16 objs_PrepMenuproc_3[] =
+{
+    4,
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16, OAM2_CHR(0x84) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+32), OAM2_CHR(0x88) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+64), OAM2_CHR(0x8C) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+96), OAM2_CHR(0x90) + OAM2_LAYER(3),
+};
+
+CONST_DATA u16 objs_PrepMenuproc_4[] =
+{
+    2,
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+48), OAM2_CHR(0x94) + OAM2_LAYER(3),
+    OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16 + OAM1_X(+88), OAM2_CHR(0xCE) + OAM2_LAYER(3),
+};
+
+CONST_DATA u16 * objs_0[] =
+{
+    objs_PrepMenuproc_1,
+    objs_PrepMenuproc_2,
+    objs_PrepMenuproc_3,
+    objs_PrepMenuproc_4
+};
+
+CONST_DATA struct ProcCmd ProcScr_PrepScreenSpriteDraw[] =
+{
     PROC_YIELD,
-    PROC_CALL(ProcPrepSpChar_OnInit),
-    PROC_SET_END_CB(ProcPrepSpChar_OnEnd),
-    PROC_REPEAT(ProcPrepSpChar_Idle),
+    PROC_CALL(PrepSpriteDraw_Init),
+    PROC_SET_END_CB(PrepSpriteDraw_OnEnd),
+    PROC_REPEAT(PrepSpriteDraw_Loop),
     PROC_END
 };
 
-CONST_DATA struct ProcCmd ProcScr_PrepScreenMenuDummyItem[] = {
+CONST_DATA struct ProcCmd ProcScr_PrepScreenMenuDummyItem[] =
+{
     PROC_BLOCK,
     PROC_END
 };
 
-CONST_DATA struct ProcCmd ProcScr_PrepMenu[] = {
+CONST_DATA struct ProcCmd ProcScr_PrepMenu[] =
+{
     PROC_CALL(PrepMenu_OnInit),
     PROC_SET_END_CB(PrepMenu_OnEnd),
     PROC_YIELD,
 
-PROC_LABEL(0x0),
+PROC_LABEL(0),
     PROC_REPEAT(PrepMenu_ShowActiveHand),
 
 
-PROC_LABEL(0x1),
+PROC_LABEL(1),
     PROC_REPEAT(PrepMenu_CtrlLoop),
 
-PROC_LABEL(0x2),
+PROC_LABEL(2),
     PROC_REPEAT(PrepMenu_ShowFrozenHand),
 
-PROC_LABEL(0xA),
+PROC_LABEL(10),
     PROC_END
 };
+
+// clang-format on

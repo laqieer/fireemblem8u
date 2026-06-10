@@ -22,11 +22,21 @@
 
 #include "constants/characters.h"
 #include "constants/items.h"
+#include "constants/songs.h"
+
+EWRAM_OVERLAY(0) struct BonusClaimEnt gBonusClaimData[50] = {};
+EWRAM_OVERLAY(0) u8 bonusclaim_maybe_not_pad1[0x18] = {};
+EWRAM_OVERLAY(0) struct BonusClaimEnt gBonusClaimDataUpdated[50] = {};
+EWRAM_OVERLAY(0) u8 bonusclaim_maybe_not_pad2[0x18] = {};
+EWRAM_OVERLAY(0) struct BonusClaimItemEnt gBonusClaimItemList[0x80] = {};
+EWRAM_OVERLAY(0) struct BonusClaimConfig gBonusClaimConfig[0x40] = {};
+EWRAM_OVERLAY(0) int gBonusClaimItemCounts[0x40] = {};
+EWRAM_OVERLAY(0) struct Text gBonusClaimText[0x121] = {}; // maybe lower
 
 struct BonusClaimEnt * CONST_DATA gpBonusClaimData = gBonusClaimData;
 struct BonusClaimEnt * CONST_DATA gpBonusClaimDataUpdated = gBonusClaimDataUpdated;
 struct BonusClaimItemEnt * CONST_DATA gpBonusClaimItemList = gBonusClaimItemList;
-int* CONST_DATA gpBonusClaimItemCount = &gBonusClaimItemCount;
+int* CONST_DATA gpBonusClaimItemCount = gBonusClaimItemCounts;
 struct Text * CONST_DATA gpBonusClaimText = gBonusClaimText;
 struct BonusClaimConfig * CONST_DATA gpBonusClaimConfig = gBonusClaimConfig;
 
@@ -34,13 +44,13 @@ int LoadBonusContentData(void*);
 
 //! FE8U = 0x080B0638
 void PutChapterBannerSprites(void) {
-    PutSpriteExt(4, 24, 8, *SpriteArray_08A209F0, 0x8000);
-    PutSpriteExt(4, 24, 16, *SpriteArray_08A209E4, 0x9000);
+    PutSpriteExt(4, 24, 8, *SpriteArray_SavemenuData_3, 0x8000);
+    PutSpriteExt(4, 24, 16, *SpriteArray_SavemenuData_2, 0x9000);
     return;
 }
 
 //! FE8U = 0x080B0674
-void sub_80B0674(void)
+void BonusClaim_DrawChapterTitle(void)
 {
     u32 flags = (-(gPlaySt.chapterStateBits & 0x40) >> 0x1f) & 4;
 
@@ -63,8 +73,8 @@ void sub_80B0674(void)
             flags |= 0x20;
     }
 
-    sub_80895B4(flags | 1, 0x18);
-    sub_80895B4(flags, 0x19);
+    ApplyChapterTitlePal(flags | 1, 0x18);
+    ApplyChapterTitlePal(flags, 0x19);
 
     EnablePaletteSync();
 
@@ -75,7 +85,7 @@ void sub_80B0674(void)
 }
 
 //! FE8U = 0x080B06FC
-void sub_80B06FC(void) {
+void BonusClaim_HBlankHandler(void) {
 
     u16 vcount = REG_VCOUNT + 1;
 
@@ -307,7 +317,7 @@ void SetupBonusClaimTargets(struct BonusClaimProc * proc)
 }
 
 //! FE8U = 0x080B0ABC
-void sub_80B0ABC(void) {
+void BonusClaim_DrawMainWindowFrame(void) {
     DrawUiFrame2(3, 6, 24, 12, 0);
     BG_EnableSyncByMask(3);
     return;
@@ -321,7 +331,7 @@ void BonusClaim_Init(struct BonusClaimProc * proc)
     SetupBackgrounds(0);
 
     ApplyPalettes(Pal_CommGameBgScreenInShop, 0xC, 2);
-    ApplyPalette(Pal_08A295B4, 0xE);
+    ApplyPalette(Pal_MenuMainObjs_0, 0xE);
     Decompress(Img_CommGameBgScreen, (void*)0x06008000);
 
     CallARM_FillTileRect(gBG3TilemapBuffer, Tsa_CommGameBgScreenInShop, 0xc000);
@@ -334,8 +344,8 @@ void BonusClaim_Init(struct BonusClaimProc * proc)
     LoadIconPalettes(4);
     LoadObjUIGfx();
 
-    sub_80B0674();
-    sub_80B0ABC();
+    BonusClaim_DrawChapterTitle();
+    BonusClaim_DrawMainWindowFrame();
 
     gLCDControlBuffer.dispcnt.win0_on = 0;
     gLCDControlBuffer.dispcnt.win1_on = 1;
@@ -383,7 +393,7 @@ void BonusClaim_Init(struct BonusClaimProc * proc)
 
     BG_EnableSyncByMask(2);
 
-    SetPrimaryHBlankHandler(sub_80B06FC);
+    SetPrimaryHBlankHandler(BonusClaim_HBlankHandler);
 
     proc->menuIndex = 0;
     proc->unk_2c = 0;
@@ -443,19 +453,19 @@ void BonusClaim_Loop_MainKeyHandler(struct BonusClaimProc * proc)
                     case BONUSKIND_ITEM0:
                     case BONUSKIND_ITEM1:
                         Proc_Goto(proc, 1);
-                        PlaySoundEffect(0x6a);
+                        PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 
                     default:
                         return;
 
                     case BONUSKIND_MONEY:
                         if (ent2->itemId == ITEM_3000G) {
-                            sub_8024E20(3000);
+                            AddPartyGoldAmount(3000);
                         }
 
                         ent = &gpBonusClaimData[itemIdx];
                         if (ent->itemId == ITEM_5000G) {
-                            sub_8024E20(5000);
+                            AddPartyGoldAmount(5000);
                         }
 
                         SetBonusItemClaimed(proc->menuIndex);
@@ -467,14 +477,14 @@ void BonusClaim_Loop_MainKeyHandler(struct BonusClaimProc * proc)
                 }
             }
 
-            PlaySoundEffect(0x6c);
+            PlaySoundEffect(SONG_6C);
 
             return;
         }
 
         if (gKeyStatusPtr->newKeys & B_BUTTON) {
             Proc_Break(proc);
-            PlaySoundEffect(0x6b);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
             return;
         }
 
@@ -493,7 +503,7 @@ void BonusClaim_Loop_MainKeyHandler(struct BonusClaimProc * proc)
                     return;
                 }
 
-                PlaySoundEffect(0x66);
+                PlaySoundEffect(SONG_SE_SYS_CURSOR_UD1);
 
                 proc->menuIndex = curIdx;
 
@@ -556,7 +566,7 @@ void BonusClaim_DrawTargetUnitSprites(struct BonusClaimProc * proc)
 }
 
 //! FE8U = 0x080B1008
-void sub_80B1008(struct BonusClaimProc * proc)
+void BonusClaim_EndTargetSpriteWorker(struct BonusClaimProc * proc)
 {
 
     if (proc->unk_34 != NULL) {
@@ -686,7 +696,7 @@ void BonusClaim_Loop_SelectTargetKeyHandler(struct BonusClaimProc * proc)
 
     if (gKeyStatusPtr->newKeys & B_BUTTON) {
         Proc_Break(proc);
-        PlaySoundEffect(0x6b);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
         return;
     }
 
@@ -699,7 +709,7 @@ void BonusClaim_Loop_SelectTargetKeyHandler(struct BonusClaimProc * proc)
     }
 
     if (((tmp != proc->submenuIndex) && (-1 < tmp)) && (tmp < proc->targets)) {
-        PlaySoundEffect(0x66);
+        PlaySoundEffect(SONG_SE_SYS_CURSOR_UD1);
         proc->submenuIndex = tmp;
         ShowSysHandCursor(92, proc->submenuIndex * 16 + 48, 12, 0x800);
     }
@@ -709,7 +719,7 @@ void BonusClaim_Loop_SelectTargetKeyHandler(struct BonusClaimProc * proc)
 
 //! FE8U = 0x080B1350
 void BonusClaim_EndSelectTargetSubMenu(struct BonusClaimProc * proc){
-    sub_80B1008(proc);
+    BonusClaim_EndTargetSpriteWorker(proc);
 
     gLCDControlBuffer.dispcnt.win0_on = 0;
     gLCDControlBuffer.dispcnt.win1_on = 1;
@@ -718,11 +728,11 @@ void BonusClaim_EndSelectTargetSubMenu(struct BonusClaimProc * proc){
     BG_Fill(gBG1TilemapBuffer, 0);
     BG_Fill(gBG0TilemapBuffer, 0);
 
-    sub_80B0ABC();
+    BonusClaim_DrawMainWindowFrame();
 
     BG_EnableSyncByMask(3);
 
-    sub_80ACA84(0);
+    ClearUiCursorHandConfig(0);
 
     ShowSysHandCursor(40, proc->menuIndex * 16 + 56 - proc->unk_2c, 19, 0x800);
 
@@ -757,16 +767,16 @@ void BonusClaim_DrawItemSentPopup(struct BonusClaimProc * proc)
     BG_Fill(gBG0TilemapBuffer, 0);
     BG_Fill(gBG1TilemapBuffer, 0);
 
-    sub_80B0ABC();
+    BonusClaim_DrawMainWindowFrame();
 
     BG_EnableSyncByMask(3);
 
-    sub_80B1008(proc);
+    BonusClaim_EndTargetSpriteWorker(proc);
 
     WriteGameSave(ReadLastGameSaveId());
 
     proc->timer = 0;
-    sub_80ACA84(0);
+    ClearUiCursorHandConfig(0);
 
     ShowSysHandCursor(40, proc->menuIndex * 16 + 56 - proc->unk_2c, 19, 0x800);
 
@@ -792,10 +802,10 @@ void BonusClaim_DrawItemSentPopup(struct BonusClaimProc * proc)
     switch (ent2->kind) {
         case BONUSKIND_ITEM0:
         case BONUSKIND_ITEM1:
-            PlaySoundEffect(0x5a);
+            PlaySoundEffect(SONG_5A);
             break;
         case BONUSKIND_MONEY:
-            PlaySoundEffect(0xb9);
+            PlaySoundEffect(SONG_SE_MONEY);
             break;
     }
 
@@ -843,7 +853,7 @@ void BonusClaim_ClearItemSentPopup(void)
 {
     BG_Fill(gBG0TilemapBuffer, 0);
     BG_Fill(gBG1TilemapBuffer, 0);
-    sub_80B0ABC();
+    BonusClaim_DrawMainWindowFrame();
     BG_EnableSyncByMask(3);
     gLCDControlBuffer.dispcnt.win0_on = 0;
     gLCDControlBuffer.dispcnt.win1_on = 1;

@@ -14,8 +14,8 @@
 void CopyBgImage(u8 bg1, u8 bg2, u8 c)
 {
     CpuFastCopy(
-        (void *)(0x6000000 + GetBackgroundTileDataOffset(bg1)),
-        (void *)(0x6000000 + GetBackgroundTileDataOffset(bg2)), c * 0x800);
+        (void *)(VRAM + GetBackgroundTileDataOffset(bg1)),
+        (void *)(VRAM + GetBackgroundTileDataOffset(bg2)), c * 0x800);
 }
 
 //! FE8U = 0x0800B954
@@ -61,7 +61,7 @@ void BgChangeChr(u8 bg, u8 chr_chg)
 }
 
 //! FE8U = 0x0800BA04
-void sub_800BA04(u8 a, u8 b)
+void BackupPalette(u8 a, u8 b)
 {
     u16 * palPtr = gPaletteBuffer + a * 0x10;
 
@@ -73,7 +73,7 @@ void sub_800BA04(u8 a, u8 b)
 }
 
 //! FE8U = 0x0800BA34
-void sub_800BA34(void)
+void RestorePalette(void)
 {
     u16 * ptr = (void *)gLoadUnitBuffer;
 
@@ -252,23 +252,26 @@ struct Unit * GetUnitStructFromEventParameter(s16 pid)
         break;
 
     case CHAR_EVT_POSITION_AT_SLOTB:
+    {
+        struct Unit * ptr;
+
         if (gBmMapUnit[((u16 *)(gEventSlots + 0xB))[1]][((u16 *)(gEventSlots + 0xB))[0]] != 0)
         {
-            return GetUnit(gBmMapUnit[((u16 *)(gEventSlots + 0xB))[1]][((u16 *)(gEventSlots + 0xB))[0]]);
+            ptr = GetUnit(gBmMapUnit[((u16 *)(gEventSlots + 0xB))[1]][((u16 *)(gEventSlots + 0xB))[0]]);
         }
         else
         {
-            #ifndef NONMATCHING
-            asm(""); // :/
-            #endif
-            return NULL;
+            ptr = NULL;
         }
+
+        return ptr;
+    }
 
     case CHAR_EVT_ACTIVE_UNIT:
         return gActiveUnit;
 
     case CHAR_EVT_PLAYER_LEADER:
-        pid = GetPlayerLeaderUnitId();
+        pid = GetPlayerLeaderPid();
         break;
     }
 

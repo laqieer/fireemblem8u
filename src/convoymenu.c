@@ -19,6 +19,8 @@
 #include "menuitempanel.h"
 #include "prepscreen.h"
 
+EWRAM_OVERLAY(0) u8 gConvoyItemCount = 0;
+
 struct ProcCmd CONST_DATA gProcCmd_ConvoyMenu[] = {
     PROC_CALL_2(ConvoyMenuProc_StarMenu),
     PROC_CALL_2(ConvoyMenuProc_MenuEnd),
@@ -150,7 +152,7 @@ u8 SendToConvoyMenu_Selected(struct MenuProc* proc_menu, struct MenuItemProc* pr
     gActionData.unk08 = proc_cmd->itemNumber;
     LoadHelpBoxGfx(NULL, -1);
     /* maybe draw hand? */
-    sub_808AA04(0x8, proc_cmd->itemNumber * 0x10 + 0x20, 0x84B, proc_menu);
+    StartBoxDialogue(0x8, proc_cmd->itemNumber * 0x10 + 0x20, 0x84B, proc_menu);
     return 0;
 }
 
@@ -160,7 +162,7 @@ u8 SendToConvoyMenu_Selected2(struct MenuProc* proc_menu, struct MenuItemProc* p
     gActionData.unk08 = UNIT_ITEM_COUNT;
     LoadHelpBoxGfx(NULL, -1);
     /* maybe draw hand? */
-    sub_808AA04(0x8, proc_cmd->itemNumber * 0x10 + 0x20, 0x84B, proc_menu);
+    StartBoxDialogue(0x8, proc_cmd->itemNumber * 0x10 + 0x20, 0x84B, proc_menu);
     return 0;
 }
 

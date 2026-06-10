@@ -1,10 +1,5 @@
 #include "global.h"
 
-#include "constants/items.h"
-#include "constants/classes.h"
-#include "constants/characters.h"
-#include "constants/terrains.h"
-
 #include "rng.h"
 #include "bmitem.h"
 #include "bmunit.h"
@@ -25,6 +20,13 @@
 #include "bmbattle.h"
 #include "mapanim.h"
 #include "worldmap.h"
+
+#include "constants/songs.h"
+#include "constants/items.h"
+#include "constants/classes.h"
+#include "constants/characters.h"
+#include "constants/terrains.h"
+#include "constants/chapters.h"
 
 struct WeaponTriangleRule {
     s8 attackerWeaponType;
@@ -73,7 +75,7 @@ static EWRAM_DATA struct {
     u8 unk00;
     u8 unk01;
     u8 unk02;
-} sUnknown_0203A60C = {};
+} sBmbattle_0 = {};
 
 void BattleGenerateSimulationInternal(struct Unit* actor, struct Unit* target, int x, int y, int actorWpnSlot) {
     InitBattleUnit(&gBattleActor, actor);
@@ -469,7 +471,7 @@ void SetBattleUnitWeaponBallista(struct BattleUnit* bu) {
     bu->canCounter = FALSE;
 }
 
-void sub_802A958(void) {} // unused
+void Battle_Nop(void) {} // unused
 
 void ComputeBattleUnitStats(struct BattleUnit* attacker, struct BattleUnit* defender) {
     ComputeBattleUnitDefense(attacker, defender);
@@ -976,10 +978,10 @@ s8 BattleCheckSilencer(struct BattleUnit* attacker, struct BattleUnit* defender)
         return FALSE;
 
     case CLASS_NECROMANCER:
-        if (gPlaySt.chapterIndex == 0x15) // TODO: CHAPTER ID CONSTANTS
+        if (gPlaySt.chapterIndex == CHAPTER_E_21)
             return FALSE;
 
-        if (gPlaySt.chapterIndex == 0x22) // TODO: CHAPTER ID CONSTANTS
+        if (gPlaySt.chapterIndex == CHAPTER_I_21)
             return FALSE;
 
     } // switch (defender->unit.pClassData->number)
@@ -1540,7 +1542,7 @@ void BattleApplyUnitUpdates(void) {
 }
 
 // unused?
-s8 sub_802C0B0(void) {
+s8 Battle_CondTrue(void) {
     return TRUE;
 }
 
@@ -1621,7 +1623,7 @@ void UpdateUnitFromBattle(struct Unit* unit, struct BattleUnit* bu) {
     unit->curHP = bu->unit.curHP;
     unit->state = bu->unit.state;
 
-    gUnknown_03003060 = UNIT_ARENA_LEVEL(unit);
+    gUnk_63 = UNIT_ARENA_LEVEL(unit);
 
     if (bu->statusOut >= 0)
         SetUnitStatus(unit, bu->statusOut);
@@ -1669,10 +1671,10 @@ void BattleApplyBallistaUpdates(void) {
 }
 
 // ???
-void sub_802C334(void) {
-    sUnknown_0203A60C.unk00 = 0;
-    sUnknown_0203A60C.unk01 = 0;
-    sUnknown_0203A60C.unk02 = 0;
+void ClearBmbattleStruct0(void) {
+    sBmbattle_0.unk00 = 0;
+    sBmbattle_0.unk01 = 0;
+    sBmbattle_0.unk02 = 0;
 }
 
 int GetUnitExpLevel(struct Unit* unit) {
@@ -1817,7 +1819,7 @@ void BattleApplyItemExpGains(void) {
             gBattleActor.unit.exp += gBattleActor.expGain;
 
             CheckBattleUnitLevelUp(&gBattleActor);
-        } else if ((gBattleActor.weaponType == ITYPE_12) && (gBattleActor.unit.exp != UNIT_EXP_DISABLED)) {
+        } else if ((gBattleActor.weaponType == ITYPE_DANCE) && (gBattleActor.unit.exp != UNIT_EXP_DISABLED)) {
             gBattleActor.expGain = 20;
             gBattleActor.unit.exp += 20;
 
@@ -1965,7 +1967,7 @@ void InitObstacleBattleUnit(void) {
 
     switch (gBmMapTerrain[gBattleTarget.unit.yPos][gBattleTarget.unit.xPos]) {
 
-    case TERRAIN_WALL_1B:
+    case TERRAIN_WALL_DAMAGED:
         gBattleTarget.unit.pCharacterData = GetCharacterData(CHARACTER_WALL);
 
         break;
@@ -1999,7 +2001,7 @@ void UpdateObstacleFromBattle(struct BattleUnit* bu) {
         int mapChangeId = GetMapChangeIdAt(bu->unit.xPos, bu->unit.yPos);
 
         if (gBmMapTerrain[bu->unit.yPos][bu->unit.xPos] == TERRAIN_SNAG)
-            PlaySoundEffect(0x2D7); // TODO: Sound id constants
+            PlaySoundEffect(SONG_2D7);
 
         RenderBmMapOnBg2();
 
@@ -2029,7 +2031,7 @@ void BeginBattleAnimations(void) {
 
     RenderBmMap();
 
-    if (sub_8055BC4()) {
+    if (EkrBattleStarting_CheckBattleAnimEnabled()) {
         SetBanimLinkArenaFlag(0);
         BeginAnimsOnBattleAnimations();
     } else {
@@ -2234,7 +2236,7 @@ void BattleGenerateArena(struct Unit* actor) {
         actor->state = (actor->state &~ (US_BIT17 | US_BIT18 | US_BIT19))
             + ((((UNIT_ARENA_LEVEL(actor) + 1) <= 7) ? (UNIT_ARENA_LEVEL(actor) + 1) << 17 : 7 << 17));
 
-        gUnknown_03003060 = UNIT_ARENA_LEVEL(actor);
+        gUnk_63 = UNIT_ARENA_LEVEL(actor);
     }
 
     BattlePrintDebugUnitInfo(&gBattleActor, &gBattleTarget);

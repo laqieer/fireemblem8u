@@ -62,13 +62,13 @@ void efxMaohFlash_Loop_Main(struct ProcEfx * proc)
 
         case 177:
         {
-            sub_8066914(anim);
+            StartSubSpell_efxMaohFlashBG3(anim);
             break;
         }
 
         case 255:
         {
-            sub_8066C98();
+            efxMaohFlash_RegisterSpritesGfx();
             StartSubSpell_efxMaohFlashEyeROBJ2(anim, 10, 173, 44);
             StartSubSpell_efxMaohFlashEyeLOBJ2(anim, 10, 159, 48);
             break;
@@ -133,218 +133,218 @@ struct ProcCmd CONST_DATA ProcScr_efxMaohFlashBG1[] =
 
 u16 * CONST_DATA TsaArray_DemonLightBg1_Close[] =
 {
-    Tsa_087B2430,
-    Tsa_087B26A4,
-    Tsa_087B291C,
-    Tsa_087B2B90,
-    Tsa_087B2E04,
-    Tsa_087B307C,
-    Tsa_087B32F0,
-    Tsa_087B3568,
-    Tsa_087B37DC,
-    Tsa_087B3A54,
-    Tsa_087B3CC8,
-    Tsa_087B3F40,
-    Tsa_087B41B4,
-    Tsa_087B4428,
-    Tsa_087B46A0,
-    Tsa_087B4914,
-    Tsa_087C2F34,
-    Tsa_087C31A4,
-    Tsa_087C341C,
-    Tsa_087C3694,
-    Tsa_087C38F0,
-    Tsa_087C3B38,
-    Tsa_087C3D74,
-    Tsa_087C3FA8,
-    Tsa_087C41E0,
-    Tsa_087C4420,
-    Tsa_087C4660,
-    Tsa_087C48AC,
-    Tsa_087C4AF0,
-    Tsa_087C4CA0,
-    Tsa_087C4E64,
-    Tsa_087C5034,
+    Tsa_DemonLightBg_Close_1,
+    Tsa_DemonLightBg_Close_2,
+    Tsa_DemonLightBg_Close_3,
+    Tsa_DemonLightBg_Close_4,
+    Tsa_DemonLightBg_Close_5,
+    Tsa_DemonLightBg_Close_6,
+    Tsa_DemonLightBg_Close_7,
+    Tsa_DemonLightBg_Close_8,
+    Tsa_DemonLightBg_Close_9,
+    Tsa_DemonLightBg_Close_10,
+    Tsa_DemonLightBg_Close_11,
+    Tsa_DemonLightBg_Close_12,
+    Tsa_DemonLightBg_Close_13,
+    Tsa_DemonLightBg_Close_14,
+    Tsa_DemonLightBg_Close_15,
+    Tsa_DemonLightBg_Close_16,
+    Tsa_DemonLightBg_Close_17,
+    Tsa_DemonLightBg_Close_18,
+    Tsa_DemonLightBg_Close_19,
+    Tsa_DemonLightBg_Close_20,
+    Tsa_DemonLightBg_Close_21,
+    Tsa_DemonLightBg_Close_22,
+    Tsa_DemonLightBg_Close_23,
+    Tsa_DemonLightBg_Close_24,
+    Tsa_DemonLightBg_Close_25,
+    Tsa_DemonLightBg_Close_26,
+    Tsa_DemonLightBg_Close_27,
+    Tsa_DemonLightBg_Close_28,
+    Tsa_DemonLightBg_Close_29,
+    Tsa_DemonLightBg_Close_30,
+    Tsa_DemonLightBg_Close_31,
+    Tsa_DemonLightBg_Close_32,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg1_Close[] =
 {
-    Img_087A73F4,
-    Img_087A7F38,
-    Img_087A8A74,
-    Img_087A9598,
-    Img_087AA02C,
-    Img_087AAAA8,
-    Img_087AB558,
-    Img_087ABFF0,
-    Img_087ACAC8,
-    Img_087AD54C,
-    Img_087ADFEC,
-    Img_087AEA74,
-    Img_087AF518,
-    Img_087B0070,
-    Img_087B0C00,
-    Img_087B1728,
-    Img_087B4B88,
-    Img_087B5678,
-    Img_087B6198,
-    Img_087B6D54,
-    Img_087B7AEC,
-    Img_087B8968,
-    Img_087B98FC,
-    Img_087BA910,
-    Img_087BBAA4,
-    Img_087BCCD8,
-    Img_087BDF0C,
-    Img_087BF05C,
-    Img_087BFEF4,
-    Img_087C0A18,
-    Img_087C15E4,
-    Img_087C2308,
+    Img_DemonLightBg_Close_1,
+    Img_DemonLightBg_Close_2,
+    Img_DemonLightBg_Close_3,
+    Img_DemonLightBg_Close_4,
+    Img_DemonLightBg_Close_5,
+    Img_DemonLightBg_Close_6,
+    Img_DemonLightBg_Close_7,
+    Img_DemonLightBg_Close_8,
+    Img_DemonLightBg_Close_9,
+    Img_DemonLightBg_Close_10,
+    Img_DemonLightBg_Close_11,
+    Img_DemonLightBg_Close_12,
+    Img_DemonLightBg_Close_13,
+    Img_DemonLightBg_Close_14,
+    Img_DemonLightBg_Close_15,
+    Img_DemonLightBg_Close_16,
+    Img_DemonLightBg_Close_17,
+    Img_DemonLightBg_Close_18,
+    Img_DemonLightBg_Close_19,
+    Img_DemonLightBg_Close_20,
+    Img_DemonLightBg_Close_21,
+    Img_DemonLightBg_Close_22,
+    Img_DemonLightBg_Close_23,
+    Img_DemonLightBg_Close_24,
+    Img_DemonLightBg_Close_25,
+    Img_DemonLightBg_Close_26,
+    Img_DemonLightBg_Close_27,
+    Img_DemonLightBg_Close_28,
+    Img_DemonLightBg_Close_29,
+    Img_DemonLightBg_Close_30,
+    Img_DemonLightBg_Close_31,
+    Img_DemonLightBg_Close_32,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg1_Close[] =
 {
-    Pal_087B2230,
-    Pal_087B2250,
-    Pal_087B2270,
-    Pal_087B2290,
-    Pal_087B22B0,
-    Pal_087B22D0,
-    Pal_087B22F0,
-    Pal_087B2310,
-    Pal_087B2330,
-    Pal_087B2350,
-    Pal_087B2370,
-    Pal_087B2390,
-    Pal_087B23B0,
-    Pal_087B23D0,
-    Pal_087B23F0,
-    Pal_087B2410,
-    Pal_087C2D34,
-    Pal_087C2D54,
-    Pal_087C2D74,
-    Pal_087C2D94,
-    Pal_087C2DB4,
-    Pal_087C2DD4,
-    Pal_087C2DF4,
-    Pal_087C2E14,
-    Pal_087C2E34,
-    Pal_087C2E54,
-    Pal_087C2E74,
-    Pal_087C2E94,
-    Pal_087C2EB4,
-    Pal_087C2ED4,
-    Pal_087C2EF4,
-    Pal_087C2F14,
+    Pal_DemonLightBg_Close_1,
+    Pal_DemonLightBg_Close_2,
+    Pal_DemonLightBg_Close_3,
+    Pal_DemonLightBg_Close_4,
+    Pal_DemonLightBg_Close_5,
+    Pal_DemonLightBg_Close_6,
+    Pal_DemonLightBg_Close_7,
+    Pal_DemonLightBg_Close_8,
+    Pal_DemonLightBg_Close_9,
+    Pal_DemonLightBg_Close_10,
+    Pal_DemonLightBg_Close_11,
+    Pal_DemonLightBg_Close_12,
+    Pal_DemonLightBg_Close_13,
+    Pal_DemonLightBg_Close_14,
+    Pal_DemonLightBg_Close_15,
+    Pal_DemonLightBg_Close_16,
+    Pal_DemonLightBg_Close_17,
+    Pal_DemonLightBg_Close_18,
+    Pal_DemonLightBg_Close_19,
+    Pal_DemonLightBg_Close_20,
+    Pal_DemonLightBg_Close_21,
+    Pal_DemonLightBg_Close_22,
+    Pal_DemonLightBg_Close_23,
+    Pal_DemonLightBg_Close_24,
+    Pal_DemonLightBg_Close_25,
+    Pal_DemonLightBg_Close_26,
+    Pal_DemonLightBg_Close_27,
+    Pal_DemonLightBg_Close_28,
+    Pal_DemonLightBg_Close_29,
+    Pal_DemonLightBg_Close_30,
+    Pal_DemonLightBg_Close_31,
+    Pal_DemonLightBg_Close_32,
 };
 
 u16 * CONST_DATA TsaArray_DemonLightBg1_Far[] =
 {
-    Tsa_087D7BE8,
-    Tsa_087D7E5C,
-    Tsa_087D80D4,
-    Tsa_087D8348,
-    Tsa_087D85BC,
-    Tsa_087D8834,
-    Tsa_087D8AA8,
-    Tsa_087D8D20,
-    Tsa_087D8F94,
-    Tsa_087D920C,
-    Tsa_087D9480,
-    Tsa_087D96F8,
-    Tsa_087D996C,
-    Tsa_087D9BE0,
-    Tsa_087D9E58,
-    Tsa_087DA0CC,
-    Tsa_087E84CC,
-    Tsa_087E873C,
-    Tsa_087E89B4,
-    Tsa_087E8C2C,
-    Tsa_087E8E88,
-    Tsa_087E90D0,
-    Tsa_087E9314,
-    Tsa_087E9554,
-    Tsa_087E9798,
-    Tsa_087E99E0,
-    Tsa_087E9C28,
-    Tsa_087E9E78,
-    Tsa_087EA0C0,
-    Tsa_087EA268,
-    Tsa_087EA41C,
-    Tsa_087EA5D0,
+    Tsa_DemonLightBg_Far_1,
+    Tsa_DemonLightBg_Far_2,
+    Tsa_DemonLightBg_Far_3,
+    Tsa_DemonLightBg_Far_4,
+    Tsa_DemonLightBg_Far_5,
+    Tsa_DemonLightBg_Far_6,
+    Tsa_DemonLightBg_Far_7,
+    Tsa_DemonLightBg_Far_8,
+    Tsa_DemonLightBg_Far_9,
+    Tsa_DemonLightBg_Far_10,
+    Tsa_DemonLightBg_Far_11,
+    Tsa_DemonLightBg_Far_12,
+    Tsa_DemonLightBg_Far_13,
+    Tsa_DemonLightBg_Far_14,
+    Tsa_DemonLightBg_Far_15,
+    Tsa_DemonLightBg_Far_16,
+    Tsa_DemonLightBg_Far_17,
+    Tsa_DemonLightBg_Far_18,
+    Tsa_DemonLightBg_Far_19,
+    Tsa_DemonLightBg_Far_20,
+    Tsa_DemonLightBg_Far_21,
+    Tsa_DemonLightBg_Far_22,
+    Tsa_DemonLightBg_Far_23,
+    Tsa_DemonLightBg_Far_24,
+    Tsa_DemonLightBg_Far_25,
+    Tsa_DemonLightBg_Far_26,
+    Tsa_DemonLightBg_Far_27,
+    Tsa_DemonLightBg_Far_28,
+    Tsa_DemonLightBg_Far_29,
+    Tsa_DemonLightBg_Far_30,
+    Tsa_DemonLightBg_Far_31,
+    Tsa_DemonLightBg_Far_32,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg1_Far[] =
 {
-    Img_087CCBF8,
-    Img_087CD738,
-    Img_087CE274,
-    Img_087CED98,
-    Img_087CF824,
-    Img_087D0298,
-    Img_087D0D3C,
-    Img_087D17C0,
-    Img_087D2294,
-    Img_087D2D18,
-    Img_087D37B8,
-    Img_087D4238,
-    Img_087D4CE4,
-    Img_087D5834,
-    Img_087D63BC,
-    Img_087D6EE4,
-    Img_087DA340,
-    Img_087DAE40,
-    Img_087DB960,
-    Img_087DC518,
-    Img_087DD288,
-    Img_087DE0C8,
-    Img_087DF030,
-    Img_087E002C,
-    Img_087E1190,
-    Img_087E238C,
-    Img_087E358C,
-    Img_087E466C,
-    Img_087E54B4,
-    Img_087E5FD4,
-    Img_087E6B90,
-    Img_087E78A0,
+    Img_DemonLightBg_Far_1,
+    Img_DemonLightBg_Far_2,
+    Img_DemonLightBg_Far_3,
+    Img_DemonLightBg_Far_4,
+    Img_DemonLightBg_Far_5,
+    Img_DemonLightBg_Far_6,
+    Img_DemonLightBg_Far_7,
+    Img_DemonLightBg_Far_8,
+    Img_DemonLightBg_Far_9,
+    Img_DemonLightBg_Far_10,
+    Img_DemonLightBg_Far_11,
+    Img_DemonLightBg_Far_12,
+    Img_DemonLightBg_Far_13,
+    Img_DemonLightBg_Far_14,
+    Img_DemonLightBg_Far_15,
+    Img_DemonLightBg_Far_16,
+    Img_DemonLightBg_Far_17,
+    Img_DemonLightBg_Far_18,
+    Img_DemonLightBg_Far_19,
+    Img_DemonLightBg_Far_20,
+    Img_DemonLightBg_Far_21,
+    Img_DemonLightBg_Far_22,
+    Img_DemonLightBg_Far_23,
+    Img_DemonLightBg_Far_24,
+    Img_DemonLightBg_Far_25,
+    Img_DemonLightBg_Far_26,
+    Img_DemonLightBg_Far_27,
+    Img_DemonLightBg_Far_28,
+    Img_DemonLightBg_Far_29,
+    Img_DemonLightBg_Far_30,
+    Img_DemonLightBg_Far_31,
+    Img_DemonLightBg_Far_32,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg1_Far[] =
 {
-    Pal_087D79E8,
-    Pal_087D7A08,
-    Pal_087D7A28,
-    Pal_087D7A48,
-    Pal_087D7A68,
-    Pal_087D7A88,
-    Pal_087D7AA8,
-    Pal_087D7AC8,
-    Pal_087D7AE8,
-    Pal_087D7B08,
-    Pal_087D7B28,
-    Pal_087D7B48,
-    Pal_087D7B68,
-    Pal_087D7B88,
-    Pal_087D7BA8,
-    Pal_087D7BC8,
-    Pal_087E82CC,
-    Pal_087E82EC,
-    Pal_087E830C,
-    Pal_087E832C,
-    Pal_087E834C,
-    Pal_087E836C,
-    Pal_087E838C,
-    Pal_087E83AC,
-    Pal_087E83CC,
-    Pal_087E83EC,
-    Pal_087E840C,
-    Pal_087E842C,
-    Pal_087E844C,
-    Pal_087E846C,
-    Pal_087E848C,
-    Pal_087E84AC,
+    Pal_DemonLightBg_Far_1,
+    Pal_DemonLightBg_Far_2,
+    Pal_DemonLightBg_Far_3,
+    Pal_DemonLightBg_Far_4,
+    Pal_DemonLightBg_Far_5,
+    Pal_DemonLightBg_Far_6,
+    Pal_DemonLightBg_Far_7,
+    Pal_DemonLightBg_Far_8,
+    Pal_DemonLightBg_Far_9,
+    Pal_DemonLightBg_Far_10,
+    Pal_DemonLightBg_Far_11,
+    Pal_DemonLightBg_Far_12,
+    Pal_DemonLightBg_Far_13,
+    Pal_DemonLightBg_Far_14,
+    Pal_DemonLightBg_Far_15,
+    Pal_DemonLightBg_Far_16,
+    Pal_DemonLightBg_Far_17,
+    Pal_DemonLightBg_Far_18,
+    Pal_DemonLightBg_Far_19,
+    Pal_DemonLightBg_Far_20,
+    Pal_DemonLightBg_Far_21,
+    Pal_DemonLightBg_Far_22,
+    Pal_DemonLightBg_Far_23,
+    Pal_DemonLightBg_Far_24,
+    Pal_DemonLightBg_Far_25,
+    Pal_DemonLightBg_Far_26,
+    Pal_DemonLightBg_Far_27,
+    Pal_DemonLightBg_Far_28,
+    Pal_DemonLightBg_Far_29,
+    Pal_DemonLightBg_Far_30,
+    Pal_DemonLightBg_Far_31,
+    Pal_DemonLightBg_Far_32,
 };
 
 // clang-format on
@@ -470,23 +470,23 @@ struct ProcCmd CONST_DATA ProcScr_efxMaohFlashBG2[] =
 
 u16 * CONST_DATA TsaArray_DemonLightBg2[] =
 {
-    Tsa_087F3C74,
-    Tsa_087F3D60,
-    Tsa_087F3E88,
+    Tsa_DemonLightBg_0,
+    Tsa_DemonLightBg_1,
+    Tsa_DemonLightBg_2,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg2[] =
 {
-    Img_087F1C94,
-    Img_087F2464,
-    Img_087F2E40,
+    Img_DemonLightBg_2,
+    Img_DemonLightBg_3,
+    Img_DemonLightBg_4,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg2[] =
 {
-    Pal_087F3C14,
-    Pal_087F3C34,
-    Pal_087F3C54,
+    Pal_DemonLightBg_0,
+    Pal_DemonLightBg_1,
+    Pal_Ekrdragonfx_2,
 };
 
 // clang-format on
@@ -548,7 +548,7 @@ void efxMaohFlashBG2_Loop(struct ProcEfxBG * proc)
         u16 ** pal = proc->pal;
 
         SpellFx_WriteBgMap(proc->anim, *(tsaL + ret), *(tsaR + ret));
-        sub_80668DC();
+        efxMaohFlashBG2_FillTilemapRightEdge();
         SpellFx_RegisterBgGfx(*(img + ret), 32 * 8 * CHR_SIZE);
         SpellFx_RegisterBgPal(*(pal + ret), PLTT_SIZE_4BPP);
     }
@@ -567,7 +567,7 @@ void efxMaohFlashBG2_Loop(struct ProcEfxBG * proc)
 }
 
 //! FE8U = 0x080668DC
-void sub_80668DC(void)
+void efxMaohFlashBG2_FillTilemapRightEdge(void)
 {
     int ix;
     int iy;
@@ -594,62 +594,62 @@ struct ProcCmd CONST_DATA ProcScr_efxMaohFlashBG3[] =
 
 u16 * CONST_DATA TsaArray_DemonLightBg3_Close[] =
 {
-    Tsa_087CC5FC,
-    Tsa_087CC734,
-    Tsa_087CC878,
-    Tsa_087CC9B8,
-    Tsa_087CCAD8,
+    Tsa_DemonLightBg3_Close_0,
+    Tsa_DemonLightBg3_Close_1,
+    Tsa_DemonLightBg3_Close_2,
+    Tsa_DemonLightBg3_Close_3,
+    Tsa_DemonLightBg3_Close_4,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg3_Close[] =
 {
-    Img_087C9F18,
-    Img_087CA68C,
-    Img_087CAE60,
-    Img_087CB630,
-    Img_087CBDF4,
+    Img_DemonLightBg3_Close_0,
+    Img_DemonLightBg3_Close_1,
+    Img_DemonLightBg3_Close_2,
+    Img_DemonLightBg3_Close_3,
+    Img_DemonLightBg3_Close_4,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg3_Close[] =
 {
-    Pal_087CC55C,
-    Pal_087CC57C,
-    Pal_087CC59C,
-    Pal_087CC5BC,
-    Pal_087CC5DC,
+    Pal_DemonLightBg3_Close_0,
+    Pal_DemonLightBg3_Close_1,
+    Pal_DemonLightBg3_Close_2,
+    Pal_DemonLightBg3_Close_3,
+    Pal_DemonLightBg3_Close_4,
 };
 
 u16 * CONST_DATA TsaArray_DemonLightBg3_Far[] =
 {
-    Tsa_087F16A0,
-    Tsa_087F17D8,
-    Tsa_087F191C,
-    Tsa_087F1A54,
-    Tsa_087F1B74,
+    Tsa_DemonLightBg3_Far_0,
+    Tsa_DemonLightBg3_Far_1,
+    Tsa_DemonLightBg3_Far_2,
+    Tsa_DemonLightBg3_Far_3,
+    Tsa_DemonLightBg3_Far_4,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg3_Far[] =
 {
-    Img_087EEFBC,
-    Img_087EF730,
-    Img_087EFF04,
-    Img_087F06D4,
-    Img_087F0E98,
+    Img_DemonLightBg3_Far_0,
+    Img_DemonLightBg3_Far_1,
+    Img_DemonLightBg3_Far_2,
+    Img_DemonLightBg3_Far_3,
+    Img_DemonLightBg3_Far_4,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg3_Far[] =
 {
-    Pal_087F1600,
-    Pal_087F1620,
-    Pal_087F1640,
-    Pal_087F1660,
-    Pal_087F1680,
+    Pal_DemonLightBg3_Far_0,
+    Pal_DemonLightBg3_Far_1,
+    Pal_DemonLightBg3_Far_2,
+    Pal_DemonLightBg3_Far_3,
+    Pal_DemonLightBg3_Far_4,
 };
 
 // clang-format on
 
 //! FE8U = 0x08066914
-void sub_8066914(struct Anim * anim)
+void StartSubSpell_efxMaohFlashBG3(struct Anim * anim)
 {
     // clang-format off
     static const u16 frames[] =
@@ -739,74 +739,74 @@ struct ProcCmd CONST_DATA ProcScr_efxMaohFlashBG4[] =
 };
 
 u16 * CONST_DATA TsaArray_DemonLightBg4_Close[] = {
-    Tsa_087C9390,
-    Tsa_087C9464,
-    Tsa_087C9600,
-    Tsa_087C9818,
-    Tsa_087C9A2C,
-    Tsa_087C9BEC,
-    Tsa_087C9CF4,
-    Tsa_087C9E04,
+    Tsa_DemonLightBg4_Close_0,
+    Tsa_DemonLightBg4_Close_1,
+    Tsa_DemonLightBg4_Close_2,
+    Tsa_DemonLightBg4_Close_3,
+    Tsa_DemonLightBg4_Close_4,
+    Tsa_DemonLightBg4_Close_5,
+    Tsa_DemonLightBg4_Close_6,
+    Tsa_DemonLightBg4_Close_7,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg4_Close[] =
 {
-    Img_087C5190,
-    Img_087C56E4,
-    Img_087C619C,
-    Img_087C6CF4,
-    Img_087C7678,
-    Img_087C810C,
-    Img_087C86BC,
-    Img_087C8C80,
+    Img_DemonLightBg_0,
+    Img_DemonLightBg4_Close_0,
+    Img_DemonLightBg4_Close_1,
+    Img_DemonLightBg4_Close_2,
+    Img_DemonLightBg4_Close_3,
+    Img_DemonLightBg4_Close_4,
+    Img_DemonLightBg4_Close_5,
+    Img_DemonLightBg4_Close_6,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg4_Close[] =
 {
-    Pal_087C9290,
-    Pal_087C92B0,
-    Pal_087C92D0,
-    Pal_087C92F0,
-    Pal_087C9310,
-    Pal_087C9330,
-    Pal_087C9350,
-    Pal_087C9370,
+    Pal_DemonLightBg4_Close_0,
+    Pal_DemonLightBg4_Close_1,
+    Pal_DemonLightBg4_Close_2,
+    Pal_DemonLightBg4_Close_3,
+    Pal_DemonLightBg4_Close_4,
+    Pal_DemonLightBg4_Close_5,
+    Pal_DemonLightBg4_Close_6,
+    Pal_DemonLightBg4_Close_7,
 };
 
 u16 * CONST_DATA TsaArray_DemonLightBg4_Far[] =
 {
-    Tsa_087EE4A0,
-    Tsa_087EE578,
-    Tsa_087EE710,
-    Tsa_087EE8F8,
-    Tsa_087EEAF4,
-    Tsa_087EECA8,
-    Tsa_087EEDAC,
-    Tsa_087EEEB0,
+    Tsa_DemonLightBg4_Far_0,
+    Tsa_DemonLightBg4_Far_1,
+    Tsa_DemonLightBg4_Far_2,
+    Tsa_DemonLightBg4_Far_3,
+    Tsa_DemonLightBg4_Far_4,
+    Tsa_DemonLightBg4_Far_5,
+    Tsa_DemonLightBg4_Far_6,
+    Tsa_DemonLightBg4_Far_7,
 };
 
 u16 * CONST_DATA ImgArray_DemonLightBg4_Far[] =
 {
-    Img_087EA72C,
-    Img_087EAC80,
-    Img_087EB704,
-    Img_087EC054,
-    Img_087EC944,
-    Img_087ED2B0,
-    Img_087ED828,
-    Img_087EDDC0,
+    Img_DemonLightBg_1,
+    Img_DemonLightBg4_Far_0,
+    Img_DemonLightBg4_Far_1,
+    Img_DemonLightBg4_Far_2,
+    Img_DemonLightBg4_Far_3,
+    Img_DemonLightBg4_Far_4,
+    Img_DemonLightBg4_Far_5,
+    Img_DemonLightBg4_Far_6,
 };
 
 u16 * CONST_DATA PalArray_DemonLightBg4_Far[] =
 {
-    Pal_087EE3A0,
-    Pal_087EE3C0,
-    Pal_087EE3E0,
-    Pal_087EE400,
-    Pal_087EE420,
-    Pal_087EE440,
-    Pal_087EE460,
-    Pal_087EE480,
+    Pal_DemonLightBg4_Far_0,
+    Pal_DemonLightBg4_Far_1,
+    Pal_DemonLightBg4_Far_2,
+    Pal_DemonLightBg4_Far_3,
+    Pal_DemonLightBg4_Far_4,
+    Pal_DemonLightBg4_Far_5,
+    Pal_DemonLightBg4_Far_6,
+    Pal_DemonLightBg4_Far_7,
 };
 
 // clang-format on
@@ -1050,7 +1050,7 @@ void StartSubSpell_efxMaohFlashBGCOL(struct Anim * anim)
     proc->frame = 0;
     proc->frame_config = frames;
 
-    proc->pal = Pal_087F3C54;
+    proc->pal = Pal_Ekrdragonfx_2;
     SpellFx_RegisterBgPal(Pal_EkrElfireBG, PLTT_SIZE_4BPP);
 
     return;
@@ -1065,7 +1065,7 @@ void efxMaohFlashBGCOL_Loop(struct ProcEfxBGCOL * proc)
 
     if (ret >= 0)
     {
-        CopyPalWithFade(Pal_087F3C54, palBuffer, ret - 4);
+        CopyPalWithFade(Pal_Ekrdragonfx_2, palBuffer, ret - 4);
         SpellFx_RegisterBgPal(palBuffer, PLTT_SIZE_4BPP);
     }
     else
@@ -1081,7 +1081,7 @@ void efxMaohFlashBGCOL_Loop(struct ProcEfxBGCOL * proc)
 }
 
 //! FE8U = 0x08066C74
-int sub_8066C74(int pos)
+int efxMaohFlash_GetSideXOffset(int pos)
 {
     int xNew;
 
@@ -1103,7 +1103,7 @@ int sub_8066C74(int pos)
 }
 
 //! FE8U = 0x08066C98
-void sub_8066C98(void)
+void efxMaohFlash_RegisterSpritesGfx(void)
 {
     SpellFx_RegisterObjPal(Pal_DemonLightSprites, PLTT_SIZE_4BPP);
     SpellFx_RegisterObjGfx(Img_DemonLightSprites, 32 * 4 * CHR_SIZE);
@@ -1134,8 +1134,8 @@ void StartSubSpell_efxMaohFlashEyeROBJ2(struct Anim * anim, int terminator, s16 
     // clang-format off
     u32 * gUnknown_080DE8A0[2] =
     {
-        gUnknown_087A5B74,
-        gUnknown_087A5958
+        gEkrdragonfx_6,
+        gEkrdragonfx_3
     };
     // clang-format on
 
@@ -1156,12 +1156,12 @@ void StartSubSpell_efxMaohFlashEyeROBJ2(struct Anim * anim, int terminator, s16 
 
     if (pos != 0)
     {
-        a = (sub_8066C74(pos) + DISPLAY_WIDTH);
+        a = (efxMaohFlash_GetSideXOffset(pos) + DISPLAY_WIDTH);
         a = a - x;
     }
     else
     {
-        a = x + sub_8066C74(0);
+        a = x + efxMaohFlash_GetSideXOffset(0);
     }
 
     ref->xPosition = frontAnim->xPosition = a;
@@ -1212,8 +1212,8 @@ void StartSubSpell_efxMaohFlashEyeLOBJ2(struct Anim * anim, int terminator, s16 
     // clang-format off
     u32 * gUnknown_080DE8C0[2] =
     {
-        gUnknown_087A5B8C,
-        gUnknown_087A5970,
+        gEkrdragonfx_7,
+        gEkrdragonfx_4,
     };
     // clang-format on
 
@@ -1234,12 +1234,12 @@ void StartSubSpell_efxMaohFlashEyeLOBJ2(struct Anim * anim, int terminator, s16 
 
     if (pos != 0)
     {
-        a = (sub_8066C74(pos) + DISPLAY_WIDTH);
+        a = (efxMaohFlash_GetSideXOffset(pos) + DISPLAY_WIDTH);
         a = a - x;
     }
     else
     {
-        a = x + sub_8066C74(0);
+        a = x + efxMaohFlash_GetSideXOffset(0);
     }
 
     ref->xPosition = frontAnim->xPosition = a;
@@ -1267,7 +1267,7 @@ void efxMaohFlashEyeLOBJ2_Loop(struct ProcEfxOBJ * proc)
 }
 
 //! FE8U = 0x08066EA8
-void sub_8066EA8(void)
+void efxMaohFlash_RegisterEyeFlashGfx(void)
 {
     SpellFx_RegisterObjPal(Pal_DemonLightSprites_EyeFlash, PLTT_SIZE_4BPP);
     SpellFx_RegisterObjGfx(Img_DemonLightSprites_EyeFlash, 32 * 4 * CHR_SIZE);
@@ -1298,8 +1298,8 @@ void StartSubSpell_efxMaohFlashEyeOBJ1(struct Anim * anim, int terminator, s16 x
     // clang-format off
     u32 * gUnknown_080DE8DC[2] =
     {
-        gUnknown_087A536C,
-        gUnknown_087A5240
+        gEkrdragonfx_1,
+        gEkrdragonfx_0
     };
     // clang-format on
 
@@ -1320,12 +1320,12 @@ void StartSubSpell_efxMaohFlashEyeOBJ1(struct Anim * anim, int terminator, s16 x
 
     if (pos != 0)
     {
-        a = (sub_8066C74(pos) + DISPLAY_WIDTH);
+        a = (efxMaohFlash_GetSideXOffset(pos) + DISPLAY_WIDTH);
         a = a - x;
     }
     else
     {
-        a = x + sub_8066C74(0);
+        a = x + efxMaohFlash_GetSideXOffset(0);
     }
 
     ref->xPosition = frontAnim->xPosition = a;
@@ -1376,8 +1376,8 @@ void StartSubSpell_efxMaohFlashEyeFire1OBJ1(struct Anim * anim, int terminator, 
     // clang-format off
     u32 * gUnknown_080DE900[2] =
     {
-        gUnknown_087A6AEC,
-        gUnknown_087A6674,
+        gEkrdragonfx_9,
+        gEkrdragonfx_8,
     };
     // clang-format on
 
@@ -1398,12 +1398,12 @@ void StartSubSpell_efxMaohFlashEyeFire1OBJ1(struct Anim * anim, int terminator, 
 
     if (pos != 0)
     {
-        a = (sub_8066C74(pos) + DISPLAY_WIDTH);
+        a = (efxMaohFlash_GetSideXOffset(pos) + DISPLAY_WIDTH);
         a = a - x;
     }
     else
     {
-        a = x + sub_8066C74(0);
+        a = x + efxMaohFlash_GetSideXOffset(0);
     }
 
     ref->xPosition = frontAnim->xPosition = a;
@@ -1412,8 +1412,8 @@ void StartSubSpell_efxMaohFlashEyeFire1OBJ1(struct Anim * anim, int terminator, 
     frontAnim->oam2Base &= ~OAM2_LAYER(3);
     frontAnim->oam2Base |= OAM2_LAYER(1);
 
-    SpellFx_RegisterObjPal(Pal_DemonLightSprites_087A61EC, PLTT_SIZE_4BPP);
-    SpellFx_RegisterObjGfx(Img_DemonLightSprites_087A5BA4, 32 * 4 * CHR_SIZE);
+    SpellFx_RegisterObjPal(Pal_DemonLightSprites_efxMaohFlashEyeFire, PLTT_SIZE_4BPP);
+    SpellFx_RegisterObjGfx(Img_DemonLightSprites_efxMaohFlashEyeFire1OBJ, 32 * 4 * CHR_SIZE);
 
     return;
 }
@@ -1457,8 +1457,8 @@ void StartSubSpell_efxMaohFlashEyeFire2OBJ1(struct Anim * anim, int terminator, 
     // clang-format off
     u32 * gUnknown_080DE924[2] =
     {
-        gUnknown_087A73E0,
-        gUnknown_087A6F64,
+        gEkrdragonfx_11,
+        gEkrdragonfx_10,
     };
     // clang-format on
 
@@ -1479,12 +1479,12 @@ void StartSubSpell_efxMaohFlashEyeFire2OBJ1(struct Anim * anim, int terminator, 
 
     if (pos != 0)
     {
-        a = (sub_8066C74(pos) + DISPLAY_WIDTH);
+        a = (efxMaohFlash_GetSideXOffset(pos) + DISPLAY_WIDTH);
         a = a - x;
     }
     else
     {
-        a = x + sub_8066C74(0);
+        a = x + efxMaohFlash_GetSideXOffset(0);
     }
 
     ref->xPosition = frontAnim->xPosition = a;
@@ -1493,8 +1493,8 @@ void StartSubSpell_efxMaohFlashEyeFire2OBJ1(struct Anim * anim, int terminator, 
     frontAnim->oam2Base &= ~OAM2_LAYER(3);
     frontAnim->oam2Base |= OAM2_LAYER(1);
 
-    SpellFx_RegisterObjPal(Pal_DemonLightSprites_087A61EC, PLTT_SIZE_4BPP);
-    SpellFx_RegisterObjGfx(Img_DemonLightSprites_087A5E9C, 32 * 4 * CHR_SIZE);
+    SpellFx_RegisterObjPal(Pal_DemonLightSprites_efxMaohFlashEyeFire, PLTT_SIZE_4BPP);
+    SpellFx_RegisterObjGfx(Img_DemonLightSprites_efxMaohFlashEyeFire2OBJ, 32 * 4 * CHR_SIZE);
 
     return;
 }
@@ -1547,7 +1547,7 @@ void StartSubSpell_efxMaohFlashThunderOBJ(struct Anim * anim, int terminator)
 void efxMaohFlashThunderOBJ_Loop(struct ProcEfxOBJ * proc)
 {
     u8 pos = GetAnimPosition(proc->anim);
-    s16 xBase = sub_8066C74(pos);
+    s16 xBase = efxMaohFlash_GetSideXOffset(pos);
 
     proc->timer++;
 
@@ -1718,7 +1718,7 @@ void StartSubSpell_efxMaohFlashThunderOBJ2(struct Anim * anim, int terminator, s
     proc->timer = 0;
     proc->terminator = terminator;
 
-    scr = gUnknown_087A5B5C;
+    scr = gEkrdragonfx_5;
     frontAnim = EfxCreateFrontAnim(anim, scr, scr, scr, scr);
     proc->anim2 = frontAnim;
 

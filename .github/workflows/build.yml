@@ -13,21 +13,27 @@ jobs:
     container: laqieer/gba-disasm-decomp-tools:fireemblem8u
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
+    # Host tools (agbcc, gbagfx, scaninc, preproc, ...) come from the image.
+    # Extra runtime deps for the ROM build: GNU libiconv for the CP932 text
+    # conversion and numpy/pillow for the TSA/graphics generators. Some build
+    # scripts hardcode a #!/bin/python3 shebang, so provide /bin/python3.
     - name: Install dependencies
-      run: apk add python3 perl gnu-libiconv
-
-    - name: Mock base ROM
-      run: head -c 16777216 /dev/urandom > baserom.gba
+      run: |
+        apk add --no-cache python3 py3-numpy py3-pillow perl gnu-libiconv
+        ln -sf /usr/bin/python3 /bin/python3
 
     - name: Build target ROM
       run: make fireemblem8.gba
 
+    - name: Verify ROM matches
+      run: make compare
+
     - name: Analyze decomp progress
       run: sh scripts/calcrom.sh
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: linker-mapfile
         path: fireemblem8.map

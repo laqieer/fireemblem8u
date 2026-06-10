@@ -22,7 +22,7 @@
 #include "soundwrapper.h"
 #include "spellassoc.h"
 
-EWRAM_OVERLAY(0) int Unk_2004BDC = 0;
+EWRAM_OVERLAY(0) int Unk_Mu_0 = 0;
 EWRAM_OVERLAY(0) u8 gMUGfxBuffer[MU_GFX_MAX_SIZE * MU_MAX_COUNT] = { 0 };
 static struct MuConfig sMuConfig[MU_MAX_COUNT];
 
@@ -79,7 +79,7 @@ u16 CONST_DATA MuSoundScr_Mounted[] = {
 
 u16 CONST_DATA MuSoundScr_Wyvern[] = {
     0x14, 1,
-    SONG_A0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    SONG_SE_BMP_MOVE_BIRD1A_T1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 u16 CONST_DATA MuSoundScr_Pegasus[] = {
@@ -190,7 +190,7 @@ struct ProcCmd CONST_DATA ProcScr_MuBlink[] = {
 
 // Doesn't match without being volatile
 // :/
-CONST_DATA vu8 static sUnknown_089A2CA8[0x40] = {
+CONST_DATA vu8 static sMu_0[0x40] = {
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
     0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
     0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
@@ -708,7 +708,7 @@ void Mu_OnStateMovement(struct MuProc * proc)
         proc->y_q4 &= ~0xF;
     }
 
-    if (proc->cam_b && !Proc_Find(gProcScr_CamMove))
+    if (proc->cam_b && !Proc_Find(ProcScr_CamMove))
     {
         gBmSt.camera.x = GetCameraAdjustedX(proc->x_q4 >> MU_SUBPIXEL_PRECISION);
         gBmSt.camera.y = GetCameraAdjustedY(proc->y_q4 >> MU_SUBPIXEL_PRECISION);
@@ -1018,12 +1018,12 @@ void PutMuSMS(struct MuProc * proc)
         if (proc->state == MU_STATE_DEATHFADE)
             pos.y |= OAM0_BLEND;
 
-        sub_8026FF4(
+        SetStandingMuFacingFast(
             proc->slot,
             proc->pGfxVRAM
         );
 
-        sub_8027DB4(
+        PutStandingMuSprite(
             proc->sprite_anim->objLayer,
 
             pos.x - 8,
@@ -1185,7 +1185,7 @@ void StartBlinkMu(struct MuProc * mu)
     mu->sprite_anim->frameTimer = 0;
     mu->sprite_anim->frameInterval = 0;
 
-    PlaySoundEffect(0xD6); // TODO: SOUND DEFINITIONS
+    PlaySoundEffect(SONG_D6);
 }
 
 void MU_SetupPixelEffect(u32* data, int frame)
@@ -1195,8 +1195,8 @@ void MU_SetupPixelEffect(u32* data, int frame)
 
     int i, j;
 
-    int pixel = sUnknown_089A2CA8[frame] % 8;
-    int wordId = sUnknown_089A2CA8[frame] / 8;
+    int pixel = sMu_0[frame] % 8;
+    int wordId = sMu_0[frame] / 8;
 
     sKeptPixelsWordMask = ~(sClearedPixelWordMask = (0xF << (pixel * 4)));
 
@@ -1252,7 +1252,7 @@ void MU_StartPixelEffect(struct MuProc * mu)
     mu->sprite_anim->frameTimer = 0;
     mu->sprite_anim->frameInterval = 0;
 
-    PlaySoundEffect(0xD6); // TODO: SOUND DEFINITIONS
+    PlaySoundEffect(SONG_D6);
 }
 
 void HideMu(struct MuProc * proc)

@@ -27,7 +27,7 @@ CONST_DATA EventListScr EventListScr_Prologue_Location[] = {
 
 CONST_DATA EventListScr EventListScr_Prologue_Misc[] = {
     DefeatBoss(EventScr_Prologue_EndingScene)
-    AFEV(EVFLAG_TMP(7), EventScr_Prologue_OneEmimyLeft, 0)
+    AFEV(EVFLAG_TMP(7), EventScr_Prologue_OneEnemyLeft, 0)
     CauseGameOverIfLordDies
     END_MAIN
 };
@@ -87,6 +87,6 @@ CONST_DATA struct ChapterEventGroup PrologueEvents = {
     .enemyUnitsChoice2InEncounter = NULL,
     .enemyUnitsChoice3InEncounter = NULL,
 
-    .beginningSceneEvents = EventScr_Prologue_BeginingScene,
+    .beginningSceneEvents = EventScr_Prologue_BeginningScene,
     .endingSceneEvents    = EventScr_Prologue_EndingScene,
 };

@@ -294,7 +294,7 @@ void LockMenuScrollBar(void)
 }
 
 //! FE8U = 0x08097668
-void sub_8097668(void) {
+void UnlockMenuScrollBar(void) {
     struct MenuScrollBarProc* proc = Proc_Find(ProcScr_menu_scroll);
 
     if (proc) {

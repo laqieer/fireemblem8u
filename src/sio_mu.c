@@ -1,5 +1,5 @@
 #include "global.h"
-
+#include "sio.h"
 #include "hardware.h"
 #include "bmlib.h"
 #include "mu.h"
@@ -8,34 +8,7 @@
 #include "m4a.h"
 #include "bmunit.h"
 #include "ctc.h"
-
-struct SioProc85AA83C
-{
-    /* 00 */ PROC_HEADER;
-    /* 29 */ STRUCT_PAD(0x29, 0x2C);
-    /* 2C */ struct MuProc * muProc;
-};
-
-struct SioWarpProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 29 */ STRUCT_PAD(0x29, 0x2C);
-    /* 2C */ struct Unit * unit;
-    /* 30 */ struct MuProc * muProc;
-    /* 34 */ int x;
-    /* 38 */ int y;
-    /* 3C */ int facing;
-    /* 40 */ u8 unk_40;
-    /* 41 */ s8 playStepSe;
-};
-
-struct SioProc85AA954
-{
-    /* 00 */ PROC_HEADER;
-    /* 29 */ STRUCT_PAD(0x29, 0x2C);
-    /* 2C */ int x;
-    /* 30 */ int y;
-};
+#include "constants/songs.h"
 
 // clang-format off
 
@@ -49,12 +22,10 @@ u16 * CONST_DATA PalArray_SolidColors[] =
     Pal_AllYellow,
 };
 
-extern struct ProcCmd ProcScr_085AA83C[];
-
 // clang-format on
 
 //! FE8U = 0x0804BED8
-void sub_804BED8(struct MuProc * muProc, int kind)
+void StartSioMuFadeFromColor(struct MuProc * muProc, int kind)
 {
     struct SioProc85AA83C * proc;
 
@@ -63,14 +34,14 @@ void sub_804BED8(struct MuProc * muProc, int kind)
     muProc->sprite_anim->tileBase = muProc->config->chr + 0x6800;
     StartPalFade(gPaletteBuffer + (muProc->config->pal + 0x10) * 0x10, 0x16, 0x14, muProc);
 
-    proc = Proc_Start(ProcScr_085AA83C, muProc);
+    proc = Proc_Start(ProcScr_SioMu_0, muProc);
     proc->muProc = muProc;
 
     return;
 }
 
 //! FE8U = 0x0804BF30
-void sub_804BF30(struct SioProc85AA83C * proc)
+void SioMuFade_RestorePal(struct SioProc85AA83C * proc)
 {
     proc->muProc->sprite_anim->tileBase =
         OAM2_PAL(proc->muProc->config->pal) + proc->muProc->config->chr + 0x800;
@@ -79,10 +50,10 @@ void sub_804BF30(struct SioProc85AA83C * proc)
 
 // clang-format off
 
-struct ProcCmd CONST_DATA ProcScr_085AA83C[] =
+struct ProcCmd CONST_DATA ProcScr_SioMu_0[] =
 {
     PROC_SLEEP(17),
-    PROC_CALL(sub_804BF30),
+    PROC_CALL(SioMuFade_RestorePal),
     PROC_END,
 };
 
@@ -104,17 +75,17 @@ void StartLinkArenaMUDeathFade(struct MuProc * muProc)
     muProc->sprite_anim->frameTimer = 0;
     muProc->sprite_anim->frameInterval = 0;
 
-    sub_804BED8(muProc, 0);
+    StartSioMuFadeFromColor(muProc, 0);
 
     muProc->sprite_anim->objLayer = 13;
 
-    PlaySoundEffect(0xd6);
+    PlaySoundEffect(SONG_D6);
 
     return;
 }
 
 //! FE8U = 0x0804BFAC
-void sub_804BFAC(struct MuProc * muProc, int palIdx)
+void StartSioMuFadeToColor(struct MuProc * muProc, int palIdx)
 {
     muProc->sprite_anim->tileBase = muProc->config->chr + 0x6800;
 
@@ -125,7 +96,7 @@ void sub_804BFAC(struct MuProc * muProc, int palIdx)
 }
 
 //! FE8U = 0x0804BFF8
-void sub_804BFF8(struct MuProc * muProc)
+void StartSioMuFadeRestore(struct MuProc * muProc)
 {
     struct MuEffectProc * muEffectProc;
 
@@ -155,11 +126,11 @@ void SioWarp_Init(struct SioWarpProc * proc)
     return;
 }
 
-extern u16 gUnknown_089AE4A4[];
+extern u16 gMapanimBattleinfo_0[];
 
 // clang-format off
 
-u8 CONST_DATA gUnknown_085AA854[] =
+u8 CONST_DATA gSioMu_0[] =
 {
     0x00, 0x01, 0x02, 0x03, 0x03,
     0x03, 0x03, 0x03, 0x03, 0x03,
@@ -173,15 +144,15 @@ u8 CONST_DATA gUnknown_085AA854[] =
 //! FE8U = 0x0804C078
 void SioWarp_Loop(struct SioWarpProc * proc)
 {
-    sub_80146A0(
-        gBG2TilemapBuffer, proc->x - 1, proc->y - 3, 0x3220, 4, 6, gUnknown_089AE4A4,
-        gUnknown_085AA854[proc->unk_40]);
+    PutTmAnimFrame(
+        gBG2TilemapBuffer, proc->x - 1, proc->y - 3, 0x3220, 4, 6, gMapanimBattleinfo_0,
+        gSioMu_0[proc->unk_40]);
 
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
     proc->unk_40++;
 
-    if (gUnknown_085AA854[proc->unk_40] == 0xFF)
+    if (gSioMu_0[proc->unk_40] == 0xFF)
     {
         Proc_Break(proc);
     }
@@ -241,9 +212,9 @@ void SioWarpFx_StartSioWarp(struct SioWarpProc * parent)
 }
 
 //! FE8U = 0x0804C178
-void SioWarpFx_804C178(struct SioWarpProc * proc)
+void SioWarpFx_0(struct SioWarpProc * proc)
 {
-    sub_804BFAC(proc->muProc, 0);
+    StartSioMuFadeToColor(proc->muProc, 0);
     return;
 }
 
@@ -279,9 +250,9 @@ void SioWarpFx_ShowMoveUnit(struct SioWarpProc * proc)
 }
 
 //! FE8U = 0x0804C1D8
-void SioWarpFx_804C1D8(struct SioWarpProc * proc)
+void SioWarpFx_1(struct SioWarpProc * proc)
 {
-    sub_804BFF8(proc->muProc);
+    StartSioMuFadeRestore(proc->muProc);
     return;
 }
 
@@ -308,7 +279,7 @@ struct ProcCmd CONST_DATA ProcScr_SIOWARPFX[] =
     PROC_CALL(SioWarpFx_StartSioWarp),
     PROC_SLEEP(5),
 
-    PROC_CALL(SioWarpFx_804C178),
+    PROC_CALL(SioWarpFx_0),
     PROC_SLEEP(15),
 
     PROC_CALL(SioWarpFx_HideMoveUnit),
@@ -319,7 +290,7 @@ struct ProcCmd CONST_DATA ProcScr_SIOWARPFX[] =
     PROC_SLEEP(5),
 
     PROC_CALL(SioWarpFx_ShowMoveUnit),
-    PROC_CALL(SioWarpFx_804C1D8),
+    PROC_CALL(SioWarpFx_1),
 
     PROC_REPEAT(SioWarpFx_AwaitSioWarp),
 
@@ -373,7 +344,7 @@ struct ProcCmd CONST_DATA ProcScr_SioWarpFxPartial[] =
 // clang-format on
 
 //! FE8U = 0x0804C260
-ProcPtr sub_804C260(struct Unit * unit, struct MuProc * muProc, int x, int y, int facing, u8 playStepSe, ProcPtr parent)
+ProcPtr StartSioWarpFxPartial(struct Unit * unit, struct MuProc * muProc, int x, int y, int facing, u8 playStepSe, ProcPtr parent)
 {
     struct SioWarpProc * proc;
 
