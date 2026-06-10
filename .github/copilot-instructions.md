@@ -4,9 +4,11 @@ This is a decompilation project for **Fire Emblem: The Sacred Stones** (GBA). Th
 
 ## Build
 
-A legally obtained ROM named `baserom.gba` must be at the repo root. First-time
-setup (installs agbcc + builds the `tools/`): `./scripts/quickstart.sh` (see
-`docs/quickstart.md`). Manual setup is in `README.md`.
+This branch removes the vendored `tools/` and builds inside Docker, which provides
+agbcc and the host tools on PATH from the
+`laqieer/gba-disasm-decomp-tools:fireemblem8u` image. Run `./build.sh` (or
+`build.bat` on Windows) — see `README.md`. The original ROM is not required; the
+build self-verifies against `checksum.sha1`.
 
 ```bash
 # Build the ROM (uses agbcc, a GCC 2.95-based GBA C compiler)
@@ -33,7 +35,7 @@ is rebuilt and checksummed. To narrow down a single function's mismatch, use
 ## Architecture
 
 ### Compiler & toolchain
-- **agbcc**: a modified GCC 2.95 targeting ARM7TDMI (Thumb/ARM interwork). Located at `tools/agbcc/`. This is C89-era — no `//` comments in compiled code, no C99 features.
+- **agbcc**: a modified GCC 2.95 targeting ARM7TDMI (Thumb/ARM interwork). Provided on PATH by the build image. This is C89-era — no `//` comments in compiled code, no C99 features.
 - Compiler flags: `-mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm`
 - Source is preprocessed with `cpp`, piped through `iconv` (UTF-8 → CP932), then compiled with `agbcc`.
 - Some files use the older compiler (`old_agbcc`) or different flags — see per-file overrides in `Makefile`.

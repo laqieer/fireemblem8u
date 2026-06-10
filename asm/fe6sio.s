@@ -93,11 +93,11 @@ _reset: @ 0x08B1A1C4
     @ inserted FE6 cartridge's save over SIO and reports it (build stamp
     @ 2002/06/06 kaneko).
     @
-    @ Built from source via the mgfembp submodule (StanHash/mgfembp, "Mysterious Gba
-    @ Fire Emblem MultiBoot Payload") -- the Makefile builds mgfembp/mgfembp.bin
-    @ (sha1 8a81a47d88f6b0a3f91c49784b9f7b317382abac) and LZ-compresses it (-mindist
-    @ 1) to fe6sio_payload.bin.lz, incbin'd below. mgfembp uses its own agbcc variant
-    @ (010110-ThumbPatch). fireemblem6j does NOT contain this payload (only the FE6
-    @ main-ROM SIO routines).
+    @ The payload is mgfembp (StanHash/mgfembp, "Mysterious Gba Fire Emblem MultiBoot
+    @ Payload", sha1 8a81a47d88f6b0a3f91c49784b9f7b317382abac). Upstream/master builds
+    @ it from source via the mgfembp submodule; this branch commits the byte-identical
+    @ fe6sio_payload.bin and the Makefile only LZ-compresses it (-mindist 1) to
+    @ fe6sio_payload.bin.lz, incbin'd below. fireemblem6j does NOT contain this payload
+    @ (only the FE6 main-ROM SIO routines).
 FE6SIO_Payload: @ 0x08B1A368
 	.incbin "fe6sio_payload.bin.lz"
