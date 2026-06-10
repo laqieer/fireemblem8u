@@ -1,7 +1,7 @@
 #include "gbafe.h"
 
-CONST_DATA EventListScr EventScr_Ruins1_BeginingScene[] = {
-    ASMC(sub_8085C58)
+CONST_DATA EventListScr EventScr_Ruins1_BeginningScene[] = {
+    ASMC(InitRuinsDungeonState)
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -16,9 +16,9 @@ CONST_DATA EventListScr EventScr_Ruins1_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CD174)
+    LOAD1(0x1, UnitDef_RuinEnemy_0)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 
@@ -29,21 +29,21 @@ CONST_DATA EventListScr EventScr_Ruin1_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE2E8[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CD4BC)
+CONST_DATA EventListScr EventScr_Ruin_0[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_1)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE300[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CD4F8)
+CONST_DATA EventListScr EventScr_Ruin_1[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_2)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE318[] = {
+CONST_DATA EventListScr EventScr_Ruin_2[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     SVAL(EVT_SLOT_1, 0x10000)
@@ -54,7 +54,7 @@ CONST_DATA EventListScr EventScr_089FE318[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins2_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins2_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -69,9 +69,9 @@ CONST_DATA EventListScr EventScr_Ruins2_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CD5E8)
+    LOAD1(0x1, UnitDef_RuinEnemy_3)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 
@@ -82,7 +82,7 @@ CONST_DATA EventListScr EventScr_Ruin2_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE3D8[] = {
+CONST_DATA EventListScr EventScr_Ruin_3[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     SVAL(EVT_SLOT_1, 0x10000)
@@ -95,7 +95,7 @@ CONST_DATA EventListScr EventScr_089FE3D8[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins3_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins3_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -110,9 +110,9 @@ CONST_DATA EventListScr EventScr_Ruins3_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CDAAC)
+    LOAD1(0x1, UnitDef_RuinEnemy_4)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 
@@ -123,42 +123,42 @@ CONST_DATA EventListScr EventScr_Ruin3_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE4A4[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CDE58)
+CONST_DATA EventListScr EventScr_Ruin_4[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_5)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE4BC[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CDE80)
+CONST_DATA EventListScr EventScr_Ruin_5[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_6)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE4D4[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CDEBC)
+CONST_DATA EventListScr EventScr_Ruin_6[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_7)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE4EC[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CDEE4)
+CONST_DATA EventListScr EventScr_Ruin_7[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_8)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE504[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CDF0C)
+CONST_DATA EventListScr EventScr_Ruin_8[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_9)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins4_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins4_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -173,21 +173,21 @@ CONST_DATA EventListScr EventScr_Ruins4_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CE024)
+    LOAD1(0x1, UnitDef_RuinEnemy_10)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE590[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CE31C)
+CONST_DATA EventListScr EventScr_Ruin_9[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_11)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE5A8[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CE344)
+CONST_DATA EventListScr EventScr_Ruin_10[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_12)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
@@ -200,7 +200,7 @@ CONST_DATA EventListScr EventScr_Ruin4_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins5_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins5_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -215,9 +215,9 @@ CONST_DATA EventListScr EventScr_Ruins5_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CE434)
+    LOAD1(0x1, UnitDef_RuinEnemy_13)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 
@@ -230,28 +230,28 @@ CONST_DATA EventListScr EventScr_Ruin5_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE67C[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CE6C8)
+CONST_DATA EventListScr EventScr_Ruin_11[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_14)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE694[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CE6F0)
+CONST_DATA EventListScr EventScr_Ruin_12[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_15)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE6AC[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CE718)
+CONST_DATA EventListScr EventScr_Ruin_13[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_16)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins6_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins6_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -266,9 +266,9 @@ CONST_DATA EventListScr EventScr_Ruins6_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CE81C)
+    LOAD1(0x1, UnitDef_RuinEnemy_17)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 
@@ -279,35 +279,35 @@ CONST_DATA EventListScr EventScr_Ruin6_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE754[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CEB8C)
+CONST_DATA EventListScr EventScr_Ruin_14[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_18)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE76C[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CEBC8)
+CONST_DATA EventListScr EventScr_Ruin_15[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_19)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE784[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CEC04)
+CONST_DATA EventListScr EventScr_Ruin_16[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_20)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE79C[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CEC40)
+CONST_DATA EventListScr EventScr_Ruin_17[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_21)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins7_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins7_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -322,9 +322,9 @@ CONST_DATA EventListScr EventScr_Ruins7_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CED74)
+    LOAD1(0x1, UnitDef_RuinEnemy_22)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENUT(8)
     ENUT(10)
     ENUT(12)
@@ -340,35 +340,35 @@ CONST_DATA EventListScr EventScr_Ruin7_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE860[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CEFB8)
+CONST_DATA EventListScr EventScr_Ruin_18[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_23)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE878[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CEFE0)
+CONST_DATA EventListScr EventScr_Ruin_19[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_24)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE890[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF01C)
+CONST_DATA EventListScr EventScr_Ruin_20[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_25)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE8A8[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF044)
+CONST_DATA EventListScr EventScr_Ruin_21[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_26)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE8C0[] = {
+CONST_DATA EventListScr EventScr_Ruin_22[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x0, 3)
@@ -377,8 +377,8 @@ CONST_DATA EventListScr EventScr_089FE8C0[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE8E0[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF06C)
+CONST_DATA EventListScr EventScr_Ruin_23[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_27)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x0)
     ENUF(8)
@@ -390,7 +390,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE914[] = {
+CONST_DATA EventListScr EventScr_Ruin_24[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x1, 3)
@@ -399,8 +399,8 @@ CONST_DATA EventListScr EventScr_089FE914[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE934[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF094)
+CONST_DATA EventListScr EventScr_Ruin_25[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_28)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x1)
     ENUF(10)
@@ -412,7 +412,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE968[] = {
+CONST_DATA EventListScr EventScr_Ruin_26[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x2, 5)
@@ -421,8 +421,8 @@ CONST_DATA EventListScr EventScr_089FE968[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE988[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF0BC)
+CONST_DATA EventListScr EventScr_Ruin_27[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_29)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x2)
     ENUF(12)
@@ -434,14 +434,14 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FE9BC[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF0E4)
+CONST_DATA EventListScr EventScr_Ruin_28[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_30)
     CALL(EventScr_LoadReinforce)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins8_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins8_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -456,9 +456,9 @@ CONST_DATA EventListScr EventScr_Ruins8_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CF1D4)
+    LOAD1(0x1, UnitDef_RuinEnemy_31)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENUT(8)
     ENUT(10)
     ENUT(12)
@@ -473,7 +473,7 @@ CONST_DATA EventListScr EventScr_Ruin8_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEA74[] = {
+CONST_DATA EventListScr EventScr_Ruin_29[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x3, 2)
@@ -482,8 +482,8 @@ CONST_DATA EventListScr EventScr_089FEA74[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEA94[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF51C)
+CONST_DATA EventListScr EventScr_Ruin_30[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_32)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x3)
     ENUF(8)
@@ -495,7 +495,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEAC8[] = {
+CONST_DATA EventListScr EventScr_Ruin_31[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x4, 2)
@@ -504,8 +504,8 @@ CONST_DATA EventListScr EventScr_089FEAC8[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEAE8[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF544)
+CONST_DATA EventListScr EventScr_Ruin_32[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_33)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x4)
     ENUF(10)
@@ -517,7 +517,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEB1C[] = {
+CONST_DATA EventListScr EventScr_Ruin_33[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x5, 2)
@@ -526,8 +526,8 @@ CONST_DATA EventListScr EventScr_089FEB1C[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEB3C[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF56C)
+CONST_DATA EventListScr EventScr_Ruin_34[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_34)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x5)
     ENUF(12)
@@ -539,7 +539,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEB70[] = {
+CONST_DATA EventListScr EventScr_Ruin_35[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     SVAL(EVT_SLOT_1, 0x10300)
@@ -550,8 +550,8 @@ CONST_DATA EventListScr EventScr_089FEB70[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEB9C[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CF5A8)
+CONST_DATA EventListScr EventScr_Ruin_36[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_35)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x6)
     ENUF(14)
@@ -563,7 +563,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEBD0[] = {
+CONST_DATA EventListScr EventScr_Ruin_37[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x1)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -577,18 +577,18 @@ CONST_DATA EventListScr EventScr_089FEBD0[] = {
 LABEL(0x0)
     CAMERA(0, 20)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x0)
     CAMERA2(12, 12)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x7)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEC40[] = {
+CONST_DATA EventListScr EventScr_Ruin_38[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x6)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -599,18 +599,18 @@ CONST_DATA EventListScr EventScr_089FEC40[] = {
 LABEL(0x0)
     CAMERA(0, 20)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x0)
     CAMERA2(12, 12)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x7)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEC9C[] = {
+CONST_DATA EventListScr EventScr_Ruin_39[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x2)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -627,22 +627,22 @@ CONST_DATA EventListScr EventScr_089FEC9C[] = {
 LABEL(0x0)
     CAMERA2(7, 10)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x1)
     CAMERA2(10, 10)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x5)
     CAMERA(19, 20)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x8)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FED30[] = {
+CONST_DATA EventListScr EventScr_Ruin_40[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x5)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -656,22 +656,22 @@ CONST_DATA EventListScr EventScr_089FED30[] = {
 LABEL(0x0)
     CAMERA2(7, 10)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x1)
     CAMERA2(10, 10)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x5)
     CAMERA(19, 20)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x8)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEDB0[] = {
+CONST_DATA EventListScr EventScr_Ruin_41[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x5)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -685,18 +685,18 @@ CONST_DATA EventListScr EventScr_089FEDB0[] = {
 LABEL(0x0)
     CAMERA(0, 0)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x2)
     CAMERA(19, 20)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x9)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEE20[] = {
+CONST_DATA EventListScr EventScr_Ruin_42[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x9)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -707,18 +707,18 @@ CONST_DATA EventListScr EventScr_089FEE20[] = {
 LABEL(0x0)
     CAMERA(0, 0)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x2)
     CAMERA(19, 20)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x9)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEE7C[] = {
+CONST_DATA EventListScr EventScr_Ruin_43[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x3)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -738,18 +738,18 @@ CONST_DATA EventListScr EventScr_089FEE7C[] = {
 LABEL(0x0)
     CAMERA(0, 20)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x3)
     CAMERA2(10, 5)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x6)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEF14[] = {
+CONST_DATA EventListScr EventScr_Ruin_44[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x5)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -766,18 +766,18 @@ CONST_DATA EventListScr EventScr_089FEF14[] = {
 LABEL(0x0)
     CAMERA(0, 20)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x3)
     CAMERA2(10, 5)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x6)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FEF98[] = {
+CONST_DATA EventListScr EventScr_Ruin_45[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x1)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -800,18 +800,18 @@ CONST_DATA EventListScr EventScr_089FEF98[] = {
 LABEL(0x0)
     CAMERA2(10, 15)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0x4)
     CAMERA2(12, 6)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0xa)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FF044[] = {
+CONST_DATA EventListScr EventScr_Ruin_46[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x3)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -831,18 +831,18 @@ CONST_DATA EventListScr EventScr_089FF044[] = {
 LABEL(0x0)
     CAMERA2(10, 15)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0x4)
     CAMERA2(12, 6)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0xa)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FF0DC[] = {
+CONST_DATA EventListScr EventScr_Ruin_47[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x6)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -859,14 +859,14 @@ CONST_DATA EventListScr EventScr_089FF0DC[] = {
 LABEL(0x0)
     CAMERA(0, 20)
     STAL(15)
-    SOUN(0xbe)
+    SOUN(SONG_BE)
     TILECHANGE(0xb)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FF150[] = {
+CONST_DATA EventListScr EventScr_Ruin_48[] = {
     CHECK_TURNS
     SVAL(EVT_SLOT_1, 0x7)
     BEQ(0x0, EVT_SLOT_C, EVT_SLOT_1)
@@ -880,14 +880,14 @@ CONST_DATA EventListScr EventScr_089FF150[] = {
 LABEL(0x0)
     CAMERA(0, 20)
     STAL(15)
-    SOUN(0xbd)
+    SOUN(SONG_BD)
     TILEREVERT(0xb)
 LABEL(0x1)
     EVBIT_T(7)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins9_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins9_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -902,9 +902,9 @@ CONST_DATA EventListScr EventScr_Ruins9_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CF684)
+    LOAD1(0x1, UnitDef_RuinEnemy_36)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENUT(8)
     ENDA
 };
@@ -916,7 +916,7 @@ CONST_DATA EventListScr EventScr_Ruin9_EndingScene[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FF244[] = {
+CONST_DATA EventListScr EventScr_Ruin_49[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     SVAL(EVT_SLOT_1, 0x10000)
@@ -925,7 +925,7 @@ CONST_DATA EventListScr EventScr_089FF244[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FF268[] = {
+CONST_DATA EventListScr EventScr_Ruin_50[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_UnTriggerIfNotFaction)
     COUNTER_SET(0x7, 3)
@@ -934,8 +934,8 @@ CONST_DATA EventListScr EventScr_089FF268[] = {
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_089FF288[] = {
-    SVAL(EVT_SLOT_2, UnitDef_088CFA08)
+CONST_DATA EventListScr EventScr_Ruin_51[] = {
+    SVAL(EVT_SLOT_2, UnitDef_RuinEnemy_37)
     CALL(EventScr_LoadReinforce)
     COUNTER_DEC(0x7)
     ENUF(8)
@@ -947,7 +947,7 @@ LABEL(0x0)
     ENDA
 };
 
-CONST_DATA EventListScr EventScr_Ruins10_BeginingScene[] = {
+CONST_DATA EventListScr EventScr_Ruins10_BeginningScene[] = {
     SVAL(EVT_SLOT_2, 0x0)
     CALL(EventScr_ConfigHardModeLoadUnitHard)
     SVAL(EVT_SLOT_D, 0x0)
@@ -962,9 +962,9 @@ CONST_DATA EventListScr EventScr_Ruins10_BeginingScene[] = {
     SVAL(EVT_SLOT_1, 0x5)
     SENQUEUE1
     CALL(EventScr_9EE84C)
-    LOAD1(0x1, UnitDef_088CFAE4)
+    LOAD1(0x1, UnitDef_RuinEnemy_38)
     ENUN
-    CALL(EventScr_08591FD8)
+    CALL(EventScr_CommonPrep)
     ENDA
 };
 

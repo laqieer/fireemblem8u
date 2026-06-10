@@ -10,8 +10,9 @@
 #include "constants/worldmap.h"
 #include "constants/characters.h"
 #include "constants/classes.h"
+#include "constants/songs.h"
 
-CONST_DATA EventScr EventScrWM_08A3A70C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_0[] = {
     EvtTextStartType5 // ENOSUPP in EAstdlib
     SVAL(EVT_SLOT_B, 0x54000c)
     TEXTSHOW(0x8e5)
@@ -48,8 +49,8 @@ CONST_DATA EventScr EventScrWM_Ch9a_Beginning[] = {
     WmEvtMoveCamToUnit(-1, -1, WM_MU_0, 46, 0) // ENOSUPP in EAstdlib
     STAL(60)
     WM_WAITFORCAM
-    MUSC(0x5)
-    CALL(EventScrWM_08A3A70C)
+    MUSC(SONG_TREASURED_MEMORIES)
+    CALL(EventScrWM_MessedEventscr_0)
     WM_MAKELORDVISIBLE(WM_MU_0)
     EVBIT_MODIFY(0x1)
     CALL(EventScr_RemoveBGIfNeeded)
@@ -144,7 +145,7 @@ CONST_DATA EventScr EventScrWM_Ch10a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3A9EC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_1[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 86, 20, 60, 0)
     WM_WAITFORCAM
@@ -207,7 +208,7 @@ CONST_DATA EventScr EventScrWM_Ch12a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3AB68[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_2[] = {
     ENDA
 };
 
@@ -230,7 +231,7 @@ CONST_DATA EventScr EventScrWM_Ch13a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3ABC8[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_3[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 168, 62, 60, 0)
     WM_WAITFORCAM
@@ -297,7 +298,7 @@ CONST_DATA EventScr EventScrWM_Ch14a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3AD40[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_4[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 196, 108, 60, 0)
     WM_WAITFORCAM
@@ -375,15 +376,15 @@ CONST_DATA EventScr EventScrWM_Ch9b_Beginning[] = {
     WmEvtMoveCamToUnit(-1, -1, WM_MU_0, 46, 0) // ENOSUPP in EAstdlib
     STAL(60)
     WM_WAITFORCAM
-    MUSC(0x6)
-    CALL(EventScrWM_08A3A70C)
+    MUSC(SONG_GRIM_JOURNEY)
+    CALL(EventScrWM_MessedEventscr_0)
     WM_MAKELORDVISIBLE(WM_MU_0)
     EVBIT_MODIFY(0x1)
     CALL(EventScr_RemoveBGIfNeeded)
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3AF30[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_5[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 0, 32, 60, 0)
     WM_WAITFORCAM
@@ -467,7 +468,7 @@ CONST_DATA EventScr EventScrWM_Ch10b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B10C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_6[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 0, 122, 60, 0)
     WM_WAITFORCAM
@@ -510,7 +511,7 @@ CONST_DATA EventScr EventScrWM_Ch12b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B1F0[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_7[] = {
     ENDA
 };
 
@@ -533,7 +534,7 @@ CONST_DATA EventScr EventScrWM_Ch13b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B250[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_8[] = {
     STAL(6)
     CALL(EventScr_WM_FadeCommon)
     WM_MOVECAM(-1, -1, 60, 188, 80, 0)
@@ -578,7 +579,7 @@ CONST_DATA EventScr EventScrWM_Ch14b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B338[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_9[] = {
     STAL(6)
     CALL(EventScr_WM_FadeCommon)
     WM_MOVECAM(-1, -1, 106, 200, 80, 0)
@@ -633,7 +634,7 @@ CONST_DATA EventScr EventScrWM_MelkaenCoast_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B460[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_10[] = {
     ENDA
 };
 
@@ -642,8 +643,8 @@ CONST_DATA EventScr EventScrWM_ValniTower1_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B46C[] = {
-    MUSCFAST(0x7fff)
+CONST_DATA EventScr EventScrWM_MessedEventscr_11[] = {
+    MUSCFAST(SONG_SILENT)
     FADI(16)
     ENDA
 };
@@ -652,7 +653,7 @@ CONST_DATA EventScr EventScrWM_ValniTower2_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B47C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_12[] = {
     ENDA
 };
 
@@ -660,7 +661,7 @@ CONST_DATA EventScr EventScrWM_ValniTower3_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B484[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_13[] = {
     ENDA
 };
 
@@ -668,7 +669,7 @@ CONST_DATA EventScr EventScrWM_ValniTower4_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B48C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_14[] = {
     ENDA
 };
 
@@ -676,7 +677,7 @@ CONST_DATA EventScr EventScrWM_ValniTower5_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B494[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_15[] = {
     ENDA
 };
 
@@ -684,7 +685,7 @@ CONST_DATA EventScr EventScrWM_ValniTower6_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B49C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_16[] = {
     ENDA
 };
 
@@ -692,7 +693,7 @@ CONST_DATA EventScr EventScrWM_ValniTower7_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4A4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_17[] = {
     ENDA
 };
 
@@ -700,23 +701,23 @@ CONST_DATA EventScr EventScrWM_ValniTower8_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4AC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_18[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4B0[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_19[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4B4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_20[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4B8[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_21[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4BC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_22[] = {
     ENDA
 };
 
@@ -724,8 +725,8 @@ CONST_DATA EventScr EventScrWM_LagdouRuins1_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4C4[] = {
-    MUSCFAST(0x7fff)
+CONST_DATA EventScr EventScrWM_MessedEventscr_23[] = {
+    MUSCFAST(SONG_SILENT)
     FADI(16)
     ENDA
 };
@@ -734,7 +735,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins2_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4D4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_24[] = {
     ENDA
 };
 
@@ -742,7 +743,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins3_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4DC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_25[] = {
     ENDA
 };
 
@@ -750,7 +751,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins4_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4E4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_26[] = {
     ENDA
 };
 
@@ -758,7 +759,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins5_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4EC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_27[] = {
     ENDA
 };
 
@@ -766,7 +767,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins6_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4F4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_28[] = {
     ENDA
 };
 
@@ -774,7 +775,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins7_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B4FC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_29[] = {
     ENDA
 };
 
@@ -782,7 +783,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins8_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B504[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_30[] = {
     ENDA
 };
 
@@ -790,7 +791,7 @@ CONST_DATA EventScr EventScrWM_LagdouRuins9_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B50C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_31[] = {
     ENDA
 };
 
@@ -798,23 +799,23 @@ CONST_DATA EventScr EventScrWM_LagdouRuins10_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B514[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_32[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B518[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_33[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B51C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_34[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B520[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_35[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B524[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_36[] = {
     ENDA
 };
 
@@ -835,7 +836,7 @@ CONST_DATA EventScr EventScrWM_Ch15a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B58C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_37[] = {
     EVBIT_MODIFY(0x1)
     ENDA
 };
@@ -875,7 +876,7 @@ CONST_DATA EventScr EventScrWM_Ch16a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B678[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_38[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 122, 108, 60, 0)
     WM_WAITFORCAM
@@ -946,7 +947,7 @@ CONST_DATA EventScr EventScrWM_Ch17a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B808[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_39[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 216, 128, 60, 0)
     WM_WAITFORCAM
@@ -1005,7 +1006,7 @@ CONST_DATA EventScr EventScrWM_Ch18a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3B944[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_40[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 240, 86, 60, 0)
     WM_WAITFORCAM
@@ -1066,7 +1067,7 @@ CONST_DATA EventScr EventScrWM_Ch19a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3BAC0[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_41[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 240, 32, 60, 0)
     WM_WAITFORCAM
@@ -1148,7 +1149,7 @@ CONST_DATA EventScr EventScrWM_Ch20a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3BC8C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_42[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 240, 18, 60, 0)
     WM_WAITFORCAM
@@ -1192,7 +1193,7 @@ CONST_DATA EventScr EventScrWM_Ch21a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3BD70[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_43[] = {
     ENDA
 };
 
@@ -1225,7 +1226,7 @@ CONST_DATA EventScr EventScrWM_Ch15b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3BE14[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_44[] = {
     STAL(6)
     CALL(EventScr_WM_FadeCommon)
     WM_MOVECAM(-1, -1, 150, 200, 80, 0)
@@ -1305,7 +1306,7 @@ CONST_DATA EventScr EventScrWM_Ch16b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3BFF4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_45[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 122, 108, 60, 0)
     WM_WAITFORCAM
@@ -1376,7 +1377,7 @@ CONST_DATA EventScr EventScrWM_Ch17b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C184[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_46[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 216, 128, 60, 0)
     WM_WAITFORCAM
@@ -1434,7 +1435,7 @@ CONST_DATA EventScr EventScrWM_Ch18b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C2BC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_47[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 240, 86, 60, 0)
     WM_WAITFORCAM
@@ -1495,7 +1496,7 @@ CONST_DATA EventScr EventScrWM_Ch19b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C438[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_48[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 240, 32, 60, 0)
     WM_WAITFORCAM
@@ -1577,7 +1578,7 @@ CONST_DATA EventScr EventScrWM_Ch20b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C604[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_49[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 240, 18, 60, 0)
     WM_WAITFORCAM
@@ -1621,11 +1622,11 @@ CONST_DATA EventScr EventScrWM_Ch21b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C6E8[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_50[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C6EC[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_51[] = {
     EVBIT_MODIFY(0x1)
     WM_SPAWNLORD(WM_MU_0, CHARACTER_EIRIKA, WM_NODE_BorderMulan)
     WM_CENTERCAMONLORD(WM_MU_0)
@@ -1658,7 +1659,7 @@ CONST_DATA EventScr EventScrWM_08A3C6EC[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C79C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_52[] = {
     EVBIT_MODIFY(0x1)
     WM_SPAWNLORD(WM_MU_0, CHARACTER_EIRIKA, WM_NODE_Serafew)
     WM_CENTERCAMONLORD(WM_MU_0)
@@ -1686,17 +1687,17 @@ CONST_DATA EventScr EventScrWM_08A3C79C[] = {
 CONST_DATA EventScr EventScrWM_CastleFrelia_Beginning[] = {
     CHECK_EVENTID(136)
     BNE(0x1, EVT_SLOT_C, EVT_SLOT_0)
-    CALL(EventScrWM_08A3C6EC)
+    CALL(EventScrWM_MessedEventscr_51)
     ENDB
 };
 
-CONST_DATA EventScr EventScrWM_08A3C878[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_53[] = {
 LABEL(0x1)
-    CALL(EventScrWM_08A3C79C)
+    CALL(EventScrWM_MessedEventscr_52)
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C888[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_54[] = {
     FADI(16)
     ENDA
 };
@@ -1713,7 +1714,7 @@ CONST_DATA EventScr EventScrWM_Ch21ax_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C89C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_55[] = {
     ENDA
 };
 
@@ -1721,7 +1722,7 @@ CONST_DATA EventScr EventScrWM_Ch21bx_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C8A4[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_56[] = {
     ENDA
 };
 
@@ -1744,7 +1745,7 @@ CONST_DATA EventScr EventScrWM_Ch11a_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3C904[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_57[] = {
     STAL(6)
     WM_MOVECAM(-1, -1, 112, 46, 60, 0)
     WM_WAITFORCAM
@@ -1800,7 +1801,7 @@ CONST_DATA EventScr EventScrWM_Ch11b_Beginning[] = {
     ENDA
 };
 
-CONST_DATA EventScr EventScrWM_08A3CA2C[] = {
+CONST_DATA EventScr EventScrWM_MessedEventscr_58[] = {
     STAL(6)
     CALL(EventScr_WM_FadeCommon)
     WM_MOVECAM(-1, -1, 0, 188, 80, 0)

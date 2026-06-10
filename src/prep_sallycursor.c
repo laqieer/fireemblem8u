@@ -4,8 +4,6 @@
 #include "ctc.h"
 #include "types.h"
 #include "functions.h"
-#include "constants/characters.h"
-#include "constants/terrains.h"
 #include "m4a.h"
 #include "soundwrapper.h"
 #include "mu.h"
@@ -40,6 +38,12 @@
 #include "bmlib.h"
 #include "eventcall.h"
 
+#include "constants/chapters.h"
+#include "constants/characters.h"
+#include "constants/msg.h"
+#include "constants/terrains.h"
+#include "constants/songs.h"
+
 // TODO: Implicit declaration?
 int CanShowUnitStatScreen(struct Unit * unit);
 int CheckInLinkArena(void);
@@ -67,7 +71,7 @@ struct ProcCmd CONST_DATA gProcScr_SALLYCURSOR[] =
     PROC_CALL(InitPrepScreenUnitsAndCamera),
     PROC_SLEEP(1),
 
-    PROC_CALL(sub_8034194),
+    PROC_CALL(PrepScreenProc_UpdateBgm),
     PROC_SLEEP(8),
 
     PROC_CALL(NewPrepScreenTraineePromotionManager),
@@ -77,15 +81,15 @@ struct ProcCmd CONST_DATA gProcScr_SALLYCURSOR[] =
     PROC_CALL(NewPrepScreenTraineePromotionManager),
     PROC_WHILE(PrepScreenTraineePromotionManagerExists),
 
-PROC_LABEL(2),
+PROC_LABEL(PL_SALLYCURSOR_START_ATMENU),
     PROC_CALL(StartPrepAtMenu),
     PROC_WHILE(PrepAtMenuExists),
     PROC_YIELD,
     PROC_CALL(InitPrepScreenCursorPosition),
 
-    PROC_GOTO(50),
+    PROC_GOTO(PL_SALLYCURSOR_ENTER_MAP),
 
-PROC_LABEL(51),
+PROC_LABEL(PL_SALLYCURSOR_RETURN_TO_ATMENU),
     PROC_CALL(StartMidFadeToBlack),
     PROC_REPEAT(WaitForFade),
 
@@ -95,7 +99,7 @@ PROC_LABEL(51),
 
     // fallthrough
 
-PROC_LABEL(50),
+PROC_LABEL(PL_SALLYCURSOR_ENTER_MAP),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
@@ -107,87 +111,87 @@ PROC_LABEL(50),
     PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
-    PROC_GOTO(61),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_MENU),
 
-PROC_LABEL(0),
-    PROC_CALL(sub_8033514),
-    PROC_WHILE(sub_8013844),
+PROC_LABEL(PL_SALLYCURSOR_OPEN_MAP_MENU),
+    PROC_CALL(PrepScreenProc_StartDimMap),
+    PROC_WHILE(MapPaletteBrightnessFadeExists),
     PROC_CALL(PrepScreenProc_StartMapMenu),
 
     // fallthrough
 
-PROC_LABEL(61),
+PROC_LABEL(PL_SALLYCURSOR_MAP_MENU),
     PROC_CALL(EnablePrepScreenMenu),
     PROC_WHILE(PrepScreenMenuExists),
     PROC_CALL(PrepScreenProc_StartBrightenMap),
-    PROC_WHILE(sub_8013844),
+    PROC_WHILE(MapPaletteBrightnessFadeExists),
 
     // fallthrough
 
-PROC_LABEL(9),
+PROC_LABEL(PL_SALLYCURSOR_MAP_IDLE),
     PROC_WHILE(IsSubtitleHelpActive),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
     PROC_CALL(RefreshUnitSprites),
 
     PROC_CALL(StartPlayerPhaseSideWindows),
-    PROC_REPEAT(sub_8033940),
+    PROC_REPEAT(PrepScreenProc_SetupMapIdle),
     PROC_REPEAT(PrepScreenProc_MapIdle),
 
     // fallthrough
 
-PROC_LABEL(1),
+PROC_LABEL(PL_SALLYCURSOR_UNIT_SELECTED),
     PROC_CALL(HideMoveRangeGraphics),
     PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_CALL(DisplayActiveUnitEffectRange),
     PROC_REPEAT(PrepScreenProc_MapMovementLoop),
 
-    PROC_GOTO(9),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_IDLE),
 
-PROC_LABEL(53),
-    PROC_CALL(sub_803348C),
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+PROC_LABEL(PL_SALLYCURSOR_SUPPLY_DEPLOY),
+    PROC_CALL(PrepScreenProc_SetCameraOnSupply),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
     PROC_CALL(SALLYCURSOR_DeploySupplyUnit),
 
-    PROC_GOTO(52),
+    PROC_GOTO(PL_SALLYCURSOR_POST_SUPPLY_CHANGE),
 
-PROC_LABEL(54),
-    PROC_CALL(sub_803348C),
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+PROC_LABEL(PL_SALLYCURSOR_SUPPLY_REMOVE),
+    PROC_CALL(PrepScreenProc_SetCameraOnSupply),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
     PROC_CALL(SALLYCURSOR_RemoveSupplyUnit),
 
-    PROC_GOTO(52),
+    PROC_GOTO(PL_SALLYCURSOR_POST_SUPPLY_CHANGE),
 
-PROC_LABEL(52),
+PROC_LABEL(PL_SALLYCURSOR_POST_SUPPLY_CHANGE),
     PROC_CALL(InitMapChangeGraphicsIfFog),
     PROC_YIELD,
     PROC_CALL(DisplayMapChangeIfFog),
     PROC_SLEEP(60),
 
-    PROC_GOTO(0),
+    PROC_GOTO(PL_SALLYCURSOR_OPEN_MAP_MENU),
 
-PROC_LABEL(5),
+PROC_LABEL(PL_SALLYCURSOR_POST_STATSCREEN_IDLE),
     PROC_CALL(RefreshBMapGraphics),
     PROC_START_CHILD_BLOCKING(gProcScr_ADJUSTSFROMXI),
 
-    PROC_GOTO(9),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_IDLE),
 
-PROC_LABEL(6),
-    PROC_CALL(sub_8034090),
+PROC_LABEL(PL_SALLYCURSOR_POST_STATSCREEN_MOVE),
+    PROC_CALL(PrepScreenProc_RefreshAfterStatScreen),
 
-    PROC_GOTO(1),
+    PROC_GOTO(PL_SALLYCURSOR_UNIT_SELECTED),
 
-PROC_LABEL(3),
+PROC_LABEL(PL_SALLYCURSOR_UNIT_SWAP),
     PROC_CALL(EndPlayerPhaseSideWindows),
     PROC_CALL(PrepScreen_StartUnitSwap),
 
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
 
     PROC_REPEAT(PrepScreen_UnitSwapIdle),
     PROC_CALL(HideMoveRangeGraphics),
     PROC_CALL(PrepScreen_StartUnitSwapAnim),
 
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
     PROC_WHILE(PrepUnitSwapProcExits),
 
     PROC_CALL(InitMapChangeGraphicsIfFog),
@@ -196,21 +200,21 @@ PROC_LABEL(3),
     PROC_YIELD,
     PROC_CALL(DisplayMapChangeIfFog),
 
-    PROC_GOTO(9),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_IDLE),
 
-PROC_LABEL(4),
+PROC_LABEL(PL_SALLYCURSOR_CANCEL_SWAP),
     PROC_CALL(HideMoveRangeGraphics),
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
-    PROC_CALL(sub_8033DD8),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
+    PROC_CALL(PrepScreenProc_RecenterOnActiveUnit),
     PROC_YIELD,
 
-    PROC_GOTO(9),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_IDLE),
 
-PROC_LABEL(11),
+PROC_LABEL(PL_SALLYCURSOR_0B),
 
-    PROC_GOTO(1),
+    PROC_GOTO(PL_SALLYCURSOR_UNIT_SELECTED),
 
-PROC_LABEL(57),
+PROC_LABEL(PL_SALLYCURSOR_OPTIONS),
     PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
@@ -221,22 +225,22 @@ PROC_LABEL(57),
 
     PROC_CALL(BMapDispResume),
 
-    PROC_GOTO(62),
+    PROC_GOTO(PL_SALLYCURSOR_REENTER_MAP),
 
-PROC_LABEL(56),
+PROC_LABEL(PL_SALLYCURSOR_CHAPTER_STATUS),
     PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
     PROC_CALL(EndPrepScreenMenu_),
 
-    PROC_CALL(sub_808E79C),
+    PROC_CALL(StartChapterStatusScreen_FromPrep),
     PROC_YIELD,
 
     PROC_CALL(BMapDispResume),
 
-    PROC_GOTO(62),
+    PROC_GOTO(PL_SALLYCURSOR_REENTER_MAP),
 
-PROC_LABEL(59),
+PROC_LABEL(PL_SALLYCURSOR_SAVE),
     PROC_CALL(StartFastFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(BMapDispSuspend),
@@ -246,24 +250,24 @@ PROC_LABEL(59),
     PROC_YIELD,
 
     PROC_CALL(BMapDispResume),
-    PROC_CALL(sub_8034168),
+    PROC_CALL(PrepScreenProc_RestoreBgmAfterSave),
 
-    PROC_GOTO(62),
+    PROC_GOTO(PL_SALLYCURSOR_REENTER_MAP),
 
-PROC_LABEL(55),
+PROC_LABEL(PL_SALLYCURSOR_END_PREP),
     PROC_CALL(StartMidFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(PrepScreenProc_Cleanup),
 
-    PROC_CALL(nullsub_20),
+    PROC_CALL(Nop_Eventcall_0),
     PROC_YIELD,
 
-    PROC_CALL(sub_801240C),
+    PROC_CALL(SyncUnitDeploymentState),
     PROC_CALL(EndPrepScreen),
 
     PROC_BLOCK,
 
-PROC_LABEL(62),
+PROC_LABEL(PL_SALLYCURSOR_REENTER_MAP),
     PROC_CALL(RefreshBMapGraphics),
     PROC_CALL(RefreshEntityBmMaps),
     PROC_CALL(RenderBmMap),
@@ -275,9 +279,9 @@ PROC_LABEL(62),
     PROC_CALL(StartFastFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
-    PROC_GOTO(61),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_MENU),
 
-PROC_LABEL(60),
+PROC_LABEL(PL_SALLYCURSOR_SHOP),
     PROC_CALL(StartMidFadeToBlack),
     PROC_REPEAT(WaitForFade),
     PROC_CALL(HideMoveRangeGraphics),
@@ -292,19 +296,19 @@ PROC_LABEL(60),
     PROC_CALL(RenderBmMap),
     PROC_CALL(RefreshUnitSprites),
 
-    PROC_CALL(sub_8034194),
-    PROC_CALL(sub_8033608),
+    PROC_CALL(PrepScreenProc_UpdateBgm),
+    PROC_CALL(PrepScreenProc_ApplyBrownBoxPalette),
 
     PROC_CALL(StartMidFadeFromBlack),
     PROC_REPEAT(WaitForFade),
 
-    PROC_GOTO(9),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_IDLE),
 
-PROC_LABEL(58),
+PROC_LABEL(PL_SALLYCURSOR_POST_DEBUG_MENU),
     PROC_YIELD,
     PROC_CALL(PrepScreenProc_StartMapMenu),
 
-    PROC_GOTO(61),
+    PROC_GOTO(PL_SALLYCURSOR_MAP_MENU),
 
     PROC_END,
 };
@@ -312,24 +316,24 @@ PROC_LABEL(58),
 // clang-format on
 
 //! FE8U = 0x08033258
-int GetPlayerLeaderUnitId(void)
+int GetPlayerLeaderPid(void)
 {
     int i;
-    int unitId;
+    int pid;
 
     switch (gPlaySt.chapterModeIndex)
     {
         case CHAPTER_MODE_COMMON:
         case CHAPTER_MODE_EIRIKA:
-            unitId = CHARACTER_EIRIKA;
+            pid = CHARACTER_EIRIKA;
             break;
 
         case CHAPTER_MODE_EPHRAIM:
-            unitId = CHARACTER_EPHRAIM;
+            pid = CHARACTER_EPHRAIM;
             break;
     }
 
-    if ((u8)gPlaySt.chapterIndex == 5)
+    if ((u8)gPlaySt.chapterIndex == CHAPTER_L_5X)
     {
         return CHARACTER_EPHRAIM;
     }
@@ -337,16 +341,17 @@ int GetPlayerLeaderUnitId(void)
     do
     {
         struct Unit * unit;
-        if (GetBattleMapKind() == 0)
+
+        if (GetBattleMapKind() == BATTLEMAP_KIND_STORY)
         {
-            return unitId;
+            return pid;
         }
 
-        unit = GetUnitFromCharId(unitId);
+        unit = GetUnitFromCharId(pid);
 
-        if (unit && !(unit->state & US_NOT_DEPLOYED))
+        if (unit != NULL && !(unit->state & US_NOT_DEPLOYED))
         {
-            return unitId;
+            return pid;
         }
 
         for (i = FACTION_BLUE + 1; i < FACTION_GREEN; ++i)
@@ -367,11 +372,11 @@ int GetPlayerLeaderUnitId(void)
         }
     } while (0);
 
-    return unitId;
+    return pid;
 }
 
 //! FE8U = 0x080332D0
-void sub_80332D0(void)
+void Prep_ShowDeployableTiles(void)
 {
     s8 xTmp;
     s8 yTmp;
@@ -380,15 +385,17 @@ void sub_80332D0(void)
 
     BmMapFill(gBmMapRange, 0);
     BmMapFill(gBmMapMovement, -1);
+
     uDef += CalcForceDeployedUnitCounts();
 
     for (; uDef->charIndex != 0; uDef++)
     {
-        GenUnitDefinitionFinalPosition(uDef, &xTmp, &yTmp, 0);
+        GenUnitDefinitionFinalPosition(uDef, &xTmp, &yTmp, false);
         gBmMapRange[yTmp][xTmp] = 1;
     }
 
     DisplayMoveRangeGraphics(0x10);
+
     return;
 }
 
@@ -402,7 +409,7 @@ void EndPrepScreenMenu_(void)
 //! FE8U = 0x08033358
 void PrepMapMenu_OnViewMap(struct ProcPrepSallyCursor * proc)
 {
-    proc->unk_58 = 1;
+    proc->lastCmd = PREP_MAPMENU_VIEW_MAP;
     Proc_Break(proc);
     EndPrepScreenMenu_();
     return;
@@ -414,7 +421,7 @@ void PrepMapMenu_OnFormation(struct ProcPrepSallyCursor * proc)
     s16 x;
     s16 y;
 
-    proc->unk_58 = 2;
+    proc->lastCmd = PREP_MAPMENU_FORMATION;
 
     x = gBmSt.playerCursor.x;
     y = gBmSt.playerCursor.y;
@@ -440,7 +447,7 @@ bool PrepMapMenu_OnStartPress(ProcPtr proc)
         return false;
     }
 
-    Proc_Goto(proc, 55);
+    Proc_Goto(proc, PL_SALLYCURSOR_END_PREP);
 
     return true;
 }
@@ -448,7 +455,7 @@ bool PrepMapMenu_OnStartPress(ProcPtr proc)
 //! FE8U = 0x080333C4
 bool PrepMapMenu_OnBPress(ProcPtr proc)
 {
-    Proc_Goto(proc, 51);
+    Proc_Goto(proc, PL_SALLYCURSOR_RETURN_TO_ATMENU);
     return true;
 }
 
@@ -457,7 +464,7 @@ void SALLYCURSOR_DeploySupplyUnit(void)
 {
     struct Unit * unit = GetSupplyUnit();
 
-    if (unit)
+    if (unit != NULL)
     {
         unit->state &= ~US_NOT_DEPLOYED;
 
@@ -474,8 +481,8 @@ void SALLYCURSOR_DeploySupplyUnit(void)
 //! FE8U = 0x0803341C
 void PrepMapMenu_OnOptions(struct ProcPrepSallyCursor * proc)
 {
-    proc->unk_58 = 8;
-    Proc_Goto(proc, 57);
+    proc->lastCmd = PREP_MAPMENU_OPTIONS;
+    Proc_Goto(proc, PL_SALLYCURSOR_OPTIONS);
     return;
 }
 
@@ -501,23 +508,23 @@ void SALLYCURSOR_RemoveSupplyUnit(void)
 //! FE8U = 0x08033458
 void PrepMapMenu_OnSave(struct ProcPrepSallyCursor * proc)
 {
-    proc->unk_58 = 9;
-    Proc_Goto(proc, 59);
+    proc->lastCmd = PREP_MAPMENU_SAVE;
+    Proc_Goto(proc, PL_SALLYCURSOR_SAVE);
     return;
 }
 
 //! FE8U = 0x08033468
-void sub_8033468(struct ProcPrepSallyCursor * proc)
+void PrepMapMenu_OnDebug_Unused(struct ProcPrepSallyCursor * proc)
 {
-    proc->unk_58 = 0xA;
+    proc->lastCmd = PREP_MAPMENU_DEBUG;
     EndPrepScreenMenu_();
     StartOrphanMenu(&gDebugMenuDef);
-    Proc_Goto(proc, 58);
+    Proc_Goto(proc, PL_SALLYCURSOR_POST_DEBUG_MENU);
     return;
 }
 
 //! FE8U = 0x0803348C
-void sub_803348C(ProcPtr proc)
+void PrepScreenProc_SetCameraOnSupply(ProcPtr proc)
 {
     EnsureCameraOntoPosition(
         proc, GetROMChapterStruct(gPlaySt.chapterIndex)->merchantPosX,
@@ -528,7 +535,7 @@ void sub_803348C(ProcPtr proc)
 //! FE8U = 0x080334BC
 void PrepScreenProc_InitMapMenu(struct ProcPrepSallyCursor * proc)
 {
-    proc->unk_58 = 1;
+    proc->lastCmd = PREP_MAPMENU_VIEW_MAP;
     PrepScreenProc_StartMapMenu(proc);
     return;
 }
@@ -544,15 +551,15 @@ void PrepScreenProc_DimMapImmediate(void)
 //! FE8U = 0x080334E8
 void PrepScreenProc_StartBrightenMap(ProcPtr proc)
 {
-    sub_8013800(0xC0, 0xC0, 0xC0, 0x100, 0x100, 0x100, 0xFF00FFF0, 0x40, proc);
+    StartMapPaletteBrightnessFade(0xC0, 0xC0, 0xC0, 0x100, 0x100, 0x100, 0xFF00FFF0, 0x40, proc);
     return;
 }
 
 //! FE8U = 0x08033514
-void sub_8033514(ProcPtr proc)
+void PrepScreenProc_StartDimMap(ProcPtr proc)
 {
     ArchiveCurrentPalettes();
-    sub_8013800(0x100, 0x100, 0x100, 0xC0, 0xC0, 0xC0, 0xFF00FFF0, 0x40, proc);
+    StartMapPaletteBrightnessFade(0x100, 0x100, 0x100, 0xC0, 0xC0, 0xC0, 0xFF00FFF0, 0x40, proc);
     return;
 }
 
@@ -560,8 +567,8 @@ void sub_8033514(ProcPtr proc)
 void PrepHelpPrompt_Init(struct ProcPrepSallyCursor * proc)
 {
     StartHelpPromptSprite(170, 140, 2, proc);
-    Decompress(Img_PrepHelpButtonSprites, (void *)(OBJ_VRAM1 + 0x3000));
-    proc->unk_58 = 0;
+    Decompress(Img_PrepHelpButtonSprites, OBJ_CHR_ADDR(0x380));
+    proc->lastCmd = PREP_MAPMENU_NONE;
     return;
 }
 
@@ -577,7 +584,7 @@ void PrepHelpPrompt_Loop(void)
 }
 
 //! FE8U = 0x08033608
-void sub_8033608(void)
+void PrepScreenProc_ApplyBrownBoxPalette(void)
 {
     ApplyPalette(Pal_SysBrownBox, 0x12);
     return;
@@ -606,30 +613,33 @@ void PrepScreenProc_StartMapMenu(struct ProcPrepSallyCursor * proc)
 
     StartPrepScreenMenu(proc);
 
-    SetPrepScreenMenuItem(1, PrepMapMenu_OnViewMap, TEXT_COLOR_SYSTEM_WHITE, 0x590, 0x5BB);
+    SetPrepScreenMenuItem(PREP_MAPMENU_VIEW_MAP, PrepMapMenu_OnViewMap, TEXT_COLOR_SYSTEM_WHITE, MSG_590, MSG_5BB);
 
     SetPrepScreenMenuItem(
-        2, PrepMapMenu_OnFormation, (PrepGetDeployedUnitAmt() ? TEXT_COLOR_SYSTEM_WHITE : TEXT_COLOR_SYSTEM_GRAY),
-        0x591, 0x5BC);
+        PREP_MAPMENU_FORMATION, PrepMapMenu_OnFormation,
+        (PrepGetDeployedUnitAmt() != 0 ? TEXT_COLOR_SYSTEM_WHITE : TEXT_COLOR_SYSTEM_GRAY), MSG_591, MSG_5BC);
 
-    SetPrepScreenMenuItem(8, PrepMapMenu_OnOptions, TEXT_COLOR_SYSTEM_WHITE, 0x592, 0x5BD);
+    SetPrepScreenMenuItem(PREP_MAPMENU_OPTIONS, PrepMapMenu_OnOptions, TEXT_COLOR_SYSTEM_WHITE, MSG_592, MSG_5BD);
 
     if (CanPrepScreenSave())
     {
-        SetPrepScreenMenuItem(9, PrepMapMenu_OnSave, TEXT_COLOR_SYSTEM_WHITE, 0x579, 0x5BE);
+        SetPrepScreenMenuItem(PREP_MAPMENU_SAVE, PrepMapMenu_OnSave, TEXT_COLOR_SYSTEM_WHITE, MSG_579, MSG_5BE);
     }
     else
     {
-        SetPrepScreenMenuItem(9, PrepMapMenu_OnSave, TEXT_COLOR_SYSTEM_GRAY, 0x579, 0x5BE);
+        SetPrepScreenMenuItem(PREP_MAPMENU_SAVE, PrepMapMenu_OnSave, TEXT_COLOR_SYSTEM_GRAY, MSG_579, MSG_5BE);
     }
 
     StartPrepHelpPrompt(proc);
+
     SetPrepScreenMenuOnBPress(PrepMapMenu_OnBPress);
     SetPrepScreenMenuOnStartPress(PrepMapMenu_OnStartPress);
     SetPrepScreenMenuOnEnd(PrepMapMenu_OnEnd);
+
     DrawPrepScreenMenuFrameAt(10, 2);
 
-    SetPrepScreenMenuSelectedItem(proc->unk_58);
+    SetPrepScreenMenuSelectedItem(proc->lastCmd);
+
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT);
 
     return;
@@ -652,7 +662,7 @@ bool CanCharacterBePrepMoved(int unitId)
 }
 
 //! FE8U = 0x08033770
-void sub_8033770(struct ProcPrepSallyCursor * proc)
+void PrepCameraPan_Init(struct ProcPrepSallyCursor * proc)
 {
     s16 x;
 
@@ -670,7 +680,7 @@ void sub_8033770(struct ProcPrepSallyCursor * proc)
 }
 
 //! FE8U = 0x08033798
-void sub_8033798(struct ProcPrepSallyCursor * proc)
+void PrepCameraPan_TurnDown(struct ProcPrepSallyCursor * proc)
 {
     s16 y;
 
@@ -684,7 +694,7 @@ void sub_8033798(struct ProcPrepSallyCursor * proc)
 }
 
 //! FE8U = 0x080337B4
-void sub_80337B4(struct ProcPrepSallyCursor * proc)
+void PrepCameraPan_TurnLeft(struct ProcPrepSallyCursor * proc)
 {
     s16 x;
 
@@ -698,7 +708,7 @@ void sub_80337B4(struct ProcPrepSallyCursor * proc)
 }
 
 //! FE8U = 0x080337D4
-void sub_80337D4(struct ProcPrepSallyCursor * proc)
+void PrepCameraPan_TurnUp(struct ProcPrepSallyCursor * proc)
 {
     s16 y;
 
@@ -712,16 +722,16 @@ void sub_80337D4(struct ProcPrepSallyCursor * proc)
 }
 
 //! FE8U = 0x080337F0
-void sub_80337F0(struct ProcPrepSallyCursor * proc)
+void PrepCameraPan_Loop(struct ProcPrepSallyCursor * proc)
 {
     if (gKeyStatusPtr->newKeys & (A_BUTTON | B_BUTTON | START_BUTTON))
     {
         proc->unk_4A = 1;
     }
 
-    if (proc->unk_4A && !(proc->unk_2C & 0xF) && !(proc->unk_30 & 0xF))
+    if (proc->unk_4A && !(proc->unk_2C & 15) && !(proc->unk_30 & 15))
     {
-        Proc_Goto(proc, 2);
+        Proc_Goto(proc, PL_SALLYCURSOR_START_ATMENU);
         return;
     }
 
@@ -746,7 +756,7 @@ void InitPrepScreenUnitsAndCamera(void)
 {
     LoadUnitPrepScreenPositions();
 
-    if (!(PLAY_FLAG_PREPSCREEN & gPlaySt.chapterStateBits))
+    if (!(gPlaySt.chapterStateBits & PLAY_FLAG_PREPSCREEN))
     {
         SortPlayerUnitsForPrepScreen();
         InitPlayerUnitPositionsForPrepScreen();
@@ -770,9 +780,9 @@ void InitPrepScreenCursorPosition(void)
     s8 x;
     s8 y;
 
-    struct Unit * unit = GetUnitFromCharId(GetPlayerLeaderUnitId());
+    struct Unit * unit = GetUnitFromCharId(GetPlayerLeaderPid());
 
-    if (unit && PrepGetDeployedUnitAmt())
+    if (unit != NULL && PrepGetDeployedUnitAmt() != 0)
     {
         SetCursorMapPosition(unit->xPos, unit->yPos);
     }
@@ -780,7 +790,7 @@ void InitPrepScreenCursorPosition(void)
     {
         uDef = GetChapterAllyUnitDataPointer();
         uDef = uDef + CalcForceDeployedUnitCounts();
-        GenUnitDefinitionFinalPosition(uDef, &x, &y, 0);
+        GenUnitDefinitionFinalPosition(uDef, &x, &y, false);
         SetCursorMapPosition(x, y);
     }
 
@@ -791,13 +801,13 @@ void InitPrepScreenCursorPosition(void)
 }
 
 //! FE8U = 0x08033940
-void sub_8033940(struct ProcPrepSallyCursor * proc)
+void PrepScreenProc_SetupMapIdle(struct ProcPrepSallyCursor * proc)
 {
     if (!DoesBMXFADEExist())
     {
-        if (proc->unk_58 == 2)
+        if (proc->lastCmd == PREP_MAPMENU_FORMATION)
         {
-            sub_80332D0();
+            Prep_ShowDeployableTiles();
         }
 
         Proc_Break(proc);
@@ -817,123 +827,123 @@ void PrepScreenProc_MapIdle(struct ProcPrepSallyCursor * proc)
         if (gKeyStatusPtr->newKeys & L_BUTTON)
         {
             TrySwitchViewedUnit(gBmSt.playerCursor.x, gBmSt.playerCursor.y);
-            PlaySoundEffect(0x6B);
-            goto showcursor;
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
         }
-
-        if (gKeyStatusPtr->newKeys & R_BUTTON)
+        else
         {
-            if (gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x])
+            if (gKeyStatusPtr->newKeys & R_BUTTON)
             {
-                if (CanShowUnitStatScreen(GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x])))
+                if (gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x])
                 {
-                    EndAllMus();
-                    EndPlayerPhaseSideWindows();
-                    SetStatScreenConfig(
-                        STATSCREEN_CONFIG_NONDEAD | STATSCREEN_CONFIG_NONBENCHED | STATSCREEN_CONFIG_NONUNK9 |
-                        STATSCREEN_CONFIG_NONROOFED | STATSCREEN_CONFIG_NONUNK16);
-                    StartStatScreen(GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]), proc);
-                    Proc_Goto(proc, 5);
-                    return;
+                    if (CanShowUnitStatScreen(GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x])))
+                    {
+                        EndAllMus();
+                        EndPlayerPhaseSideWindows();
+                        SetStatScreenConfig(
+                            STATSCREEN_CONFIG_NONDEAD | STATSCREEN_CONFIG_NONBENCHED | STATSCREEN_CONFIG_NONUNK9 |
+                            STATSCREEN_CONFIG_NONROOFED | STATSCREEN_CONFIG_NONUNK16);
+                        StartStatScreen(GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]), proc);
+                        Proc_Goto(proc, PL_SALLYCURSOR_POST_STATSCREEN_IDLE);
+                        return;
+                    }
                 }
             }
-        }
 
-        if (gKeyStatusPtr->newKeys & B_BUTTON)
-        {
-            EndPlayerPhaseSideWindows();
-            gPlaySt.xCursor = gBmSt.playerCursor.x;
-            gPlaySt.yCursor = gBmSt.playerCursor.y;
-            Proc_Goto(proc, 0);
-            PlaySoundEffect(0x69);
-            return;
-        }
-
-        if (gKeyStatusPtr->newKeys & A_BUTTON)
-        {
-            struct Unit * unit = GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]);
-
-            switch (GetPlayerSelectKind(unit))
+            if (gKeyStatusPtr->newKeys & B_BUTTON)
             {
-                case PLAYER_SELECT_NOUNIT:
-                case PLAYER_SELECT_TURNENDED:
-                    EndPlayerPhaseSideWindows();
-                    gPlaySt.xCursor = gBmSt.playerCursor.x;
-                    gPlaySt.yCursor = gBmSt.playerCursor.y;
-
-                    switch (gBmMapTerrain[gBmSt.playerCursor.y][gBmSt.playerCursor.x])
-                    {
-                        case TERRAIN_VENDOR:
-                        case TERRAIN_ARMORY:
-                            PlaySoundEffect(0x6A);
-                            Proc_Goto(proc, 60);
-                            return;
-                        default:
-                            Proc_Goto(proc, 0);
-                            PlaySoundEffect(0x69);
-                            return;
-                    }
-
-                case PLAYER_SELECT_CONTROL:
-                    UnitBeginAction(unit);
-                    gActiveUnit->state &= ~(US_HIDDEN);
-
-                    if (proc->unk_58 == 2)
-                    {
-                        Proc_Goto(proc, 3);
-                        return;
-                    }
-
-                    Proc_Goto(proc, 1);
-
-                    return;
-
-                case PLAYER_SELECT_4:
-                    if (proc->unk_58 == 2)
-                    {
-                        PlaySoundEffect(0x6C);
-                        return;
-                    }
-
-                    // fallthrough
-
-                case PLAYER_SELECT_NOCONTROL:
-                    UnitBeginAction(unit);
-                    gActiveUnit->state &= ~(US_HIDDEN);
-
-                    Proc_Goto(proc, 1);
-
-                    return;
+                EndPlayerPhaseSideWindows();
+                gPlaySt.xCursor = gBmSt.playerCursor.x;
+                gPlaySt.yCursor = gBmSt.playerCursor.y;
+                Proc_Goto(proc, PL_SALLYCURSOR_OPEN_MAP_MENU);
+                PlaySoundEffect(SONG_69);
+                return;
             }
-        }
 
-        if (gKeyStatusPtr->newKeys & START_BUTTON)
-        {
-            EndPlayerPhaseSideWindows();
-            StartMinimapPrepPhase(proc);
-            Proc_Goto(proc, 9);
-            return;
+            if (gKeyStatusPtr->newKeys & A_BUTTON)
+            {
+                struct Unit * unit = GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]);
+
+                switch (GetPlayerSelectKind(unit))
+                {
+                    case PLAYER_SELECT_NOUNIT:
+                    case PLAYER_SELECT_TURNENDED:
+                        EndPlayerPhaseSideWindows();
+                        gPlaySt.xCursor = gBmSt.playerCursor.x;
+                        gPlaySt.yCursor = gBmSt.playerCursor.y;
+
+                        switch (gBmMapTerrain[gBmSt.playerCursor.y][gBmSt.playerCursor.x])
+                        {
+                            case TERRAIN_VENDOR:
+                            case TERRAIN_ARMORY:
+                                PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
+                                Proc_Goto(proc, PL_SALLYCURSOR_SHOP);
+                                return;
+                            default:
+                                Proc_Goto(proc, PL_SALLYCURSOR_OPEN_MAP_MENU);
+                                PlaySoundEffect(SONG_69);
+                                return;
+                        }
+
+                    case PLAYER_SELECT_CONTROL:
+                        UnitBeginAction(unit);
+                        gActiveUnit->state &= ~(US_HIDDEN);
+
+                        if (proc->lastCmd == PREP_MAPMENU_FORMATION)
+                        {
+                            Proc_Goto(proc, PL_SALLYCURSOR_UNIT_SWAP);
+                            return;
+                        }
+
+                        Proc_Goto(proc, PL_SALLYCURSOR_UNIT_SELECTED);
+
+                        return;
+
+                    case PLAYER_SELECT_4:
+                        if (proc->lastCmd == PREP_MAPMENU_FORMATION)
+                        {
+                            PlaySoundEffect(SONG_6C);
+                            return;
+                        }
+
+                        // fallthrough
+
+                    case PLAYER_SELECT_NOCONTROL:
+                        UnitBeginAction(unit);
+                        gActiveUnit->state &= ~(US_HIDDEN);
+
+                        Proc_Goto(proc, PL_SALLYCURSOR_UNIT_SELECTED);
+
+                        return;
+                }
+            }
+
+            if (gKeyStatusPtr->newKeys & START_BUTTON)
+            {
+                EndPlayerPhaseSideWindows();
+                StartMinimapPrepPhase(proc);
+                Proc_Goto(proc, PL_SALLYCURSOR_MAP_IDLE);
+                return;
+            }
         }
     }
 
-showcursor:
     PutMapCursor(gBmSt.playerCursorDisplay.x, gBmSt.playerCursorDisplay.y, 0);
 
     return;
 }
 
 //! FE8U = 0x08033BF8
-int sub_8033BF8(void)
+int PrepMapMenu_ReturnToAtMenu(void)
 {
     ProcPtr proc = Proc_Find(gProcScr_SALLYCURSOR);
-    Proc_Goto(proc, 51);
+    Proc_Goto(proc, PL_SALLYCURSOR_RETURN_TO_ATMENU);
     return MENU_ACT_SKIPCURSOR | MENU_ACT_END | MENU_ACT_SND6A | MENU_ACT_CLEAR;
 }
 
 //! FE8U = 0x08033C10
 void PrepScreen_StartUnitSwap(struct ProcPrepSallyCursor * proc)
 {
-    struct APHandle * ap = AP_Create(gUnknown_085A0EA0, 0);
+    struct APHandle * ap = AP_Create(gUnkData_2, 0);
     ap->tileBase = 0;
     AP_SwitchAnimation(ap, 0);
 
@@ -942,10 +952,10 @@ void PrepScreen_StartUnitSwap(struct ProcPrepSallyCursor * proc)
     proc->xCursor = gBmSt.playerCursor.x;
     proc->yCursor = gBmSt.playerCursor.y;
 
-    StartSubtitleHelp(proc, GetStringFromIndex(0x872)); // TODO: msgid "Reorder your units.[.]"
+    StartSubtitleHelp(proc, GetStringFromIndex(MSG_872)); // "Reorder your units.[.]"
 
     EnsureCameraOntoPosition(proc, gActiveUnit->xPos, gActiveUnit->yPos);
-    PlaySoundEffect(0x69);
+    PlaySoundEffect(SONG_69);
 
     return;
 }
@@ -967,9 +977,9 @@ void PrepScreen_UnitSwapIdle(struct ProcPrepSallyCursor * proc)
     xLoc = (proc->xCursor * 16) - gBmSt.camera.x;
     yLoc = (proc->yCursor * 16) - gBmSt.camera.y;
 
-    if (((xLoc + 16) <= 256) && ((yLoc + 32) <= 192))
+    if (((xLoc + 16) <= DISPLAY_WIDTH + 16) && ((yLoc + 32) <= DISPLAY_HEIGHT + 32))
     {
-        PutSprite(4, xLoc, yLoc - 12, gObject_16x16, 6);
+        PutSprite(4, xLoc, yLoc - 12, gObject_16x16, OAM2_CHR(0x6));
     }
 
     if (gKeyStatusPtr->newKeys & A_BUTTON)
@@ -983,16 +993,16 @@ void PrepScreen_UnitSwapIdle(struct ProcPrepSallyCursor * proc)
             return;
         }
 
-        PlaySoundEffect(0x6C);
+        PlaySoundEffect(SONG_6C);
 
         return;
     }
     else if (gKeyStatusPtr->newKeys & B_BUTTON)
     {
         AP_Delete(proc->ap);
-        Proc_Goto(proc, 4);
+        Proc_Goto(proc, PL_SALLYCURSOR_CANCEL_SWAP);
         EndSubtitleHelp();
-        PlaySoundEffect(0x6B);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
 
         return;
     }
@@ -1010,7 +1020,7 @@ void PrepScreen_UnitSwapIdle(struct ProcPrepSallyCursor * proc)
 }
 
 //! FE8U = 0x08033DD8
-void sub_8033DD8(ProcPtr proc)
+void PrepScreenProc_RecenterOnActiveUnit(ProcPtr proc)
 {
     SetCursorMapPosition(gActiveUnit->xPos, gActiveUnit->yPos);
     EnsureCameraOntoPosition(proc, gActiveUnit->xPos, gActiveUnit->yPos);
@@ -1022,7 +1032,7 @@ void PrepScreen_StartUnitSwapAnim(ProcPtr proc)
 {
     struct Unit * activeUnit = gActiveUnit;
     struct Unit * targetUnit = GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]);
-    if (!targetUnit)
+    if (targetUnit == NULL)
     {
         StartPrepUnitSwap(proc, activeUnit, gBmSt.playerCursor.x, gBmSt.playerCursor.y);
     }
@@ -1032,7 +1042,7 @@ void PrepScreen_StartUnitSwapAnim(ProcPtr proc)
         StartPrepUnitSwap(proc, targetUnit, activeUnit->xPos, activeUnit->yPos);
     }
 
-    PlaySoundEffect(0x61);
+    PlaySoundEffect(SONG_61);
     return;
 }
 
@@ -1062,7 +1072,7 @@ void DisplayMapChangeIfFog(void)
 //! FE8U = 0x08033EC0
 void PrepScreenProc_StartConfigMenu(ProcPtr proc)
 {
-    Proc_StartBlocking(ProcScr_Config2, proc);
+    Proc_StartBlocking(ProcScr_Config_PrepMapMenu, proc);
     return;
 }
 
@@ -1110,8 +1120,8 @@ void PrepScreenProc_MapMovementLoop(ProcPtr proc)
         RefreshEntityBmMaps();
         RefreshUnitSprites();
 
-        PlaySoundEffect(0x6B);
-        Proc_Goto(proc, 9);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
+        Proc_Goto(proc, PL_SALLYCURSOR_MAP_IDLE);
         return;
     }
 
@@ -1124,7 +1134,7 @@ void PrepScreenProc_MapMovementLoop(ProcPtr proc)
             uid = gActiveUnit->index;
         }
 
-        if (uid)
+        if (uid != 0)
         {
             struct Unit * unit = GetUnit(uid);
             if (CanShowUnitStatScreen(unit))
@@ -1134,7 +1144,7 @@ void PrepScreenProc_MapMovementLoop(ProcPtr proc)
                     STATSCREEN_CONFIG_NONDEAD | STATSCREEN_CONFIG_NONBENCHED | STATSCREEN_CONFIG_NONUNK9 |
                     STATSCREEN_CONFIG_NONROOFED | STATSCREEN_CONFIG_NONUNK16);
                 StartStatScreen(GetUnit(uid), proc);
-                Proc_Goto(proc, 6);
+                Proc_Goto(proc, PL_SALLYCURSOR_POST_STATSCREEN_MOVE);
             }
         }
     }
@@ -1145,7 +1155,7 @@ void PrepScreenProc_MapMovementLoop(ProcPtr proc)
         {
             EnsureCameraOntoPosition(proc, gActiveUnitMoveOrigin.x, gActiveUnitMoveOrigin.y);
             SetCursorMapPosition(gActiveUnitMoveOrigin.x, gActiveUnitMoveOrigin.y);
-            PlaySoundEffect(0x6B);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
         }
     }
 
@@ -1163,12 +1173,12 @@ void PrepScreenProc_Cleanup(ProcPtr proc)
 }
 
 //! FE8U = 0x08034090
-void sub_8034090(ProcPtr proc)
+void PrepScreenProc_RefreshAfterStatScreen(ProcPtr proc)
 {
     if (gActiveUnit == NULL)
     {
         RefreshBMapGraphics();
-        Proc_Goto(proc, 12);
+        Proc_Goto(proc, PL_SALLYCURSOR_0C); // NOTE: Label does not exist
         return;
     }
 
@@ -1180,7 +1190,7 @@ void sub_8034090(ProcPtr proc)
     gBmMapUnit[gActiveUnit->yPos][gActiveUnit->xPos] = 0;
     gActiveUnit->state |= US_HIDDEN;
 
-    Proc_Goto(proc, 11);
+    Proc_Goto(proc, PL_SALLYCURSOR_0B);
 
     return;
 }
@@ -1192,21 +1202,22 @@ void StartPrepSaveScreen(ProcPtr proc)
 
     if (!(gPlaySt.chapterStateBits & PLAY_FLAG_COMPLETE))
     {
-        if ((GetBattleMapKind() - 1) <= 1)
+        u32 mapKind = GetBattleMapKind();
+        if (mapKind == BATTLEMAP_KIND_DUNGEON || mapKind == BATTLEMAP_KIND_SKIRMISH)
         {
             gPlaySt.save_menu_type = 4;
         }
     }
 
     StartBgmVolumeChange(0x100, 0x80, 0x20, NULL);
-    sub_801240C();
+    SyncUnitDeploymentState();
     Make6C_SaveMenuPostChapter(proc);
 
     return;
 }
 
 //! FE8U = 0x08034168
-void sub_8034168(void)
+void PrepScreenProc_RestoreBgmAfterSave(void)
 {
     StartBgmVolumeChange(0x80, 0x100, 0x20, NULL);
     gPlaySt.save_menu_type = 2;
@@ -1214,7 +1225,7 @@ void sub_8034168(void)
 }
 
 //! FE8U = 0x08034194
-void sub_8034194(void)
+void PrepScreenProc_UpdateBgm(void)
 {
     if (CheckInLinkArena())
     {
@@ -1223,11 +1234,11 @@ void sub_8034194(void)
 
     if (gGMData.state.bits.state_0)
     {
-        sub_80B9FC0();
+        UpdateWorldMapBgm();
         return;
     }
 
-    CallSomeSoundMaybe(0x34, 0x100, 0x100, 0x18, NULL);
+    ChangeBgm(SONG_COMBAT_PREPARATION, 0x100, 0x100, 0x18, NULL);
 
     return;
 }
@@ -1249,7 +1260,7 @@ void PrepScreenProc_HideEverythingAndUnlockGame(void)
     UnlockGame();
     BMapDispResume();
 
-    sub_80141B0(); // disables layers
+    ForceScreenToBlack(); // disables layers
 
     return;
 }
@@ -1332,7 +1343,7 @@ void EndPrepScreen(void)
 }
 
 //! FE8U = 0x080342FC
-bool sub_80342FC(void)
+bool IsPrepMapActive(void)
 {
     return Proc_Find(gProcScr_SALLYCURSOR) ? true : false;
 }

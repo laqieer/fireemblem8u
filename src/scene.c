@@ -17,6 +17,7 @@
 #include "bmlib.h"
 #include "bmshop.h"
 #include "scene.h"
+#include "constants/songs.h"
 
 // various bits of the box opening animation
 extern u8 CONST_DATA Img_TalkBubbleOpening_A[];
@@ -202,10 +203,10 @@ struct ProcCmd CONST_DATA ProcScr_TalkSpriteShiftClear[] =
 {
     PROC_MARK(PROC_MARK_TALK),
 
-    PROC_CALL(sub_80080D0),
+    PROC_CALL(TalkSpriteShiftClear_OnInit),
     PROC_SLEEP(0),
 
-    PROC_CALL(sub_8008108),
+    PROC_CALL(TalkSpriteShiftClear_ClearLine),
     PROC_SLEEP(1),
 
     PROC_END,
@@ -267,18 +268,18 @@ struct ProcCmd CONST_DATA gProcScr_TalkPutSpriteText_Unused[] =
     PROC_END,
 };
 
-struct ProcCmd CONST_DATA ProcScr_0859160C[] =
+struct ProcCmd CONST_DATA ProcScr_Scene_0[] =
 {
-    PROC_SET_END_CB(sub_8008F54),
-    PROC_WHILE(sub_8008F3C),
+    PROC_SET_END_CB(SpriteTextScroll_OnEnd),
+    PROC_WHILE(SpriteTextScroll_BlockWhileActive),
 
     PROC_END,
 };
 
-struct ProcCmd CONST_DATA ProcScr_08591624[] =
+struct ProcCmd CONST_DATA ProcScr_Scene_1[] =
 {
-    PROC_CALL(sub_8008FAC),
-    PROC_REPEAT(sub_8008FB4),
+    PROC_CALL(SpriteTextScroll_OnInit),
+    PROC_REPEAT(SpriteTextScroll_OnIdle),
 
     PROC_END,
 };
@@ -309,7 +310,7 @@ void ClearTalkFaceRefs(void) {
 void InitTalk(int chr, int lines, s8 unpackBubble) {
     int i;
 
-    InitTextFont(&sTalkFont, (void*)(0x6000000 + GetBackgroundTileDataOffset(0) + (0x3FF & chr) * 0x20), chr, 2);
+    InitTextFont(&sTalkFont, (void*)(VRAM + GetBackgroundTileDataOffset(0) + (0x3FF & chr) * 0x20), chr, 2);
     SetInitTalkTextFont();
 
     sTalkState->lines = lines;
@@ -338,7 +339,7 @@ void InitSpriteTalk(int chr, int lines, int palId) {
     SetTextFont(&sTalkFont);
     SetTextFontGlyphs(TEXT_GLYPHS_TALK);
 
-    ApplyPalette(gUnknown_0859EF20, palId + 0x10);
+    ApplyPalette(Pal_TalkText, palId + 0x10);
 
     PAL_OBJ_COLOR(palId, 4) = RGB(7, 18, 28);
     PAL_OBJ_COLOR(palId, 14) = RGB(14, 13, 12);
@@ -358,7 +359,7 @@ void InitSpriteTalk(int chr, int lines, int palId) {
 }
 
 //! FE8U = 0x08006964
-void sub_8006964(void) {
+void ApplyTalkTextPalette(void) {
     ApplyPalette(Pal_Text, 2);
     return;
 }
@@ -448,7 +449,7 @@ void SetTalkFlag(int flag) {
 }
 
 //! FE8U = 0x08006ABC
-void sub_8006ABC(void(*func)(ProcPtr)) {
+void SetTalkCallback(void(*func)(ProcPtr)) {
     sTalkState->unk38 = func;
     return;
 }
@@ -565,26 +566,21 @@ void Talk_OnIdle(ProcPtr proc) {
                 Proc_Break(proc);
                 return;
 
-            case 1:
-                goto _08006CD0;
-
             case 2:
                 if (sTalkState->instantScroll || sTalkState->printDelay <= 0) {
                     break;
-                    goto _08006CC2;
                 }
 
                 return;
 
             case 3:
-        _08006CC2:
                 sTalkState->printClock = sTalkState->printDelay;
                 sTalkState->instantScroll = 0;
 
                 return;
 
+            case 1:
             default:
-        _08006CD0:
                 if (!(CheckTalkFlag(TALK_FLAG_SPRITE))) {
                     if (TalkPrepNextChar(proc) == 1) {
                         return;
@@ -599,7 +595,7 @@ void Talk_OnIdle(ProcPtr proc) {
 
                 if (!CheckTalkFlag(TALK_FLAG_SILENT)) {
                     if (CheckTalkFlag(TALK_FLAG_7)) {
-                        PlaySoundEffect(0x7a);
+                        PlaySoundEffect(SONG_7A);
                     } else {
                         if ((GetTextDisplaySpeed() == 1) && !(GetGameClock() & 1)) {
                             break;
@@ -610,7 +606,7 @@ void Talk_OnIdle(ProcPtr proc) {
                         }
 
                         sTalkState->unk82 = 1;
-                        PlaySoundEffect(0x6e);
+                        PlaySoundEffect(SONG_6E);
                     }
                 }
         }
@@ -701,7 +697,7 @@ void ResumeTalk(void) {
 }
 
 //! FE8U = 0x08006F00
-void sub_8006F00(void) {
+void ToggleTalkTextRed(void) {
     int i;
 
     if (sTalkState->printColor == 1) {
@@ -1011,7 +1007,7 @@ int TalkInterpret(ProcPtr proc) {
 
                 case 0x21: // [ToggleRed]
                     // _08007658
-                    sub_8006F00();
+                    ToggleTalkTextRed();
                     sTalkState->str++;
                     return TalkInterpret(proc);
 
@@ -1129,25 +1125,25 @@ int TalkInterpret(ProcPtr proc) {
                 case 0x1C: // [OpenEyes]
                     // _080077CC
                     sTalkState->str++;
-                    sub_80064D4(sTalkState->faces[sTalkState->activeFaceSlot], 0);
+                    SetFaceEyeControl(sTalkState->faces[sTalkState->activeFaceSlot], 0);
                     return 3;
 
                 case 0x1D: // [CloseEyes]
                     // _080077E2
                     sTalkState->str++;
-                    sub_80064D4(sTalkState->faces[sTalkState->activeFaceSlot], 2);
+                    SetFaceEyeControl(sTalkState->faces[sTalkState->activeFaceSlot], 2);
                     return 3;
 
                 case 0x1E: // [HalfCloseEyes]
                     // _080077F8
                     sTalkState->str++;
-                    sub_80064D4(sTalkState->faces[sTalkState->activeFaceSlot], 3);
+                    SetFaceEyeControl(sTalkState->faces[sTalkState->activeFaceSlot], 3);
                     return 3;
 
                 case 0x1F: // [Wink]
                     // _0800780E
                     sTalkState->str++;
-                    sub_80064D4(sTalkState->faces[sTalkState->activeFaceSlot], 4);
+                    SetFaceEyeControl(sTalkState->faces[sTalkState->activeFaceSlot], 4);
                     return 3;
 
                 default:
@@ -1199,7 +1195,7 @@ void TalkLoadFace(ProcPtr proc) {
     }
 
     if (sTalkState->faces[sTalkState->activeFaceSlot] != NULL) {
-        sub_80066E0(sTalkState->faces[sTalkState->activeFaceSlot], faceId);
+        StartFaceChange(sTalkState->faces[sTalkState->activeFaceSlot], faceId);
         return;
     }
 
@@ -1422,7 +1418,7 @@ void TalkWaitForInput_OnIdle(struct Proc* proc) {
 }
 
 //! FE8U = 0x08007CD4
-void sub_8007CD4(void) {
+void Talk_Nop(void) {
     return;
 }
 
@@ -1523,7 +1519,7 @@ void StartTalkChoice(const struct ChoiceEntryInfo* choices, struct Text* text, u
 void TalkChoice_OnIdle(struct TalkChoiceProc* proc) {
 
     if (gKeyStatusPtr->newKeys & (B_BUTTON)) {
-        PlaySoundEffect(0x6b);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
 
         sTalkChoiceResult = 0;
 
@@ -1531,7 +1527,7 @@ void TalkChoice_OnIdle(struct TalkChoiceProc* proc) {
 
         return;
     } else if (gKeyStatusPtr->newKeys & (A_BUTTON)) {
-        PlaySoundEffect(0x6a);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 
         sTalkChoiceResult = proc->selectedChoice;
 
@@ -1541,7 +1537,7 @@ void TalkChoice_OnIdle(struct TalkChoiceProc* proc) {
     }
 
     if ((gKeyStatusPtr->newKeys & (DPAD_LEFT)) && (proc->selectedChoice == 2)) {
-        PlaySoundEffect(0x67);
+        PlaySoundEffect(SONG_SE_SYS_CURSOR_LR1);
 
         proc->selectedChoice = 1;
 
@@ -1551,7 +1547,7 @@ void TalkChoice_OnIdle(struct TalkChoiceProc* proc) {
     }
 
     if ((gKeyStatusPtr->newKeys & (DPAD_RIGHT)) && (proc->selectedChoice == 1)) {
-        PlaySoundEffect(0x67);
+        PlaySoundEffect(SONG_SE_SYS_CURSOR_LR1);
 
         proc->selectedChoice = 2;
 
@@ -1625,18 +1621,18 @@ void TalkShiftClear_OnIdle(struct Proc* proc) {
 }
 
 //! FE8U = 0x080080D0
-void sub_80080D0(ProcPtr proc) {
+void TalkSpriteShiftClear_OnInit(ProcPtr proc) {
     if (CheckTalkFlag(TALK_FLAG_7)) {
-        sub_8008F64(0x200, 0x1c, 0, proc);
+        StartSpriteTextScroll(0x200, 0x1c, 0, proc);
     } else {
-        sub_8008F64(0x200, 0x19, 0x44444444, proc);
+        StartSpriteTextScroll(0x200, 0x19, 0x44444444, proc);
     }
 
     return;
 }
 
 //! FE8U = 0x08008108
-void sub_8008108(void) {
+void TalkSpriteShiftClear_ClearLine(void) {
     sTalkState->lineActive--;
 
     if (CheckTalkFlag(TALK_FLAG_7)) {
@@ -2285,9 +2281,7 @@ int GetStrTalkLen(const char* str, s8 isBubbleOpen) {
                             continue;
 
                         case 0x10:
-                            str++;
-                            str++;
-                            str++;
+                            str += 3;
 
                             continue;
                     }
@@ -2457,7 +2451,7 @@ bool GetZero(void) {
 }
 
 //! FE8U = 0x08008F1C
-void sub_8008F1C(void) {
+void TalkDebugNop(void) {
     // Maybe "StartTalkDebug" in FE6
     return;
 }
@@ -2472,8 +2466,8 @@ void TalkBgSync(int bg) {
 }
 
 //! FE8U = 0x08008F3C
-bool sub_8008F3C(void) {
-    if (Proc_Find(ProcScr_08591624))
+bool SpriteTextScroll_BlockWhileActive(void) {
+    if (Proc_Find(ProcScr_Scene_1))
         return true;
 
 #if BUGFIX
@@ -2482,34 +2476,34 @@ bool sub_8008F3C(void) {
 }
 
 //! FE8U = 0x08008F54
-void sub_8008F54(void)
+void SpriteTextScroll_OnEnd(void)
 {
-    Proc_EndEach(ProcScr_08591624);
+    Proc_EndEach(ProcScr_Scene_1);
     return;
 }
 
 //! FE8U = 0x08008F64
-void sub_8008F64(int chr, int b, int c, ProcPtr parent)
+void StartSpriteTextScroll(int chr, int b, int c, ProcPtr parent)
 {
-    struct TalkDebugProc * proc = Proc_Start(ProcScr_08591624, PROC_TREE_VSYNC);
+    struct TalkDebugProc * proc = Proc_Start(ProcScr_Scene_1, PROC_TREE_VSYNC);
 
     proc->unk_4c = (0x3FF & chr) * CHR_SIZE + 0x06010000;
     proc->unk_54 = b;
     proc->unk_58 = c;
-    Proc_StartBlocking(ProcScr_0859160C, parent);
+    Proc_StartBlocking(ProcScr_Scene_0, parent);
 
     return;
 }
 
 //! FE8U = 0x08008FAC
-void sub_8008FAC(struct TalkDebugProc * proc)
+void SpriteTextScroll_OnInit(struct TalkDebugProc * proc)
 {
     proc->unk_64 = 0;
     return;
 }
 
 //! FE8U = 0x08008FB4
-void sub_8008FB4(struct TalkDebugProc * proc)
+void SpriteTextScroll_OnIdle(struct TalkDebugProc * proc)
 {
     int i;
     int j;
@@ -2552,7 +2546,7 @@ void sub_8008FB4(struct TalkDebugProc * proc)
 // The functions below seem to be unrelated to the dialog system
 
 //! FE8U = 0x08009038
-void nullsub_15(ProcPtr proc, int label)
+void Nop_Scene_0(ProcPtr proc, int label)
 {
     // "EventGotoLabel" from FE6 (and possibly FE7)
     return;

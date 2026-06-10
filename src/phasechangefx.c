@@ -13,6 +13,7 @@
 #include "bmlib.h"
 #include "phasechangefx.h"
 #include "constants/video-global.h"
+#include "constants/songs.h"
 
 /*
  * The nice phase changing animation thing and related procs/functions
@@ -23,7 +24,7 @@ int CheckInLinkArena();
 
 /* section.data */
 
-u16 CONST_DATA obj_0859AEC8[] =
+u16 CONST_DATA obj_Phasechangefx_0[] =
 {
     5,
     OAM0_SHAPE_64x32 + OAM0_AFFINE_ENABLE, OAM1_SIZE_64x32, 0,
@@ -137,7 +138,7 @@ void PhaseIntroInitText(struct PhaseIntroSubProc *proc)
     if (GetCurrentBgmSong() != GetCurrentMapMusicIndex())
         Sound_FadeOutBGM(4);
 
-    PlaySoundEffect(0x73);
+    PlaySoundEffect(SONG_73);
 
     proc->timer = 15;
 }
@@ -256,7 +257,7 @@ void PhaseIntroUnk_Loop(struct PhaseIntroSubProc *proc)
 
     PutSpriteExt(
         2, 0, 0x44,
-        obj_0859AEC8,
+        obj_Phasechangefx_0,
         0x2600
     );
 }

@@ -6,6 +6,7 @@
 #include "bm.h"
 
 #include "ekrbattle.h"
+#include "constants/songs.h"
 
 EWRAM_DATA int gBaArenaFlag = 0;
 
@@ -23,7 +24,7 @@ int GetBattleAnimArenaFlag(void)
 }
 
 //! FE8U = 0x0805B034
-void sub_805B034(int x)
+void EkrArenaBgScroll(int x)
 {
     int x1 = x >> 3;
     int x2 = x & 7;
@@ -41,18 +42,18 @@ void PlayDeathSoundForArena(void)
 {
     if (GetBattleAnimArenaFlag() != 0)
     {
-        EfxPlaySE(0x8f, 0x100);
+        EfxPlaySE(SONG_8F, 0x100);
     }
 
     return;
 }
 
 //! FE8U = 0x0805B094
-void sub_805B094(void)
+void StopArenaBattleMusic(void)
 {
     if (GetBattleAnimArenaFlag() != 0)
     {
-        DoM4aSongNumStop(0x8e);
+        DoM4aSongNumStop(SONG_8E);
     }
 
     return;
@@ -81,7 +82,7 @@ void ExecBattleAnimArenaExit(void)
     AnimClearAll();
     NewEkrTogiEndPROC();
 
-    SetMainUpdateRoutine(MainUpdate_8055C68);
+    SetMainUpdateRoutine(MainUpdate_0);
     Proc_EndEach(ProcScr_efxStatusUnit);
 
     return;
@@ -142,14 +143,14 @@ void ekrTogiInit_LoadGfx(struct ProcEkrTogi * proc)
     LZ77UnCompVram(Img_ArenaBattleBg, (void *)0x06008000);
     LZ77UnCompWram(Tsa_ArenaBattleBg, gEkrTsaBuffer);
     EfxTmCpyExt(gEkrTsaBuffer, -1, gTmB_Banim, 66, 46, 20, 6, 0);
-    sub_805B034(0);
+    EkrArenaBgScroll(0);
 
     BG_EnableSyncByMask(BG3_SYNC_BIT);
 
     proc->unk_2c = 0;
     proc->unk_2e = 16;
 
-    EfxPlaySE(0x8e, 0x100);
+    EfxPlaySE(SONG_8E, 0x100);
 
     Proc_Break(proc);
 
@@ -242,7 +243,7 @@ void ekrTogiEnd_End(ProcPtr proc)
     EndEkrBattleDeamon();
     EndEkrGauge();
 
-    SetMainUpdateRoutine(OnGameLoopMain);
+    SetMainUpdateRoutine(OnMain);
     SetInterrupt_LCDVBlank(OnVBlank);
 
     Proc_Break(proc);

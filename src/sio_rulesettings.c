@@ -5,6 +5,8 @@
 #include "bmlib.h"
 #include "fontgrp.h"
 
+#include "constants/msg.h"
+
 #include "sio_core.h"
 #include "sio.h"
 
@@ -34,7 +36,7 @@ void SaveLinkArenaRuleSettings(u8 * buf)
 }
 
 //! FE8U = 0x080476CC
-void sub_80476CC(int idx, int state)
+void SioRuleSettings_DrawRuleOptions(int idx, int state)
 {
     int i;
 
@@ -50,11 +52,11 @@ void sub_80476CC(int idx, int state)
 
     for (i = 0; i < 2; i++)
     {
-        ClearText(&gUnk_Sio_0203DA88[(idx << 1) + i]);
-        Text_SetColor(&gUnk_Sio_0203DA88[(idx << 1) + i], textColorLut[(state + i) & 1]);
-        Text_DrawString(&gUnk_Sio_0203DA88[(idx << 1) + i], GetStringFromIndex(gLinkArenaRuleData[idx].optionTextId[i]));
+        ClearText(&gUnk_Sio_7[(idx << 1) + i]);
+        Text_SetColor(&gUnk_Sio_7[(idx << 1) + i], textColorLut[(state + i) & 1]);
+        Text_DrawString(&gUnk_Sio_7[(idx << 1) + i], GetStringFromIndex(gLinkArenaRuleData[idx].optionTextId[i]));
         PutText(
-            &gUnk_Sio_0203DA88[(idx << 1) + i],
+            &gUnk_Sio_7[(idx << 1) + i],
             TILEMAP_LOCATED(gBG0TilemapBuffer, gLinkArenaRuleData[idx].xPos[i], 6 + idx * 3));
     }
 
@@ -67,28 +69,27 @@ void sub_80476CC(int idx, int state)
 void SioRuleSettings_Init(struct ProcSioRuleSettings * proc)
 {
     int i;
-    int r7;
     u8 buf[4];
 
     ClearSioBG();
     InitSioBG();
     StartMuralBackgroundExt(proc, 0, 0x12, 2, 0);
 
-    Decompress(Img_LinkArenaRankIcons, (void *)(0x06000F00 + GetBackgroundTileDataOffset(BG_1)));
+    Decompress(Img_LinkArenaRankIcons, GetBackgroundTileDataOffset(BG_1) + BG_CHR_ADDR(0x78));
     ApplyPalette(Pal_LinkArenaRankIcons, 6);
 
-    Decompress(Img_TacticianSelObj, (void *)0x06014800);
+    Decompress(Img_TacticianSelObj, OBJ_CHR_ADDR(0x240));
     ApplyPalettes(Pal_TacticianSelObj, 0x13, 4);
 
-    sub_804C3A4(0);
+    Nop_SioUiutils_2(0);
 
-    Decompress(gUnknown_085AE778, gGenericBuffer);
-    CallARM_FillTileRect(gBG2TilemapBuffer + 0xA1, gGenericBuffer, 0x1000);
+    Decompress(gUnkData_15, gGenericBuffer);
+    CallARM_FillTileRect(TILEMAP_LOCATED(gBG2TilemapBuffer, 1, 5), gGenericBuffer, TILEREF(0x0, 1));
 
-    SetTextFont(&Font_0203DB64);
+    SetTextFont(&Font_0);
     ResetTextFont();
 
-    sub_8043164();
+    InitSioTexts();
 
     proc->unk_30 = 0;
     proc->unk_2c = StartRuleSettingSpriteDrawInteractive(proc);
@@ -99,18 +100,16 @@ void SioRuleSettings_Init(struct ProcSioRuleSettings * proc)
 
     UpdateRuleSettingSprites(
         proc->unk_2c, proc->unk_30, gLinkArenaRuleData[proc->unk_30].xPos[buf[proc->unk_30]] * 8,
-        ((proc->unk_30 * 3) << 3) + 0x30);
-
-    r7 = 0xc0;
+        ((proc->unk_30 * 3) * 8) + 48);
 
     for (i = 0; i < 3; i++)
     {
         ClearText(&gLinkArenaSt.texts[i]);
-        Text_SetColor(&gLinkArenaSt.texts[i], 0);
+        Text_SetColor(&gLinkArenaSt.texts[i], TEXT_COLOR_SYSTEM_WHITE);
         Text_DrawString(&gLinkArenaSt.texts[i], GetStringFromIndex(gLinkArenaRuleData[i].labelTextId));
-        PutText(&gLinkArenaSt.texts[i], gBG0TilemapBuffer + 6 + (r7 + i * 0x60));
+        PutText(&gLinkArenaSt.texts[i], TILEMAP_LOCATED(gBG0TilemapBuffer, 6, 6 + i * 3));
 
-        sub_80476CC(i, buf[i]);
+        SioRuleSettings_DrawRuleOptions(i, buf[i]);
     }
 
     DrawLinkArenaModeIcon(gBG1TilemapBuffer + 0x11E + gLinkArenaRuleData[1].xPos[0], 0);
@@ -118,9 +117,9 @@ void SioRuleSettings_Init(struct ProcSioRuleSettings * proc)
 
     StartLinkArenaTitleBanner(proc->unk_2c, 6, 0);
 
-    sub_804C508();
+    SetLinkArenaUiBlendAndWindowOff();
 
-    sub_8043100(proc->unk_30 + 0x745, 1);
+    PutSioText(MSG_745 + proc->unk_30, 1); // "Set whether to hide enemy units."
 
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG1_SYNC_BIT | BG2_SYNC_BIT | BG3_SYNC_BIT);
 
@@ -158,14 +157,14 @@ void SioRuleSettings_Loop_Main(struct ProcSioRuleSettings * proc)
     if ((gKeyStatusPtr->newKeys & DPAD_LEFT) != 0)
     {
         buf[proc->unk_30] = (buf[proc->unk_30] - 1) & 1;
-        sub_80476CC(proc->unk_30, buf[proc->unk_30]);
+        SioRuleSettings_DrawRuleOptions(proc->unk_30, buf[proc->unk_30]);
         change++;
     }
 
     if ((gKeyStatusPtr->newKeys & DPAD_RIGHT) != 0)
     {
         buf[proc->unk_30] = (buf[proc->unk_30] + 1) & 1;
-        sub_80476CC(proc->unk_30, buf[proc->unk_30]);
+        SioRuleSettings_DrawRuleOptions(proc->unk_30, buf[proc->unk_30]);
         change++;
     }
 
@@ -182,9 +181,9 @@ void SioRuleSettings_Loop_Main(struct ProcSioRuleSettings * proc)
 
         UpdateRuleSettingSprites(
             proc->unk_2c, proc->unk_30, (gLinkArenaRuleData[proc->unk_30].xPos[buf[proc->unk_30]] + var) * 8,
-            ((proc->unk_30 * 3) << 3) + 0x30);
+            ((proc->unk_30 * 3) * 8) + 48);
 
-        sub_8043100(proc->unk_30 + 0x745, 1);
+        PutSioText(MSG_745 + proc->unk_30, 1);
     }
 
     return;
@@ -199,13 +198,13 @@ struct ProcCmd CONST_DATA ProcScr_SIO_RuleSettings[] =
     PROC_CALL(FadeInBlackSpeed20),
     PROC_YIELD,
 
-    PROC_CALL(Clear_0203DDDC),
+    PROC_CALL(Clear_UnkData_0),
 
     PROC_REPEAT(SioRuleSettings_Loop_Main),
 
-    PROC_CALL(Set_0203DDDC),
+    PROC_CALL(Set_UnkData_0),
 
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_YIELD,
 
     PROC_CALL(EndMuralBackground),

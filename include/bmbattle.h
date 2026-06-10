@@ -174,7 +174,7 @@ void SetBattleUnitTerrainBonuses(struct BattleUnit* bu, int terrain);
 void SetBattleUnitTerrainBonusesAuto(struct BattleUnit* bu);
 void SetBattleUnitWeapon(struct BattleUnit* bu, int itemSlot);
 void SetBattleUnitWeaponBallista(struct BattleUnit* bu);
-void sub_802A958(void); // unused?
+void Battle_Nop(void); // unused?
 void ClearBattleHits(void);
 void BattleUnwind(void);
 void BattleGetBattleUnitOrder(struct BattleUnit** outAttacker, struct BattleUnit** outDefender);
@@ -188,12 +188,12 @@ void ApplyUnitPromotion(struct Unit* unit, u8 classId);
 void GenerateBattleUnitStatGainsComparatively(struct BattleUnit* bu, struct Unit* unit);
 void CheckBattleUnitStatCaps(struct Unit* unit, struct BattleUnit* bu);
 void BattleApplyUnitUpdates(void);
-s8 sub_802C0B0(void); // unused?
+s8 Battle_CondTrue(void); // unused?
 s8 HasBattleUnitGainedWeaponLevel(struct BattleUnit* bu);
 void UpdateUnitFromBattle(struct Unit* unit, struct BattleUnit* bu);
 void UpdateUnitDuringBattle(struct Unit* unit, struct BattleUnit* bu);
 void BattleApplyBallistaUpdates(void);
-void sub_802C334(void);
+void ClearBmbattleStruct0(void);
 void BattleUnitTargetSetEquippedWeapon(struct BattleUnit* bu);
 void BattleUnitTargetCheckCanCounter(struct BattleUnit* bu);
 void BattleApplyWeaponTriangleEffect(struct BattleUnit* actor, struct BattleUnit* target);
@@ -284,6 +284,6 @@ void BattlePrintDebugHitInfo(void);
 void BattleGenerateHitScriptedDamage(struct BattleUnit* bu);
 void BattleUnwindScripted(void);
 
-#define BUNIT_IS_OBSTACLE(aBu) (((aBu)->terrainId == TERRAIN_WALL_1B) || ((aBu)->terrainId == TERRAIN_SNAG))
+#define BUNIT_IS_OBSTACLE(aBu) (((aBu)->terrainId == TERRAIN_WALL_DAMAGED) || ((aBu)->terrainId == TERRAIN_SNAG))
 
 #endif // GUARD_BMBATTLE_H

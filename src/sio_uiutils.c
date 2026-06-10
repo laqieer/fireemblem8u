@@ -15,6 +15,8 @@
 #include "sio_core.h"
 #include "sio.h"
 
+#include "constants/songs.h"
+
 /**
  * Contains various sprite/palette utility procs used in
  * the Link Arena menus.
@@ -48,25 +50,25 @@ void InitSioBG(void)
 }
 
 //! FE8U = 0x0804C3A0
-void sub_804C3A0(int unusedA, int unusedB)
+void Nop_SioUiutils_1(int unusedA, int unusedB)
 {
     return;
 }
 
 //! FE8U = 0x0804C3A4
-void sub_804C3A4(int unused)
+void Nop_SioUiutils_2(int unused)
 {
     return;
 }
 
 //! FE8U = 0x0804C3A8
-void nullsub_13(void)
+void Nop_SioUiutils_0(void)
 {
     return;
 }
 
 //! FE8U = 0x0804C3AC
-void sub_804C3AC(u8 * src, u8 * dst, int c, int d)
+void CopyLinkArenaTileRows(u8 * src, u8 * dst, int c, int d)
 {
     int i;
 
@@ -82,33 +84,18 @@ void sub_804C3AC(u8 * src, u8 * dst, int c, int d)
     return;
 }
 
-struct LinkArenaTitleBannerProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int unk_2c;
-    /* 30 */ int unk_30;
-    /* 34 */ STRUCT_PAD(0x34, 0x58);
-    /* 58 */ int unk_58;
-    /* 5C */ u32 chr;
-};
-
-extern u8 gUnknown_085B0DE8[];
-extern u8 gUnknown_085AAE0C[];
-
-extern u8 gUnknown_085B0F2C[];
-
 //! FE8U = 0x0804C3EC
 void LATitleBanner_Init(struct LinkArenaTitleBannerProc * proc)
 {
     int a = (proc->unk_58 % 3) * 0x140;
     int b = (proc->unk_58 / 3) * 0x800;
 
-    Decompress(gUnknown_085B0DE8, (void *)(0x6000000 + proc->chr));
-    Decompress(gUnknown_085AAE0C, gGenericBuffer);
+    Decompress(gUnkData_25, (void *)(VRAM + proc->chr));
+    Decompress(gUnkData_5, gGenericBuffer);
 
-    sub_804C3AC(gGenericBuffer + (a + b), (void *)(0x06014000), 10, 2);
+    CopyLinkArenaTileRows(gGenericBuffer + (a + b), OBJ_CHR_ADDR(0x200), 10, 2);
 
-    CallARM_FillTileRect(gBG2TilemapBuffer, gUnknown_085B0F2C, (((u16)(proc->chr >> 1) >> 4)) | 0x1000);
+    CallARM_FillTileRect(gBG2TilemapBuffer, gUnkData_26, (((u16)(proc->chr >> 1) >> 4)) | 0x1000);
     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
     return;
@@ -159,7 +146,7 @@ void StartLinkArenaTitleBanner(ProcPtr parent, int size, int chr)
 
     if (chr == 0)
     {
-        proc->chr = 0x5c00;
+        proc->chr = 0x2E0 * CHR_SIZE;
     }
 
     proc->unk_2c = (proc->unk_58 % 3) * 0x140;
@@ -169,14 +156,14 @@ void StartLinkArenaTitleBanner(ProcPtr parent, int size, int chr)
 }
 
 //! FE8U = 0x0804C4F8
-void sub_804C4F8(void)
+void EndLinkArenaTitleBanner(void)
 {
     Proc_EndEach(ProcScr_LinkArenaTitleBanner);
     return;
 }
 
 //! FE8U = 0x0804C508
-void sub_804C508(void)
+void SetLinkArenaUiBlendAndWindowOff(void)
 {
     SetBlendAlpha(16, 4);
 
@@ -189,7 +176,7 @@ void sub_804C508(void)
 }
 
 //! FE8U = 0x0804C558
-void sub_804C558(void)
+void SetLinkArenaUiBlend(void)
 {
     SetBlendAlpha(16, 4);
 
@@ -200,7 +187,7 @@ void sub_804C558(void)
 }
 
 //! FE8U = 0x0804C590
-void sub_804C590(void)
+void ResetLinkArenaUiBlend(void)
 {
     SetBlendConfig(0, 0, 0, 0);
     return;
@@ -267,7 +254,7 @@ const u16 * CONST_DATA SpriteArray_SioMenuItems[] =
     Sprite_SioMenu_RuleSettings,
 };
 
-const u16 gUnknown_080DA09C[] =
+const u16 gSioUiutils_0[] =
 {
     OAM2_LAYER(1) + OAM2_PAL(5),
     OAM2_LAYER(1) + OAM2_PAL(4),
@@ -308,10 +295,10 @@ const u16 * CONST_DATA SpriteArray_SioMenuTeamCount[] =
 // clang-format on
 
 //! FE8U = 0x0804C5A4
-void sub_804C5A4(u8 idx)
+void UpdateSioMenuSelectedGlow(u8 idx)
 {
     // clang-format off
-    const u8 gUnknown_080DA0DA[] =
+    const u8 sioMenuItemGlowLut[] =
     {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -320,9 +307,9 @@ void sub_804C5A4(u8 idx)
     };
     // clang-format on
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
-        int color = gUnknown_080DA0DA[idx] + 0x10;
+        int color = sioMenuItemGlowLut[idx] + 0x10;
         PAL_OBJ_COLOR(3, 1) = ((color) << 10) + ((color) << 5) + (color);
         EnablePaletteSync();
     }
@@ -331,53 +318,53 @@ void sub_804C5A4(u8 idx)
 }
 
 //! FE8U = 0x0804C5F8
-void sub_804C5F8(struct SioProc85AA9C0 * proc)
+void SioMenuItem_Loop(struct SioMenuItemProc * proc)
 {
     int oam2 = OAM2_CHR(0x2C8) + OAM2_PAL(8);
 
-    PutSprite(4, proc->xBase, proc->yBase, SpriteArray_SioMenuItems[proc->unk_2f], gUnknown_080DA09C[proc->unk_2e]);
+    PutSprite(4, proc->xBase, proc->yBase, SpriteArray_SioMenuItems[proc->index], gSioUiutils_0[proc->state]);
 
-    if (proc->unk_2e == 2)
+    if (proc->state == 2)
     {
-        sub_804C5A4(proc->unk_30);
+        UpdateSioMenuSelectedGlow(proc->glowFrame);
     }
 
-    proc->unk_30 = (proc->unk_30 + 1) & 31;
+    proc->glowFrame = (proc->glowFrame + 1) & 31;
 
-    if (proc->unk_2e == 2 && proc->unk_2f == 1)
+    if (proc->state == 2 && proc->index == 1)
     {
-        proc->unk_36 += proc->unk_3a;
-        proc->unk_38 += proc->unk_3c;
+        proc->leftArrowAnmCnt += proc->leftArrowSpeed;
+        proc->rightArrowAnmCnt += proc->rightArrowSpeed;
 
-        if (proc->unk_3a > 4)
+        if (proc->leftArrowSpeed > 4)
         {
-            proc->unk_3a--;
+            proc->leftArrowSpeed--;
         }
 
-        if (proc->unk_3c > 4)
+        if (proc->rightArrowSpeed > 4)
         {
-            proc->unk_3c--;
+            proc->rightArrowSpeed--;
         }
 
         if ((GetGameClock() & 3) == 0)
         {
-            if (proc->unk_32 < 0)
+            if (proc->xLeftArrow < 0)
             {
-                proc->unk_32++;
+                proc->xLeftArrow++;
             }
 
-            if (proc->unk_34 > 52)
+            if (proc->xRightArrow > 52)
             {
-                proc->unk_34--;
+                proc->xRightArrow--;
             }
         }
 
         // Put golden arrow sprites for increasing/decreasing team count
 
-        PutSprite(0, 75 + proc->xBase + proc->unk_32, proc->yBase + 8, gObject_8x16, ((proc->unk_36 >> 5) % 6) + oam2);
+        PutSprite(0, 75 + proc->xBase + proc->xLeftArrow, proc->yBase + 8, gObject_8x16, ((proc->leftArrowAnmCnt >> 5) % 6) + oam2);
         PutSprite(
-            0, 73 + proc->xBase + proc->unk_34, proc->yBase + 8, gObject_8x16_HFlipped,
-            ((proc->unk_38 >> 5) % 6) + oam2);
+            0, 73 + proc->xBase + proc->xRightArrow, proc->yBase + 8, gObject_8x16_HFlipped,
+            ((proc->rightArrowAnmCnt >> 5) % 6) + oam2);
 
         PutSpriteExt(0, 80 + proc->xBase, proc->yBase + 9, SpriteArray_SioMenuTeamCount[gLinkArenaSt.unk_05], 0);
     }
@@ -387,57 +374,55 @@ void sub_804C5F8(struct SioProc85AA9C0 * proc)
 
 // clang-format off
 
-struct ProcCmd CONST_DATA ProcScr_085AA9C0[] =
+struct ProcCmd CONST_DATA ProcScr_SioMenuItem[] =
 {
     PROC_YIELD,
-    PROC_REPEAT(sub_804C5F8),
+    PROC_REPEAT(SioMenuItem_Loop),
     PROC_END,
 };
 
 // clang-format on
 
 //! FE8U = 0x0804C758
-ProcPtr sub_804C758(ProcPtr parent, u8 xBase, u8 yBase, u8 d, u8 e)
+ProcPtr StartSioMenuItem(ProcPtr parent, u8 xBase, u8 yBase, u8 index, u8 state)
 {
-    struct SioProc85AA9C0 * proc = Proc_Start(ProcScr_085AA9C0, parent);
+    struct SioMenuItemProc * proc = Proc_Start(ProcScr_SioMenuItem, parent);
 
     proc->xBase = xBase;
     proc->yBase = yBase;
-    proc->unk_2e = e;
-    proc->unk_2f = d;
-    proc->unk_32 = 0;
-    proc->unk_34 = 52;
-    proc->unk_38 = 0;
-    proc->unk_36 = 0;
-    proc->unk_3c = 4;
-    proc->unk_3a = 4;
+    proc->state = state;
+    proc->index = index;
+    proc->xLeftArrow = 0;
+    proc->xRightArrow = 52;
+    proc->rightArrowAnmCnt = 0;
+    proc->leftArrowAnmCnt = 0;
+    proc->rightArrowSpeed = 4;
+    proc->leftArrowSpeed = 4;
     proc->unk_3e = 0;
-    proc->unk_30 = 0;
+    proc->glowFrame = 0;
 
     return proc;
 }
 
 //! FE8U = 0x0804C7C8
-void sub_804C7C8(struct SioProc85AA9C0 * proc, int b, int c, int d, int e)
+void SioMenuItem_SetArrowConfig(struct SioMenuItemProc * proc, int xLeft, int xRight, int leftSpeed, int rightSpeed)
 {
-    proc->unk_32 = b;
-    proc->unk_34 = c;
-    proc->unk_3a = d;
-    proc->unk_3c = e;
+    proc->xLeftArrow = xLeft;
+    proc->xRightArrow = xRight;
+    proc->leftArrowSpeed = leftSpeed;
+    proc->rightArrowSpeed = rightSpeed;
 
     return;
 }
 
 //! FE8U = 0x0804C7DC
-void sub_804C7DC(struct SioProc85AA9C0 * proc, s16 x, s16 y)
+void SioMenuItem_SetPosition(struct SioMenuItemProc * proc, s16 x, s16 y)
 {
     proc->xBase = x;
     proc->yBase = y;
 
     return;
 }
-
-extern u16 gUnknown_085ADDE8[];
 
 // clang-format off
 
@@ -450,9 +435,9 @@ const u16 Sprite_LinkArena_PressStart[] =
 // clang-format on
 
 //! FE8U = 0x0804C7E4
-void sub_804C7E4(void)
+void UpdateLinkArenaSideMenuGlow(void)
 {
-    u16 * ptr = gUnknown_085ADDE8;
+    u16 * ptr = gUnkData_10;
 
     // clang-format off
     const u8 gUnknown_080DA102[] =
@@ -464,7 +449,7 @@ void sub_804C7E4(void)
     };
     // clang-format on
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         int a = (GetGameClock() % 0x40);
         int idx = gUnknown_080DA102[a / 2];
@@ -476,15 +461,13 @@ void sub_804C7E4(void)
     return;
 }
 
-extern u16 gUnknown_085ADE48[];
-
 //! FE8U = 0x0804C83C
-void sub_804C83C(void)
+void UpdateLinkArenaNameBannerGlow(void)
 {
-    u16 * ptr = gUnknown_085ADE48;
+    u16 * ptr = gUnkData_12;
 
     // clang-format off
-    const u8 gUnknown_080DA0DA[] =
+    const u8 sioMenuItemGlowLut[] =
     {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -493,10 +476,10 @@ void sub_804C83C(void)
     };
     // clang-format on
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         int a = (GetGameClock() % 0x40);
-        int idx = gUnknown_080DA0DA[a / 2];
+        int idx = sioMenuItemGlowLut[a / 2];
 
         PAL_OBJ_COLOR(3, 14) = ptr[idx];
         EnablePaletteSync();
@@ -514,7 +497,7 @@ u16 CONST_DATA Sprite_LinkArena_TeamName[] =
     OAM0_SHAPE_32x8, OAM1_SIZE_32x8 + OAM1_X(32), OAM2_CHR(0x2BC) + OAM2_PAL(8),
 };
 
-u16 CONST_DATA Sprite_085AA9E6[] =
+u16 CONST_DATA Sprite_SioUiutils_3[] =
 {
     3,
     OAM0_SHAPE_32x8, OAM1_SIZE_32x8, OAM2_CHR(0x27B) + OAM2_LAYER(1) + OAM2_PAL(8),
@@ -522,7 +505,7 @@ u16 CONST_DATA Sprite_085AA9E6[] =
     OAM0_SHAPE_8x8, OAM1_SIZE_8x8 + OAM1_X(64), OAM2_CHR(0x27F) + OAM2_LAYER(1) + OAM2_PAL(8),
 };
 
-u16 CONST_DATA Sprite_085AA9FA[] =
+u16 CONST_DATA Sprite_SioUiutils_4[] =
 {
     3,
     OAM0_SHAPE_32x8, OAM1_SIZE_32x8, OAM2_CHR(0x29B) + OAM2_LAYER(1) + OAM2_PAL(8),
@@ -530,7 +513,7 @@ u16 CONST_DATA Sprite_085AA9FA[] =
     OAM0_SHAPE_8x8, OAM1_SIZE_8x8 + OAM1_X(64), OAM2_CHR(0x29F) + OAM2_LAYER(1) + OAM2_PAL(8),
 };
 
-u16 CONST_DATA gUnknown_085AAA0E[] =
+u16 CONST_DATA gSioUiutils_2[] =
 {
     9,
     OAM0_SHAPE_16x8, OAM1_SIZE_16x8, OAM2_CHR(0x277) + OAM2_PAL(3),
@@ -544,10 +527,10 @@ u16 CONST_DATA gUnknown_085AAA0E[] =
     OAM0_SHAPE_16x8, OAM1_SIZE_16x8 + OAM1_X(128), OAM2_CHR(0x279) + OAM2_PAL(3),
 };
 
-u16 * CONST_DATA gUnknown_085AAA48[] =
+u16 * CONST_DATA gSioUiutils_3[] =
 {
-    Sprite_085AA9E6,
-    Sprite_085AA9FA,
+    Sprite_SioUiutils_3,
+    Sprite_SioUiutils_4,
 };
 
 u16 CONST_DATA Sprite_LinkArena_NameBanner[] =
@@ -557,7 +540,7 @@ u16 CONST_DATA Sprite_LinkArena_NameBanner[] =
     OAM0_SHAPE_32x32, OAM1_SIZE_32x32 + OAM1_X(64), OAM2_CHR(0x248) + OAM2_PAL(3),
 };
 
-u16 CONST_DATA gUnknown_085AAA5E[] =
+u16 CONST_DATA gSioUiutils_4[] =
 {
     4,
     OAM0_SHAPE_32x32, OAM1_SIZE_32x32, OAM2_CHR(0x24C) + OAM2_PAL(3),
@@ -568,10 +551,10 @@ u16 CONST_DATA gUnknown_085AAA5E[] =
 
 // clang-format on
 
-extern u16 gUnknown_08A1BD40[];
+extern u16 gUnkData_75[];
 
 //! FE8U = 0x0804C894
-void sub_804C894(struct SioProc85AAA78 * proc)
+void SioTeamMenuSpriteDraw_Loop(struct SioProc85AAA78 * proc)
 {
     int i;
     int oam2;
@@ -598,15 +581,15 @@ void sub_804C894(struct SioProc85AAA78 * proc)
             if (proc->unk_3a[i] != 0)
             {
                 // Put active selection sprite
-                PutSprite(4, proc->unk_30[i] + 6, 32 + i * 24, gUnknown_085AAA5E, oam2);
+                PutSprite(4, proc->unk_30[i] + 6, 32 + i * 24, gSioUiutils_4, oam2);
             }
         }
 
         if (proc->unk_40 != 0)
         {
-            if (gUnk_Sio_0203DDDC == 0)
+            if (gUnk_Sio_22 == 0)
             {
-                PAL_OBJ_COLOR(8, 14) = ((GetGameClock() % 0x40) / 4)[gUnknown_08A1BD40];
+                PAL_OBJ_COLOR(8, 14) = ((GetGameClock() % 0x40) / 4)[gUnkData_75];
                 EnablePaletteSync();
             }
 
@@ -629,7 +612,7 @@ void sub_804C894(struct SioProc85AAA78 * proc)
             PutSprite(4, 120, 0, Sprite_LinkArena_PressStart, OAM2_PAL(8));
         }
 
-        sub_804C83C();
+        UpdateLinkArenaNameBannerGlow();
     }
     else
     {
@@ -639,7 +622,7 @@ void sub_804C894(struct SioProc85AAA78 * proc)
         for (i = 0; i < proc->unk_2c; i++)
         {
             // Put side menu item sprite
-            PutSprite(2, proc->unk_30[i], 48 + i * 16, gUnknown_085AAA48[proc->unk_3a[i]], 0);
+            PutSprite(2, proc->unk_30[i], 48 + i * 16, gSioUiutils_3[proc->unk_3a[i]], 0);
 
             if (proc->unk_3a[i] != 0)
             {
@@ -654,7 +637,7 @@ void sub_804C894(struct SioProc85AAA78 * proc)
             }
         }
 
-        sub_804C7E4();
+        UpdateLinkArenaSideMenuGlow();
     }
 
     if (gLinkArenaSt.unk_00 == 1)
@@ -674,7 +657,7 @@ void sub_804C894(struct SioProc85AAA78 * proc)
     if (proc->unk_48 >= 0)
     {
         // Put team row highlight indicator sprite
-        PutSprite(4, 80, proc->unk_48 + 8, gUnknown_085AAA0E, oam2);
+        PutSprite(4, 80, proc->unk_48 + 8, gSioUiutils_2, oam2);
     }
 
     return;
@@ -682,23 +665,23 @@ void sub_804C894(struct SioProc85AAA78 * proc)
 
 // clang-format off
 
-struct ProcCmd CONST_DATA ProcScr_085AAA78[] =
+struct ProcCmd CONST_DATA ProcScr_SioUiutils_0[] =
 {
     PROC_YIELD,
-    PROC_REPEAT(sub_804C894),
+    PROC_REPEAT(SioTeamMenuSpriteDraw_Loop),
     PROC_END,
 };
 
 // clang-format on
 
 //! FE8U = 0x0804CAEC
-ProcPtr sub_804CAEC(struct SioTeamListProc * parent, int numActiveOptions, u8 * buf)
+ProcPtr StartSioTeamMenuSpriteDraw(struct SioTeamListProc * parent, int numActiveOptions, u8 * buf)
 {
     struct SioProc85AAA78 * proc;
     int i;
 
-    Proc_EndEach(ProcScr_085AAA78);
-    proc = Proc_Start(ProcScr_085AAA78, parent);
+    Proc_EndEach(ProcScr_SioUiutils_0);
+    proc = Proc_Start(ProcScr_SioUiutils_0, parent);
 
     proc->unk_2c = numActiveOptions;
     proc->unk_44 = 1;
@@ -716,16 +699,6 @@ ProcPtr sub_804CAEC(struct SioTeamListProc * parent, int numActiveOptions, u8 * 
 
     return proc;
 }
-
-struct LATeamSpriteDrawProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int xBase;
-    /* 30 */ int yBase;
-    /* 34 */ int yMin;
-    /* 38 */ int yMax;
-    /* 3C */ int numTeams;
-};
 
 //! FE8U = 0x0804CB94
 void LATeamSpriteDraw_Loop(struct LATeamSpriteDrawProc * proc)
@@ -756,7 +729,7 @@ void LATeamSpriteDraw_Loop(struct LATeamSpriteDrawProc * proc)
                 continue;
             }
 
-            sub_8027E4C(4, proc->xBase + j * 14, y, OAM2_LAYER(1), unit);
+            PutUiUnitSprite(4, proc->xBase + j * 14, y, OAM2_LAYER(1), unit);
         }
     }
 
@@ -802,17 +775,15 @@ void ScrollMultiArenaTeamSprites(int amount)
     return;
 }
 
-extern u16 gUnknown_085ADE28[];
-
 //! FE8U = 0x0804CC78
 void UpdateNameEntrySpriteGlow(void)
 {
     int r2;
     int i;
 
-    u16 * ptr = gUnknown_085ADE28;
+    u16 * ptr = gUnkData_11;
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         r2 = (GetGameClock() % 0x20);
         r2 = r2 >> 1;
@@ -827,18 +798,6 @@ void UpdateNameEntrySpriteGlow(void)
 
     return;
 }
-
-struct NameEntrySpriteDrawProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int xCurrent;
-    /* 30 */ int yCurrent;
-    /* 34 */ int xNew;
-    /* 38 */ int yNew;
-    /* 3C */ int cursorKind;
-    /* 40 */ int xPointer;
-    /* 44 */ int unk_44; // maybe mode (Katakana/Hiragana)?
-};
 
 // clang-format off
 
@@ -892,7 +851,7 @@ const u16 Sprite_NameEntry_HiraganaIcon[] =
     OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x2CC) + OAM2_LAYER(1),
 };
 
-const u16 Sprite_NameEntry_080DA15A[] =
+const u16 Sprite_NameEntry_0[] =
 {
     1,
     OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x2D0) + OAM2_LAYER(1),
@@ -902,7 +861,7 @@ const u16 * CONST_DATA SpriteArray_NameEntryIcons[] =
 {
     Sprite_NameEntry_HiraganaIcon,
     Sprite_NameEntry_KatakanaIcon,
-    Sprite_NameEntry_080DA15A,
+    Sprite_NameEntry_0,
     Sprite_NameEntry_DeleteIcon,
     Sprite_NameEntry_OKIcon,
 };
@@ -988,15 +947,6 @@ void UpdateNameEntrySpriteDraw(void * proc, int xNew, int yNew, int xPointer, in
 
     return;
 }
-
-struct RuleSettingSpriteDrawProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2A */ s16 yPrevious;
-    /* 2C */ s16 yNew;
-    /* 2E */ s16 xOption;
-    /* 30 */ s16 yOption;
-};
 
 // clang-format off
 
@@ -1119,14 +1069,14 @@ void UpdateRuleSettingSprites(ProcPtr proc, s16 b, s16 xOption, s16 yOption)
     return;
 }
 
-extern u16 gUnknown_085ADE28[];
+extern u16 gUnkData_11[];
 
 //! FE8U = 0x0804CECC
 void UpdateSioMenuBurstGlow(int idx)
 {
-    u16 * ptr = gUnknown_085ADE28;
+    u16 * ptr = gUnkData_11;
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         PAL_OBJ_COLOR(6, 14) = ptr[idx];
         EnablePaletteSync();
@@ -1134,15 +1084,6 @@ void UpdateSioMenuBurstGlow(int idx)
 
     return;
 }
-
-struct SioMenuBurstFxProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int xBase;
-    /* 30 */ int yBase;
-    /* 34 */ STRUCT_PAD(0x34, 0x4C);
-    /* 4C */ s16 glowPalIdx;
-};
 
 // clang-format off
 
@@ -1178,7 +1119,7 @@ const u16 Sprite_SioMenuBurst_BottomRight[] =
     OAM0_SHAPE_8x16 + OAM0_Y(8), OAM1_SIZE_8x16 + OAM1_X(72) + OAM1_HFLIP + OAM1_VFLIP, OAM2_CHR(0x2D3) + OAM2_PAL(6),
 };
 
-const s16 gUnknown_080DA1CA[] =
+const s16 gSioUiutils_1[] =
 {
     2, 3,
     2, 6,
@@ -1212,10 +1153,10 @@ void SioMenuBurstFx_Loop(struct SioMenuBurstFxProc * proc)
 
     UpdateSioMenuBurstGlow(proc->glowPalIdx);
 
-    x = gUnknown_080DA1CA[idx + 1];
+    x = gSioUiutils_1[idx + 1];
     r1 = proc->xBase - x;
 
-    y = gUnknown_080DA1CA[idx + 0];
+    y = gSioUiutils_1[idx + 0];
 
     PutSprite(2, r1, proc->yBase - y, Sprite_SioMenuBurst_TopLeft, 0);
     PutSprite(2, proc->xBase + x + 16, proc->yBase - y, Sprite_SioMenuBurst_TopRight, 0);
@@ -1254,21 +1195,6 @@ ProcPtr StartSioMenuBurstFx(ProcPtr parent, int x, int y)
 
     // return proc; // BUG
 }
-
-struct LAMenuScrollBarProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int xBase;
-    /* 30 */ int yBase;
-    /* 34 */ int unk_34;
-    /* 38 */ int unk_38;
-    /* 3C */ u8 unk_3c;
-    /* 3D */ u8 unk_3d;
-    /* 3E */ s16 unk_3e;
-    /* 40 */ s16 unk_40;
-    /* 42 */ u16 unk_42;
-    /* 44 */ u8 oam2Arrows[2];
-};
 
 //! FE8U = 0x0804CFE0
 void LinkArenaMenuScroll_Init(struct LAMenuScrollBarProc * proc)
@@ -1435,18 +1361,18 @@ void LAPhaseIntro_Init(void)
     // clang-format off
     u8 * gUnknown_080DA20C[] =
     {
-        gUnknown_085AEDD4,
-        gUnknown_085AEE90,
-        gUnknown_085AEF54,
-        gUnknown_085AF02C,
+        gUnkData_17,
+        gUnkData_18,
+        gUnkData_19,
+        gUnkData_20,
     };
 
     u16 * gUnknown_080DA21C[] =
     {
-        gUnknown_085AF0F0,
-        gUnknown_085AF130,
-        gUnknown_085AF110,
-        gUnknown_085AF150,
+        gUnkData_21,
+        gUnkData_23,
+        gUnkData_22,
+        gUnkData_24,
     };
 
     u16 * gUnknown_080DA22C[] =
@@ -1454,21 +1380,21 @@ void LAPhaseIntro_Init(void)
         Pal_PhaseChangePlayer,
         Pal_PhaseChangeOther,
         Pal_PhaseChangeEnemy,
-        Pal_085A06B8,
+        Pal_PhaseChange_0,
     };
     // clang-format on
 
-    Decompress(Img_PhaseChangeUnk, (void *)(0x06014000));
-    Decompress(Img_PhaseChangeSquares, (void *)(0x06002000));
-    Decompress(gUnknown_085AE7EC, (void *)(0x06002800));
+    Decompress(Img_PhaseChangeUnk, OBJ_CHR_ADDR(0x200));
+    Decompress(Img_PhaseChangeSquares, BG_CHR_ADDR(0x100));
+    Decompress(gUnkData_16, BG_CHR_ADDR(0x140));
 
     Decompress(gUnknown_080DA20C[gPlaySt.faction], gGenericBuffer);
-    Copy2dChr(gGenericBuffer, (void *)(0x06002980), 3, 3);
+    Copy2dChr(gGenericBuffer, BG_CHR_ADDR(0x14C), 3, 3);
 
-    CopyToPaletteBuffer(gUnknown_080DA21C[gPlaySt.faction], 0xa0, 0x20);
-    CopyToPaletteBuffer(gUnknown_080DA22C[gPlaySt.faction], 0x240, 0x20);
+    ApplyPalette(gUnknown_080DA21C[gPlaySt.faction], 5);
+    ApplyPalette(gUnknown_080DA22C[gPlaySt.faction], 0x12);
 
-    gUnknown_03001860 = gPlaySt.faction;
+    gUnk_49 = gPlaySt.faction;
     gPlaySt.faction = FACTION_BLUE;
 
     return;
@@ -1477,7 +1403,7 @@ void LAPhaseIntro_Init(void)
 //! FE8U = 0x0804D37C
 void LAPhaseIntro_End(void)
 {
-    gPlaySt.faction = gUnknown_03001860;
+    gPlaySt.faction = gUnk_49;
 
     SetWinEnable(0, 0, 0);
     SetDefaultColorEffects();
@@ -1493,7 +1419,7 @@ void LAPhaseIntro_End(void)
 //! FE8U = 0x0804D3DC
 void LAPhaseIntro_StartBgm(void)
 {
-    StartBgm(0x34, &gMPlayInfo_BGM2);
+    StartBgm(SONG_COMBAT_PREPARATION, &gMPlayInfo_BGM2);
     return;
 }
 
@@ -1520,7 +1446,7 @@ struct ProcCmd CONST_DATA ProcScr_LinkArenaPhaseIntro[] =
 // clang-format on
 
 //! FE8U = 0x0804D3F0
-void sub_804D3F0(struct Unit * unit, int itemSlot)
+void SetUnitItemUsesToMax(struct Unit * unit, int itemSlot)
 {
     u16 item = unit->items[itemSlot];
 
@@ -1533,27 +1459,27 @@ void sub_804D3F0(struct Unit * unit, int itemSlot)
 }
 
 //! FE8U = 0x0804D40C
-void sub_804D40C(struct Unit * unit)
+void SetUnitAllItemsUsesToMax(struct Unit * unit)
 {
     int i;
 
     for (i = 0; i < UNIT_ITEM_COUNT; i++)
     {
-        sub_804D3F0(unit, i);
+        SetUnitItemUsesToMax(unit, i);
     }
 
     return;
 }
 
 //! FE8U = 0x0804D428
-void sub_804D428(void)
+void UpdateLinkArenaVersusBannerGlow(void)
 {
     int idx;
     int i;
 
     u16 * ptr = Pal_LinkArenaActiveBannerFx;
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         idx = (GetGameClock() % 0x20);
         idx = idx >> 1;
@@ -1568,16 +1494,6 @@ void sub_804D428(void)
 
     return;
 }
-
-struct LAVersusSpriteDrawProc
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int x;
-    /* 30 */ int yBase;
-    /* 34 */ int unk_34;
-    /* 38 */ int unk_38;
-    /* 3C */ u16 unk_3c[4];
-};
 
 // clang-format off
 
@@ -1613,14 +1529,14 @@ const u16 * CONST_DATA SpriteArray_LAVersusPlayerNumbers[] =
     Sprite_LAVersus_P4,
 };
 
-const u16 Sprite_080DA25C[] =
+const u16 Sprite_SioUiutils_0[] =
 {
     2,
     OAM0_SHAPE_32x16, OAM1_SIZE_32x16, OAM2_CHR(0x348) + OAM2_LAYER(1) + OAM2_PAL(8),
     OAM0_SHAPE_8x16, OAM1_SIZE_8x16 + OAM1_X(32), OAM2_CHR(0x34C) + OAM2_LAYER(1) + OAM2_PAL(8),
 };
 
-const u16 Sprite_080DA26A[] =
+const u16 Sprite_SioUiutils_1[] =
 {
     3,
     OAM0_SHAPE_32x8, OAM1_SIZE_32x8, OAM2_CHR(0x34D) + OAM2_LAYER(1) + OAM2_PAL(9),
@@ -1688,9 +1604,9 @@ void LAVersusSpriteDraw_Loop(struct LAVersusSpriteDrawProc * proc)
 
     if (proc->unk_34 != -1)
     {
-        PutSprite(4, proc->x - 72, proc->yBase + proc->unk_34 * 24 + 8, Sprite_080DA25C, 0);
-        PutSprite(4, proc->x - 72, proc->yBase + proc->unk_34 * 24 + 18, Sprite_080DA26A, 0);
-        sub_804D428();
+        PutSprite(4, proc->x - 72, proc->yBase + proc->unk_34 * 24 + 8, Sprite_SioUiutils_0, 0);
+        PutSprite(4, proc->x - 72, proc->yBase + proc->unk_34 * 24 + 18, Sprite_SioUiutils_1, 0);
+        UpdateLinkArenaVersusBannerGlow();
     }
 
     return;
@@ -1742,14 +1658,14 @@ ProcPtr GetLinkArenaVersusSpriteDraw(void)
 }
 
 //! FE8U = 0x0804D6D4
-void sub_804D6D4(void)
+void UpdateLinkArenaActiveBannerBgGlow(void)
 {
     int idx;
     int i;
 
     u16 * ptr = Pal_LinkArenaActiveBannerFx;
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         idx = GetGameClock() % 0x20;
         idx = idx >> 1;
@@ -1766,14 +1682,14 @@ void sub_804D6D4(void)
 }
 
 //! FE8U = 0x0804D724
-void sub_804D724(void)
+void UpdateLinkArenaActiveBannerObjGlow(void)
 {
     int idx;
     int i;
 
     u16 * ptr = Pal_LinkArenaActiveBannerFx;
 
-    if (gUnk_Sio_0203DDDC == 0)
+    if (gUnk_Sio_22 == 0)
     {
         idx = GetGameClock() % 0x20;
         idx = idx >> 1;
@@ -1790,7 +1706,7 @@ void sub_804D724(void)
 }
 
 //! FE8U = 0x0804D778
-void sub_804D778(void)
+void SetLinkArenaResultBlend(void)
 {
     SetBlendAlpha(8, 12);
 
@@ -1800,16 +1716,9 @@ void sub_804D778(void)
     return;
 }
 
-struct SioProc85AABD8
-{
-    /* 00 */ PROC_HEADER;
-    /* 2C */ int x;
-    /* 30 */ int y;
-};
-
 // clang-format off
 
-const u16 Sprite_080DA27E[] =
+const u16 Sprite_SioUiutils_2[] =
 {
     8,
     OAM0_SHAPE_32x16 + OAM0_BLEND, OAM1_SIZE_32x16, OAM2_CHR(0x300) + OAM2_LAYER(2) + OAM2_PAL(3),
@@ -1825,12 +1734,12 @@ const u16 Sprite_080DA27E[] =
 // clang-format on
 
 //! FE8U = 0x0804D7B0
-void sub_804D7B0(struct SioProc85AABD8 * proc)
+void LinkArenaResultBanner_Loop(struct SioProc85AABD8 * proc)
 {
     if (proc->y > 30 && proc->y < 153)
     {
-        PutSprite(4, proc->x, proc->y, Sprite_080DA27E, 0);
-        sub_804D724();
+        PutSprite(4, proc->x, proc->y, Sprite_SioUiutils_2, 0);
+        UpdateLinkArenaActiveBannerObjGlow();
     }
 
     return;
@@ -1838,22 +1747,22 @@ void sub_804D7B0(struct SioProc85AABD8 * proc)
 
 // clang-format off
 
-struct ProcCmd CONST_DATA ProcScr_085AABD8[] =
+struct ProcCmd CONST_DATA ProcScr_SioUiutils_1[] =
 {
     PROC_YIELD,
-    PROC_REPEAT(sub_804D7B0),
+    PROC_REPEAT(LinkArenaResultBanner_Loop),
     PROC_END,
 };
 
 // clang-format on
 
 //! FE8U = 0x0804D7DC
-ProcPtr sub_804D7DC(int x, int y, ProcPtr parent)
+ProcPtr StartLinkArenaResultBanner(int x, int y, ProcPtr parent)
 {
     struct SioProc85AABD8 * proc;
 
-    Proc_EndEach(ProcScr_085AABD8);
-    proc = Proc_Start(ProcScr_085AABD8, parent);
+    Proc_EndEach(ProcScr_SioUiutils_1);
+    proc = Proc_Start(ProcScr_SioUiutils_1, parent);
 
     proc->x = x;
     proc->y = y;
@@ -1862,7 +1771,7 @@ ProcPtr sub_804D7DC(int x, int y, ProcPtr parent)
 }
 
 //! FE8U = 0x0804D80C
-void sub_804D80C(void)
+void LoadLinkArenaChoiceBoxGfx(void)
 {
     Decompress(gGfx_SupportMenu, (void *)(0x06016800));
     ApplyPalette(gPal_SupportMenu, 0x12);

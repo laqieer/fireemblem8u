@@ -31,6 +31,7 @@
 
 #include "constants/classes.h"
 #include "constants/items.h"
+#include "constants/songs.h"
 
 // clang-format off
 
@@ -72,7 +73,7 @@ PROC_LABEL(1),
     PROC_CALL(SetAllUnitNotBackSprite),
     PROC_CALL(RefreshUnitSprites),
 
-    PROC_START_CHILD_BLOCKING(gProcScr_0859ACE8),
+    PROC_START_CHILD_BLOCKING(gProcScr_Playerphase_0),
 
     PROC_CALL(PlayerPhase_InitUnitMovementSelect),
     PROC_SLEEP(1),
@@ -89,7 +90,7 @@ PROC_LABEL(2),
     // fallthrough
 
 PROC_LABEL(7),
-    PROC_WHILE_EXISTS(gProcScr_CamMove),
+    PROC_WHILE_EXISTS(ProcScr_CamMove),
 
     PROC_CALL_2(PlayerPhase_PrepareAction),
 
@@ -152,7 +153,7 @@ PROC_LABEL(3),
     PROC_END,
 };
 
-struct ProcCmd CONST_DATA gProcScr_0859ACE8[] =
+struct ProcCmd CONST_DATA gProcScr_Playerphase_0[] =
 {
     PROC_CALL(MakeMoveunitForActiveUnit),
     PROC_CALL(TryCallSelectEvents),
@@ -162,16 +163,19 @@ struct ProcCmd CONST_DATA gProcScr_0859ACE8[] =
     PROC_END,
 };
 
+/* The move-limit-view open animation is 6 uniform frames of 4 tiles (32x8 px) each. */
+#define LIMIT_VIEW_FRAME_SIZE (4 * CHR_SIZE)
+
 u8 * CONST_DATA gOpenLimitViewImgLut[] =
 {
     NULL,
     NULL,
-    Img_LimitViewSquares + (0 * 4 * CHR_SIZE),
-    Img_LimitViewSquares + (1 * 4 * CHR_SIZE),
-    Img_LimitViewSquares + (2 * 4 * CHR_SIZE),
-    Img_LimitViewSquares + (3 * 4 * CHR_SIZE),
-    Img_LimitViewSquares + (4 * 4 * CHR_SIZE),
-    Img_LimitViewSquares + (5 * 4 * CHR_SIZE),
+    Img_LimitViewSquares + (0 * LIMIT_VIEW_FRAME_SIZE),
+    Img_LimitViewSquares + (1 * LIMIT_VIEW_FRAME_SIZE),
+    Img_LimitViewSquares + (2 * LIMIT_VIEW_FRAME_SIZE),
+    Img_LimitViewSquares + (3 * LIMIT_VIEW_FRAME_SIZE),
+    Img_LimitViewSquares + (4 * LIMIT_VIEW_FRAME_SIZE),
+    Img_LimitViewSquares + (5 * LIMIT_VIEW_FRAME_SIZE),
 };
 
 struct ProcCmd CONST_DATA sProcScr_MoveLimitViewChange[] =
@@ -256,7 +260,7 @@ void PlayerPhase_MainIdle(ProcPtr proc)
     if (gKeyStatusPtr->newKeys & L_BUTTON)
     {
         TrySwitchViewedUnit(gBmSt.playerCursor.x, gBmSt.playerCursor.y);
-        PlaySoundEffect(0x6B);
+        PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
     }
     else if (!DoesBMXFADEExist())
     {
@@ -300,7 +304,7 @@ void PlayerPhase_MainIdle(ProcPtr proc)
                     }
 
                     StartOrphanMenuAdjusted(&gMapMenuDef, gBmSt.cursorTarget.x - gBmSt.camera.x, 1, 0x17);
-                    sub_80832CC();
+                    Eventinfo_CondFalse_2();
 
                     Proc_Goto(proc, 9);
 
@@ -312,7 +316,7 @@ void PlayerPhase_MainIdle(ProcPtr proc)
 
                     Proc_Break(proc);
 
-                    goto _0801CB38;
+                    break;
 
                 case PLAYER_SELECT_NOCONTROL:
                     UnitBeginAction(unit);
@@ -320,30 +324,35 @@ void PlayerPhase_MainIdle(ProcPtr proc)
 
                     Proc_Goto(proc, 11);
 
-                    goto _0801CB38;
+                    break;
+
+                default:
+                    goto else_stmt;
             }
         }
-
-        if ((gKeyStatusPtr->newKeys & START_BUTTON) && !(gKeyStatusPtr->heldKeys & SELECT_BUTTON))
+        else
         {
-            struct Unit * unit = GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]);
-
-            if (unit)
+else_stmt:
+            if ((gKeyStatusPtr->newKeys & START_BUTTON) && !(gKeyStatusPtr->heldKeys & SELECT_BUTTON))
             {
-                EndAllMus();
-                ShowUnitSprite(unit);
+                struct Unit * unit = GetUnit(gBmMapUnit[gBmSt.playerCursor.y][gBmSt.playerCursor.x]);
+
+                if (unit)
+                {
+                    EndAllMus();
+                    ShowUnitSprite(unit);
+                }
+
+                EndPlayerPhaseSideWindows();
+                StartMinimapPlayerPhase();
+
+                Proc_Goto(proc, 9);
+
+                return;
             }
-
-            EndPlayerPhaseSideWindows();
-            StartMinimapPlayerPhase();
-
-            Proc_Goto(proc, 9);
-
-            return;
         }
     }
 
-_0801CB38:
     UnitSpriteHoverUpdate();
 
     PutMapCursor(
@@ -417,7 +426,7 @@ void PlayerPhase_InitUnitMovementSelect(void)
     if ((gActiveUnit->xPos == gBmSt.playerCursor.x) && (gActiveUnit->yPos == gBmSt.playerCursor.y))
     {
         PathArrowDisp_Init(0);
-        PlaySoundEffect(0x69);
+        PlaySoundEffect(SONG_69);
         return;
     }
 
@@ -429,7 +438,7 @@ void PlayerPhase_InitUnitMovementSelect(void)
 //! FE8U = 0x0801CC7C
 void DisplayActiveUnitEffectRange(ProcPtr proc)
 {
-    PlaySoundEffect(0x68);
+    PlaySoundEffect(SONG_68);
 
     gBmSt.gameStateBits &= ~BM_FLAG_1;
     DisplayUnitEffectRange(gActiveUnit);
@@ -444,7 +453,7 @@ void PlayerPhase_DisplayDangerZone(void)
 
     BmMapFill(gBmMapMovement, -1);
 
-    PlaySoundEffect(0x68);
+    PlaySoundEffect(SONG_68);
 
     gBmSt.gameStateBits |= BM_FLAG_3;
     gBmSt.gameStateBits &= ~BM_FLAG_1;
@@ -492,14 +501,10 @@ void PlayerPhase_RangeDisplayIdle(ProcPtr proc)
             {
                 action = ACT_CANCEL;
             }
-
-            goto _0801CDE2;
         }
-
-        if (StartDestSelectedEvent())
+        else if (StartDestSelectedEvent())
         {
             action = ACT_EVENT;
-            goto _0801CDE2;
         }
         else
         {
@@ -513,47 +518,46 @@ void PlayerPhase_RangeDisplayIdle(ProcPtr proc)
                 {
                     action = ACT_CANCEL;
                 }
-
-                goto _0801CDE2;
+            }
+            else if (!CanMoveActiveUnitTo(gBmSt.playerCursor.x, gBmSt.playerCursor.y))
+            {
+                action = ACT_FAIL;
             }
             else
             {
-                if (!CanMoveActiveUnitTo(gBmSt.playerCursor.x, gBmSt.playerCursor.y))
-                {
-                    action = ACT_FAIL;
-                    goto _0801CDE2;
-                }
-
                 action = ACT_MOVE;
+                goto else_stmt;
             }
         }
     }
-
-    if (gKeyStatusPtr->newKeys & B_BUTTON)
+    else
     {
-        if (gActiveUnit->state & US_HAS_MOVED)
+else_stmt:
+        if (gKeyStatusPtr->newKeys & B_BUTTON)
         {
-            action = ACT_FAIL;
+            if (gActiveUnit->state & US_HAS_MOVED)
+            {
+                action = ACT_FAIL;
+            }
+            else
+            {
+                action = ACT_CANCEL;
+            }
         }
-        else
+        else if (gKeyStatusPtr->newKeys & R_BUTTON)
         {
-            action = ACT_CANCEL;
+            action = ACT_INFOSCREEN;
         }
-    }
-    else if (gKeyStatusPtr->newKeys & R_BUTTON)
-    {
-        action = ACT_INFOSCREEN;
-    }
-    else if (gKeyStatusPtr->newKeys & L_BUTTON)
-    {
-        action = ACT_RESET_CURSOR;
+        else if (gKeyStatusPtr->newKeys & L_BUTTON)
+        {
+            action = ACT_RESET_CURSOR;
+        }
     }
 
-_0801CDE2:
     switch (action)
     {
         case ACT_FAIL:
-            PlaySoundEffect(0x6C);
+            PlaySoundEffect(SONG_6C);
 
             break;
 
@@ -585,7 +589,7 @@ _0801CDE2:
             RefreshEntityBmMaps();
             RefreshUnitSprites();
 
-            PlaySoundEffect(0x6B);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
 
             Proc_Goto(proc, 9);
 
@@ -632,7 +636,7 @@ _0801CDE2:
 
             EnsureCameraOntoPosition(proc, gActiveUnitMoveOrigin.x, gActiveUnitMoveOrigin.y);
             SetCursorMapPosition(gActiveUnitMoveOrigin.x, gActiveUnitMoveOrigin.y);
-            PlaySoundEffect(0x6B);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
 
             break;
 
@@ -923,7 +927,7 @@ void PlayerPhase_FinishAction(ProcPtr proc)
 }
 
 //! FE8U = 0x0801D404
-void sub_801D404(void)
+void PlayerPhase_CommitActiveUnitMove(void)
 {
     if (gPlaySt.faction == FACTION_BLUE)
     {
@@ -938,7 +942,7 @@ void sub_801D404(void)
 }
 
 //! FE8U = 0x0801D434
-void sub_801D434(ProcPtr proc)
+void PlayerPhase_OpenUnitActionMenu(ProcPtr proc)
 {
     if (gActionData.unitActionType != UNIT_ACTION_TRAPPED)
     {
@@ -967,7 +971,7 @@ void PlayerPhase_ApplyUnitMovement(ProcPtr proc)
 
     if (StartAfterUnitMovedEvent() == 1)
     {
-        sub_801D434(proc);
+        PlayerPhase_OpenUnitActionMenu(proc);
         return;
     }
 
@@ -1234,7 +1238,7 @@ void PlayPhaseForceActiveUnitCanto(void)
 //! FE8U = 0x0801D89C
 void MoveLimitViewChange_OnInit(struct MoveLimitViewProc * proc)
 {
-    RegisterDataMove(gUnknown_08A02EB4, (u8 *)VRAM + 0x5080, 0x80);
+    RegisterDataMove(Img_LimitViewSquares + (5 * LIMIT_VIEW_FRAME_SIZE), (u8 *)VRAM + 0x5080, 0x80);
 
     if (!(gBmSt.gameStateBits & BM_FLAG_0))
     {
@@ -1242,7 +1246,7 @@ void MoveLimitViewChange_OnInit(struct MoveLimitViewProc * proc)
     }
     else
     {
-        RegisterDataMove(gUnknown_08A02EB4, (u8 *)VRAM + 0x5000, 0x80);
+        RegisterDataMove(Img_LimitViewSquares + (5 * LIMIT_VIEW_FRAME_SIZE), (u8 *)VRAM + 0x5000, 0x80);
         Proc_End(proc);
     }
 
@@ -1309,22 +1313,22 @@ void MoveLimitView_OnLoop(struct MoveLimitViewProc * proc)
 
     if (proc->flags & LIMITVIEW_BLUE)
     {
-        CopyToPaletteBuffer(gUnknown_08A02F34 + frame, 0x82, 0x20);
+        CopyToPaletteBuffer(gUnkData_35 + frame, 0x82, 0x20);
     }
 
     if (proc->flags & LIMITVIEW_RED)
     {
-        CopyToPaletteBuffer(gUnknown_08A02F94 + frame, 0xA2, 0x20);
+        CopyToPaletteBuffer(gUnkData_36 + frame, 0xA2, 0x20);
     }
 
     if (proc->flags & LIMITVIEW_GREEN)
     {
-        CopyToPaletteBuffer(gUnknown_08A02FF4 + frame, 0xA2, 0x20);
+        CopyToPaletteBuffer(gUnkData_37 + frame, 0xA2, 0x20);
     }
 
     if (proc->flags & LIMITVIEW_UNK)
     {
-        CopyToPaletteBuffer(gUnknown_08A02F34 + frame, 0xA2, 0x20);
+        CopyToPaletteBuffer(gUnkData_35 + frame, 0xA2, 0x20);
     }
 
     return;

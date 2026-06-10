@@ -1,5 +1,6 @@
 #include "global.h"
 
+#include "constants/chapters.h"
 #include "variables.h"
 #include "bmitem.h"
 #include "chapterdata.h"
@@ -96,29 +97,29 @@ int GetConvoyItemSlot(int item)
 
 bool8 HasConvoyAccess(void)
 {
-    unsigned int chapterId;
+    u32 chapterId;
     if (gGMData.state.bits.state_0)
     {
         chapterId = GetNextUnclearedChapter();
-        if (chapterId <= 1)
+        if (chapterId == CHAPTER_L_PROLOGUE || chapterId == CHAPTER_L_1)
             return false;
-        else if (chapterId == 0x38)
+        else if (chapterId == CHAPTER_CASTLE_FRELIA)
             return false;
         else
             return true;
     }
 
-    if (gPlaySt.chapterIndex <= 1)
+    if (gPlaySt.chapterIndex <= CHAPTER_L_1)
         return false;
-    else if (gPlaySt.chapterIndex == 0x38)
+    else if (gPlaySt.chapterIndex == CHAPTER_CASTLE_FRELIA)
         return false;
-    else if (gPlaySt.chapterIndex != 5)
+    else if (gPlaySt.chapterIndex != CHAPTER_L_5X)
         return true;
 
     return false;
 }
 
-bool8 sub_8031660(void)
+bool8 ChapterHasMerchant(void)
 {
     const struct ROMChapterData * chapterData =
         GetROMChapterStruct(gPlaySt.chapterIndex);

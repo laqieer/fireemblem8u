@@ -13,21 +13,37 @@ jobs:
     container: laqieer/gba-disasm-decomp-tools:fireemblem8u
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
+    # Host tools (agbcc, gbagfx, scaninc, preproc, ...) come from the image.
+    # These are the extra runtime deps the ROM build needs: GNU libiconv for the
+    # CP932 text conversion, numpy/pillow for the TSA/graphics generators, and
+    # git + build-base so the mgfembp submodule can build its own agbcc (the FE6
+    # SIO payload). perl is used by a few helper scripts.
     - name: Install dependencies
-      run: apk add python3 perl gnu-libiconv
+      run: apk add --no-cache python3 py3-numpy py3-pillow perl git build-base gnu-libiconv
 
-    - name: Mock base ROM
-      run: head -c 16777216 /dev/urandom > baserom.gba
+    # Cache the mgfembp submodule's agbcc variant (010110-ThumbPatch); the FE6 SIO
+    # payload sub-build installs it on a cache miss. `make compare` is the backstop
+    # if a stale cache ever produced a different payload.
+    - name: Cache mgfembp agbcc
+      uses: actions/cache@v4
+      with:
+        path: mgfembp/tools/agbcc
+        key: mgfembp-agbcc-${{ hashFiles('mgfembp/tools/install_agbcc.sh') }}
 
     - name: Build target ROM
       run: make fireemblem8.gba
 
+    - name: Verify ROM matches
+      run: make compare
+
     - name: Analyze decomp progress
       run: sh scripts/calcrom.sh
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: linker-mapfile
         path: fireemblem8.map

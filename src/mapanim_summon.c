@@ -15,6 +15,7 @@
 #include "constants/characters.h"
 #include "constants/items.h"
 #include "mapanim.h"
+#include "constants/songs.h"
 
 void New6C_SummonGfx_FromActionPos(ProcPtr proc)
 {
@@ -187,9 +188,9 @@ s8 CheckCanSummon(struct SumProc* proc)
     return TRUE;
 }
 
-void sub_807B054(void)
+void MapAnimSummon_PlaySound(void)
 {
-    PlaySoundEffect(0xA0); // TODO: song ids!
+    PlaySoundEffect(SONG_SE_BMP_MOVE_BIRD1A_T1);
 }
 
 void ProcSummonDK_ResetCounter(struct SumProc* proc)
@@ -311,7 +312,7 @@ CONST_DATA struct ProcCmd ProcScr_MapAnimSummon[] = {
     PROC_CALL(GenerateSummonUnitDef),
     PROC_CALL(New6C_SummonGfx_FromActionPos),
     PROC_SLEEP(0x5),
-    PROC_JUMP(gProc_MapAnimEnd),
+    PROC_JUMP(ProcScr_MapAnimEnd),
 };
 
 CONST_DATA struct ProcCmd ProcScr_MapAnimSumDK[] = {
@@ -344,5 +345,5 @@ CONST_DATA struct ProcCmd ProcScr_MapAnimSumDK[] = {
     PROC_LABEL(PROC_LABEL_SUMDK_LOAD_POS_END),
     PROC_CALL(ProcSummonDK_CheckIsEnough),
     PROC_LABEL(PROC_LABEL_SUMDK_LOAD_TERMINAL),
-    PROC_JUMP(gProc_MapAnimEnd),
+    PROC_JUMP(ProcScr_MapAnimEnd),
 };

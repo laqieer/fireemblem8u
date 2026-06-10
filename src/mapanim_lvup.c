@@ -9,6 +9,7 @@
 #include "soundwrapper.h"
 #include "mapanim.h"
 #include "bmlib.h"
+#include "constants/songs.h"
 
 void StartManimLevelUp(int actor_id, ProcPtr parent)
 {
@@ -148,9 +149,9 @@ void ManimLevelUp_PutStatGainLabels(struct ManimLevelUpProc * proc)
         stat_num, GetManimLevelUpStatGain(proc->actor_id, stat_num));
 
     if (stat_num == 0) {
-        PlaySoundEffect(0x2CD);
+        PlaySoundEffect(SONG_2CD);
     } else {
-        PlaySoundEffect(0x76);
+        PlaySoundEffect(SONG_76);
     }
 
     proc->next_stat_num = stat_num + 1;
@@ -185,8 +186,8 @@ void ManimLevelUp_StartLevelUpText(struct ManimLevelUpProc * proc)
     if (SCREEN_TILE_X(gManimSt.actor[proc->actor_id].unit->xPos) * 2 > 25)
         x = 208;
 
-    APProc_Create(gUnknown_089A5A6C, x, y, OAM2_CHR(0x1C0) + OAM2_PAL(0x3), 0, 2);
-    PlaySoundEffect(0x5B);
+    APProc_Create(gMapanimTorchfx_0, x, y, OAM2_CHR(0x1C0) + OAM2_PAL(0x3), 0, 2);
+    PlaySoundEffect(SONG_5B);
 }
 
 void ManimLevelUp_EndLevelUpText(struct ManimLevelUpProc * proc)

@@ -21,6 +21,7 @@
 #include "constants/characters.h"
 #include "constants/items.h"
 #include "constants/event-flags.h"
+#include "constants/songs.h"
 
 #define EVT_CMD_LO(cmd) (((cmd) & 0x0000FFFF))
 #define EVT_CMD_HI(cmd) (((cmd) & 0xFFFF0000) >> 16)
@@ -105,20 +106,18 @@ struct EventInfo * SearchAvailableEvent(struct EventInfo * info)
 
         if (!CheckFlag(EVT_CMD_HI(info->listScript[0])))
         {
-            if (cmdInfo[cmdId].func(info) != 1)
+            if (cmdInfo[cmdId].func(info) == 1)
             {
-            label:
-                info->listScript += len[r6 << 1];
-                continue;
+                goto _end; // FIXME: Goto appears to be required for match
             }
-
-            if (info->script)
-                return info;
-
-            break;
         }
-        goto label;
+
+        info->listScript += len[r6 << 1];
     }
+
+_end:
+    if (info->script)
+        return info;
     return NULL;
 }
 
@@ -298,7 +297,7 @@ bool IsThereTileCommand15(s8 x, s8 y)
 
 bool ShouldCallEndEvent(void)
 {
-    if (GetBattleMapKind() == 2)
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH)
         return 0;
 
     return CheckWin();
@@ -306,7 +305,7 @@ bool ShouldCallEndEvent(void)
 
 //! FE8U = 0x0808326C
 void MaybeCallEndEvent_(void) {
-    if (GetBattleMapKind() != 2) {
+    if (GetBattleMapKind() != BATTLEMAP_KIND_SKIRMISH) {
         MaybeCallEndEvent();
     }
 
@@ -317,7 +316,7 @@ void MaybeCallEndEvent_(void) {
 void CallEndEvent(void) {
     const struct ChapterEventGroup* evGroup = GetChapterEventDataPointer(gPlaySt.chapterIndex);
 
-    if (GetBattleMapKind() != 2) {
+    if (GetBattleMapKind() != BATTLEMAP_KIND_SKIRMISH) {
         CallEvent(evGroup->endingSceneEvents, 1);
     } else {
         CallEvent((u16 *)EventScr_SkirmishCommonEnd, 1);
@@ -330,27 +329,27 @@ void CallEndEvent(void) {
 }
 
 //! FE8U = 0x080832C4
-s8 sub_80832C4(void) {
+s8 Eventinfo_CondFalse_0(void) {
     return 0;
 }
 
 //! FE8U = 0x080832C8
-s8 sub_80832C8(void) {
+s8 Eventinfo_CondFalse_1(void) {
     return 0;
 }
 
 //! FE8U = 0x080832CC
-s8 sub_80832CC(void) {
+s8 Eventinfo_CondFalse_2(void) {
     return 0;
 }
 
 //! FE8U = 0x080832D0
-s8 sub_80832D0(void) {
+s8 Eventinfo_CondFalse_3(void) {
     return 0;
 }
 
 //! FE8U = 0x080832D4
-s8 sub_80832D4(void) {
+s8 Eventinfo_CondFalse_4(void) {
     return 0;
 }
 
@@ -396,7 +395,7 @@ const void * GetChapterAllyUnitDataPointer(void)
 {
     const struct ChapterEventGroup* evGroup = GetChapterEventDataPointer(gPlaySt.chapterIndex);
 
-    if (GetBattleMapKind() != 2) {
+    if (GetBattleMapKind() != BATTLEMAP_KIND_SKIRMISH) {
         if (gPlaySt.chapterStateBits & PLAY_FLAG_HARD) {
             return evGroup->playerUnitsInHard;
         }
@@ -451,7 +450,7 @@ void GetChapterSkirmishLeaderClasses(u8 chapterId, u8 * list)
 }
 
 //! FE8U = 0x08083424
-bool sub_8083424(void)
+bool AreSkirmishUnitsAvailable(void)
 {
     const struct ChapterEventGroup* evGroup = GetChapterEventDataPointer(gPlaySt.chapterIndex);
 
@@ -499,7 +498,7 @@ struct BattleTalkEnt* GetAvailableBattleTalk(u8 pid, struct BattleTalkEnt* it) {
 
 //! FE8U = 0x080834B0
 s8 ShouldCallBattleQuote(u8 pidA, u8 pidB) {
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
@@ -526,7 +525,7 @@ s8 ShouldCallBattleQuote(u8 pidA, u8 pidB) {
 void CallBattleQuoteEventsIfAny(u8 pidA, u8 pidB) {
     struct BattleTalkExtEnt* ent;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return;
     }
 
@@ -556,7 +555,7 @@ void CallBattleQuoteEventsIfAny(u8 pidA, u8 pidB) {
 void SetPidDefeatedFlag(u8 pid, int flag) {
     const struct ROMChapterData* chapterData;
 
-    if ((GetBattleMapKind() == 0) || (chapterData = GetROMChapterStruct(gPlaySt.chapterIndex), pid != chapterData->protectCharacterIndex) || flag != 0x65) {
+    if ((GetBattleMapKind() == BATTLEMAP_KIND_STORY) || (chapterData = GetROMChapterStruct(gPlaySt.chapterIndex), pid != chapterData->protectCharacterIndex) || flag != 0x65) {
         SetFlag(flag);
         return;
     }
@@ -586,11 +585,11 @@ void DisplayDefeatTalkForPid(u8 pid) {
 
     if (ent) {
         if ((ent->route == 1) && (ent->flag == 0x65)) {
-            StartBgm(0x3e, NULL);
+            StartBgm(SONG_GAME_OVER, NULL);
             gPlaySt.config.disableBgm = 1;
         } else {
             if (UNIT_FACTION(GetUnitFromCharId(pid)) == FACTION_BLUE) {
-                StartBgm(0x3f, NULL);
+                StartBgm(SONG_IN_SORROWS_SHROUD, NULL);
             }
         }
         if (ent->msg != 0) {
@@ -608,7 +607,7 @@ void DisplayDefeatTalkForPid(u8 pid) {
 }
 
 //! FE8U = 0x08083654
-void sub_8083654(u16 pid) {
+void KillPlayerUnitByPid(u16 pid) {
     struct Unit* unit;
     int i;
     int x;
@@ -691,9 +690,9 @@ u16 GetSupportTalkSong_(u8 unused, u8 pidA, u8 pidB, int rank) {
 }
 
 //! FE8U = 0x080837B0
-void sub_80837B0(void) {
+void ForceGameOver(void) {
     SetFlag(EVFLAG_GAMEOVER);
-    StartBgm(0x3e, NULL);
+    StartBgm(SONG_GAME_OVER, NULL);
     gPlaySt.config.disableBgm = 1;
     CallGameOverEvent();
 
@@ -701,7 +700,7 @@ void sub_80837B0(void) {
 }
 
 //! FE8U = 0x080837D8
-s8 sub_80837D8(void) {
+s8 IsHardMode(void) {
     if (gPlaySt.chapterStateBits & PLAY_FLAG_HARD) {
         return 1;
     }
@@ -1316,14 +1315,14 @@ s8 RunPhaseSwitchEvents(void) {
     struct EventInfo* pInfo;
     struct EventInfo info;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
     chapter = gPlaySt.chapterIndex;
 
     if (chapter != 0) {
-        if (GetBattleMapKind() != 2) {
+        if (GetBattleMapKind() != BATTLEMAP_KIND_SKIRMISH) {
             type = GetROMChapterStruct(chapter)->goalWindowDataType;
         } else {
             type = GOAL_TYPE_DEFEAT_ALL;
@@ -1331,7 +1330,7 @@ s8 RunPhaseSwitchEvents(void) {
 
         if (((type == GOAL_TYPE_DEFEAT_ALL) || (type == GOAL_TYPE_DEFEAT_BOSS)) && (AreAnyEnemyUnitDead() == 0))
         {
-            if (GetBattleMapKind() == 0)
+            if (GetBattleMapKind() == BATTLEMAP_KIND_STORY)
                 SetFlag(EVFLAG_WIN);
 
             CallEndEvent();
@@ -1362,7 +1361,7 @@ s8 RunPhaseSwitchEvents(void) {
 s8 CheckForCharacterEvents(u8 pidA, u8 pidB) {
     struct EventInfo info;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
@@ -1381,7 +1380,7 @@ s8 CheckForCharacterEvents(u8 pidA, u8 pidB) {
 void StartCharacterEvent(u8 pidA, u8 pidB) {
     struct EventInfo info;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return;
     }
 
@@ -1398,7 +1397,7 @@ void StartCharacterEvent(u8 pidA, u8 pidB) {
 }
 
 //! FE8U = 0x08083FFC
-u16 sub_8083FFC(u16 itemId) {
+u16 GetChestItemSubstitute(u16 itemId) {
     if (itemId == ITEM_MEMBERCARD) {
         if (GetConvoyItemSlot(ITEM_MEMBERCARD) != -1) {
             return ITEM_WHITEGEM;
@@ -1441,7 +1440,7 @@ int GetAvailableTileEventCommand(s8 x, s8 y) {
     info.xPos = x;
     info.yPos = y;
 
-    if (SearchAvailableEvent(&info) && (GetBattleMapKind() != 2)) {
+    if (SearchAvailableEvent(&info) && (GetBattleMapKind() != BATTLEMAP_KIND_SKIRMISH)) {
         return info.commandId;
     }
 
@@ -1467,7 +1466,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
             // fallthrough
 
         case TILE_COMMAND_SEIZE:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
 
@@ -1481,7 +1480,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
             return;
 
         case TILE_COMMAND_20:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
 
@@ -1491,7 +1490,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
 
         case TILE_COMMAND_DOOR:
         case TILE_COMMAND_BRIDGE:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
 
@@ -1506,7 +1505,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
             return;
 
         case TILE_COMMAND_CHEST:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
 
@@ -1533,11 +1532,11 @@ void StartAvailableTileEvent(s8 x, s8 y) {
                     info.givenItem = r0;
                 }
             _08084274:
-                info.givenItem = sub_8083FFC(info.givenItem);
+                info.givenItem = GetChestItemSubstitute(info.givenItem);
                 CallChestOpeningEvent(GetMapChangeIdAt(info.xPos, info.yPos), info.givenItem);
             } else {
-                if (info.givenItem != 0x77) {
-                    info.givenItem = sub_8083FFC(info.givenItem);
+                if (info.givenItem != ITEM_GOLD) {
+                    info.givenItem = GetChestItemSubstitute(info.givenItem);
                     CallChestOpeningEvent(GetMapChangeIdAt(info.xPos, info.yPos), info.givenItem);
                 } else {
                     CallChestOpeningEvent(GetMapChangeIdAt(info.xPos, info.yPos), info.givenMoney);
@@ -1549,7 +1548,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
             return;
 
         case TILE_COMMAND_ARMORY:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
 
@@ -1558,7 +1557,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
             return;
 
         case TILE_COMMAND_VENDOR:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
             StartVendorScreenOrphaned(gActiveUnit, (u16*)info.script);
@@ -1566,7 +1565,7 @@ void StartAvailableTileEvent(s8 x, s8 y) {
             return;
 
         case TILE_COMMAND_SECRET:
-            if (GetBattleMapKind() == 2) {
+            if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
                 return;
             }
 
@@ -1596,7 +1595,7 @@ s8 CheckForWaitEvents(void) {
     if (AreAnyEnemyUnitDead() == 0) {
         SetFlag(EVFLAG_DEFEAT_ALL);
 
-        if (GetBattleMapKind() == 2) {
+        if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
             return 1;
         }
     } else {
@@ -1604,7 +1603,7 @@ s8 CheckForWaitEvents(void) {
     }
 
     if (!CheckFlag(EVFLAG_GAMEOVER) && (CountAvailableBlueUnits() != 0)) {
-        if (GetBattleMapKind() == 2) {
+        if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
             return 0;
         }
 
@@ -1629,7 +1628,7 @@ void RunWaitEvents(void) {
 
     if (AreAnyEnemyUnitDead() == 0) {
         SetFlag(EVFLAG_DEFEAT_ALL);
-        if (GetBattleMapKind() == 2) {
+        if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
             CallEndEvent();
             return;
         }
@@ -1638,11 +1637,11 @@ void RunWaitEvents(void) {
     }
 
     if (CheckFlag(0x65) || (CountAvailableBlueUnits() == 0)) {
-        sub_80837B0();
+        ForceGameOver();
         return;
     }
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return;
     }
 
@@ -1671,7 +1670,7 @@ s8 TryCallSelectEvents(void) {
     s8 ret;
     struct EventInfo info;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
@@ -1694,7 +1693,7 @@ s8 StartDestSelectedEvent(void) {
     s8 ret;
     struct EventInfo info;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
@@ -1716,7 +1715,7 @@ s8 StartAfterUnitMovedEvent(void) {
     s8 ret;
     struct EventInfo info;
 
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
@@ -1735,7 +1734,7 @@ s8 StartAfterUnitMovedEvent(void) {
 
 //! FE8U = 0x08084560
 s8 CheckBattleForecastTutorialEvent(void) {
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return 0;
     }
 
@@ -1744,7 +1743,7 @@ s8 CheckBattleForecastTutorialEvent(void) {
 
 //! FE8U = 0x0808457C
 void StartBattleForecastTutorialEvent(void) {
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return;
     }
 
@@ -1754,7 +1753,7 @@ void StartBattleForecastTutorialEvent(void) {
 
 //! FE8U = 0x08084590
 void StartPlayerPhaseStartTutorialEvent(void) {
-    if (GetBattleMapKind() == 2) {
+    if (GetBattleMapKind() == BATTLEMAP_KIND_SKIRMISH) {
         return;
     }
 

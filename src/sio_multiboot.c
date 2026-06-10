@@ -1,4 +1,5 @@
 #include "global.h"
+#include "sio.h"
 
 // clang-format off
 
@@ -14,14 +15,6 @@
 #define MULTIBOOT_MASTER_VERIFY_CRC      0x66
 
 // clang-format on
-
-extern u16 gUnknown_03001864[MULTIBOOT_NCHILD];
-
-int MultiBootSend(struct MultiBootParam * mp, u16 data);
-int MultiBootCheckComplete(struct MultiBootParam * mp);
-int MultiBootHandShake(struct MultiBootParam * mp);
-void MultiBootStartProbe(struct MultiBootParam * mp);
-void MultiBootWaitSendDone(void);
 
 //! FE8U = 0x0804D9C4
 void MultiBootInit(struct MultiBootParam * mp)
@@ -158,7 +151,7 @@ output_burst:
                 j = REG_SIOMULTI(i);
                 if ((j >> 8) == MULTIBOOT_CLIENT_INFO)
                 {
-                    gUnknown_03001864[i - 1] = j;
+                    gUnk_50[i - 1] = j;
                     j &= 0xff;
                     if (j == (1 << i))
                     {
@@ -181,7 +174,7 @@ output_burst:
                 if (mp->probe_target_bit & (1 << i))
                 {
                     j = REG_SIOMULTI(i);
-                    if (j != gUnknown_03001864[i - 1])
+                    if (j != gUnk_50[i - 1])
                     {
                         mp->probe_target_bit ^= 1 << i;
                     }
@@ -202,7 +195,7 @@ output_burst:
                         MultiBootInit(mp);
                         return MULTIBOOT_ERROR_NO_DLREADY;
                     }
-                    if (j == gUnknown_03001864[i - 1])
+                    if (j == gUnk_50[i - 1])
                     {
                         k = 0;
                     }

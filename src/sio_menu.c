@@ -13,19 +13,21 @@
 #include "sio.h"
 
 #include "constants/faces.h"
+#include "constants/msg.h"
+#include "constants/songs.h"
 
 //! FE8U = 0x08047A54
-int sub_8047A54(struct SioMenuProc * proc, int lineNum)
+int SioMenu_GetItemHelpText(struct SioMenuProc * proc, int lineNum)
 {
     // clang-format off
 
-    int gUnknown_080D9EC8[] =
+    int linkMenuMsgLut[] =
     {
-        0x736, -1,
-        0x737, 0x738,
-        0x739, -1,
-        0x73A, -1,
-        0x73B, -1,
+        MSG_736, -1, // "Build or edit a multiplayer team."
+        MSG_737, MSG_738, // "Battle the computer." / "Set team # with + Control Pad."
+        MSG_739, -1, // "Battle against a linked player."
+        MSG_73A, -1, // "Confirm battle records to date."
+        MSG_73B, -1, // "Set combat rules."
     };
 
     // clang-format on
@@ -34,15 +36,18 @@ int sub_8047A54(struct SioMenuProc * proc, int lineNum)
     {
         if (proc->unk_58 == 0)
         {
-            return 0x735;
+            return MSG_735; // "Select Edit Teams to build a team."
         }
     }
-    else if (proc->unk_58 == 0)
+    else
     {
-        return -1;
+        if (proc->unk_58 == 0)
+        {
+            return -1;
+        }
     }
 
-    return gUnknown_080D9EC8[proc->unk_48 * 2 + lineNum];
+    return linkMenuMsgLut[proc->unk_48 * 2 + lineNum];
 }
 
 //! FE8U = 0x08047AB8
@@ -88,7 +93,7 @@ void SioMenu_Init(void)
 
 // clang-format off
 
-struct FaceVramEntry CONST_DATA FaceConfig_085A9E48[] =
+struct FaceVramEntry CONST_DATA FaceConfig_SioMenu_0[] =
 {
     0x7000, 1,
     0x7000, 1,
@@ -101,7 +106,7 @@ struct FaceVramEntry CONST_DATA FaceConfig_085A9E48[] =
 //! FE8U = 0x08047B34
 void SioMenu_LoadGraphics(struct SioMenuProc * proc)
 {
-    int unkBool;
+    int enabled;
     int i;
 
     ReadMultiArenaSaveConfig(&gSioSaveConfig);
@@ -110,62 +115,63 @@ void SioMenu_LoadGraphics(struct SioMenuProc * proc)
     InitSioBG();
     StartMuralBackgroundExt(proc, 0, 0x10, 4, 0);
 
-    Decompress(Img_LinkArenaMenu, (void *)0x06014800);
+    Decompress(Img_LinkArenaMenu, OBJ_CHR_ADDR(0x240));
     ApplyPalettes(Pal_LinkArenaMenu, 0x13, 3);
 
-    SetTextFont(&Font_0203DB64);
+    SetTextFont(&Font_0);
     InitSystemTextFont();
     ResetTextFont();
 
-    sub_8043164();
+    InitSioTexts();
 
     proc->unk_4c = 0;
 
     proc->unk_58 = IsMultiArenaSaveReady();
-    proc->unk_40[0] = 1;
-    unkBool = proc->unk_58 != 0;
-    proc->unk_40[1] = unkBool;
-    proc->unk_40[2] = unkBool;
-    proc->unk_40[3] = unkBool;
+    proc->menuItemState[0] = true;
+
+    enabled = proc->unk_58 != 0;
+    proc->menuItemState[1] = enabled;
+    proc->menuItemState[2] = enabled;
+    proc->menuItemState[3] = enabled;
 
     if (proc->unk_59 == 0)
     {
-        unkBool = 0;
+        enabled = false;
         proc->unk_50 = 3;
     }
     else
     {
-        unkBool = 1;
+        enabled = true;
         proc->unk_50 = 4;
     }
 
-    proc->unk_44 = unkBool;
+    proc->menuItemState[4] = enabled;
 
     proc->unk_48 = gLinkArenaSt.unk_01;
-    proc->unk_40[proc->unk_48] = 2;
+    proc->menuItemState[proc->unk_48] = 2;
 
     for (i = 4; i >= 0; i--)
     {
-        proc->unk_2c[i] = sub_804C758(proc, 0xb0, 0xa0, i, proc->unk_40[i]);
+        proc->menuItems[i] = StartSioMenuItem(proc, 176, 160, i, proc->menuItemState[i]);
     }
 
-    StartLinkArenaTitleBanner(proc->unk_2c[0], 0, 0);
-    sub_804C508();
+    StartLinkArenaTitleBanner(proc->menuItems[0], 0, 0);
+    SetLinkArenaUiBlendAndWindowOff();
 
-    SetupFaceGfxData(FaceConfig_085A9E48);
+    SetupFaceGfxData(FaceConfig_SioMenu_0);
     StartFace(3, FID_ANNA, 208, 80, FACE_DISP_KIND(FACE_96x80));
 
     proc->unk_54 = 0;
 
-    StartBgm(0x38, 0);
-    sub_80497CC();
+    StartBgm(SONG_COLOSSEUM_ENTRANCE, 0);
+    LinkArenaBattleMap_InitConfig();
 
     return;
 }
 
 // clang-format off
 
-const u8 gUnknown_080D9EF0[] =
+const u8 gSioMenu_0[] =
 {
     120, 16,
      96, 36,
@@ -178,24 +184,24 @@ const u8 gUnknown_080D9EF0[] =
 // clang-format on
 
 //! FE8U = 0x08047C60
-void SioMenu_8047C60(struct SioMenuProc * proc)
+void SioMenu_0(struct SioMenuProc * proc)
 {
     int i;
 
-    int x = Interpolate(INTERPOLATE_RSQUARE, -0x50, gUnknown_080D9EF0[0], proc->unk_54, 0x20);
-    int y = Interpolate(INTERPOLATE_RCUBIC, 0xa0, gUnknown_080D9EF0[1], proc->unk_54, 0x20);
+    int x = Interpolate(INTERPOLATE_RSQUARE, -80, gSioMenu_0[0], proc->unk_54, 32);
+    int y = Interpolate(INTERPOLATE_RCUBIC, 160, gSioMenu_0[1], proc->unk_54, 32);
 
     for (i = 4; i >= 0; i--)
     {
-        sub_804C7DC(proc->unk_2c[i], x, y);
+        SioMenuItem_SetPosition(proc->menuItems[i], x, y);
     }
 
-    if (proc->unk_54 >= 0x20)
+    if (proc->unk_54 >= 32)
     {
         proc->unk_54 = 0;
 
-        sub_8043100(sub_8047A54(proc, 0), 0);
-        sub_8043100(sub_8047A54(proc, 1), 1);
+        PutSioText(SioMenu_GetItemHelpText(proc, 0), 0);
+        PutSioText(SioMenu_GetItemHelpText(proc, 1), 1);
 
         Proc_Break(proc);
     }
@@ -206,7 +212,7 @@ void SioMenu_8047C60(struct SioMenuProc * proc)
 }
 
 //! FE8U = 0x08047CF0
-void sub_8047CF0(struct SioMenuProc * proc)
+void SioMenu_AnimateItemsSpreadFromSelection(struct SioMenuProc * proc)
 {
     int i;
 
@@ -215,13 +221,13 @@ void sub_8047CF0(struct SioMenuProc * proc)
     for (i = 4; i >= 0; i--)
     {
         int x = Interpolate(
-            INTERPOLATE_RSQUARE, gUnknown_080D9EF0[idx + 0], gUnknown_080D9EF0[i * 2 + 0], proc->unk_54, 0x10);
+            INTERPOLATE_RSQUARE, gSioMenu_0[idx + 0], gSioMenu_0[i * 2 + 0], proc->unk_54, 16);
         int y = Interpolate(
-            INTERPOLATE_RSQUARE, gUnknown_080D9EF0[idx + 1], gUnknown_080D9EF0[i * 2 + 1], proc->unk_54, 0x10);
-        sub_804C7DC(proc->unk_2c[i], x, y);
+            INTERPOLATE_RSQUARE, gSioMenu_0[idx + 1], gSioMenu_0[i * 2 + 1], proc->unk_54, 16);
+        SioMenuItem_SetPosition(proc->menuItems[i], x, y);
     }
 
-    if (proc->unk_54 >= 0x10)
+    if (proc->unk_54 >= 16)
     {
         Proc_Break(proc);
     }
@@ -233,7 +239,7 @@ void sub_8047CF0(struct SioMenuProc * proc)
 
 // clang-format off
 
-struct FaceVramEntry CONST_DATA FaceConfig_085A9E68[] =
+struct FaceVramEntry CONST_DATA FaceConfig_SioMenu_1[] =
 {
     0x7000, 1,
     0x7000, 1,
@@ -246,7 +252,7 @@ struct FaceVramEntry CONST_DATA FaceConfig_085A9E68[] =
 //! FE8U = 0x08047D88
 void SioMenu_RestartGraphicsMaybe(struct SioMenuProc * proc)
 {
-    int unkBool;
+    int enabled;
     int i;
     int idx;
 
@@ -254,61 +260,61 @@ void SioMenu_RestartGraphicsMaybe(struct SioMenuProc * proc)
     proc->unk_59 = gSioSaveConfig._unk3_;
 
     InitSioBG();
-
     StartMuralBackgroundExt(proc, 0, 0x10, 4, 0);
 
-    Decompress(Img_LinkArenaMenu, (void *)0x06014800);
+    Decompress(Img_LinkArenaMenu, OBJ_CHR_ADDR(0x240));
     ApplyPalettes(Pal_LinkArenaMenu, 0x13, 3);
 
-    SetTextFont(&Font_0203DB64);
+    SetTextFont(&Font_0);
     InitSystemTextFont();
     ResetTextFont();
 
-    sub_8043164();
+    InitSioTexts();
 
     proc->unk_4c = 0;
 
     proc->unk_58 = IsMultiArenaSaveReady();
-    proc->unk_40[0] = 1;
-    unkBool = proc->unk_58 != 0;
-    proc->unk_40[1] = unkBool;
-    proc->unk_40[2] = unkBool;
-    proc->unk_40[3] = unkBool;
+    proc->menuItemState[0] = true;
+
+    enabled = proc->unk_58 != 0;
+    proc->menuItemState[1] = enabled;
+    proc->menuItemState[2] = enabled;
+    proc->menuItemState[3] = enabled;
 
     if (proc->unk_59 == 0)
     {
-        unkBool = 0;
+        enabled = false;
         proc->unk_50 = 3;
     }
     else
     {
-        unkBool = 1;
+        enabled = true;
         proc->unk_50 = 4;
     }
 
-    proc->unk_44 = unkBool;
+    proc->menuItemState[4] = enabled;
 
     proc->unk_48 = gLinkArenaSt.unk_01;
-    proc->unk_40[proc->unk_48] = 2;
+    proc->menuItemState[proc->unk_48] = 2;
 
     idx = proc->unk_48 * 2;
 
     for (i = 4; i >= 0; i--)
     {
-        proc->unk_2c[i] = sub_804C758(proc, gUnknown_080D9EF0[idx + 0], gUnknown_080D9EF0[idx + 1], i, proc->unk_40[i]);
+        proc->menuItems[i] = StartSioMenuItem(proc, gSioMenu_0[idx + 0], gSioMenu_0[idx + 1], i, proc->menuItemState[i]);
     }
 
-    StartLinkArenaTitleBanner(proc->unk_2c[0], 0, 0);
-    sub_804C508();
+    StartLinkArenaTitleBanner(proc->menuItems[0], 0, 0);
+    SetLinkArenaUiBlendAndWindowOff();
 
-    SetupFaceGfxData(FaceConfig_085A9E68);
+    SetupFaceGfxData(FaceConfig_SioMenu_1);
     StartFace(3, FID_ANNA, 208, 80, FACE_DISP_KIND(FACE_96x80));
 
-    sub_8043100(sub_8047A54(proc, 0), 0);
-    sub_8043100(sub_8047A54(proc, 1), 1);
-    sub_80497CC();
+    PutSioText(SioMenu_GetItemHelpText(proc, 0), 0);
+    PutSioText(SioMenu_GetItemHelpText(proc, 1), 1);
+    LinkArenaBattleMap_InitConfig();
 
-    StartBgm(0x38, 0);
+    StartBgm(SONG_COLOSSEUM_ENTRANCE, 0);
 
     proc->unk_54 = 0;
 
@@ -329,7 +335,7 @@ void SioMenu_HandleDPadInput(struct SioMenuProc * proc, u8 b)
                 gLinkArenaSt.unk_05 = 2;
             }
 
-            sub_804C7C8(proc->unk_2c[1], -6, 0x34, 0x1f, 4);
+            SioMenuItem_SetArrowConfig(proc->menuItems[1], -6, 0x34, 0x1f, 4);
             SioPlaySoundEffect(3);
         }
 
@@ -338,7 +344,7 @@ void SioMenu_HandleDPadInput(struct SioMenuProc * proc, u8 b)
             gLinkArenaSt.unk_05++;
             gLinkArenaSt.unk_05 = gLinkArenaSt.unk_05 % 3;
 
-            sub_804C7C8(proc->unk_2c[1], 0, 0x3a, 4, 0x1f);
+            SioMenuItem_SetArrowConfig(proc->menuItems[1], 0, 0x3a, 4, 0x1f);
             SioPlaySoundEffect(3);
         }
     }
@@ -353,7 +359,7 @@ void SioMenu_HandleDPadInput(struct SioMenuProc * proc, u8 b)
             {
                 proc->unk_48 = b - 1;
             }
-        } while (proc->unk_40[proc->unk_48] == 0);
+        } while (proc->menuItemState[proc->unk_48] == 0);
     }
 
     if (((gKeyStatusPtr->repeatedKeys & DPAD_DOWN) != 0) &&
@@ -363,7 +369,7 @@ void SioMenu_HandleDPadInput(struct SioMenuProc * proc, u8 b)
         {
             proc->unk_48++;
             proc->unk_48 = proc->unk_48 % b;
-        } while (proc->unk_40[proc->unk_48] == 0);
+        } while (proc->menuItemState[proc->unk_48] == 0);
     }
     return;
 }
@@ -378,20 +384,20 @@ void SioMenu_Loop_HandleKeyInput(struct SioMenuProc * proc)
 
     if (idx != proc->unk_48)
     {
-        struct SioProc85AA9C0 * child;
+        struct SioMenuItemProc * child;
 
         SioPlaySoundEffect(3);
 
-        child = proc->unk_2c[idx];
-        child->unk_2e = 1;
+        child = proc->menuItems[idx];
+        child->state = 1;
 
-        child = proc->unk_2c[proc->unk_48];
-        child->unk_2e = 2;
+        child = proc->menuItems[proc->unk_48];
+        child->state = 2;
 
         StartSioMenuBurstFx(child, child->xBase, child->yBase);
 
-        sub_8043100(sub_8047A54(proc, 0), 0);
-        sub_8043100(sub_8047A54(proc, 1), 1);
+        PutSioText(SioMenu_GetItemHelpText(proc, 0), 0);
+        PutSioText(SioMenu_GetItemHelpText(proc, 1), 1);
     }
 
     if ((gKeyStatusPtr->newKeys & A_BUTTON) != 0)
@@ -414,7 +420,7 @@ void SioMenu_Loop_HandleKeyInput(struct SioMenuProc * proc)
 }
 
 //! FE8U = 0x080480B4
-void SioMenu_80480B4(struct SioMenuProc * proc)
+void SioMenu_1(struct SioMenuProc * proc)
 {
     int r2;
     int i;
@@ -426,19 +432,19 @@ void SioMenu_80480B4(struct SioMenuProc * proc)
 
     r2 = gLinkArenaSt.unk_00;
 
-    if (proc->unk_54 < 0x11)
+    if (proc->unk_54 <= 16)
     {
         for (i = 4; i >= 0; i--)
         {
             int x = Interpolate(
-                INTERPOLATE_RSQUARE, gUnknown_080D9EF0[i * 2 + 0], gUnknown_080D9EF0[r2 * 2 + 0], proc->unk_54, 0x10);
+                INTERPOLATE_RSQUARE, gSioMenu_0[i * 2 + 0], gSioMenu_0[r2 * 2 + 0], proc->unk_54, 0x10);
             int y = Interpolate(
-                INTERPOLATE_RSQUARE, gUnknown_080D9EF0[i * 2 + 1], gUnknown_080D9EF0[r2 * 2 + 1], proc->unk_54, 0x10);
-            sub_804C7DC(proc->unk_2c[i], x, y);
+                INTERPOLATE_RSQUARE, gSioMenu_0[i * 2 + 1], gSioMenu_0[r2 * 2 + 1], proc->unk_54, 0x10);
+            SioMenuItem_SetPosition(proc->menuItems[i], x, y);
         }
     }
 
-    if (proc->unk_54 > 0x20)
+    if (proc->unk_54 > 32)
     {
         Proc_Break(proc);
     }
@@ -466,13 +472,13 @@ void SioMenu_End(struct SioMenuProc * proc)
 
     for (i = 0; i < 5; i++)
     {
-        Proc_End(proc->unk_2c[i]);
+        Proc_End(proc->menuItems[i]);
     }
 
     if (gLinkArenaSt.unk_00 == 0xFF)
     {
         BMapVSync_End();
-        nullsub_13();
+        Nop_SioUiutils_0();
 
         UnsetBmStLinkArenaFlag();
 
@@ -500,8 +506,8 @@ PROC_LABEL(0),
     PROC_CALL(FadeInBlackSpeed20),
     PROC_YIELD,
 
-    PROC_CALL(Clear_0203DDDC),
-    PROC_REPEAT(SioMenu_8047C60),
+    PROC_CALL(Clear_UnkData_0),
+    PROC_REPEAT(SioMenu_0),
 
     PROC_GOTO(2),
 
@@ -509,18 +515,18 @@ PROC_LABEL(1),
     PROC_CALL(SioMenu_RestartGraphicsMaybe),
     PROC_CALL(FadeInBlackSpeed20),
     PROC_YIELD,
-    PROC_CALL(Clear_0203DDDC),
+    PROC_CALL(Clear_UnkData_0),
 
     // fallthrough
 
 PROC_LABEL(2),
-    PROC_REPEAT(sub_8047CF0),
+    PROC_REPEAT(SioMenu_AnimateItemsSpreadFromSelection),
     PROC_REPEAT(SioMenu_Loop_HandleKeyInput),
-    PROC_REPEAT(SioMenu_80480B4),
+    PROC_REPEAT(SioMenu_1),
 
-    PROC_CALL(Set_0203DDDC),
+    PROC_CALL(Set_UnkData_0),
 
-    PROC_CALL(sub_8013F40),
+    PROC_CALL(FadeOutBlackSpeed20Locking),
     PROC_YIELD,
 
     PROC_CALL(SioMenu_End),
@@ -535,9 +541,9 @@ PROC_LABEL(2),
 void StartLinkArenaMainMenu(ProcPtr parent)
 {
     LoadUiFrameGraphics();
-    InitTextFont(&Font_0203DB64, (void *)0x06001800, 0xc0, 0);
+    InitTextFont(&Font_0, BG_CHR_ADDR(0xC0), 0xc0, 0);
 
-    if (!IsSaveValid(5))
+    if (!IsSaveValid(SAVE_ID_ARENA))
     {
         WriteNewMultiArenaSave();
     }
@@ -547,7 +553,7 @@ void StartLinkArenaMainMenu(ProcPtr parent)
     gLinkArenaSt.unk_01 = 0;
 
     SetBmStLinkArenaFlag();
-    sub_80496A4();
+    LinkArenaBattleMap_InitChapter();
 
     BMapVSync_Start();
 

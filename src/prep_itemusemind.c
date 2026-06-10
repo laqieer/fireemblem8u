@@ -9,6 +9,7 @@
 #include "soundwrapper.h"
 #include "prepscreen.h"
 #include "sysutil.h"
+#include "constants/songs.h"
 
 void PrepItemUseBooster_OnDraw(struct ProcPrepItemUseBooster *proc, int x, int y, int msg, int item)
 {
@@ -88,7 +89,7 @@ void PrepItemUseBooster_OnInit(struct ProcPrepItemUseBooster * proc)
     }
 
     proc->timer = 0x78;
-    PlaySoundEffect(0x5A);
+    PlaySoundEffect(SONG_5A);
 }
 
 void PrepItemUseBooster_IDLE(struct ProcPrepItemUseBooster * proc)
@@ -122,7 +123,7 @@ void PrepItemUseBooster_OnEnd(struct ProcPrepItemUseBooster * proc)
 
     DrawPrepScreenItemUseDesc(parent->unit, parent->slot);
 
-    sub_80ACA84(0);
+    ClearUiCursorHandConfig(0);
     EndManimLevelUpStatGainLabels();
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG2_SYNC_BIT);
     LoadHelpBoxGfx(OBJ_VRAM1, -1);
@@ -188,7 +189,7 @@ void PrepItemUseJuna_OnInit(struct ProcPrepItemUseJunaFruit * proc)
 
     proc->timer = 0x78;
 
-    PlaySoundEffect(0x5A);
+    PlaySoundEffect(SONG_5A);
 }
 
 void PrepItemUseJuna_IDLE(struct ProcPrepItemUseJunaFruit *proc)
@@ -222,7 +223,7 @@ void PrepItemUseJuna_OnEnd(struct ProcPrepItemUseJunaFruit *proc)
 
     DrawPrepScreenItemUseDesc(parent->unit, parent->slot);
 
-    sub_80ACA84(0);
+    ClearUiCursorHandConfig(0);
     BG_EnableSyncByMask(BG0_SYNC_BIT | BG2_SYNC_BIT);
     LoadHelpBoxGfx(OBJ_VRAM1, -1);
 }

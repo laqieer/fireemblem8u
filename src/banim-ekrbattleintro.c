@@ -59,32 +59,32 @@ CONST_DATA struct ProcCmd ProcScr_EkrBaseKaiten[] = {
     PROC_END
 };
 
-const u8 * CONST_DATA Imgs_085B9B84[] = {
-    Img_080DB538, NULL,
-    Img_080DB538, NULL,
-    Img_080DB034, NULL,
-    Img_080DB538, NULL
+const u8 * CONST_DATA Imgs_Ekrbattleintro_0[] = {
+    Img_ConstDataDB034_1, NULL,
+    Img_ConstDataDB034_1, NULL,
+    Img_ConstDataDB034_0, NULL,
+    Img_ConstDataDB034_1, NULL
 };
 
-const u8 * CONST_DATA Imgs_085B9BA4[] = {
-    Img_080DB9C4,
-    Img_080DBE1C,
-    Img_080DBE1C,
-    Img_080DBE1C,
-    Img_080DC350,
-    Img_080DBE1C,
-    Img_080DBE1C,
-    Img_080DBE1C
+const u8 * CONST_DATA Imgs_Ekrbattleintro_1[] = {
+    Img_ConstDataDB034_2,
+    Img_ConstDataDB034_3,
+    Img_ConstDataDB034_3,
+    Img_ConstDataDB034_3,
+    Img_ConstDataDB034_4,
+    Img_ConstDataDB034_3,
+    Img_ConstDataDB034_3,
+    Img_ConstDataDB034_3
 };
 
-CONST_DATA u32 * AnimScrs_085B9BC4[] = {
+CONST_DATA u32 * AnimScrs_Ekrbattleintro_0[] = {
     AnimScr_EkrBaseKaiten3, NULL,
     AnimScr_EkrBaseKaiten4, NULL,
     AnimScr_EkrBaseKaiten1, NULL,
     AnimScr_EkrBaseKaiten5, NULL
 };
 
-CONST_DATA u32 * AnimScrs_085B9BE4[] = {
+CONST_DATA u32 * AnimScrs_Ekrbattleintro_1[] = {
     AnimScr_EkrBaseKaiten10,
     AnimScr_EkrBaseKaiten15,
     AnimScr_EkrBaseKaiten15,
@@ -95,7 +95,7 @@ CONST_DATA u32 * AnimScrs_085B9BE4[] = {
     AnimScr_EkrBaseKaiten16,
 };
 
-CONST_DATA u32 * AnimScrs_085B9C04[] = {
+CONST_DATA u32 * AnimScrs_Ekrbattleintro_2[] = {
     AnimScr_EkrBaseKaiten9,
     AnimScr_EkrBaseKaiten13,
     AnimScr_EkrBaseKaiten13,
@@ -106,14 +106,14 @@ CONST_DATA u32 * AnimScrs_085B9C04[] = {
     AnimScr_EkrBaseKaiten14,
 };
 
-CONST_DATA u32 * AnimScrs_085B9C24[] = {
+CONST_DATA u32 * AnimScrs_Ekrbattleintro_3[] = {
     AnimScr_EkrBaseKaiten6, NULL,
     AnimScr_EkrBaseKaiten7, NULL,
     AnimScr_EkrBaseKaiten2, NULL,
     AnimScr_EkrBaseKaiten8, NULL
 };
 
-CONST_DATA u32 * AnimScrs_085B9C44[] = {
+CONST_DATA u32 * AnimScrs_Ekrbattleintro_4[] = {
     AnimScr_EkrBaseKaiten12,
     AnimScr_EkrBaseKaiten19,
     AnimScr_EkrBaseKaiten19,
@@ -124,7 +124,7 @@ CONST_DATA u32 * AnimScrs_085B9C44[] = {
     AnimScr_EkrBaseKaiten20,
 };
 
-CONST_DATA u32 * AnimScrs_085B9C64[] = {
+CONST_DATA u32 * AnimScrs_Ekrbattleintro_5[] = {
     AnimScr_EkrBaseKaiten11,
     AnimScr_EkrBaseKaiten17,
     AnimScr_EkrBaseKaiten17,
@@ -135,7 +135,7 @@ CONST_DATA u32 * AnimScrs_085B9C64[] = {
     AnimScr_EkrBaseKaiten18,
 };
 
-const u16 gUnknown_080DAD86[12][8] = {
+const u16 gEkrbattleintro_0[12][8] = {
     {0xA0, 0xB8, 0xE0, 0xF0, 0x01, 0x30, 0x60, 0xFFFF},
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFFFF},
     {0xC0, 0xD8, 0xF0, 0x01, 0x10, 0x28, 0x40, 0xFFFF},
@@ -150,33 +150,33 @@ const u16 gUnknown_080DAD86[12][8] = {
     {0x70, 0x40, 0x10, 0xE0, 0xB0, 0x80, 0x50, 0xFFFF}
 };
 
-const u16 * CONST_DATA gUnknown_085B9C84[] = {
-    gUnknown_080DAD86[1], NULL,
-    gUnknown_080DAD86[2], NULL,
-    gUnknown_080DAD86[0], NULL,
-    gUnknown_080DAD86[3], NULL,
+const u16 * CONST_DATA gEkrbattleintro_1[] = {
+    gEkrbattleintro_0[1], NULL,
+    gEkrbattleintro_0[2], NULL,
+    gEkrbattleintro_0[0], NULL,
+    gEkrbattleintro_0[3], NULL,
 };
 
-const u16 * CONST_DATA gUnknown_085B9CA4[] = {
-    gUnknown_080DAD86[5],
-    gUnknown_080DAD86[8],
-    gUnknown_080DAD86[8],
-    gUnknown_080DAD86[8],
-    gUnknown_080DAD86[11],
-    gUnknown_080DAD86[9],
-    gUnknown_080DAD86[9],
-    gUnknown_080DAD86[9]
+const u16 * CONST_DATA gEkrbattleintro_2[] = {
+    gEkrbattleintro_0[5],
+    gEkrbattleintro_0[8],
+    gEkrbattleintro_0[8],
+    gEkrbattleintro_0[8],
+    gEkrbattleintro_0[11],
+    gEkrbattleintro_0[9],
+    gEkrbattleintro_0[9],
+    gEkrbattleintro_0[9]
 };
 
-const u16 * CONST_DATA gUnknown_085B9CC4[] = {
-    gUnknown_080DAD86[4],
-    gUnknown_080DAD86[6],
-    gUnknown_080DAD86[6],
-    gUnknown_080DAD86[6],
-    gUnknown_080DAD86[10],
-    gUnknown_080DAD86[7],
-    gUnknown_080DAD86[7],
-    gUnknown_080DAD86[7]
+const u16 * CONST_DATA gEkrbattleintro_3[] = {
+    gEkrbattleintro_0[4],
+    gEkrbattleintro_0[6],
+    gEkrbattleintro_0[6],
+    gEkrbattleintro_0[6],
+    gEkrbattleintro_0[10],
+    gEkrbattleintro_0[7],
+    gEkrbattleintro_0[7],
+    gEkrbattleintro_0[7]
 };
 
 /* https://decomp.me/scratch/vwNsr */
@@ -239,21 +239,21 @@ void NewEkrBaseKaiten(int identifier)
     switch (gEkrDistanceType) {
     case EKR_DISTANCE_CLOSE:
     case EKR_DISTANCE_PROMOTION:
-        pptr = Imgs_085B9B84;
+        pptr = Imgs_Ekrbattleintro_0;
         break;
 
     case EKR_DISTANCE_FAR:
     case EKR_DISTANCE_FARFAR:
     case EKR_DISTANCE_MONOCOMBAT:
     default:
-        pptr = Imgs_085B9BA4;
+        pptr = Imgs_Ekrbattleintro_1;
         break;
     }
 
     src = pptr[mode];
     r6 = mode * 4;
     LZ77UnCompVram(src, OBJ_VRAM0);
-    CpuFastCopy(Pal_080DC85C, PAL_OBJ(4), 4);
+    CpuFastCopy(Pal_NewEkrBaseKaiten, PAL_OBJ(4), 4);
     EnablePaletteSync();
 
     switch (gEkrDistanceType) {
@@ -270,9 +270,9 @@ void NewEkrBaseKaiten(int identifier)
         proc->y2 = 0x68;
 
         if (proc->type == 0)
-            anim = AnimCreate(AccessArray(AnimScrs_085B9BC4, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_0, mode, r6), 0x64);
         else
-            anim = AnimCreate(AccessArray(AnimScrs_085B9C24, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_3, mode, r6), 0x64);
 
         proc->anim = anim;
         anim->oam2Base = 0x4800;
@@ -288,7 +288,7 @@ void NewEkrBaseKaiten(int identifier)
             anim->xPosition = proc->x2;
             anim->yPosition = proc->y2;
         }
-        proc->unk60 = AccessArray(gUnknown_085B9C84, mode, r6);
+        proc->unk60 = AccessArray(gEkrbattleintro_1, mode, r6);
         proc->unk3E = 0;
         proc->unk36 = 0;
         break;
@@ -309,9 +309,9 @@ void NewEkrBaseKaiten(int identifier)
             proc->x2 -= BanimLeftDefaultPos[gEkrDistanceType];
 
         if (proc->type == 0)
-            anim = AnimCreate(AccessArray(AnimScrs_085B9BE4, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_1, mode, r6), 0x64);
         else
-            anim = AnimCreate(AccessArray(AnimScrs_085B9C44, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_4, mode, r6), 0x64);
 
         proc->anim = anim;
         anim->oam2Base = 0x4800;
@@ -327,7 +327,7 @@ void NewEkrBaseKaiten(int identifier)
             anim->xPosition = proc->x2;
             anim->yPosition = proc->y2;
         }
-        proc->unk60 = AccessArray(gUnknown_085B9CA4, mode, r6);
+        proc->unk60 = AccessArray(gEkrbattleintro_2, mode, r6);
         proc->unk3E = 0;
         proc->unk36 = 0;
 
@@ -346,9 +346,9 @@ void NewEkrBaseKaiten(int identifier)
             proc->x2 = BanimLeftDefaultPos[gEkrDistanceType] + 0xA8;
 
         if (proc->type == 0)
-            anim = AnimCreate(AccessArray(AnimScrs_085B9C04, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_2, mode, r6), 0x64);
         else
-            anim = AnimCreate(AccessArray(AnimScrs_085B9C64, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_5, mode, r6), 0x64);
 
         proc->anim = anim;
         anim->oam2Base = 0x4800;
@@ -364,7 +364,7 @@ void NewEkrBaseKaiten(int identifier)
             anim->xPosition = proc->x2;
             anim->yPosition = proc->y2;
         }
-        proc->unk60 = AccessArray(gUnknown_085B9CC4, mode, r6);
+        proc->unk60 = AccessArray(gEkrbattleintro_3, mode, r6);
         proc->unk3E = 0;
         proc->unk36 = 0;
         break;
@@ -381,9 +381,9 @@ void NewEkrBaseKaiten(int identifier)
         proc->y2 = 0x68;
 
         if (proc->type == 0)
-            anim = AnimCreate(AccessArray(AnimScrs_085B9C04, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_2, mode, r6), 0x64);
         else
-            anim = AnimCreate(AccessArray(AnimScrs_085B9C64, mode, r6), 0x64);
+            anim = AnimCreate(AccessArray(AnimScrs_Ekrbattleintro_5, mode, r6), 0x64);
 
         proc->anim = anim;
         anim->oam2Base = 0x4800;
@@ -399,7 +399,7 @@ void NewEkrBaseKaiten(int identifier)
             anim->xPosition = proc->x2;
             anim->yPosition = proc->y2;
         }
-        proc->unk60 = AccessArray(gUnknown_085B9CC4, mode, r6);
+        proc->unk60 = AccessArray(gEkrbattleintro_3, mode, r6);
         proc->unk3E = 0;
         proc->unk36 = 0;
         break;
@@ -500,7 +500,7 @@ void UnitKakudaiPrepareAnimScript(struct ProcUnitKakudai * proc)
     register int r0 asm("r0");
     u8 mode2;
 
-    mode2 = BattleTypeToAnimModeEndOfDodge[gEkrDistanceType];
+    mode2 = BanimDefaultStandingTypes[gEkrDistanceType];
     asm("":::"r0", "r1");
     cfg = BanimDefaultModeConfig;
     r0 = mode2 * 4;
@@ -509,7 +509,7 @@ void UnitKakudaiPrepareAnimScript(struct ProcUnitKakudai * proc)
     int mode;
     u8 mode2;
 
-    mode2 = BattleTypeToAnimModeEndOfDodge[gEkrDistanceType];
+    mode2 = BanimDefaultStandingTypes[gEkrDistanceType];
     front_mode = BanimDefaultModeConfig[mode2 * 4 + 0];
 #endif
 
@@ -861,7 +861,7 @@ bool PrepareBattleGraphicsMaybe(void)
 {
     u16 i;
     u16 pid, jid;
-    int zero;
+    void * zero;
     struct Unit * unit_bu1;
     struct Unit * unit_bu2;
     struct BattleUnit * bu1;
@@ -873,7 +873,7 @@ bool PrepareBattleGraphicsMaybe(void)
     const void * animdef2;
     s16 valid_l;
     s16 valid_r;
-    int animid1, animid2;
+    u32 animid1, animid2;
 
     int char_cnt = 1;
 
@@ -904,7 +904,6 @@ bool PrepareBattleGraphicsMaybe(void)
     }
     else
     {
-        int pos;
         u8 i1 = -0x40 & gBattleActor.unit.index;
         u16 faction1 = GetBanimFactionPalette(i1);
         u8 i2 = -0x40 & gBattleTarget.unit.index;
@@ -1304,7 +1303,7 @@ bool PrepareBattleGraphicsMaybe(void)
             gBanimEffectiveness[POS_R] = IsItemEffectiveAgainst(bu2->weapon, unit_bu1);
     }
 
-    gBanimForceUnitChgDebug[POS_L] = gBanimForceUnitChgDebug[POS_R] = (void *)zero = 0;
+    gBanimForceUnitChgDebug[POS_L] = gBanimForceUnitChgDebug[POS_R] = zero = 0;
 
     if (valid_l)
         (void)GetItemIndex(bu1->weaponBefore);
@@ -1318,7 +1317,7 @@ bool PrepareBattleGraphicsMaybe(void)
     }
     else
     {
-        gBanimUniquePaletteDisabled[POS_L] = gBanimUniquePaletteDisabled[POS_R] = zero;
+        gBanimUniquePaletteDisabled[POS_L] = gBanimUniquePaletteDisabled[POS_R] = 0;
     }
 
     ++zero; --zero; // :/
@@ -1351,17 +1350,17 @@ bool PrepareBattleGraphicsMaybe(void)
          *
          * 1. promotion
          * 2. arena
-         * 3. scriptted battle
+         * 3. scripted battle
          */
         if (gEkrDistanceType == EKR_DISTANCE_PROMOTION)
             usrdefined_enable = true;
         if (GetBattleAnimArenaFlag() == true)
             usrdefined_enable = true;
-        if ((CheckBattleScriptted() == true))
+        if ((CheckBattleScripted() == true))
             usrdefined_enable = true;
     }
 
-    SetBattleUnscriptted();
+    SetBattleUnscripted();
 
     if (gEkrDistanceType != EKR_DISTANCE_PROMOTION)
     {
@@ -1417,7 +1416,7 @@ bool PrepareBattleGraphicsMaybe(void)
         if (gBanimFloorfx[POS_L] == -1)
             return false;
 
-        if (gBanimTerrain[POS_L] == TERRAIN_WALL_1B)
+        if (gBanimTerrain[POS_L] == TERRAIN_WALL_DAMAGED)
             return false;
 
         if (gBanimTerrain[POS_L] == TERRAIN_SNAG)
@@ -1438,7 +1437,7 @@ bool PrepareBattleGraphicsMaybe(void)
         if (gBanimFloorfx[POS_R] == -1)
             return false;
 
-        if (gBanimTerrain[POS_R] == TERRAIN_WALL_1B)
+        if (gBanimTerrain[POS_R] == TERRAIN_WALL_DAMAGED)
             return false;
 
         if (gBanimTerrain[POS_R] == TERRAIN_SNAG)

@@ -4,6 +4,7 @@
 #include "bmsave.h"
 #include "bmlib.h"
 #include "soundwrapper.h"
+#include "constants/songs.h"
 
 EWRAM_DATA struct SoundSt gSoundSt = {0};
 
@@ -324,7 +325,7 @@ void PlaySong(int songId, struct MusicPlayerInfo *player)
 {
     if (songId < 128)
     {
-        sub_80028FC(songId);
+        Sound_SetupMaxChannelsForSong(songId);
         UnlockSoundRoomSong(0, songId);
     }
 
@@ -346,17 +347,17 @@ void Sound_SetMaxNumChannels(int maxchn)
     m4aSoundMode(maxchn << SOUND_MODE_MAXCHN_SHIFT);
 }
 
-void sub_80028FC(int songId)
+void Sound_SetupMaxChannelsForSong(int songId)
 {
     switch (songId)
     {
-    case 1:
-    case 2:
-    case 0x42:
-    case 0x43:
-    case 0x40:
-    case 0x56:
-    case 0x74:
+    case SONG_THE_VALIANT:
+    case SONG_MAIN_THEME_EXT:
+    case SONG_FLY_WITH_THE_BREEZE:
+    case SONG_MAIN_THEME:
+    case SONG_RECORDS:
+    case SONG_BGM_ED_STAFF_2:
+    case SONG_74:
         if (gSoundSt.maxChannels != 8)
             Sound_SetMaxNumChannels(8);
         break;
@@ -375,7 +376,7 @@ int IsMusicProc2Running(void)
         return FALSE;
 }
 
-void sub_800296C(struct Proc *proc)
+void ChangeBgm_FadeVolume(struct Proc *proc)
 {
     struct MusicProc *mproc = (struct MusicProc *)proc;
     if (IsBgmPlaying() != 0 && mproc->vc_init_volume != 0)
@@ -387,7 +388,7 @@ void sub_800296C(struct Proc *proc)
     }
 }
 
-void sub_80029BC(struct Proc *proc)
+void ChangeBgm_StartNewSong(struct Proc *proc)
 {
     struct MusicProc *mproc = (struct MusicProc *)proc;
     if (mproc->unk5C > 0)
@@ -404,16 +405,16 @@ void sub_80029BC(struct Proc *proc)
 static struct ProcCmd sMusicProc4Script[] =
 {
     PROC_SLEEP(1),
-    PROC_CALL(sub_800296C),
+    PROC_CALL(ChangeBgm_FadeVolume),
     PROC_SLEEP(1),
-    PROC_CALL(sub_80029BC),
+    PROC_CALL(ChangeBgm_StartNewSong),
     PROC_SLEEP(8),
     PROC_LABEL(0),
     PROC_YIELD,
     PROC_END,
 };
 
-void CallSomeSoundMaybe(int songId, int vc_init_volume, int vc_end_volume, int d, ProcPtr parent)
+void ChangeBgm(int songId, int vc_init_volume, int vc_end_volume, int duration, ProcPtr parent)
 {
     struct MusicProc *mproc;
 
@@ -425,7 +426,7 @@ void CallSomeSoundMaybe(int songId, int vc_init_volume, int vc_end_volume, int d
     else
         mproc = Proc_Start(sMusicProc4Script, PROC_TREE_3);
 
-    mproc->unk58 = d;
+    mproc->unk58 = duration;
 
     if (IsBgmPlaying() != 0 && songId == gSoundSt.songId)
         mproc->unk5C = -1;
@@ -444,7 +445,7 @@ s8 MusicProc4Exists(void)
         return FALSE;
 }
 
-void sub_8002A88(int songId)
+void Sound_ForceChangeBgm(int songId)
 {
     if (songId != gSoundSt.songId)
     {
@@ -459,7 +460,7 @@ void DeleteAll6CWaitMusicRelated(void)
     Proc_EndEach(gMusicProc3Script);
 }
 
-void sub_8002AC8(void)
+void Sound_StopBgmImmediate(void)
 {
     DeleteAll6CWaitMusicRelated();
     m4aMPlayFadeOut(&gMPlayInfo_BGM1, 1);

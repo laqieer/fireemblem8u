@@ -66,13 +66,13 @@ void OpAnimHS_BrightenPalette(u16 * src, int palid, int line, int cur, int max)
     EnablePaletteSync();
 }
 
-void sub_80CBF9C(struct ProcOpAnimHS * proc)
+void OpAnimHS_InitFadeToBlack(struct ProcOpAnimHS * proc)
 {
     CpuFastCopy(gPaletteBuffer, gPaletteOpAnimHsBackup, 0x400);
     proc->unk38 = 4;
 }
 
-void sub_80CBFC0(struct ProcOpAnimHS * proc)
+void OpAnimHS_FadeToBlackLoop(struct ProcOpAnimHS * proc)
 {
     int i;
 
@@ -196,10 +196,10 @@ void PrepareHealthAndSafetyScreen(struct ProcOpAnimHS * proc)
     SetPrimaryHBlankHandler(NULL);
     SetDispEnable(0, 0, 0, 0, 0);
 
-    Decompress(Img_OpAnimHleathSafetyScreen, (void *)VRAM);
-    Decompress(Tsa_OpAnimHleathSafetyScreenBG1, gGenericBuffer);
+    Decompress(Img_OpAnimHealthSafetyScreen, (void *)VRAM);
+    Decompress(Tsa_OpAnimHealthSafetyScreenBG1, gGenericBuffer);
     CallARM_FillTileRect(gBG1TilemapBuffer, gGenericBuffer, 0);
-    Decompress(Tsa_OpAnimHleathSafetyScreenBG0, gGenericBuffer);
+    Decompress(Tsa_OpAnimHealthSafetyScreenBG0, gGenericBuffer);
     CallARM_FillTileRect(gBG0TilemapBuffer, gGenericBuffer, 0);
 
     CpuFastFill16(0, gPaletteBuffer, 0x400);
@@ -213,7 +213,7 @@ void PrepareHealthAndSafetyScreen(struct ProcOpAnimHS * proc)
 void GameIntroHealthSafetyFadeIN(struct ProcOpAnimHS * proc)
 {
     proc->palette_timer++;
-    OpAnimHS_BrightenPalette(Pal_OpAnimHleathSafetyScreen, 0, 1, proc->palette_timer, 0x1E);
+    OpAnimHS_BrightenPalette(Pal_OpAnimHealthSafetyScreen, 0, 1, proc->palette_timer, 0x1E);
 
     if (proc->palette_timer > 0x1D)
     {
@@ -255,7 +255,7 @@ void GameIntroHealthSafetyWaitButton(struct ProcOpAnimHS * proc)
 void GameIntroHealthSafetyFadeOUT(struct ProcOpAnimHS * proc)
 {
     proc->palette_timer++;
-    OpAnimHS_BrightenPalette(Pal_OpAnimHleathSafetyScreen, 0, 1, 0x1E - proc->palette_timer, 0x1E);
+    OpAnimHS_BrightenPalette(Pal_OpAnimHealthSafetyScreen, 0, 1, 0x1E - proc->palette_timer, 0x1E);
 
     if (proc->palette_timer > 0x1D)
     {
@@ -297,8 +297,8 @@ PROC_LABEL(0x3E7),
 
 PROC_LABEL(0x0),
     PROC_CALL(EnableKeyComboResetEN),
-    PROC_CALL(sub_80CBF9C),
-    PROC_REPEAT(sub_80CBFC0),
+    PROC_CALL(OpAnimHS_InitFadeToBlack),
+    PROC_REPEAT(OpAnimHS_FadeToBlackLoop),
 
 PROC_LABEL(0x1),
     PROC_END

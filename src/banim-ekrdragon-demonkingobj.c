@@ -1,52 +1,52 @@
 #include "gbafe.h"
 
-CONST_DATA struct ProcCmd ProcScr_08801800[] = {
-    PROC_CALL(sub_8077D30),
-    PROC_REPEAT(sub_8077D38),
+CONST_DATA struct ProcCmd ProcScr_EkrdragonDemonkingobj_0[] = {
+    PROC_CALL(EkrDemonkingObj_Init),
+    PROC_REPEAT(EkrDemonkingObj_UpdateBgPosLoop),
 };
 
-void sub_8077D30(struct Proc08801800 *proc)
+void EkrDemonkingObj_Init(struct Proc08801800 *proc)
 {
     proc->timer = 0;
 }
 
 /* This function is unusable */
-void sub_8077D38(struct Proc08801800 *proc)
+void EkrDemonkingObj_UpdateBgPosLoop(struct Proc08801800 *proc)
 {
-    sub_8077EAC(-gUnknown_03004FA0 + gEkrBgPosition, -gUnknown_03004FA4);
-    EkrDragonTmCpyExt(-gUnknown_03004FA0 + gEkrBgPosition, -gUnknown_03004FA4);
+    EkrDemonkingObj_SetBgPosition(-gUnk_76 + gEkrBgPosition, -gUnk_77);
+    EkrDragonTmCpyExt(-gUnk_76 + gEkrBgPosition, -gUnk_77);
     proc->timer++;
 }
 
-void sub_8077D80(s16 *out1, s16 *out2, int val1, int val2)
+void EkrDemonkingObj_GetShakeOffset(s16 *out1, s16 *out2, int val1, int val2)
 {
-    s16 *ref = gUnknown_08801AAC[val2];
+    s16 *ref = gEkrdragonDemonkingobj_2[val2];
     int ret = (val1 % ref[0]) * 2 + 1;
     *out1 = ref[ret];
     *out2 = ref[ret + 1];
 }
 
-void sub_8077DB4(int a, int b)
+void EkrDemonkingObj_SetBgOffset(int a, int b)
 {
-    gUnknown_03004FA0 = a;
-    gUnknown_03004FA4 = b;
+    gUnk_76 = a;
+    gUnk_77 = b;
 }
 
-CONST_DATA struct ProcCmd ProcScr_08801810[] = {
-    PROC_SET_END_CB(sub_8077E9C),
-    PROC_CALL(sub_8077DC8),
-    PROC_CALL(sub_8077E64),
-    PROC_REPEAT(sub_8077E6C),
-    PROC_WHILE_EXISTS(ProcScr_08801840),
+CONST_DATA struct ProcCmd ProcScr_EkrdragonDemonkingobj_1[] = {
+    PROC_SET_END_CB(EkrDemonkingObj_RevealOnEnd),
+    PROC_CALL(EkrDemonkingObj_RevealInit),
+    PROC_CALL(EkrDemonkingObj_RevealTimerInit),
+    PROC_REPEAT(EkrDemonkingObj_RevealLoop),
+    PROC_WHILE_EXISTS(ProcScr_EkrdragonDemonkingobj_2),
     PROC_END
 };
 
-void sub_8077DC8(void)
+void EkrDemonkingObj_RevealInit(void)
 {
-    Decompress(Tsa_087F45D0, gEkrTsaBuffer);
+    Decompress(Tsa_Ekrdk_0, gEkrTsaBuffer);
     EfxTmCpyBG(gEkrTsaBuffer, gBG1TilemapBuffer, 0x20, 0x20, 1, 0x100);
     BG_EnableSyncByMask(BG1_SYNC_BIT);
-    sub_8077EAC(gEkrBgPosition, 0);
+    EkrDemonkingObj_SetBgPosition(gEkrBgPosition, 0);
     SetBlackPal(0x1);
     EnablePaletteSync();
     CpuFill16(0, (void *)(BG_VRAM + 0x2000), 0x1000);
@@ -56,16 +56,16 @@ void sub_8077DC8(void)
     SetBlendTargetB(0, 0, 0, 0, 1);
 }
 
-void sub_8077E64(struct Proc08801810 *proc)
+void EkrDemonkingObj_RevealTimerInit(struct Proc08801810 *proc)
 {
     proc->timer1 = 0;
     proc->timer2 = 0;
 }
 
-void sub_8077E6C(struct Proc08801810 *proc)
+void EkrDemonkingObj_RevealLoop(struct Proc08801810 *proc)
 {
     if (++proc->timer1 == 0x18) {
-        sub_8077EEC(proc->timer2, proc);
+        EkrDemonkingObj_StartDissolveProc(proc->timer2, proc);
         proc->timer1 = 0;
         
         if (++proc->timer2 > 0xF)
@@ -73,13 +73,13 @@ void sub_8077E6C(struct Proc08801810 *proc)
     }
 }
 
-void sub_8077E9C(void)
+void EkrDemonkingObj_RevealOnEnd(void)
 {
     SpellFx_ClearBG1();
     BG_EnableSyncByMask(BG1_SYNC_BIT);
 }
 
-void sub_8077EAC(int x, int y)
+void EkrDemonkingObj_SetBgPosition(int x, int y)
 {
     int type = gEkrDistanceType;
     switch (type) {
@@ -99,30 +99,30 @@ void sub_8077EAC(int x, int y)
     BG_SetPosition(BG_1, x, y);
 }
 
-CONST_DATA struct ProcCmd ProcScr_08801840[] = {
-    PROC_CALL(sub_8077F04),
-    PROC_REPEAT(sub_8077F10),
+CONST_DATA struct ProcCmd ProcScr_EkrdragonDemonkingobj_2[] = {
+    PROC_CALL(EkrDemonkingObj_DissolveInit),
+    PROC_REPEAT(EkrDemonkingObj_DissolveLoop),
     PROC_END
 };
 
-void sub_8077EEC(int ref, ProcPtr parent)
+void EkrDemonkingObj_StartDissolveProc(int ref, ProcPtr parent)
 {
     struct Proc08801840 *proc;
-    proc = Proc_Start(ProcScr_08801840, parent);
+    proc = Proc_Start(ProcScr_EkrdragonDemonkingobj_2, parent);
     proc->ref = ref;
 }
 
-void sub_8077F04(struct Proc08801840 *proc)
+void EkrDemonkingObj_DissolveInit(struct Proc08801840 *proc)
 {
     proc->ref = 0;
     proc->timer = 0;
 }
 
-void sub_8077F10(struct Proc08801840 *proc)
+void EkrDemonkingObj_DissolveLoop(struct Proc08801840 *proc)
 {
     int i = 0;
     for (i = 0; i < 6; i++)
-        sub_8077F9C((void *)0x6002000 + ((proc->ref + i * 0x10) & 0x3FF) * 0x20, gUnknown_08801AB4[i][proc->timer]);
+        EkrDemonkingObj_SetTilePixel((void *)0x6002000 + ((proc->ref + i * 0x10) & 0x3FF) * 0x20, gEkrdragonDemonkingobj_3[i][proc->timer]);
 
     if (proc->timer > 0x3E)
         Proc_Break(proc);
@@ -130,7 +130,7 @@ void sub_8077F10(struct Proc08801840 *proc)
         proc->timer++;
 
         for (i = 0; i < 6; i++)
-            sub_8077F9C((void *)0x6002000 + ((proc->ref + i * 0x10) & 0x3FF) * 0x20, gUnknown_08801AB4[i][proc->timer]);
+            EkrDemonkingObj_SetTilePixel((void *)0x6002000 + ((proc->ref + i * 0x10) & 0x3FF) * 0x20, gEkrdragonDemonkingobj_3[i][proc->timer]);
 
         if (proc->timer > 0x3E)
             Proc_Break(proc);
@@ -139,18 +139,18 @@ void sub_8077F10(struct Proc08801840 *proc)
     }
 }
 
-CONST_DATA u16 gUnknown_08801858[] = {
+CONST_DATA u16 gEkrdragonDemonkingobj_0[] = {
     0x000F, 0x00F0, 0x0F00, 0xF000
 };
-CONST_DATA u16 gUnknown_08801860[] = {
+CONST_DATA u16 gEkrdragonDemonkingobj_1[] = {
     0x0001, 0x0010, 0x0100, 0x1000
 };
 
-void sub_8077F9C(u16 *buf, int a)
+void EkrDemonkingObj_SetTilePixel(u16 *buf, int a)
 {
     u16 *dst = &buf[a >> 2];
-    *dst &= ~gUnknown_08801858[a & 3];
-    *dst |= gUnknown_08801860[a & 3];
+    *dst &= ~gEkrdragonDemonkingobj_0[a & 3];
+    *dst |= gEkrdragonDemonkingobj_1[a & 3];
 }
 
 void CopyPalWithFade(const u16 *src, u16 *dst, int ref)
@@ -249,6 +249,26 @@ void NewEkrSelfThunderBG(struct Anim *anim)
     SpellFx_SetSomeColorEffect();
 }
 
+CONST_DATA struct EfxSelfThunderBGFrame gEfxSelfThunderBGFrames[] = {
+    { 4, Img_EfxSelfThunderBG1,  TSA1_EfxSelfThunderBG1,  TSA2_EfxSelfThunderBG1,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG2,  TSA1_EfxSelfThunderBG2,  TSA2_EfxSelfThunderBG2,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG3,  TSA1_EfxSelfThunderBG3,  TSA2_EfxSelfThunderBG3,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG4,  TSA1_EfxSelfThunderBG4,  TSA2_EfxSelfThunderBG4,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG5,  TSA1_EfxSelfThunderBG5,  TSA2_EfxSelfThunderBG5,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG6,  TSA1_EfxSelfThunderBG6,  TSA2_EfxSelfThunderBG6,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG7,  TSA1_EfxSelfThunderBG7,  TSA2_EfxSelfThunderBG7,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG8,  TSA1_EfxSelfThunderBG8,  TSA2_EfxSelfThunderBG8,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG9,  TSA1_EfxSelfThunderBG9,  TSA2_EfxSelfThunderBG9,  Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG10, TSA1_EfxSelfThunderBG10, TSA2_EfxSelfThunderBG10, Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG11, TSA1_EfxSelfThunderBG11, TSA2_EfxSelfThunderBG11, Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG12, TSA1_EfxSelfThunderBG12, TSA2_EfxSelfThunderBG12, Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG13, TSA1_EfxSelfThunderBG13, TSA2_EfxSelfThunderBG13, Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG14, TSA1_EfxSelfThunderBG14, TSA2_EfxSelfThunderBG14, Pal1_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG15, TSA1_EfxSelfThunderBG15, TSA2_EfxSelfThunderBG15, Pal2_EfxSelfThunderBG },
+    { 4, Img_EfxSelfThunderBG16, TSA1_EfxSelfThunderBG16, TSA2_EfxSelfThunderBG16, Pal2_EfxSelfThunderBG },
+    { .duration = -1 },
+};
+
 void EfxSelfThunderBGUpdateAnim(struct ProcSelfThunderBG *proc, u16 *img, u16 *tsa_close, u16 *tsa_far, u16 *pal)
 {
     SpellFx_RegisterBgGfx(img, 0x0C00);
@@ -283,3 +303,94 @@ void EfxSelfThunderBGMain(struct ProcSelfThunderBG *proc)
 
     proc->timer--;
 }
+
+CONST_DATA s16 gEkrdragonDemonkingobj_array1[] = {
+    0x0028, 0x0000, 0x0002, 0x0000, 0x0002, 0x0000, 0xFFFE, 0x0000,
+    0xFFFE, 0x0000, 0x0002, 0x0000, 0x0002, 0x0000, 0xFFFE, 0x0000,
+    0xFFFE, 0x0000, 0x0002, 0x0000, 0x0002, 0x0000, 0xFFFE, 0x0000,
+    0xFFFE, 0x0000, 0x0002, 0x0000, 0x0002, 0x0000, 0xFFFE, 0x0000,
+    0xFFFE, 0x0000, 0x0002, 0x0000, 0x0002, 0x0000, 0xFFFE, 0x0000,
+    0xFFFE, 0x0000, 0x0002, 0x0000, 0x0002, 0x0000, 0xFFFE, 0x0000,
+    0xFFFE, 0x0000, 0x0001, 0x0000, 0x0001, 0x0000, 0xFFFF, 0x0000,
+    0xFFFF, 0x0000, 0x0001, 0x0000, 0x0001, 0x0000, 0xFFFF, 0x0000,
+    0xFFFF, 0x0000, 0x0001, 0x0000, 0x0001, 0x0000, 0xFFFF, 0x0000,
+    0xFFFF, 0x0000, 0x0001, 0x0000, 0x0001, 0x0000, 0xFFFF, 0x0000,
+    0xFFFF
+};
+
+CONST_DATA s16 gEkrdragonDemonkingobj_array2[] = {
+    0x0005, 0x0002, 0x0002, 0xFFFE, 0xFFFE, 0x0001, 0x0001, 0xFFFF,
+    0xFFFF, 0
+};
+
+CONST_DATA s16 * gEkrdragonDemonkingobj_2[2] = {
+    gEkrdragonDemonkingobj_array2, gEkrdragonDemonkingobj_array1,
+};
+
+CONST_DATA u8 * gEkrdragonDemonkingobj_3[8] = {
+    gEkrdragonDemonkingobj_array2_1,
+    gEkrdragonDemonkingobj_array1_1,
+    gEkrdragonDemonkingobj_array1_1,
+    gEkrdragonDemonkingobj_array1_1,
+    gEkrdragonDemonkingobj_array3,
+    gEkrdragonDemonkingobj_array2_1,
+    gEkrdragonDemonkingobj_array1_1,
+    gEkrdragonDemonkingobj_array1_1,
+};
+
+CONST_DATA u8 gEkrdragonDemonkingobj_array1_1[] = {
+    0x37, 0x32, 0x39, 0x35, 0x3B, 0x36, 0x3D, 0x34,
+    0x3F, 0x2D, 0x3E, 0x29, 0x33, 0x2B, 0x31, 0x2E,
+    0x20, 0x2C, 0x38, 0x24, 0x3C, 0x26, 0x28, 0x22,
+    0x2A, 0x1A, 0x2F, 0x27, 0x1F, 0x23, 0x1B, 0x18,
+    0x11, 0x3A, 0x1D, 0x12, 0x19, 0x10, 0x16, 0x30,
+    0x21, 0x08, 0x1C, 0x1E, 0x0E, 0x15, 0x0A, 0x09,
+    0x0B, 0x07, 0x03, 0x13, 0x02, 0x0F, 0x06, 0x14,
+    0x04, 0x0D, 0x25, 0x05, 0x0C, 0x01, 0x17, 0x00,
+};
+
+CONST_DATA u8 gEkrdragonDemonkingobj_array2_1[] = {
+    0x36, 0x1F, 0x16, 0x0F, 0x26, 0x2E, 0x37, 0x3E,
+    0x15, 0x3D, 0x17, 0x1D, 0x25, 0x3F, 0x35, 0x2F,
+    0x07, 0x3C, 0x34, 0x0E, 0x27, 0x1C, 0x06, 0x2C,
+    0x13, 0x1E, 0x05, 0x2B, 0x04, 0x3B, 0x33, 0x0D,
+    0x22, 0x3A, 0x23, 0x0C, 0x12, 0x2D, 0x24, 0x0A,
+    0x14, 0x0B, 0x11, 0x39, 0x03, 0x19, 0x02, 0x09,
+    0x31, 0x18, 0x32, 0x38, 0x21, 0x2A, 0x20, 0x1B,
+    0x00, 0x29, 0x10, 0x1A, 0x30, 0x08, 0x01, 0x28,
+};
+
+CONST_DATA u8 gEkrdragonDemonkingobj_array3[] = {
+    0x00, 0x29, 0x10, 0x1A, 0x30, 0x08, 0x01, 0x28,
+    0x31, 0x18, 0x32, 0x38, 0x21, 0x2A, 0x20, 0x1B,
+    0x14, 0x0B, 0x11, 0x39, 0x03, 0x19, 0x02, 0x09,
+    0x22, 0x3A, 0x23, 0x0C, 0x12, 0x2D, 0x24, 0x0A,
+    0x13, 0x1E, 0x05, 0x2B, 0x04, 0x3B, 0x33, 0x0D,
+    0x07, 0x3C, 0x34, 0x0E, 0x27, 0x1C, 0x06, 0x2C,
+    0x15, 0x3D, 0x17, 0x1D, 0x25, 0x3F, 0x35, 0x2F,
+    0x36, 0x1F, 0x16, 0x0F, 0x26, 0x2E, 0x37, 0x3E,
+};
+
+// unused
+CONST_DATA u8 gEkrdragonDemonkingobj_array4[] = {
+    0x14, 0x2B, 0x21, 0x02, 0x11, 0x25, 0x2E, 0x07,
+    0x33, 0x3B, 0x19, 0x1C, 0x2F, 0x0D, 0x27, 0x0F,
+    0x1A, 0x05, 0x32, 0x0A, 0x1B, 0x16, 0x3F, 0x3D,
+    0x29, 0x2A, 0x31, 0x10, 0x34, 0x1E, 0x1F, 0x3E,
+    0x3A, 0x0B, 0x00, 0x08, 0x03, 0x2D, 0x0E, 0x37,
+    0x09, 0x15, 0x30, 0x01, 0x3C, 0x38, 0x2C, 0x24,
+    0x1D, 0x0C, 0x18, 0x22, 0x26, 0x36, 0x12, 0x17,
+    0x23, 0x04, 0x20, 0x39, 0x28, 0x13, 0x35, 0x06,
+};
+
+// unused
+CONST_DATA u8 gEkrdragonDemonkingobj_array5[] = {
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+    0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+};

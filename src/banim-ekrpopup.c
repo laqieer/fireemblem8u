@@ -10,6 +10,7 @@
 #include "ekrlevelup.h"
 #include "soundwrapper.h"
 #include "ctc.h"
+#include "constants/songs.h"
 
 EWRAM_OVERLAY(banim) struct ProcEkrPopup *gpProcEkrPopup = NULL;
 EWRAM_OVERLAY(banim) int gEkrPopupEnded = false;
@@ -63,12 +64,12 @@ void DeleteAnimsOnPopup(void)
 
 void EfxPlaySound5AVol100(void)
 {
-    EfxPlaySE(0x5A, 0x100);
+    EfxPlaySE(SONG_5A, 0x100);
 }
 
 void EfxPlaySound5CVol100(void)
 {
-    EfxPlaySE(0x5C, 0x100);
+    EfxPlaySE(SONG_5C, 0x100);
 }
 
 void MakeBattlePopupTileMapFromTSA(u16 *tm, u16 width)
@@ -174,7 +175,7 @@ void DrawBattlePopup(struct ProcEkrPopup *proc, int type, u32 priv)
     InitText(text, width_popupbox);
     xcursor = (width_popupbox * 8 - width3) >> 1;
     Text_SetCursor(text, xcursor);
-    LZ77UnCompVram(gUnknown_08803BD0, (void *)BG_VRAM + 0x2100);
+    LZ77UnCompVram(gBanimmisc_12, (void *)BG_VRAM + 0x2100);
 
     if (type == 0) {
         /*  [.] */
@@ -249,7 +250,7 @@ CONST_DATA struct ProcCmd ProcScr_ekrPopup[] = {
     PROC_REPEAT(ekrPopup_DrawWpnBroke2),
     PROC_REPEAT(ekrPopup_WaitWpnBroke2),
     PROC_REPEAT(ekrPopup_MarkEnd),
-    PROC_REPEAT(nullsub_68),
+    PROC_REPEAT(Nop_BanimEkrpopup_0),
     PROC_END
 };
 
@@ -258,17 +259,17 @@ CONST_DATA struct ProcCmd ProcScr_ekrPopup2[] = {
     PROC_REPEAT(BattlePopup_Wait16Frames),
 
 PROC_LABEL(0x0),
-    PROC_REPEAT(sub_8076250),
-    PROC_REPEAT(sub_8076290),
+    PROC_REPEAT(ekrPopup_DrawWpnUsable),
+    PROC_REPEAT(ekrPopup_WaitWpnUsable),
     PROC_SLEEP(0x14),
 
 PROC_LABEL(0x1),
-    PROC_REPEAT(sub_80762D0),
-    PROC_REPEAT(sub_8076290),
+    PROC_REPEAT(ekrPopup_DrawWpnUsable2),
+    PROC_REPEAT(ekrPopup_WaitWpnUsable),
 
 PROC_LABEL(0x5),
     PROC_REPEAT(ekrPopup_MarkEnd),
-    PROC_REPEAT(nullsub_68),
+    PROC_REPEAT(Nop_BanimEkrpopup_0),
     PROC_END
 };
 
@@ -470,7 +471,7 @@ void ekrPopup_MarkEnd(struct ProcEkrPopup *proc)
     }
 }
 
-void nullsub_68(struct ProcEkrPopup *proc)
+void Nop_BanimEkrpopup_0(struct ProcEkrPopup *proc)
 {
     return;
 }
@@ -479,7 +480,7 @@ void nullsub_68(struct ProcEkrPopup *proc)
  * Popup2: for promotion
  */
 
-void sub_8076250(struct ProcEkrPopup *proc)
+void ekrPopup_DrawWpnUsable(struct ProcEkrPopup *proc)
 {
     u32 priv;
 
@@ -499,7 +500,7 @@ void sub_8076250(struct ProcEkrPopup *proc)
     Proc_Break(proc);
 }
 
-void sub_8076290(struct ProcEkrPopup *proc)
+void ekrPopup_WaitWpnUsable(struct ProcEkrPopup *proc)
 {
     if (proc->rdebuf == 0) {
         Proc_Break(proc);
@@ -514,7 +515,7 @@ void sub_8076290(struct ProcEkrPopup *proc)
     }
 }
 
-void sub_80762D0(struct ProcEkrPopup *proc)
+void ekrPopup_DrawWpnUsable2(struct ProcEkrPopup *proc)
 {
     u32 priv;
 

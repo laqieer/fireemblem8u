@@ -13,6 +13,7 @@
 #include "bm.h"
 
 #include "bmguide.h"
+#include "constants/songs.h"
 
 struct GuideSt * CONST_DATA gGuideSt = (void *)gGenericBuffer;
 
@@ -72,15 +73,15 @@ u16 CONST_DATA gTextIds_GuideCategoriesTopic[] =
 
 // clang-format on
 
-extern u8 Tsa_08B176CC[]; // tsa
-extern u8 Img_08B177C0[]; // gfx
-extern u8 Img_08B17864[]; // gfx
-extern u16 Pal_08B17B44[]; // pal
+extern u8 Tsa_UnkData_5[]; // tsa
+extern u8 Img_UnkData_2[]; // gfx
+extern u8 Img_UnkData_3[]; // gfx
+extern u16 Pal_UnkData_3[]; // pal
 
 // TODO: Implicit declarations
 void UpdateMenuScrollBarConfig(int, int, int, int);
 ProcPtr StartMenuScrollBarExt(ProcPtr, int, int, int, int);
-void sub_8097668(void);
+void UnlockMenuScrollBar(void);
 void LockMenuScrollBar(void);
 void EndMenuScrollBar(void);
 
@@ -203,7 +204,7 @@ void PutGuideBottomBarText(void)
 }
 
 //! FE8U = 0x080CE1C0
-void sub_80CE1C0(int strIndex, int textIndex, int y)
+void PutGuideCategoryName(int strIndex, int textIndex, int y)
 {
     const char * str;
 
@@ -219,7 +220,7 @@ void sub_80CE1C0(int strIndex, int textIndex, int y)
 }
 
 //! FE8U = 0x080CE248
-void sub_80CE248(void)
+void PutGuideCategoryList(void)
 {
     int i;
 
@@ -229,7 +230,7 @@ void sub_80CE248(void)
     {
         if (i < a)
         {
-            sub_80CE1C0(i, i, (i * 2) + 5);
+            PutGuideCategoryName(i, i, (i * 2) + 5);
         }
     }
 
@@ -237,7 +238,7 @@ void sub_80CE248(void)
 }
 
 //! FE8U = 0x080CE28C
-void sub_80CE28C(void)
+void ClearGuideCategoryTilemap(void)
 {
     int iy;
     int ix;
@@ -309,7 +310,7 @@ void GuideEntry_RedrawDown(struct GuideProc * proc)
 }
 
 //! FE8U = 0x080CE414
-void sub_80CE414(void)
+void BuildAndPutGuideEntryList(void)
 {
     int r6;
 
@@ -527,7 +528,7 @@ void MoveGuideDetailText(int idx, int moveDirection)
 extern struct ProcCmd gProcScr_GuideEntryListRedraw_Up[];
 
 //! FE8U = 0x080CE750
-void sub_80CE750(ProcPtr proc, int b)
+void GuideList_ScrollUp(ProcPtr proc, int b)
 {
     struct GuideProc * child;
     int ix;
@@ -549,7 +550,7 @@ void sub_80CE750(ProcPtr proc, int b)
                 off = off - 0x40;
             }
 
-            sub_80CE1C0(hm, hm % 6, 5);
+            PutGuideCategoryName(hm, hm % 6, 5);
 
             break;
 
@@ -576,7 +577,7 @@ void sub_80CE750(ProcPtr proc, int b)
 extern struct ProcCmd gProcScr_GuideEntryListRedraw_Down[];
 
 //! FE8U = 0x080CE858
-void sub_80CE858(ProcPtr proc, int b)
+void GuideList_ScrollDown(ProcPtr proc, int b)
 {
     struct GuideProc * child;
     int ix;
@@ -598,7 +599,7 @@ void sub_80CE858(ProcPtr proc, int b)
                 off = off + 0x40;
             }
 
-            sub_80CE1C0(hm, hm % 6, 15);
+            PutGuideCategoryName(hm, hm % 6, 15);
 
             break;
 
@@ -724,7 +725,7 @@ void GuideDetailsRedraw_Loop(struct GuideProc * proc)
 }
 
 //! FE8U = 0x080CEAE8
-void sub_80CEAE8(void)
+void BuildGuideTopicList(void)
 {
     int i;
     u8 local[20];
@@ -785,7 +786,7 @@ void sub_80CEAE8(void)
 }
 
 //! FE8U = 0x080CEBA4
-void sub_80CEBA4(void)
+void BuildGuideChapterList(void)
 {
     int i;
     u8 local[20];
@@ -848,7 +849,7 @@ void sub_80CEBA4(void)
 }
 
 //! FE8U = 0x080CEC68
-void sub_80CEC68(u16 off)
+void SetGuidePanelTilemapPalette(u16 off)
 {
     int ix;
     int iy;
@@ -898,8 +899,8 @@ void Guide_Init(ProcPtr proc)
     gGuideSt->unk_2b = 0;
     gGuideSt->unk_2c = 0;
 
-    sub_80CEAE8();
-    sub_80CEBA4();
+    BuildGuideTopicList();
+    BuildGuideChapterList();
     LoadUiFrameGraphics();
 
     SetDispEnable(1, 1, 1, 1, 1);
@@ -920,11 +921,11 @@ void Guide_Init(ProcPtr proc)
     SetWin0Layers(1, 1, 1, 1, 1);
     SetWOutLayers(1, 0, 1, 1, 1);
 
-    ApplyPalette(Pal_08B17B44, 0x12);
-    Decompress(Img_08B17864, (void *)0x06011000);
-    Decompress(Img_08B177C0, (void *)0x06011800);
+    ApplyPalette(Pal_UnkData_3, 0x12);
+    Decompress(Img_UnkData_3, (void *)0x06011000);
+    Decompress(Img_UnkData_2, (void *)0x06011800);
 
-    Decompress(Tsa_08B176CC, gGenericBuffer + 0x100);
+    Decompress(Tsa_UnkData_5, gGenericBuffer + 0x100);
     CallARM_FillTileRect(gBG2TilemapBuffer, gGenericBuffer + 0x100, 0x1000);
 
     ApplyPalette(gUiFramePaletteA + (gPlaySt.config.windowColor + 4) * 0x10, 2);
@@ -944,8 +945,8 @@ void Guide_Init(ProcPtr proc)
         InitText(&gGuideSt->unk_b4[i], 18);
     }
 
-    sub_80CE248();
-    sub_80CE414();
+    PutGuideCategoryList();
+    BuildAndPutGuideEntryList();
 
     StartMuralBackgroundExt(proc, 0, 18, 2, 0);
     Proc_Start(gProcScr_Guide_DrawSprites, proc);
@@ -955,7 +956,7 @@ void Guide_Init(ProcPtr proc)
     StartMenuScrollBarExt(proc, 224, 47, 0x800, 4);
     UpdateMenuScrollBarConfig(10, gGuideSt->unk_2c * 16, gGuideSt->unk_3e, 6);
 
-    sub_8097668();
+    UnlockMenuScrollBar();
 
     return;
 }
@@ -1025,14 +1026,14 @@ struct ProcCmd CONST_DATA gProcScr_GuideCategoryRedraw[] =
     PROC_NAME("E_guMenu1ReWrite"),
     PROC_SLEEP(1),
 
-    PROC_CALL(sub_80CE28C),
+    PROC_CALL(ClearGuideCategoryTilemap),
     PROC_CALL(GuideMenuRefresh_SyncBg1),
     PROC_SLEEP(1),
 
-    PROC_CALL(sub_80CE248),
+    PROC_CALL(PutGuideCategoryList),
     PROC_SLEEP(1),
 
-    PROC_CALL(sub_80CE414),
+    PROC_CALL(BuildAndPutGuideEntryList),
     PROC_SLEEP(1),
 
     PROC_CALL(PutGuideBottomBarText),
@@ -1050,7 +1051,7 @@ struct ProcCmd CONST_DATA gProcScr_GuideEntryListRedraw_Initial[] =
     PROC_CALL(GuideMenuRefresh_SyncBg1),
     PROC_SLEEP(1),
 
-    PROC_CALL(sub_80CE414),
+    PROC_CALL(BuildAndPutGuideEntryList),
     PROC_SLEEP(1),
 
     PROC_CALL(PutGuideBottomBarText),
@@ -1102,14 +1103,14 @@ void Guide_MainLoop(struct GuideProc * proc)
     switch (GetGuideAction(proc))
     {
         case GUIDE_ACTION_A_PRESS:
-            PlaySoundEffect(0x6a);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 
             gGuideSt->state++;
 
             switch (gGuideSt->state)
             {
                 case GUIDE_STATE_1:
-                    sub_80CEC68(0x2000);
+                    SetGuidePanelTilemapPalette(0x2000);
                     BG_EnableSyncByMask(BG2_SYNC_BIT);
 
                     break;
@@ -1137,7 +1138,7 @@ void Guide_MainLoop(struct GuideProc * proc)
             break;
 
         case GUIDE_ACTION_CANCEL:
-            PlaySoundEffect(0x6b);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_CANSEL1);
 
             if (gGuideSt->state != GUIDE_STATE_0)
             {
@@ -1146,13 +1147,13 @@ void Guide_MainLoop(struct GuideProc * proc)
                 switch (gGuideSt->state)
                 {
                     case GUIDE_STATE_0:
-                        sub_80CEC68(0x1000);
+                        SetGuidePanelTilemapPalette(0x1000);
                         BG_EnableSyncByMask(BG2_SYNC_BIT);
                         break;
 
                     case GUIDE_STATE_1:
                         Proc_StartBlocking(gProcScr_GuideEntryListRedraw_Initial, proc_);
-                        sub_8097668();
+                        UnlockMenuScrollBar();
                         return;
 
                     default:
@@ -1168,7 +1169,7 @@ void Guide_MainLoop(struct GuideProc * proc)
             break;
 
         case GUIDE_ACTION_SORT:
-            PlaySoundEffect(0x6a);
+            PlaySoundEffect(SONG_SE_SYS_WINDOW_SELECT1);
 
             gGuideSt->sortMode = (gGuideSt->sortMode + 1) & 1;
             if (gGuideSt->sortMode != GUIDE_SORT_MODE_TOPIC)
@@ -1202,7 +1203,7 @@ void Guide_MainLoop(struct GuideProc * proc)
                             if (((gGuideSt->categoryIdx - gGuideSt->unk_2a) < 1) && (gGuideSt->unk_2a != 0))
                             {
                                 gGuideSt->unk_2a--;
-                                sub_80CE750(proc_, gGuideSt->categoryIdx - 1);
+                                GuideList_ScrollUp(proc_, gGuideSt->categoryIdx - 1);
                             }
 
                             flag = 1;
@@ -1228,7 +1229,7 @@ void Guide_MainLoop(struct GuideProc * proc)
                                         ? gGuideSt->unk_3c : gGuideSt->unk_3d) - 1))
                                 {
                                     gGuideSt->unk_2a++;
-                                    sub_80CE858(proc_, gGuideSt->categoryIdx + 1);
+                                    GuideList_ScrollDown(proc_, gGuideSt->categoryIdx + 1);
                                 }
                             }
                             flag = 1;
@@ -1256,7 +1257,7 @@ void Guide_MainLoop(struct GuideProc * proc)
                             if ((gGuideSt->unk_2b - gGuideSt->unk_2c < 1) && (gGuideSt->unk_2c != 0))
                             {
                                 gGuideSt->unk_2c--;
-                                sub_80CE750(proc_, gGuideSt->unk_2b - 1);
+                                GuideList_ScrollUp(proc_, gGuideSt->unk_2b - 1);
                             }
 
                             flag = 1;
@@ -1271,7 +1272,7 @@ void Guide_MainLoop(struct GuideProc * proc)
                             if ((gGuideSt->unk_2b - gGuideSt->unk_2c > 4) && (gGuideSt->unk_2b < gGuideSt->unk_3e - 1))
                             {
                                 gGuideSt->unk_2c++;
-                                sub_80CE858(proc_, gGuideSt->unk_2b + 1);
+                                GuideList_ScrollDown(proc_, gGuideSt->unk_2b + 1);
                             }
 
                             flag = 1;
@@ -1312,7 +1313,7 @@ void Guide_MainLoop(struct GuideProc * proc)
                 return;
             }
 
-            PlaySoundEffect(0x66);
+            PlaySoundEffect(SONG_SE_SYS_CURSOR_UD1);
     }
 
     return;

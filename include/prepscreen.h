@@ -25,7 +25,7 @@ struct ProcPrepSallyCursor
 
     /* 54 */ struct APHandle * ap;
 
-    /* 58 */ u32 unk_58;
+    /* 58 */ u32 lastCmd;
 };
 
 struct PrepUnitList {
@@ -108,6 +108,33 @@ enum prepitem_textindex {
 
 extern struct Text gPrepItemTexts[32];
 
+struct PrepItemSuppyText {
+    /* 00 */ struct Font font;
+    /* 18 */ struct Text th[18];
+};
+extern struct PrepItemSuppyText PrepItemSuppyTexts;
+
+/* This should be the same as: struct PrepItemSuppyText */
+struct Unknown02013648 {
+    /* 00 */ struct Font font;
+    /* 18 */ struct Text textA;
+    /* 20 */ struct Text textB;
+    /* 28 */ struct Text textArray[5];
+    /* 50 */ u8 _pad[0x90-0x50];
+    /* 90 */ struct Text textC;
+};
+#define _PrepItemSuppyTexts ((struct Unknown02013648 *)&PrepItemSuppyTexts)
+
+struct WmSellProc {
+    /* 00 */ PROC_HEADER;
+
+    /* 2C */ struct Unit* unit;
+    /* 30 */ u8 unk_30;
+    /* 31 */ u8 unk_31;
+    /* 32 */ u16 unk_32;
+    /* 34 */ u16 unk_34;
+};
+
 struct PrepItemSupplyProc {
     /* 00 */ PROC_HEADER;
 
@@ -143,44 +170,44 @@ struct SioPidPool {
 
 extern struct SioPidPool gSioPidPool;
 
-extern struct Text gPrepMainMenuTexts[9];
+struct Win1H {
+    /* 00 */ u8 left;
+    /* 01 */ u8 right;
+};
+
+extern struct Win1H gPrepscreen_3[][160];
+extern struct Win1H* gPrepscreen_4[];
+
+extern struct Text gPrepMainMenuTexts[10];
 extern u8 gPrepUnitPool[];
 extern u8 gBanimScrRight[];
 extern struct PrepUnitList gPrepUnitList;
 extern struct PrepScreenItemListEnt gPrepScreenItemList[];
-extern struct PrepScreenItemListEnt gUnknown_02012914[];
-extern u16 gUnknown_02012F54;
-extern u16 gUnknown_02012F56;
-// extern ??? gUnknown_02012F58
-// extern ??? gUnknown_02013458
-// extern ??? gUnknown_02013460
-extern struct Text gPrepItemScreenTexts[16];
-extern struct Text gUnknown_02013590[];
-extern struct Text gPrepUnitTexts[];
-// extern ??? gUnknown_02013648
-extern struct Text gUnknown_02013660[16];
-// extern ??? gUnknown_02013668
-// extern ??? gUnknown_02013670
-// extern ??? gUnknown_02013698
-// extern ??? gUnknown_020136D8
+extern struct PrepScreenItemListEnt gPrepscreen_0[];
+extern u16 gPrepscreen_1;
+extern u16 gPrepscreen_2;
+// extern ??? gPrepscreen_3
+// extern ??? gPrepscreen_4
+extern u16 gPrepscreen_5[];
+extern struct Text gPrepUnitTexts[0x16];
 extern int sSupportScreenUnitCount;
-extern u16 gUnknown_020136F4[];
+extern u16 gUisupport_0[];
 
 extern struct ProcCmd gProcScr_SALLYCURSOR[];
 extern struct ProcCmd gProcScr_PrepHelpPrompt[];
 extern u16 gBgConfig_ItemUseScreen[];
-// extern ??? gUnknown_08A18200
+// extern ??? gPrepscreen_6
 extern CONST_DATA struct ProcCmd ProcScr_PrepMenuDescHandler[];
 extern CONST_DATA struct ProcCmd ProcScr_AtMenu[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepPromoteDebug[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepTraineePromo[];
-extern CONST_DATA u16 obj_8A1856E[];
-extern CONST_DATA u16 obj_8A18582[];
-extern CONST_DATA u16 obj_8A18590[];
-extern CONST_DATA u16 obj_8A1859E[];
-extern CONST_DATA u16 obj_8A185AC[];
-extern CONST_DATA u16 *objs_8A18614[];
-extern CONST_DATA struct ProcCmd ProcScr_PrepSpecialCharEff[];
+extern CONST_DATA u16 Sprite_PrepInformation[];
+extern CONST_DATA u16 Sprite_PrepChapter[];
+extern CONST_DATA u16 Sprite_PrepTower[];
+extern CONST_DATA u16 Sprite_PrepRuins[];
+extern CONST_DATA u16 Sprite_PrepExMap[];
+extern CONST_DATA u16 * SpriteArray_PrepChapterNumbers[];
+extern CONST_DATA struct ProcCmd ProcScr_PrepScreenSpriteDraw[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepScreenMenuDummyItem[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepMenu[];
 extern CONST_DATA u16 gSprite_MenuScrollContainer[];
@@ -207,10 +234,10 @@ extern CONST_DATA struct ProcCmd gProcScr_DrawPrepFundsSprite[];
 extern CONST_DATA u16 gSprite_PrepUnitInfoBg[];
 extern CONST_DATA struct ProcCmd gProcScr_DrawUnitInfoBgSprites[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepItemScreen[];
-extern CONST_DATA u16 obj_08A18E34[];
-extern CONST_DATA u16 obj_08A18E4E[];
-extern CONST_DATA u16 obj_08A18E62[];
-extern CONST_DATA u16 obj_08A18E76[];
+extern CONST_DATA u16 obj_PrepUnitselect_0[];
+extern CONST_DATA u16 Sprite_PrepStartButton[];
+extern CONST_DATA u16 obj_PrepUnitselect_1[];
+extern CONST_DATA u16 Sprite_PrepBButton[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepUnitScreen[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepItemTradeScreen[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepItemUseScreen[];
@@ -222,71 +249,111 @@ extern int CONST_DATA gSupplyHelpTextIndexLookup[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepItemSupplyScreen[];
 extern CONST_DATA struct ProcCmd ProcScr_BmSupplyScreen[];
 extern CONST_DATA struct ProcCmd ProcScr_PrepItemListScreen[];
-extern u16 gUnknown_08A195F8[];
-extern u16 * gUnknown_08A19608[];
+extern u16 gPrepWmSell_0[];
+extern u16 * gPrepWmSell_1[];
 extern CONST_DATA struct ProcCmd gProcScr_FortuneSubMenu[];
-extern int gUnknown_08A196BC[]; /* msg lists */
-extern int CONST_DATA gUnknown_08A196D0[];
-extern int CONST_DATA gUnused_08A196E4[];
+extern int gUnkData_59[]; /* msg lists */
+extern int CONST_DATA gUnkData_60[];
+extern int CONST_DATA gUnused_UnkData_0[];
 extern u16 CONST_DATA Img_PrepHelpButtonSprites[];
 extern u8 Img_MenuScrollBar[];
 extern u16 Pal_MenuScrollBar[];
-extern u8 gUnknown_08A19CCC[]; // gfx
+extern u8 gUnkData_61[]; // gfx
 extern u16 Pal_SpinningArrow[]; // pal
-extern u8 gUnknown_08A1A0A4[]; // gfx
-extern u8 gUnknown_08A1A23C[]; // gfx
-extern u16 gUnknown_08A1A3FC[]; // pal
-extern u8 CONST_DATA Tsa_08A1A41C[];
-extern u8 CONST_DATA Tsa_08A1A434[];
-extern u8 CONST_DATA Tsa_08A1A474[];
-extern u8 CONST_DATA gUnknown_08A1A4C8[];
+extern u8 gUnkData_62[]; // gfx
+extern u8 gUnkData_63[]; // gfx
+extern u16 gUnkData_64[]; // pal
+extern u8 CONST_DATA Tsa_UnkData_1[];
+extern u8 CONST_DATA Tsa_UnkData_2[];
+extern u8 CONST_DATA Tsa_UnkData_3[];
+extern u8 CONST_DATA gUnkData_65[];
 extern u8 gGfx_SupportScreenBanner[];
-extern u8 CONST_DATA gUnknown_08A1AC88[];
+extern u8 CONST_DATA gUnkData_66[];
 extern u16 CONST_DATA Img_SysBrownBox[];
 extern u16 CONST_DATA Pal_SysBrownBox[];
 extern u16 CONST_DATA gPal_SupportScreenBanner[];
-extern u16 CONST_DATA gUnknown_08A1B194[];
-extern u8 gUnknown_08A1B1FC[]; // gfx
-extern u16 gUnknown_08A1B638[]; // pal
-extern u8 CONST_DATA gUnknown_08A1B658[];
-extern u8 CONST_DATA gUnknown_08A1B698[];
-extern u8 CONST_DATA gUnknown_08A1B730[];
-extern u8 CONST_DATA gUnknown_08A1B7C8[];
-extern u8 gUnknown_08A1B8B8[]; // tsa
-extern u8 gUnknown_08A1B990[]; // tsa
-extern u8 gUnknown_08A1B9EC[]; // tsa
+extern u16 CONST_DATA AP_DrawPreparationsBanner[];
+extern u8 Img_PrepFunds[]; // gfx
+extern u16 Pal_PrepFunds[]; // pal
+extern u8 CONST_DATA gUnkData_67[];
+extern u8 CONST_DATA gUnkData_68[];
+extern u8 CONST_DATA gUnkData_69[];
+extern u8 CONST_DATA gUnkData_70[];
+extern u8 Tsa_PrepItemScreen[]; // tsa
+extern u8 Tsa_UnkData_4[]; // tsa
+extern u8 gUnkData_71[]; // tsa
 extern u16 CONST_DATA Img_PrepItemUseScreen[];
 extern u16 CONST_DATA Tsa_PrepItemUseScreen[];
-extern u8 gUnknown_08A1BBD0[]; // tsa?
-extern u8 gUnknown_08A1BCC0[];
-extern u16 gUnknown_08A1BD00[]; // pal
-// extern ??? gUnknown_08A1BD40
-extern u16 gUnknown_08A1BD60[];
+extern u8 gUnkData_72[]; // tsa?
+extern u8 gUnkData_73[];
+extern u16 gUnkData_74[]; // pal
+// extern ??? gUnkData_75
+extern u16 gUnkData_76[];
 extern u8 Img_SpinningArrow[]; // arrow gfx
 extern u8 gImg_UiSpinningArrow_Horizontal[];
-// extern ??? gUnknown_08A1C8B4
-// extern ??? Img_08A1CD68
-// extern ??? Img_UnitListBanners
-// extern ??? Img_UnitListBanner_Animation
-extern u16 Pal_08A1D448[];
-extern u16 CONST_DATA gUnknown_08A1D4C8[];
+extern u8 gUnkData_77[]; // tsa
+extern u8 Img_UnkData_1[];
+extern u8 Img_UnitListBanners[];
+extern u8 Img_UnitListBanner_Animation[];
+extern u16 Pal_UnkData_1[];
+extern u16 CONST_DATA gUnkData_78[];
 extern u8 Img_PrepTextShadow[];
-extern u8 CONST_DATA gUnknown_08A1D510[];
+extern u8 CONST_DATA gUnkData_79[];
 extern u16 CONST_DATA Pal_MapBattleInfoNum[]; // 'R is info' palette
 extern u8 Img_PrepPopupWindow[];
-extern u16 Pal_08A1D850[];
-extern u16 Pal_08A1D870[];
-extern u16 Pal_08A1D890[];
-extern u16 Pal_08A1D8B0[];
+extern u16 Pal_PrepWindowA[];
+extern u16 Pal_PrepWindowB[];
+extern u16 Pal_PrepWindowC[];
+extern u16 Pal_PrepWindowD[];
 extern u8 Img_PrepWindow[];
-extern u8 gUnknown_08A1DB80[];
+extern u8 gUnkData_80[];
 extern u8 gTsa_SupportSubScreen[];
 extern u8 gGfx_SupportMenu[];
 extern u16 gPal_SupportMenu[];
 
 /* sally-cursor */
-int GetPlayerLeaderUnitId(void);
-void sub_80332D0(void);
+
+enum
+{
+    PREP_MAPMENU_NONE = 0,
+    PREP_MAPMENU_VIEW_MAP = 1,
+    PREP_MAPMENU_FORMATION = 2,
+
+    PREP_MAPMENU_OPTIONS = 8,
+    PREP_MAPMENU_SAVE = 9,
+    PREP_MAPMENU_DEBUG = 10,
+};
+
+enum
+{
+    PL_SALLYCURSOR_OPEN_MAP_MENU = 0x00,
+    PL_SALLYCURSOR_UNIT_SELECTED = 0x01,
+    PL_SALLYCURSOR_START_ATMENU = 0x02,
+    PL_SALLYCURSOR_UNIT_SWAP = 0x03,
+    PL_SALLYCURSOR_CANCEL_SWAP = 0x04,
+    PL_SALLYCURSOR_POST_STATSCREEN_IDLE = 0x05,
+    PL_SALLYCURSOR_POST_STATSCREEN_MOVE = 0x06,
+    PL_SALLYCURSOR_MAP_IDLE = 0x09,
+    PL_SALLYCURSOR_0B = 0x0B,
+    PL_SALLYCURSOR_0C = 0x0C, // NOTE: Does not exist in the actual proc
+
+    PL_SALLYCURSOR_ENTER_MAP = 0x32,
+    PL_SALLYCURSOR_RETURN_TO_ATMENU = 0x33,
+    PL_SALLYCURSOR_POST_SUPPLY_CHANGE = 0x34,
+    PL_SALLYCURSOR_SUPPLY_DEPLOY = 0x35,
+    PL_SALLYCURSOR_SUPPLY_REMOVE = 0x36,
+    PL_SALLYCURSOR_END_PREP = 0x37,
+    PL_SALLYCURSOR_CHAPTER_STATUS = 0x38,
+    PL_SALLYCURSOR_OPTIONS = 0x39,
+    PL_SALLYCURSOR_POST_DEBUG_MENU = 0x3A,
+    PL_SALLYCURSOR_SAVE = 0x3B,
+    PL_SALLYCURSOR_SHOP = 0x3C,
+    PL_SALLYCURSOR_MAP_MENU = 0x3D,
+    PL_SALLYCURSOR_REENTER_MAP = 0x3E,
+};
+
+int GetPlayerLeaderPid(void);
+void Prep_ShowDeployableTiles(void);
 void EndPrepScreenMenu_(void);
 void PrepMapMenu_OnViewMap(struct ProcPrepSallyCursor*);
 void PrepMapMenu_OnFormation(struct ProcPrepSallyCursor*);
@@ -296,32 +363,32 @@ void SALLYCURSOR_DeploySupplyUnit(void);
 void PrepMapMenu_OnOptions(struct ProcPrepSallyCursor*);
 void SALLYCURSOR_RemoveSupplyUnit(void);
 void PrepMapMenu_OnSave(struct ProcPrepSallyCursor*);
-void sub_8033468(struct ProcPrepSallyCursor*);
-void sub_803348C(ProcPtr);
+void PrepMapMenu_OnDebug_Unused(struct ProcPrepSallyCursor*);
+void PrepScreenProc_SetCameraOnSupply(ProcPtr);
 void PrepScreenProc_InitMapMenu(struct ProcPrepSallyCursor*);
 void PrepScreenProc_DimMapImmediate(void);
 void PrepScreenProc_StartBrightenMap(ProcPtr);
-void sub_8033514(ProcPtr);
+void PrepScreenProc_StartDimMap(ProcPtr);
 void PrepHelpPrompt_Init(struct ProcPrepSallyCursor *);
 void PrepHelpPrompt_Loop(void);
-void sub_8033608(void);
+void PrepScreenProc_ApplyBrownBoxPalette(void);
 void StartPrepHelpPrompt(ProcPtr);
 void PrepMapMenu_OnEnd(void);
 void PrepScreenProc_StartMapMenu(struct ProcPrepSallyCursor*);
 bool CanCharacterBePrepMoved(int);
-void sub_8033770(struct ProcPrepSallyCursor*);
-void sub_8033798(struct ProcPrepSallyCursor*);
-void sub_80337B4(struct ProcPrepSallyCursor*);
-void sub_80337D4(struct ProcPrepSallyCursor*);
-void sub_80337F0(struct ProcPrepSallyCursor*);
+void PrepCameraPan_Init(struct ProcPrepSallyCursor*);
+void PrepCameraPan_TurnDown(struct ProcPrepSallyCursor*);
+void PrepCameraPan_TurnLeft(struct ProcPrepSallyCursor*);
+void PrepCameraPan_TurnUp(struct ProcPrepSallyCursor*);
+void PrepCameraPan_Loop(struct ProcPrepSallyCursor*);
 void InitPrepScreenUnitsAndCamera(void);
 void InitPrepScreenCursorPosition(void);
-void sub_8033940(struct ProcPrepSallyCursor*);
+void PrepScreenProc_SetupMapIdle(struct ProcPrepSallyCursor*);
 void PrepScreenProc_MapIdle(struct ProcPrepSallyCursor* proc);
-int sub_8033BF8(void);
+int PrepMapMenu_ReturnToAtMenu(void);
 void PrepScreen_StartUnitSwap(struct ProcPrepSallyCursor*);
 void PrepScreen_UnitSwapIdle(struct ProcPrepSallyCursor*);
-void sub_8033DD8(ProcPtr);
+void PrepScreenProc_RecenterOnActiveUnit(ProcPtr);
 void PrepScreen_StartUnitSwapAnim(ProcPtr);
 void InitMapChangeGraphicsIfFog(void);
 void DisplayMapChangeIfFog(void);
@@ -329,15 +396,15 @@ void PrepScreenProc_StartConfigMenu(ProcPtr);
 void PrepScreenProc_StartShopScreen(ProcPtr);
 void PrepScreenProc_MapMovementLoop(ProcPtr);
 void PrepScreenProc_Cleanup(ProcPtr);
-void sub_8034090(ProcPtr);
+void PrepScreenProc_RefreshAfterStatScreen(ProcPtr);
 void StartPrepSaveScreen(ProcPtr);
-void sub_8034168(void);
-void sub_8034194(void);
+void PrepScreenProc_RestoreBgmAfterSave(void);
+void PrepScreenProc_UpdateBgm(void);
 void PrepScreenProc_LockGame(void);
 void PrepScreenProc_HideEverythingAndUnlockGame(void);
 void ShrinkPlayerUnits(void);
 void EndPrepScreen(void);
-bool sub_80342FC(void);
+bool IsPrepMapActive(void);
 
 void Prep_DrawChapterGoal(int VRAM_offset, int pal);
 
@@ -379,22 +446,22 @@ struct ProcPrepMenuDesc {
 void PrepMenuDescOnInit(struct ProcPrepMenuDesc * proc);
 void PrepMenuDescOnParse(struct ProcPrepMenuDesc * proc);
 void PrepMenuDescOnDraw();
-void sub_8095C00(int msg, ProcPtr parent);
-void sub_8095C2C(struct ProcAtMenu * proc);
-void sub_8095C50(int tile, int pal);
+void StartPrepMenuDesc(int msg, ProcPtr parent);
+void AtMenu_EndScreenElements(struct ProcAtMenu * proc);
+void LoadPrepBannerGfx(int tile, int pal);
 void AtMenu_Reinitialize(struct ProcAtMenu * proc);
 void EndPrepAtMenuIfNoUnitAvailable(struct ProcAtMenu * proc);
-void sub_8095F2C(struct ProcAtMenu * proc);
-void sub_8095F54(struct ProcAtMenu *proc);
+void AtMenu_UpdateDescLoop(struct ProcAtMenu * proc);
+void AtMenu_DrawSubmenuOptions(struct ProcAtMenu *proc);
 void CleanupPrepMenuScreen(ProcPtr proc);
-void sub_8096004(struct ProcAtMenu * proc);
+void AtMenu_InitSubmenuCursor(struct ProcAtMenu * proc);
 void AtMenu_CtrlLoop(struct ProcAtMenu * proc);
 void AtMenuSetUnitStateAndEndFlag(struct ProcAtMenu * proc);
 void AtMenu_ResetScreenEffect(struct ProcAtMenu * proc);
 void AtMenu_ResetBmUiEffect(struct ProcAtMenu * proc);
 void AtMenu_StartSubmenu(struct ProcAtMenu * proc);
 void AtMenu_OnSubmenuEnd(struct ProcAtMenu * proc);
-void sub_8096404();
+void AtMenu_EnableDisplay();
 void AtMenu_LockGame();
 void AtMenu_UnlockGame();
 void StartPrepAtMenu();
@@ -412,37 +479,47 @@ void DoPromoteAnimForChar100(struct Proc08A184B4 * proc);
 void IsGameLockLevelReserved(struct Proc08A184B4 *proc);
 void NullExpForChar100AndResetScreen();
 void IsGameLockLevelReserved(struct Proc08A184B4 *proc);
-void sub_8096668();
+void FadeOutPrepBgm();
 void NewPrepScreenTraineePromotionManager();
 int PrepScreenTraineePromotionManagerExists(ProcPtr proc);
 int PrepAtMenuExists(ProcPtr proc);
-void PutObj8A1856E(int xOam1, int yOam0, u16 oam2);
-void PutObj8A18582_WithConfigs(int xOam1, int yOam0, int a3, u16 oam2);
-void PutObj8A18590_WithConfigs(int xOam1, int yOam0, int a3, u16 oam2);
-void PutObj8A1859E_WithConfigs(int xOam1, int yOam0, int a3, u16 oam2);
-void PutObj8A185AC(int xOam1, int yOam0, u16 oam2);
+void PutPrepInformationSprite(int xOam1, int yOam0, u16 oam2);
+void PutPrepChapterSprite_Default(int xOam1, int yOam0, int prepChapterNum, u16 oam2);
+void PutPrepChapterSprite_Tower(int xOam1, int yOam0, int prepChapterNum, u16 oam2);
+void PutPrepChapterSprite_Ruins(int xOam1, int yOam0, int prepChapterNum, u16 oam2);
+void PutPrepChapterSprite_Skirmish(int xOam1, int yOam0, u16 oam2);
 
-struct ProcPrepSpecialChar {
+enum
+{
+    PREP_KIND_FINAL_MAP = 0,
+    PREP_KIND_STANDARD = 1,
+    PREP_KIND_TOWER = 2,
+    PREP_KIND_RUINS = 3,
+    PREP_KIND_SKIRMISH = 4,
+};
+
+struct PrepSpriteDrawProc
+{
      PROC_HEADER;
-    /* 29 */ u8 _pad29_[0x2A - 0x29];
+    /* 29 */ STRUCT_PAD(0x29, 0x2A);
     /* 2A */ u8 unk2A;
     /* 2B */ u8 unk2B;
-    /* 29 */ u8 _pad2C_[0x2F - 0x2C];
-    /* 2F */ u8 unk2F;
-    /* 30 */ u8 unk30;
+    /* 29 */ STRUCT_PAD(0x2C, 0x2F);
+    /* 2F */ u8 prepChapterNum;
+    /* 30 */ u8 kind;
     /* 31 */ u8 unk31;
     /* 32 */ u8 unk32;
-    /* 33 */ u8 blink_Start;
-    /* 34 */ u8 blink_B;
+    /* 33 */ u8 buttonStartSolid;
+    /* 34 */ u8 buttonBSolid;
     /* 35 */ u8 unk35;
-    /* 36 */ u16 unk36;
+    /* 36 */ u16 timer;
     /* 38 */ ProcPtr apProc;
 };
 
-void sub_8096958(struct ProcPrepSpecialChar *proc);
-void ProcPrepSpChar_OnInit(struct ProcPrepSpecialChar *proc);
-void ProcPrepSpChar_Idle(struct ProcPrepSpecialChar *proc);
-void ProcPrepSpChar_OnEnd(struct ProcPrepSpecialChar *proc);
+void DrawPrepScreenSprites(struct PrepSpriteDrawProc *proc);
+void PrepSpriteDraw_Init(struct PrepSpriteDrawProc *proc);
+void PrepSpriteDraw_Loop(struct PrepSpriteDrawProc *proc);
+void PrepSpriteDraw_OnEnd(struct PrepSpriteDrawProc *proc);
 
 struct Unit * GetUnitFromPrepList(int index);
 void RegisterPrepUnitList(int index, struct Unit *);
@@ -469,11 +546,11 @@ int PrepGetDeployedUnitAmt(void);
 void PrepAutoCapDeployUnits(struct ProcAtMenu* proc);
 void RestartMuralBackground();
 void EndMuralBackground_(void);
-void PrepSpecialChar_BlinkButtonStart();
-void PrepSpecialChar_BlinkButtonB();
-ProcPtr StartPrepSpecialCharEffect(ProcPtr parent);
-void EndPrepSpecialCharEffect(void);
-// ??? sub_8096C34(???);
+void PrepSpriteDraw_BlinkButtonStart();
+void PrepSpriteDraw_BlinkButtonB();
+ProcPtr StartPrepScreenSpriteDraw(ProcPtr parent);
+void EndPrepScreenSpriteDraw(void);
+// ??? PrepDebugDrawWindowPosition(???);
 
 struct ProcPrepMenu {
     PROC_HEADER;
@@ -533,15 +610,15 @@ void MenuScroll_Init(struct MenuScrollBarProc * proc);
 void MenuScroll_Loop(struct MenuScrollBarProc * proc);
 
 void LockMenuScrollBar(void);
-void sub_8097668(void);
+void UnlockMenuScrollBar(void);
 void EndMenuScrollBar(void);
 ProcPtr StartMenuScrollBar(ProcPtr);
 void PutMenuScrollBarAt(int, int);
 void UpdateMenuScrollBarConfig(u8, u16, u16, u8);
 void InitMenuScrollBarImg(int, int);
 ProcPtr StartMenuScrollBarExt(ProcPtr, int, int, int, int);
-void sub_80977AC(struct Text * th, u16 * tm, int color, int x, const char * str);
-void sub_80977EC(u8 * a, u16 * b);
+void PrepSallycir_PutColoredText(struct Text * th, u16 * tm, int color, int x, const char * str);
+void PrepSallycir_ClampCursorScroll(u8 * a, u16 * b);
 void SallyCir_OnHBlank(void);
 
 struct SallyCirProc {
@@ -555,9 +632,9 @@ void SallyCir_Init(struct SallyCirProc * proc);
 void SallyCir_Loop(struct SallyCirProc * proc);
 void SallyCir_OnEnd(void);
 struct SallyCirProc* StartSallyCirProc(ProcPtr parent, u8 unk);
-void sub_8097ACC(struct SallyCirProc * proc);
-void sub_8097B98(struct SallyCirProc * proc);
-int sub_8097CC4(void);
+void SallyCir_RectInit(struct SallyCirProc * proc);
+void SallyCir_RectLoop(struct SallyCirProc * proc);
+int PrepUtils_CondFalse_0(void);
 u8 GetConvoyItemCount_(void);
 
 struct ViewCounterProc {
@@ -574,20 +651,20 @@ void PrepHbKeyListener_Loop(ProcPtr proc);
 ProcPtr StartPrepErrorHelpbox(int, int, int, ProcPtr);
 s8 IsWeaponUsable(struct Unit * unit, int item);
 int CountUnitUsableWeapons(struct Unit * unit);
-s8 sub_8097E38(struct Unit *unit);
+s8 CanUnitJoinLinkArena(struct Unit *unit);
 s8 CanUnitBeDeployedLinkArena(struct Unit *unit);
 s8 CheckValidLinkArenaItemSwap(struct Unit*, int, struct Unit*, int);
 s8 CheckValidLinkArenaItemSupply(struct Unit*, int, int);
-s8 sub_8097F98(struct Unit*, int);
-void sub_8097FDC(void);
+s8 CheckValidLinkArenaItemRemoval(struct Unit*, int);
+void ApplyPrepWindowColorPalette(void);
 int GetPrepPageForItem(int);
-void sub_8098048(int page);
+void SortPrepScreenItemsByPage(int page);
 void SomethingPrepListRelated(struct Unit*, int, int);
-void sub_80982B8(void);
-void sub_80982FC(void);
-int sub_809831C(u16 a);
-int sub_8098344(u16 a, int b);
-int sub_8098378(u16 a);
+void RebuildConvoyFromPrepList(void);
+void DebugFillConvoyWithItems(void);
+int CountSetBits(u16 a);
+int GetNthSetBitMask(u16 a, int b);
+int GetFirstSetBitIndex(u16 a);
 
 struct PrepItemScreenProc {
     /* 00 */ PROC_HEADER;
@@ -595,13 +672,13 @@ struct PrepItemScreenProc {
     /* 2A */ u8 hoverUnitIdx;
     /* 2B */ u8 selectedUnitIdx;
     /* 2C */ s8 hasConvoyAccess;
-    /* 2D */ u8 unk_2d; // popup prompt R-text index, when R is pressed
+    /* 2D */ u8 helpboxActiveIdx; // popup prompt R-text index, when R is pressed
     /* 2E */ u8 popupPromptIdx;
     /* 2F */ u8 unk_2f; // unreferenced
     /* 30 */ u8 unk_30; // unreferenced
     /* 31 */ u8 scrollAmount;
     /* 32 */ s8 unitSelected; // opens the popup prompt for Trade/List/Use/etc.
-    /* 34 */ u16 unk_34;
+    /* 34 */ u16 scrollOffset;
     /* 36 */ u16 unk_36; // unreferenced
     /* 38 */ u16 xFacePosBySlot[2];
     /* 3C */ u16 yFacePosBySlot[2];
@@ -643,30 +720,30 @@ void PrepItemScreen_DrawFunds(void);
 void PrepItemScreen_HideFunds(void);
 void PrepItemScreen_SetupGfx(struct PrepItemScreenProc * proc);
 void PrepItemScreen_OnEnd(struct PrepItemScreenProc * proc);
-void sub_8098A04(u16 * tm);
-void sub_8098A74(u16 * tm);
-void sub_8098B48(void);
-void sub_8098B68(void);
-void sub_8098BA8(void);
-void sub_8098BC8(void);
-void sub_8098BE8(void);
+void PutPrepItemScreenPromptText(u16 * tm);
+void PutWmItemScreenPromptText(u16 * tm);
+void PrepItem_DrawPromptBox(void);
+void PrepItem_DrawPromptBoxGMap(void);
+void PrepItem_DrawItemListBox(void);
+void PrepItem_DrawCommandMenuBox(void);
+void PrepItem_EndPopupBoxWorkers(void);
 void PutImg_PrepItemUseUnk(int, int);
 void PutImg_PrepPopupWindow(int, int);
-void sub_8098CC0(struct PrepItemScreenProc * proc);
+void PrepItem_DrawUnitGridScreen(struct PrepItemScreenProc * proc);
 s8 PrepItemScreen_DpadKeyHandler(struct PrepItemScreenProc *);
-void sub_8098FAC(struct PrepItemScreenProc *);
+void PrepItem_UpdateGridScroll(struct PrepItemScreenProc *);
 void PrepItemScreen_StartStatScreen(struct PrepItemScreenProc *);
 void PrepItemScreen_ResumeFromStatScreen(struct PrepItemScreenProc *);
-void sub_8099120(struct PrepItemScreenProc *);
-void sub_8099328(struct PrepItemScreenProc* proc, u16 * tm, struct Unit * unit);
-void sub_80994C4(struct PrepItemScreenProc *);
-void sub_80995D4(struct PrepItemScreenProc *);
-void sub_8099654(struct PrepItemScreenProc *);
-void sub_80996B0(struct PrepItemScreenProc *);
-void sub_80996E8(struct PrepItemScreenProc *);
-void sub_8099AA0(struct PrepItemScreenProc *);
-void sub_8099AF8(struct PrepItemScreenProc *);
-void sub_8099C60(void);
+void PrepItem_GridSelectLoop(struct PrepItemScreenProc *);
+void PrepItem_DrawCommandMenuText(struct PrepItemScreenProc* proc, u16 * tm, struct Unit * unit);
+void PrepItemScreen_DrawSelectedUnitDetails(struct PrepItemScreenProc *);
+void PrepItem_DrawSelectedUnitScreen(struct PrepItemScreenProc *);
+void PrepItem_InitCommandMenu(struct PrepItemScreenProc *);
+void PrepItem_RefreshSelectedUnitItems(struct PrepItemScreenProc *);
+void PrepItem_CommandMenuLoop(struct PrepItemScreenProc *);
+void PrepItem_TradeRedrawItems(struct PrepItemScreenProc *);
+void PrepItem_InitTradeScreen(struct PrepItemScreenProc *);
+void PrepItem_EndPopupBoxesAndSync(void);
 void PrepItemScreen_Loop_MainKeyHandler(struct PrepItemScreenProc *);
 void StartPrepItemTradeScreen(struct PrepItemScreenProc *);
 void StartPrepItemUse(struct PrepItemScreenProc *);
@@ -674,18 +751,18 @@ void StartPrepItemSupply(struct PrepItemScreenProc *);
 void StartPrepSell(struct PrepItemScreenProc *);
 void StartPrepItemListScreen(struct PrepItemScreenProc *);
 void StartPrepArmory(struct PrepItemScreenProc *);
-void sub_8099E68(struct PrepItemScreenProc * proc);
+void PrepItem_ClearGMapMenuOnCancel(struct PrepItemScreenProc * proc);
 void UpdatePrepItemScreenFace(int, struct Unit*, u16, u16, u16);
 void EndPrepItemScreenFace(int);
 ProcPtr StartPrepItemScreen(ProcPtr);
-void sub_8099F7C(struct Text*, u16*, struct Unit*, u16);
-void sub_809A08C(struct PrepItemScreenProc *);
-void sub_809A114(struct PrepItemScreenProc *, u8, s8);
-s8 sub_809A21C(u32, int);
-void sub_809A230(struct Unit * unit, u16 x, u16 y);
-void sub_809A274(struct PrepItemScreenProc *);
+void PrepItemScreen_DrawUnitItems(struct Text*, u16*, struct Unit*, u16);
+void PrepItem_SnapGridScroll(struct PrepItemScreenProc *);
+void PrepItem_DrawUnitNameRow(struct PrepItemScreenProc *, u8, s8);
+bool IsCoordHiddenByMinimug(u32, int);
+void PutClassSpriteForSecretShop(struct Unit * unit, u16 x, u16 y);
+void PrepItem_PutUnitGridSprites(struct PrepItemScreenProc *);
 void PrepItemDrawPopupBox(int x, int y, int w, int h, int oam2);
-void sub_809A504(struct PrepItemScreenProc *, u8);
+void PrepItemScreen_DrawVisibleUnitNames(struct PrepItemScreenProc *, u8);
 s8 PrepItemScreen_GiveAll(struct Unit * unit);
 
 struct PrepMenuTradeProc {
@@ -706,7 +783,7 @@ void PrepItemTrade_Init(struct PrepMenuTradeProc * proc);
 void PrepItemTrade_Loop_MainKeyHandler(struct PrepMenuTradeProc * proc);
 void PrepItemTrade_OnEnd(void);
 void StartPrepItemTradeScreenProc(struct Unit* unitA, struct Unit* unitB, ProcPtr parent);
-void sub_809BE60(struct Unit* unitA, struct Unit* unitB, int rightItemIdx, ProcPtr parent);
+void StartPrepItemTradeScreenProcAtSlot(struct Unit* unitA, struct Unit* unitB, int rightItemIdx, ProcPtr parent);
 
 /* PrepItemUse */
 struct ProcPrepItemUse {
@@ -750,7 +827,7 @@ void PrepItemUse_ExecPromotionItemUnused(struct ProcPrepItemUse * proc);
 void PrepItemUse_ExecPromoDoneUnusedIDLE(struct ProcPrepItemUse * proc);
 void PrepItemUse_PostPromotion(struct ProcPrepItemUse * proc);
 void PrepItemUse_ResetBgmAfterPromo(struct ProcPrepItemUse * proc);
-void sub_809CCE0(void);
+void PrepItemUse_FadeOutBgm(void);
 void StartPrepItemUseScreen(struct Unit *unit, ProcPtr parent);
 
 struct ProcPrepItemUseJunaFruit {
@@ -784,63 +861,63 @@ void PrepItemUseBooster_OnEnd(struct ProcPrepItemUseBooster * proc);
 void StartPrepItemSupplyProc(struct Unit * unit, ProcPtr parent);
 void StartWorldMapSellScreen(struct Unit * unit, ProcPtr parent);
 
-void sub_809D244(void);
-void sub_809D278(int idx, ProcPtr proc);
+void PrepItemSupply_PutPromptBoxSprites(void);
+void PrepItemSupply_StartPromptText(int idx, ProcPtr proc);
 void StoreConvoyWeaponIconGraphics(int, int);
-void sub_809D300(struct Text * textBase, u16 * tm, int yLines, struct Unit * unit);
-void sub_809D418(u16 *, int);
-void sub_809D47C(struct Text *, u16 *, int, struct Unit *);
-void sub_809D47C(struct Text * textBase, u16 * tm, int yLines, struct Unit * unit);
+void PrepItemSupply_DrawItemList(struct Text * textBase, u16 * tm, int yLines, struct Unit * unit);
+void PrepItemSupply_DrawItemListIcons(u16 *, int);
+void PrepItemSupply_DrawItemListRow(struct Text *, u16 *, int, struct Unit *);
+void PrepItemSupply_DrawItemListRow(struct Text * textBase, u16 * tm, int yLines, struct Unit * unit);
 void PrepItemSupply_OnHBlank(void);
 void PrepItemSupply_Init(struct PrepItemSupplyProc * proc);
-void sub_809D608(void);
-void sub_809D644(struct PrepItemSupplyProc * proc);
-void sub_809D6CC(void);
+void PrepItemSupply_InitGiveTakeText(void);
+void PrepItemSupply_DrawGiveTakeText(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_DrawConvoyHeader(void);
 void PutGiveTakeBoxSprites(void);
 void PutGiveSprites(void);
 void PutTakeSprites(void);
 void Supply_PutHighlightedCategorySprites(struct PrepItemSupplyProc * proc);
-void sub_809D8D4(u16 * tm, u32 chr, int pal);
-void sub_809D914(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_DrawConvoyWeaponIconTiles(u16 * tm, u32 chr, int pal);
+void PrepItemSupply_ResetBackgrounds(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_InitGfx(struct PrepItemSupplyProc * proc);
-void sub_809DC70(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_EnterGiveTakeMenu(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_Loop_GiveTakeKeyHandler(struct PrepItemSupplyProc * proc);
-void sub_809DEFC(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_RedrawAfterPageSwitch(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_SwitchPageLeft(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_SwitchPageRight(struct PrepItemSupplyProc * proc);
-void sub_809E100(struct PrepItemSupplyProc * proc);
-void sub_809E184(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_ClampScroll(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_AdjustCursorAndScroll(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_ScrollVertical(struct PrepItemSupplyProc * proc, int amount);
-void sub_809E2BC(void);
-void sub_809E2C8(struct PrepItemSupplyProc * proc);
-void sub_809E420(struct PrepItemSupplyProc * proc);
-s8 sub_809E7A8(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_RedrawConvoyHeaderWorker(void);
+void PrepItemSupply_TakeItemFromSupply(struct PrepItemSupplyProc * proc);
+void PrepItemSupply_Loop_ItemListKeyHandler(struct PrepItemSupplyProc * proc);
+s8 PrepItemSupply_HandleUnitInvCursorInput(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_SwitchToUnitInventory(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_GiveItemToSupply(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_Loop_UnitInvKeyHandler(struct PrepItemSupplyProc * proc);
 void PrepItemSupply_OnEnd(struct PrepItemSupplyProc * proc);
 void StartPrepItemSupplyProc(struct Unit * unit, ProcPtr parent);
-void sub_809EAF4(void);
-void sub_809EB14(void);
+void PrepItemSupply_ShowActiveUnitOnEnter(void);
+void PrepItemSupply_StartActiveUnitMuOnExit(void);
 void StartBmSupply(struct Unit *, ProcPtr);
 void MaybeStartSelectConvoyItemProc(struct Unit *, ProcPtr);
 void PrepItemList_Init(struct PrepItemListProc * proc);
-void sub_809EBF0(void);
+void PrepItemList_DrawOwnerHeaderText(void);
 void PrepItemList_DrawCurrentOwnerText(struct PrepItemListProc *);
 void List_PutHighlightedCategorySprites(struct PrepItemListProc *);
 void PrepItemList_InitGfx(struct PrepItemListProc * proc);
 void PrepItemList_OnEnd(struct PrepItemListProc * proc);
-void sub_809F150(struct PrepItemListProc * proc);
+void PrepItemList_RedrawPageContents(struct PrepItemListProc * proc);
 void PrepItemList_SwitchPageLeft(struct PrepItemListProc * proc);
 void PrepItemList_SwitchPageRight(struct PrepItemListProc * proc);
-void sub_809F370(struct PrepItemListProc *);
+void PrepItemList_ClampCursorAndScroll(struct PrepItemListProc *);
 void PrepItemList_ScrollVertical(struct PrepItemListProc * proc, int amount);
-void sub_809F498(struct PrepItemListProc * proc);
-void sub_809F5F4(struct PrepItemListProc *);
+void PrepItemList_TakeItemToUnit(struct PrepItemListProc * proc);
+void PrepItemList_SnapCursorIntoView(struct PrepItemListProc *);
 void PrepItemList_Loop_MainKeyHandler(struct PrepItemListProc * proc);
-s8 sub_809FA88(struct PrepItemListProc * proc);
+s8 PrepItemList_MoveUnitInvCursor(struct PrepItemListProc * proc);
 void PrepItemList_SwitchToUnitInventory(struct PrepItemListProc * proc);
-void sub_809FB70(struct PrepItemListProc * proc);
+void PrepItemList_SwapItemWithUnitSlot(struct PrepItemListProc * proc);
 void PrepItemList_Loop_UnitInvKeyHandler(struct PrepItemListProc * proc);
 void PrepItemList_StartTradeScreen(struct PrepItemListProc * proc);
 void StartPrepItemListScreenProc(struct Unit * unit, ProcPtr parent);

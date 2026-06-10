@@ -24,13 +24,14 @@
 #include "eventinfo.h"
 #include "bmmind.h"
 #include "bmusemind.h"
+#include "constants/songs.h"
 
 s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
  struct ProcCmd CONST_DATA ProcScr_PostWarpStaffAction[] = {
     PROC_SLEEP(0),
     PROC_CALL_2(PostWarpStaff_ExecTrap),
-    PROC_CALL(sub_802EF80),
+    PROC_CALL(PostWarpStaff_RefreshMap),
 
     PROC_END,
 };
@@ -44,7 +45,7 @@ s8 CanUnitCrossTerrain(struct Unit* unit, int terrain);
 
  struct ProcCmd CONST_DATA ProcScr_ExecNightmareStaff[] = {
     PROC_SLEEP(1),
-    PROC_CALL(sub_8030050),
+    PROC_CALL(ExecNightmareStaffEffect),
 
     PROC_END,
 };
@@ -236,7 +237,7 @@ int PostWarpStaff_ExecTrap(ProcPtr proc) {
     return ExecTrapAfterWarp(proc);
 }
 
-int sub_802EF80() {
+int PostWarpStaff_RefreshMap() {
     EndMu(GetUnitMu(GetUnit(gActionData.targetIndex)));
 
     RefreshEntityBmMaps();
@@ -338,7 +339,7 @@ void ExecFortify(ProcPtr proc) {
         gActionData.itemSlotIndex);
 
     BattleInitItemEffectTarget(
-        GetUnitFromCharId(GetPlayerLeaderUnitId())
+        GetUnitFromCharId(GetPlayerLeaderPid())
     );
 
     MakeTargetListForRangedHeal(GetUnit(gActionData.subjectIndex));
@@ -440,7 +441,7 @@ void ExecLatona(ProcPtr proc) {
         gActionData.itemSlotIndex);
 
     BattleInitItemEffectTarget(
-        GetUnitFromCharId(GetPlayerLeaderUnitId())
+        GetUnitFromCharId(GetPlayerLeaderPid())
     );
 
     MakeTargetListForLatona(GetUnit(gActionData.subjectIndex));
@@ -554,14 +555,14 @@ void ExecKeyItem() {
 
     StartAvailableChestTileEvent(x, y);
 
-    PlaySoundEffect(0xB1);
+    PlaySoundEffect(SONG_B1);
 
     gBattleTarget.statusOut = -1;
 
     return;
 }
 
-void sub_802F598(struct Unit* unit, int itemIdx, s8 unk) {
+void ExecUnitDefaultPromotion(struct Unit* unit, int itemIdx, s8 unk) {
 
     if (itemIdx != -1) {
         gBattleActor.weaponBefore = gBattleTarget.weaponBefore = unit->items[itemIdx];
@@ -633,14 +634,14 @@ void ExecUnitPromotion(struct Unit* unit, u8 classId, int itemIdx, s8 unk) {
     return;
 }
 
-void sub_802F73C() {
+void ExecPromotionToClass1() {
     ExecUnitPromotion(GetUnit(gActionData.subjectIndex), 1, gActionData.itemSlotIndex, 1);
     BeginBattleAnimations();
 
     return;
 }
 
-void sub_802F760(struct Unit* unit, int item) {
+void ExecUnitDefaultPromotionAndHide(struct Unit* unit, int item) {
     gBattleActor.weaponBefore = gBattleTarget.weaponBefore = item;
     gBattleActor.weapon = gBattleTarget.weapon = item;
 
@@ -740,7 +741,7 @@ void ExecStatBoostItem(ProcPtr proc) {
 
     messageId = ApplyStatBoostItem(unit, gActionData.itemSlotIndex);
 
-    PlaySoundEffect(0x5A);
+    PlaySoundEffect(SONG_5A);
 
     NewPopup2_PlanA(proc, GetItemIconId(item), GetStringFromIndex(messageId));
 
@@ -796,7 +797,7 @@ void ExecJunaFruitItem(ProcPtr proc) {
 
     levelCount = ApplyJunaFruitItem(unit, gActionData.itemSlotIndex);
 
-    PlaySoundEffect(0x5A);
+    PlaySoundEffect(SONG_5A);
 
     NewPopup2_PlanB(proc, GetItemIconId(itemId), 0, levelCount, GetStringFromIndex(0x1E));
 
@@ -833,7 +834,7 @@ void ExecLightRune(ProcPtr proc) {
     return;
 }
 
-void sub_802FAD0(ProcPtr proc) {
+void ExecLightRuneSummon(ProcPtr proc) {
     int xPos, yPos;
     struct Unit* unit;
     BattleInitItemEffect(GetUnit(gActionData.subjectIndex),
@@ -849,37 +850,37 @@ void sub_802FAD0(ProcPtr proc) {
     // Seems to be required
     unit = 0;
 
-    gUnknown_03001788.charIndex = 0x80;
-    gUnknown_03001788.classIndex = CLASS_BERSERKER;
-    gUnknown_03001788.leaderCharIndex = 1;
+    gUnk_39.charIndex = 0x80;
+    gUnk_39.classIndex = CLASS_BERSERKER;
+    gUnk_39.leaderCharIndex = 1;
 
-    gUnknown_03001788.autolevel = 0;
-    gUnknown_03001788.allegiance = 0;
-    gUnknown_03001788.level = 1;
+    gUnk_39.autolevel = 0;
+    gUnk_39.allegiance = 0;
+    gUnk_39.level = 1;
 
-    gUnknown_03001788.xPosition = xPos;
-    gUnknown_03001788.yPosition = yPos;
+    gUnk_39.xPosition = xPos;
+    gUnk_39.yPosition = yPos;
 
-    gUnknown_03001788.redaCount = 0;
-    gUnknown_03001788.redas = NULL;
+    gUnk_39.redaCount = 0;
+    gUnk_39.redas = NULL;
 
-    gUnknown_03001788.genMonster = 0;
-    gUnknown_03001788.itemDrop = 0;
+    gUnk_39.genMonster = 0;
+    gUnk_39.itemDrop = 0;
 
-    gUnknown_03001788.items[0] = ITEM_AXE_STEEL;
-    gUnknown_03001788.items[1] = ITEM_AXE_SILVER;
-    gUnknown_03001788.items[2] = ITEM_AXE_DEVIL;
-    gUnknown_03001788.items[3] = ITEM_AXE_TOMAHAWK;
+    gUnk_39.items[0] = ITEM_AXE_STEEL;
+    gUnk_39.items[1] = ITEM_AXE_SILVER;
+    gUnk_39.items[2] = ITEM_AXE_DEVIL;
+    gUnk_39.items[3] = ITEM_AXE_TOMAHAWK;
 
-    gUnknown_03001788.ai[0] = 0;
-    gUnknown_03001788.ai[1] = 0;
-    gUnknown_03001788.ai[2] = 0;
-    gUnknown_03001788.ai[3] = 0;
+    gUnk_39.ai[0] = 0;
+    gUnk_39.ai[1] = 0;
+    gUnk_39.ai[2] = 0;
+    gUnk_39.ai[3] = 0;
 
     // TODO: Can't seem to force the extra register allocation for the return, which is required for match
     unit = GetUnitFromCharId(1); // CHARACTER_EIRIKA
     if (!unit) {
-        LoadUnits(&gUnknown_03001788);
+        LoadUnits(&gUnk_39);
     }
 
     gBattleTarget.statusOut = -1;
@@ -1071,7 +1072,7 @@ void ActionPick(ProcPtr proc) {
 
     StartAvailableChestTileEvent(xPos, yPos);
 
-    PlaySoundEffect(0xB1);
+    PlaySoundEffect(SONG_B1);
 
     gBattleTarget.statusOut = -1;
 
@@ -1093,7 +1094,7 @@ void AfterItemUse_SetTargetStatus() {
     return;
 }
 
-void sub_8030050() {
+void ExecNightmareStaffEffect() {
     ApplyNightmareEffect();
     return;
 }

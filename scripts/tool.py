@@ -14,7 +14,7 @@ from PIL import Image
 cwd = os.path.dirname(os.path.realpath(__file__))
 
 # tool path
-gbagfx = 'gbagfx'
+gbagfx = '../tools/gbagfx/gbagfx'
 
 fake = 0
 lz77 = 1
@@ -163,7 +163,7 @@ def read_palette(infile):
             hword = fp.read(2)
         return pal
 
-def save_image(infile, outfile=None, width=32, palfile=None, mapfile=None, palbase=0):
+def save_image(infile, outfile=None, width=32, palfile=None, mapfile=None, palbase=0, keepNomapDimensions=False):
     """
     Save image with gbagfx.
     """
@@ -172,7 +172,7 @@ def save_image(infile, outfile=None, width=32, palfile=None, mapfile=None, palba
         raise FileExtNameError(infile, '*.1bpp, *.4bpp, *.8bpp')
     if outfile is not None:
         ext = os.path.splitext(outfile)[1]
-        if exit != '.png':
+        if ext != '.png':
             raise FileExtNameError(outfile, '*.png')
     else:
         outfile = base + '.png'
@@ -202,7 +202,12 @@ def save_image(infile, outfile=None, width=32, palfile=None, mapfile=None, palba
         with open(mapfile, 'rb') as fp_map, Image.open(outfile) as im_nomap:
             w = struct.unpack('b', fp_map.read(1))[0] + 1
             h = struct.unpack('b', fp_map.read(1))[0] + 1
-            im_withmap = Image.new('P', (8 * w, 8 * h))
+            iw = 8 * w
+            ih = 8 * h
+            if keepNomapDimensions:
+                iw = im_nomap.width
+                ih = im_nomap.height
+            im_withmap = Image.new('P', (iw, ih))
             im_withmap.putpalette(read_palette(palfile_full))
             for row in range(h - 1, -1, -1):
                 for col in range(0, w):
@@ -215,9 +220,9 @@ def save_image(infile, outfile=None, width=32, palfile=None, mapfile=None, palba
                     x = tile % (im_nomap.width / 8)
                     im_tile = im_nomap.crop((8 * x, 8 * y, 8 * x + 8, 8 * y + 8))
                     if flipH:
-                        im_tile = im_tile.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                        im_tile = im_tile.transpose(Image.FLIP_LEFT_RIGHT)
                     if flipV:
-                        im_tile = im_tile.transpose(Image.Transpose.FLIP_TOP_BOTTOM)
+                        im_tile = im_tile.transpose(Image.FLIP_TOP_BOTTOM)
                     im_withmap.paste(im_tile, (8 * col, 8 * row))
                     if pal > 0:
                         for r in range(0, 8):
