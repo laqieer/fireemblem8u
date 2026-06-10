@@ -8,8 +8,9 @@ MAINTAINER laqieer <laqieer@126.com>
 # few helper scripts.
 # Some build scripts hardcode a #!/bin/python3 shebang; Alpine installs python3
 # under /usr/bin, so provide /bin/python3.
-RUN apk add --no-cache python3 py3-numpy py3-pillow perl git build-base gnu-libiconv \
-    && ln -sf /usr/bin/python3 /bin/python3
+RUN apk add --no-cache python3 py3-numpy py3-pillow perl bash git build-base gnu-libiconv \
+    && ln -sf /usr/bin/python3 /bin/python3 \
+    && ln -sf "$(command -v gnu-iconv)" /usr/local/bin/iconv
 
 COPY . .
 
