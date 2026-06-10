@@ -42,6 +42,10 @@ MARTOMAP   := scripts/mar_to_map.py
 PYTHON    ?= python3
 PAL2GBAPAL := $(GBAGFX)
 
+# Exported so helper scripts invoked during the build (e.g. scripts/compressor.py
+# for the banim LZ step) use the same gbagfx as the Makefile.
+export GBAGFX
+
 # agbcc runtime libs (libc/libgcc). The build image installs agbcc under
 # /usr/local/bin/agbcc; override for non-image builds, e.g.
 # make AGBCC_LIB=/path/to/agbcc/lib (agbcc headers come from C_INCLUDE_PATH).
