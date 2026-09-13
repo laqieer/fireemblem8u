@@ -39,10 +39,10 @@ is rebuilt and checksummed. To narrow down a single function's mismatch, use
 - Some files use the older compiler (`old_agbcc`) or different flags — see per-file overrides in `Makefile`.
 
 ### Decompilation workflow
-Assembly lives in `asm/` (only `arm.s` and `arm_call.s` remain, plus data files in `data/`). Decompiled C goes in `src/`. The linking order in `ldscript.txt` determines ROM layout — when decompiling a function, you add `src/x.o(.text)` **before** `asm/x.o(.text)` and remove the function from the `.s` file. Keep **both** the `src/` and `asm/` linker entries until `asm/x.s` is fully empty; leaving a function in both places causes a `multiple definition` link error. For undeclared symbols, locate the type with `git grep "<symbol>" include/` and add the owning header (functions still living in `asm/` get a bare forward declaration, not `extern`). The decomp tutorial in `CONTRIBUTING.md` walks a full function end-to-end.
+All code has been decompiled; `asm/` holds only `fe6sio.s` (an incbin'd payload) and the assembler macros, plus data files live in `data/`. Decompiled C goes in `src/`. The linking order in `ldscript.txt` determines ROM layout — when decompiling a function, you add `src/x.o(.text)` **before** `asm/x.o(.text)` and remove the function from the `.s` file. Keep **both** the `src/` and `asm/` linker entries until `asm/x.s` is fully empty; leaving a function in both places causes a `multiple definition` link error. For undeclared symbols, locate the type with `git grep "<symbol>" include/` and add the owning header (functions still living in `asm/` get a bare forward declaration, not `extern`). The decomp tutorial in `CONTRIBUTING.md` walks a full function end-to-end.
 
 ### Files that must NOT be decompiled
-These are handwritten assembly, already commented, and stay in `asm/`: `crt0.s`, `libagbsyscall.s`, `libgcnmultiboot.s`, `m4a_1.s`, `m4a_3.s`, `arm.s`, `arm_call.s`.
+These are handwritten assembly, already commented, and are kept as `.s` files in `src/`: `crt0.s`, `libagbsyscall.s`, `m4a_1.s`, `arm.s`, `arm_call.s`.
 
 ### Proc system (cooperative multitasking)
 The engine uses a **Proc** system (`include/proc.h`, `src/proc.c`) — a tree-based cooperative scheduler. Game entities are `struct Proc` with script tables (`struct ProcCmd[]`) that define behavior as sequences of commands: `PROC_CALL`, `PROC_REPEAT`, `PROC_SLEEP`, `PROC_YIELD`, `PROC_START_CHILD_BLOCKING`, etc. Local proc structs embed `PROC_HEADER` at offset 0 and add custom fields after.

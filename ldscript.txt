@@ -246,7 +246,7 @@ SECTIONS
         /* .text */
         src/rom_header.o(.text);
         src/crt0.o(.text);
-        asm/arm.o(.text);
+        src/arm.o(.text);
         src/main.o(.text);
         src/fe3_dummy.o(.text);
         src/irq.o(.text);
@@ -616,7 +616,7 @@ SECTIONS
         *libgcc.a:fp-bit.o(.text);
         *libgcc.a:_lshrdi3.o(.text);
         *libgcc.a:_negdi2.o(.text);
-        asm/arm_call.o(.text);
+        src/arm_call.o(.text);
 
         /* .rodata */
         . = ALIGN(4); src/main.o(.rodata);

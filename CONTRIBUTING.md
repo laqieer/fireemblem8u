@@ -12,14 +12,14 @@
 
 Code starts out in `asm/`. When decompiled to C, it goes into `src/`. The goal is to decompile all the code.
 
-Some of the code in `asm/` is handwritten assembly. It can't and shouldn't be decompiled. It's already commented, so there's no further work to do on these files.
-* `asm/crt0.s`
-* `asm/libagbsyscall.s`
-* `asm/libgcnmultiboot.s`
-* `asm/m4a_1.s`
-* `asm/m4a_3.s`
+Some of the code is handwritten assembly. It can't and shouldn't be decompiled. It's already commented, so there's no further work to do on these files, which are kept as `.s` files in `src/` next to the C:
+* `src/crt0.s`
+* `src/libagbsyscall.s`
+* `src/m4a_1.s`
+* `src/arm.s` (ARM-mode routines copied into IWRAM at boot)
+* `src/arm_call.s` (Thumb-to-ARM call stubs for `src/arm.s`)
 
-The rest of the `.s` files in `asm/` are fair game.
+All remaining code has been decompiled. `asm/` now holds only `fe6sio.s` (the incbin'd FE6 link payload) and the assembler macros, so the guide below is kept for reference.
 
 The basic decompilation process is:
 * Choose a file in `asm/`, i.e. `asm/x.s`. Create a C file called `src/x.c`.
