@@ -26,6 +26,7 @@
 #include "constants/event-flags.h"
 #include "constants/characters.h"
 #include "constants/chapters.h"
+#include "constants/msg.h"
 #include "constants/songs.h"
 
 extern u16 gEndingTmScratchA[];
@@ -107,7 +108,7 @@ void SaveMenuHandleHelpBox(struct SaveMenuProc * proc)
         if ((proc->cursor_config != 0) && (proc->hb_en == false))
         {
             LoadHelpBoxGfx(OBJ_VRAM0 + OBJCHR_SAVEMENU_SLOTSEL_HELPBOX * TILE_SIZE_4BPP, OBJPAL_SAVEMENU_SLOTSEL_HELPBOX);
-            StartHelpBoxExt_Unk(0x30, 0x30, 0x882);
+            StartHelpBoxExt_NoHelpSprite(48, 48, MSG_882); // "Suspended data will be lost.[NL]Is that all right?"
             proc->hb_en = true;
         }
         break;
@@ -1117,7 +1118,7 @@ s8 SaveMenuTryMoveExtraSlotCursor(struct SaveMenuProc * proc, int direction) {
 void SaveMenuPopupHelpBox_Init(struct SaveMenu8A20068Proc  * proc)
 {
     LoadHelpBoxGfx(OBJ_VRAM0 + OBJCHR_SAVEMENU_SLOTSEL_HELPBOX * TILE_SIZE_4BPP, OBJPAL_SAVEMENU_SLOTSEL_HELPBOX);
-    StartHelpBoxExt_Unk(proc->x, proc->y, proc->msgId);
+    StartHelpBoxExt_NoHelpSprite(proc->x, proc->y, proc->msgId);
     PlaySoundEffect(SONG_70);
 }
 
@@ -1810,7 +1811,7 @@ void BonusClaimMenu_PromptSong3(struct ProcBonusClaimMenu * proc)
     if (proc->unk_58 != 0)
     {
         proc->unk_4c = 0;
-        StartHelpBoxExt_Unk(0x40, 0x30, 0x893); // TODO: msgid "Sacred Dragon[.][NL]added to[NL]Sound Room"
+        StartHelpBoxExt_NoHelpSprite(64, 48, MSG_893); // "Sacred Dragon[.][NL]added to[NL]Sound Room"
         PlaySoundEffect(SONG_5B);
         return;
     }
@@ -1824,7 +1825,7 @@ void BonusClaimMenu_PromptSong4(struct ProcBonusClaimMenu * proc)
     if (proc->unk_5c != 0)
     {
         proc->unk_4c = 0;
-        StartHelpBoxExt_Unk(0x40, 0x30, 0x894); // TODO: msgid "Palace Silezia[NL]added to[NL]Sound Room"
+        StartHelpBoxExt_NoHelpSprite(64, 48, MSG_894); // "Palace Silezia[NL]added to[NL]Sound Room"
         PlaySoundEffect(SONG_5B);
         return;
     }
