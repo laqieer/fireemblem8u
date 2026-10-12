@@ -77,7 +77,7 @@ ifeq (,$(findstring $(CFILES_GENERATED),$(CFILES)))
 CFILES       += $(CFILES_GENERATED)
 endif
 ASM_S_FILES  := $(wildcard $(ASM_SUBDIR)/*.s)
-SRC_S_FILES  := src/rom_header.s src/crt0.s src/m4a_1.s src/libagbsyscall.s
+SRC_S_FILES  := src/rom_header.s src/crt0.s src/m4a_1.s src/libagbsyscall.s src/arm.s src/arm_call.s
 DATA_S_FILES := $(wildcard $(DATA_SUBDIR)/*.s)
 DATA_SRC_C_FILES := $(wildcard $(DATA_SRC_SUBDIR)/*.c $(DATA_SRC_SUBDIR)/mapanim/*.c $(DATA_SRC_SUBDIR)/menu/*.c $(DATA_SRC_SUBDIR)/ending/*.c $(DATA_SRC_SUBDIR)/worldmap/*.c $(DATA_SRC_SUBDIR)/ui/*.c)
 DATA_SRC_C_OBJECTS := $(DATA_SRC_C_FILES:.c=.o)

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a decompilation of **Fire Emblem: The Sacred Stones** (GBA). The goal is to reverse-engineer the original ROM into matching C source code, translating ARM/Thumb assembly from `asm/` into equivalent C in `src/`. The compiled output must be **byte-identical** to the original ROM. Only `asm/arm.s` and `asm/arm_call.s` remain as non-handwritten assembly to decompile.
+This is a decompilation of **Fire Emblem: The Sacred Stones** (GBA). The goal is to reverse-engineer the original ROM into matching C source code, translating ARM/Thumb assembly from `asm/` into equivalent C in `src/`. The compiled output must be **byte-identical** to the original ROM. All tracked main-game decompilation targets have been decompiled; the handwritten assembly (`src/crt0.s`, `src/libagbsyscall.s`, `src/m4a_1.s`, `src/arm.s`, `src/arm_call.s`) is kept as `.s` files under `src/` and is not a decompilation target. The separate FE6 SIO program is outside that scope: `asm/fe6sio.s` still contains an executable bootstrap and an incbin'd multiboot payload built from the `mgfembp` submodule.
 
 ## Build Commands
 

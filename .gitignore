@@ -974,6 +974,8 @@ include/msg_data.h
 # Source files written in ASM
 !src/rom_header.s
 !src/crt0.s
+!src/arm.s
+!src/arm_call.s
 !src/m4a_1.s
 !src/libagbsyscall.s
 
