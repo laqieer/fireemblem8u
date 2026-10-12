@@ -19,7 +19,7 @@ Some of the code is handwritten assembly. It can't and shouldn't be decompiled. 
 * `src/arm.s` (ARM-mode routines copied into IWRAM at boot)
 * `src/arm_call.s` (Thumb-to-ARM call stubs for `src/arm.s`)
 
-All remaining code has been decompiled. `asm/` now holds only `fe6sio.s` (the incbin'd FE6 link payload) and the assembler macros, so the guide below is kept for reference.
+All tracked main-game decompilation targets have been decompiled, so the guide below is kept for reference. `asm/` still contains assembler macros and `fe6sio.s`, which includes the executable FE6 SIO bootstrap (`FE6SIO_Init`, `_reset`, and `sio_polling`) as well as an incbin'd multiboot payload built from the separate `mgfembp` submodule. This embedded program is outside the tracked main-game decompilation scope.
 
 The basic decompilation process is:
 * Choose a file in `asm/`, i.e. `asm/x.s`. Create a C file called `src/x.c`.
